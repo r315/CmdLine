@@ -1,6 +1,10 @@
 #ifndef _strfunctions_h_
 #define _strfunctions_h_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 
 #define FLOAT_MAX_PRECISION 6
@@ -14,4 +18,8 @@ void vftoa(void *putc(char), double f, char places);
 char * strchr ( const char *str, int c);
 size_t strlen(const char *str);
 void hitoa (void *putc(char), long val, int radix, int len);
+
+#ifdef __cplusplus
+}
+#endif
 #endif
