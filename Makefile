@@ -34,7 +34,7 @@ OBJPATH =obj
 
 GCSYMBOLS =-D__NEWLIB__ -D__BB__
 GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables #-ffunction-sections
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -g -lgcc -lstdc++ -fno-exceptions -fno-unwind-tables #-Wl,--gc-sections -nostartfiles 
+LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -lstdc++ -fno-exceptions -fno-unwind-tables -Wl,--gc-sections -nostartfiles 
 
 CSRCS   +=startup_lpc1768.c #syscalls.c
 LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
@@ -46,7 +46,7 @@ $(LIBEMB_PATH)/drv/pwm \
 
 ifeq ($(LIBEMB_PATH), )
 erro:
-	@echo "Please export libemb path"
+	@echo "Please export LIBEMB_PATH"
 endif
 
 all: $(TARGET).elf stats
@@ -54,7 +54,7 @@ all: $(TARGET).elf stats
 
 $(TARGET).elf:  $(OBJECTS)
 	@echo "---- Linking ---->" $@
-	$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
+	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j $(TARGET).elf $(TARGET).hex
