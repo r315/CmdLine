@@ -122,9 +122,7 @@ public:
 	int putchar(int c);
 };
 
-
-int usbSerialInit(); // run once in main b4 main loop starts.
-
+extern Vcom *vcom;
 
 #ifdef __cplusplus
 }

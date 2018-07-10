@@ -68,6 +68,8 @@ void VCOM_gets_echo(char *str); // gets string terminated in '\r' or '\n' and ec
 
 #include "usbserial.h"
 
+#include "vcom.h"
+
 #define BAUD_RATE	    115200
 
 #define INT_IN_EP		0x81
@@ -86,6 +88,8 @@ void VCOM_gets_echo(char *str); // gets string terminated in '\r' or '\n' and ec
 #define	GET_LINE_CODING			0x21
 #define	SET_CONTROL_LINE_STATE	0x22
 
+#define VID                     0xFFFF
+#define PID                     0x0005
 
 static TLineCoding LineCoding = {115200, 0, 0, 8};
 static U8 abBulkBuf[64];
@@ -106,15 +110,15 @@ static const U8 abDescriptors[] = {
 	0x00,						// bDeviceSubClass
 	0x00,						// bDeviceProtocol
 	MAX_PACKET_SIZE0,			// bMaxPacketSize
-	LE_WORD(0xFFFF),			// idVendor
-	LE_WORD(0x0005),			// idProduct
+	LE_WORD(VID),			// idVendor
+	LE_WORD(PID),			// idProduct
 	LE_WORD(0x0100),			// bcdDevice
 	0x01,						// iManufacturer
 	0x02,						// iProduct
 	0x03,						// iSerialNumber
 	0x01,						// bNumConfigurations
 
-// configuration descriptor
+// configuration descriptor one
 	0x09,
 	DESC_CONFIGURATION,
 	LE_WORD(67),				// wTotalLength

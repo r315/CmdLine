@@ -204,7 +204,8 @@ int xatoi (char **str, long *res)
 
 void * memcpy ( void * destination, const void * source, size_t num ){
 	for(size_t i = 0; i < num; i++){
-		*((uint8_t*)destination + i) = *((uint8_t*)source++); 
+		*((uint8_t*)destination + i) = *((uint8_t*)source);
+		source = (uint8_t*)source + 1; 
 	}
 	return destination;
 }

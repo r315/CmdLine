@@ -23,7 +23,7 @@ typedef struct {
 	U8		bDataBits;
 } TLineCoding;
 
-extern void USBSERIAL_Init(Fifo_ops *fifo_ops);
+void USBSERIAL_Init(Fifo_ops *fifo_ops);
 
 #ifdef __cplusplus
 }

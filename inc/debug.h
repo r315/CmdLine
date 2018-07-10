@@ -29,17 +29,24 @@
 // to implement output via semihosting
 
 //int printf(const char *format, ...);
-# include <stdio.h>
-#include <display.h>
+#include <stdio.h>
+
 
 // CodeRed - added DEBUG_MESSAGES, so still get output for Release builds
-#define DEBUG_MESSAGES 0
-//#ifdef DEBUG
+#define DEBUG_MESSAGES 1
+
+#define DEBUG_OUT_DISPLAY 1
+
 #if DEBUG_MESSAGES
-#define DBG	DISPLAY_printf
-#define ASSERT(x)	if(!(x)){DBG("\nAssertion '%s' failed in %s:%s#%d!\n",#x,__FILE__,__FUNCTION__,__LINE__);while(1);}
+   #if DEBUG_OUT_DISPLAY
+      #include <display.h>
+      #define DBG	DISPLAY_printf
+   #else
+      #define DBG printf
+   #endif
+   #define ASSERT(x)	if(!(x)){DBG("\nAssertion '%s' failed in %s:%s#%d!\n",#x,__FILE__,__FUNCTION__,__LINE__);while(1);}
 #else
-#define DBG(x ...)
-#define ASSERT(x)
+   #define DBG(x ...)
+   #define ASSERT(x)
 #endif
 

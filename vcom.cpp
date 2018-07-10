@@ -3,7 +3,38 @@
 #include <stdio.h>
 
 #include "vcom.h"
+#include "usbserial.h"
 #include "strfunctions.h"
+
+static Vcom vcom1;
+Vcom *vcom = &vcom1;
+
+// ---------------------------------------------------
+// Callbacks for usb stack
+// ---------------------------------------------------
+
+uint8_t vcom1_fifo_put(uint8_t data){
+    return vcom1.fifo_put(&vcom1.rxfifo, data);
+}
+
+uint8_t vcom1_fifo_get(uint8_t *dst){
+    return  vcom1.fifo_get(&vcom1.txfifo, dst);
+}
+
+int vcom1_fifo_free(void){
+    return vcom1.fifo_free(&vcom1.rxfifo);
+}
+
+int vcom1_fifo_available(void){
+    return vcom1.fifo_avail(&vcom1.txfifo);
+}
+
+Fifo_ops vcom1_fifo_ops = {
+    .put = vcom1_fifo_put,
+    .get = vcom1_fifo_get,
+    .free = vcom1_fifo_free,
+    .available = vcom1_fifo_available,
+};
 
 // ---------------------------------------------------
 // Fifo handling
@@ -81,6 +112,7 @@ void Vcom::fifo_flush(fifo_t *fifo)
 void Vcom::init(void)
 {
 	fifo_init();
+	USBSERIAL_Init(&vcom1_fifo_ops);
 }
 
 void Vcom::flush(void)

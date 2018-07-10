@@ -18,10 +18,10 @@ CHECKSUM =$(BSPPATH)/tools/checksum
 TARGET = LPCbus
 PRJPATH =. usbdrv
 INCSPATH =. usbdrv
-CSRCS =usbhw_lpc.c usbcontrol.c usbstdreq.c usbserial.c strfunctions.c #command.c
+CSRCS = #command.c
 #CSRCS +=spi_lpc1768.c cmdgpio.c cmdspi.c cmdavr.c
 CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c
-CPPSRCS =LPCbus.cpp vcom.cpp
+CPPSRCS =LPCbus.cpp vcom.cpp usbserial.cpp usbhw_lpc.cpp usbcontrol.cpp usbstdreq.cpp strfunctions.cpp
 
 #########################################################
 #Startup files and libraries
@@ -105,7 +105,7 @@ $(OBJPATH)/%.o : %.c
 
 $(OBJPATH)/%.obj : %.cpp
 	@echo "---- Compile" $< "---->" $@
-	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
+	@$(GPP) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
 $(OBJPATH)/%.o : %.S
 	@echo "---- Assemble" $< "---->" $@
