@@ -2,8 +2,8 @@
 #include <stdlib.h>
 #include "strfunctions.h"
 
-size_t strlen(const char *str){
-size_t count = 0;
+int strlen(const char *str){
+int count = 0;
 	while(*str++){
 		count++;
 	}

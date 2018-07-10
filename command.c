@@ -1,7 +1,6 @@
 
 #include "command.h"
 #include "strfunctions.h"
-#include "vcom.h"
 
 char *cmdNextParameter(char *line){
     line = strchr(line, ' ');
@@ -44,14 +43,10 @@ uint8_t i;
     }
 
     if(pcmd == NULL){
-        VCOM_printf("Command not found\n");
         res = CMD_NOT_FOUND;
     }
     else{
-        res = pcmd->callCmd((void*)(line + strlen(tmp) + 1)); // pass arguments
-        if(res == CMD_BAD_PARAM ){ 
-                VCOM_printf("\rBad parameter '%s'\n", tmp);
-        }
+        res = pcmd->callCmd((void*)(line + strlen(tmp) + 1)); // pass arguments       
     }
     return res;
 }

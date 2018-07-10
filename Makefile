@@ -18,10 +18,10 @@ CHECKSUM =$(BSPPATH)/tools/checksum
 TARGET = LPCbus
 PRJPATH =. usbdrv
 INCSPATH =. usbdrv
-CSRCS = #command.c
-#CSRCS +=spi_lpc1768.c cmdgpio.c cmdspi.c cmdavr.c
+CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c command.c strfunctions.c
+CSRCS += #spi_lpc1768.c cmdgpio.c cmdspi.c cmdavr.c
 CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c
-CPPSRCS =LPCbus.cpp vcom.cpp usbserial.cpp usbhw_lpc.cpp usbcontrol.cpp usbstdreq.cpp strfunctions.cpp
+CPPSRCS =LPCbus.cpp vcom.cpp
 
 #########################################################
 #Startup files and libraries
@@ -39,7 +39,7 @@ LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -lstdc++ -fno-exceptions -fno-u
 CSRCS   +=startup_lpc1768.c #syscalls.c
 LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
 ##########################################################
-OBJECTS =$(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj)) $(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) $(addprefix $(OBJPATH)/,$(ASRCS:.S=.o))
+OBJECTS =$(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) $(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) $(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj))
 VPATH = $(PRJPATH) $(BSPPATH)/lpc17xx/ $(LIBEMB_PATH)/display $(LIBEMB_PATH)/drv/tft $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
 $(LIBEMB_PATH)/drv/pwm \
@@ -54,7 +54,7 @@ all: $(TARGET).elf stats
 
 $(TARGET).elf:  $(OBJECTS)
 	@echo "---- Linking ---->" $@
-	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
+	$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j $(TARGET).elf $(TARGET).hex
@@ -105,7 +105,7 @@ $(OBJPATH)/%.o : %.c
 
 $(OBJPATH)/%.obj : %.cpp
 	@echo "---- Compile" $< "---->" $@
-	@$(GPP) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
+	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
 $(OBJPATH)/%.o : %.S
 	@echo "---- Assemble" $< "---->" $@

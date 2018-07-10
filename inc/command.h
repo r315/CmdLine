@@ -1,6 +1,10 @@
 #ifndef _command_h_
 #define _command_h_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include "type.h"
 
@@ -29,5 +33,9 @@ enum{
 char cmdProcess(char *, CmdLine *, uint8_t);
 char cmdNextChar(char **line);
 uint32_t cmdNextHex(char **line);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

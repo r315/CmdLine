@@ -12,7 +12,7 @@ Vcom *vcom = &vcom1;
 // ---------------------------------------------------
 // Callbacks for usb stack
 // ---------------------------------------------------
-
+/*
 uint8_t vcom1_fifo_put(uint8_t data){
     return vcom1.fifo_put(&vcom1.rxfifo, data);
 }
@@ -28,80 +28,7 @@ int vcom1_fifo_free(void){
 int vcom1_fifo_available(void){
     return vcom1.fifo_avail(&vcom1.txfifo);
 }
-
-Fifo_ops vcom1_fifo_ops = {
-    .put = vcom1_fifo_put,
-    .get = vcom1_fifo_get,
-    .free = vcom1_fifo_free,
-    .available = vcom1_fifo_available,
-};
-
-// ---------------------------------------------------
-// Fifo handling
-// ---------------------------------------------------
-
-void Vcom::fifo_init(void)
-{
-	txfifo.head = 0;
-	txfifo.tail = 0;
-
-    rxfifo.head = 0;
-	rxfifo.tail = 0;
-}
-
-
-uint8_t Vcom::fifo_put(fifo_t *fifo, uint8_t c)
-{
-	int next;
-	
-	// check if FIFO has room
-	next = (fifo->head + 1) % VCOM_FIFO_SIZE;
-	if (next == fifo->tail) {
-		// full
-		return 0;
-	}
-	
-	fifo->buf[fifo->head] = c;
-	fifo->head = next;
-	
-	return 1;
-}
-
-
-uint8_t Vcom::fifo_get(fifo_t *fifo, uint8_t *pc)
-{
-	int next;
-	
-	// check if FIFO has data
-	if (fifo->head == fifo->tail) {
-		return 0;
-	}
-	
-	next = (fifo->tail + 1) % VCOM_FIFO_SIZE;
-	
-	*pc = fifo->buf[fifo->tail];
-	fifo->tail = next;
-
-	return 1;
-}
-
-int Vcom::fifo_avail(fifo_t *fifo)
-{
-    return (VCOM_FIFO_SIZE + fifo->head - fifo->tail) % VCOM_FIFO_SIZE;
-}
-
-
-int Vcom::fifo_free(fifo_t *fifo)
-{
-	return (VCOM_FIFO_SIZE - 1 - fifo_avail(fifo));
-}
-
-void Vcom::fifo_flush(fifo_t *fifo)
-{
-	fifo->head = 0;
-	fifo->tail = 0;
-}
-
+*/
 //-------------------------------------------
 // Standard input output functions
 //-------------------------------------------
@@ -111,16 +38,13 @@ void Vcom::fifo_flush(fifo_t *fifo)
  */
 void Vcom::init(void)
 {
-	fifo_init();
-	USBSERIAL_Init(&vcom1_fifo_ops);
-}
+	rxfifo.size = VCOM_FIFO_SIZE;
+	txfifo.size = VCOM_FIFO_SIZE;
 
-void Vcom::flush(void)
-{
-	fifo_flush(&txfifo);
-	fifo_flush(&rxfifo);
+	fifo_init(&txfifo);
+	fifo_init(&rxfifo);
+	USBSERIAL_Init(&txfifo, &rxfifo);
 }
-
 
 /**
 	Writes one character to VCOM port

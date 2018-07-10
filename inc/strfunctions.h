@@ -16,7 +16,7 @@ int hatoi(char *str);
 int xatoi (char **str, long *res);
 void vftoa(void *putc(char), double f, char places);
 char * strchr ( const char *str, int c);
-size_t strlen(const char *str);
+int strlen(const char *str);
 void hitoa (void *putc(char), long val, int radix, int len);
 
 #ifdef __cplusplus

@@ -72,24 +72,14 @@ extern "C" {
 //#include "usbapi.h"
 //#include "usbdebug.h"
 
-#define VCOM_FIFO_SIZE	512
+#include "fifo.h"
 
-typedef struct {
-	int	    head;
-	int     tail;
-	uint8_t	buf[VCOM_FIFO_SIZE];
-} fifo_t;
-
+#define VCOM_FIFO_SIZE 512
 
 class Vcom{
-
-public:
-    fifo_t txfifo;
+	fifo_t txfifo;
     fifo_t rxfifo;
-
-	void flush(void);
-	void fifo_init(void);	
-	void fifo_flush(fifo_t *fifo);
+public:   
 
    /**
 	Reads one character from VCOM port
@@ -108,11 +98,7 @@ public:
 	char gets_echo(char *str); // gets string terminated in '\r' or '\n' and echoes back the same, return sizeof string.
 	void printf(const char* str, ...); // Original code by Elm_CHaN. Modified by Martin Thomas
 	void bufferHex(uint8_t *buf, uint8_t len);
-	uint8_t fifo_put(fifo_t *fifo, uint8_t c);
-	uint8_t fifo_get(fifo_t *fifo, uint8_t *pc);
-	int  fifo_avail(fifo_t *fifo);
-	int	 fifo_free(fifo_t *fifo);
-
+	
 	/*
 		Writes one character to VCOM port
 		
