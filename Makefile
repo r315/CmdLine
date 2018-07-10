@@ -54,7 +54,7 @@ all: $(TARGET).elf stats
 
 $(TARGET).elf:  $(OBJECTS)
 	@echo "---- Linking ---->" $@
-	$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
+	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j $(TARGET).elf $(TARGET).hex
@@ -84,7 +84,7 @@ inline_asm:
 
 $(TARGET).jlink:
 	@echo "Creating Jlink configuration file"
-	echo "erase\nloadbin $(TARGET).bin , 0x0000000\nr\nq" > $(TARGET).jlink
+	@echo "erase\nloadbin $(TARGET).bin , 0x0000000\nr\nq" > $(TARGET).jlink
 	
 flash-jlink: $(TARGET).jlink #tdso.bin #$(TARGET).bin
 	$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
@@ -105,7 +105,7 @@ $(OBJPATH)/%.o : %.c
 
 $(OBJPATH)/%.obj : %.cpp
 	@echo "---- Compile" $< "---->" $@
-	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
+	@$(GPP) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
 $(OBJPATH)/%.o : %.S
 	@echo "---- Assemble" $< "---->" $@

@@ -1,9 +1,8 @@
 
-#include <stdlib.h>
 #include "strfunctions.h"
 
-int strlen(const char *str){
-int count = 0;
+size_t strlen(const char *str){
+size_t count = 0;
 	while(*str++){
 		count++;
 	}
@@ -113,7 +112,7 @@ char c;
 
 
 // convert integer to string
-void hitoa (void *putc(char), long val, int radix, int len)
+void hitoa (void (*putc)(char), long val, int radix, int len)
 {
 	uint8_t c, r, sgn = 0, pad = ' ';
 	uint8_t s[20], i = 0;
@@ -219,7 +218,7 @@ void * memset ( void * ptr, int value, size_t num ){
 //-----------------------------------------------------------
 //
 //-----------------------------------------------------------
-void vitoa (void *putc(char), long val, signed char radix, signed char len){
+void vitoa (void (*putc)(char), long val, signed char radix, signed char len){
 	unsigned char c, r, sgn = 0, pad = ' ';
 	unsigned char s[16], i = 0;
 	unsigned int v;
@@ -264,7 +263,7 @@ void vitoa (void *putc(char), long val, signed char radix, signed char len){
 //https://en.wikipedia.org/wiki/Single-precision_floating-point_format
 //https://wirejungle.wordpress.com/2011/08/06/displaying-floating-point-numbers
 //-----------------------------------------------------------
-void vftoa(void *putc(char), double f, char places){
+void vftoa(void (*putc)(char), double f, char places){
 long int_part, frac_part;
 char prec;
   

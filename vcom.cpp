@@ -10,25 +10,11 @@ static Vcom vcom1;
 Vcom *vcom = &vcom1;
 
 // ---------------------------------------------------
-// Callbacks for usb stack
+// workaround for calling putc from c
 // ---------------------------------------------------
-/*
-uint8_t vcom1_fifo_put(uint8_t data){
-    return vcom1.fifo_put(&vcom1.rxfifo, data);
+void c_putc(char c){
+	vcom->putc(c);
 }
-
-uint8_t vcom1_fifo_get(uint8_t *dst){
-    return  vcom1.fifo_get(&vcom1.txfifo, dst);
-}
-
-int vcom1_fifo_free(void){
-    return vcom1.fifo_free(&vcom1.rxfifo);
-}
-
-int vcom1_fifo_available(void){
-    return vcom1.fifo_avail(&vcom1.txfifo);
-}
-*/
 //-------------------------------------------
 // Standard input output functions
 //-------------------------------------------
@@ -158,7 +144,7 @@ char s = 0;
 void Vcom::printf (const char* str, ...)
 {
 	va_list arp;
-	int d, r, w, s, l, f;
+	int d, r, w, s, l,f;
 
 
 	va_start(arp, str);
@@ -170,7 +156,7 @@ void Vcom::printf (const char* str, ...)
 		d = *str++; w = r = s = l = 0;
 		if(d == '.'){           
 			d = *str++; f = 1; 
-		}	
+		}
 		if (d == '0') {
 			d = *str++; s = 1;
 		}
@@ -195,22 +181,22 @@ void Vcom::printf (const char* str, ...)
 		if (d == 'd') r = -10;
 		if (d == 'X' || d == 'x') r = 16; // 'x' added by mthomas in increase compatibility
 		if (d == 'b') r = 2;
-		/* if(d == 'f'){
+		 if(d == 'f'){
 			if(!f)
 				w = 6;						// dafault 6 decimal places
-			vftoa(this->putc, va_arg(arp, double), w);			
+			vftoa(c_putc, va_arg(arp, double), w);			
 			continue;
 		}	
 		if (!r) break;
 		if (s) w = -w;
 		if (l) {
-			//hitoa(putc, (long)va_arg(arp, long), r, w);
+			hitoa(c_putc, (long)va_arg(arp, long), r, w);
 		} else {
 			if (r > 0)
-				hitoa(putc, (unsigned long)va_arg(arp, int), r, w);
+				hitoa(c_putc, (unsigned long)va_arg(arp, int), r, w);
 			else
-				hitoa(putc, (long)va_arg(arp, int), r, w);
-		}	*/	
+				hitoa(c_putc, (long)va_arg(arp, int), r, w);
+		}
 	}
 
 	va_end(arp);

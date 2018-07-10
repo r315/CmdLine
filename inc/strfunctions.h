@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <stdlib.h>
 
 #define FLOAT_MAX_PRECISION 6
 
@@ -14,10 +15,10 @@ char xstrcmp(char *str1, char *str2);
 int yatoi(char *str);
 int hatoi(char *str);
 int xatoi (char **str, long *res);
-void vftoa(void *putc(char), double f, char places);
+void vftoa(void (*putc)(char), double f, char places);
 char * strchr ( const char *str, int c);
-int strlen(const char *str);
-void hitoa (void *putc(char), long val, int radix, int len);
+size_t strlen(const char *str);
+void hitoa (void (*putc)(char), long val, int radix, int len);
 
 #ifdef __cplusplus
 }

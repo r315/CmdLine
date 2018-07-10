@@ -14,7 +14,7 @@ void fifo_init(fifo_t *fifo)
 
 uint8_t fifo_put(fifo_t *fifo, uint8_t c)
 {
-	int next;
+	uint32_t next;
 	
 	// check if FIFO has room
 	next = (fifo->head + 1) % fifo->size;

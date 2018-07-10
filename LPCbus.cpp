@@ -19,7 +19,7 @@ CmdLine lpcbusCommands[] =
 	//{"gpio",gpioCmd},
 	//{"spi",spiCmd},	
 	//{"avr",avrCmd},
-	//{"capture",captureTest},
+	{"capture",captureTest},
 	//{"match",matchTest},
 };
 
@@ -43,8 +43,8 @@ void capCb(void *ptr){
 }
 
 char captureTest(void *ptr){
-	vcom->printf("1kHz square wave on P2.0 using pwm\n");
-	vcom->printf("Period measure test on pin P0.23\n");
+	vcom->printf("1kHz square wave on P2.0 (TXD1) using pwm\n");
+	vcom->printf("Period measure test on pin P0.23 (AD0.0)\n");
 
 	PWM_Init(1000);
 	PWM_Enable(1);
@@ -60,7 +60,7 @@ void matchCb(void *ptr){
 }
 
 char matchTest(void *ptr){
-	vcom->printf("1kHz square wave on P2.0 using interrupt\n");
+	vcom->printf("1kHz square wave on P2.0 (TXD1) using interrupt\n");
 	PINSEL_P2_0(P2_0_GPIO);
 	PINDIR_P2_0(GPIO_OUTPUT);
 
@@ -79,13 +79,12 @@ char showHelp(void *ptr){
 	return CMD_OK;	
 }
 
-
 int main()
 {
     char line[10],i, res;
+	
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
-
 
     DISPLAY_Init(ON);
 	//LCD_Rotation(LCD_LANDSCAPE);
@@ -107,7 +106,7 @@ int main()
         if (res == CMD_NOT_FOUND){
             vcom->printf("Command not found\n");
         }else if(res == CMD_BAD_PARAM){ 
-            vcom->printf("\rBad parameter \n");
+            vcom->printf("Bad parameter \n");
         }	
 	}	
 	return 0;

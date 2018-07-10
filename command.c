@@ -31,7 +31,7 @@ uint8_t i;
     tmp = stringSplit(line,' ', CMD_MAX_LINE);
 
     if(tmp == NULL)
-			tmp = "";
+			tmp = (char*)"";
 
     pcmd = NULL;
 
