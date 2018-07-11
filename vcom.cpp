@@ -115,7 +115,7 @@ char Vcom::getc_echo()
 	return c;
 }
 
-char Vcom::gets_echo(char *str)
+char Vcom::getLine(char *line, uint8_t max)
 {
 char s = 0;
 	char c;
@@ -127,17 +127,19 @@ char s = 0;
 				putc(c);
 				putc(' ');
 				putc(c);
-				str--;
+				line--;
 				s--;
 			}
 		}else{
-			putc(c);
-			*str++ = c;
-			s++;
+			if(s < max){
+				putc(c);
+			   *line++ = c;
+			   s++;
+			}			
 		}
 		c = getc();
 	}
-	*str = '\0';
+	*line = '\0';
 	return s;
 }
 

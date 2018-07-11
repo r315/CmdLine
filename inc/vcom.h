@@ -95,7 +95,7 @@ public:
 	char getc(); // returns character entered in the terminal. blocking function
 	void gets(char* str); // returns a string. '\r' or '\n' will terminate character collection.
 	char getc_echo(); // returns character entered and echoes the same back.
-	char gets_echo(char *str); // gets string terminated in '\r' or '\n' and echoes back the same, return sizeof string.
+	char getLine(char *line, uint8_t max);
 	void printf(const char* str, ...); // Original code by Elm_CHaN. Modified by Martin Thomas
 	void bufferHex(uint8_t *buf, uint8_t len);
 	
