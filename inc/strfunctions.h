@@ -10,7 +10,7 @@ extern "C" {
 
 #define FLOAT_MAX_PRECISION 6
 
-char *stringSplit(char *str, const char token, uint8_t len);
+char *strtok_s(char *str, const char token, uint8_t len, char **saveptr);
 char xstrcmp(char *str1, char *str2);
 int yatoi(char *str);
 int hatoi(char *str);
@@ -24,3 +24,4 @@ void hitoa (void (*putc)(char), long val, int radix, int len);
 }
 #endif
 #endif
+

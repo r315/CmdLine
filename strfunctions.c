@@ -18,29 +18,51 @@ char * strchr ( const char *str, int c){
 	return (char*)str;
 }
 
-char *stringSplit(char *str, const char token, uint8_t len){
-uint8_t i;
+/**
+ * get first occuring substring from a token split of a given string
+ * 
+ * @param str:		reference to input string, on return the reference will pointer 
+ * 					for then remaining string. 
+ * @param token:	token to split the string
+ * @param len:		length of the given string
+ * @param saveptr:	pointer for saving the remaining string
+ * 
+ * returns: 		pointer for found sub string
+ **/
+
+char *strtok_s(char *str, const char token, uint8_t len, char **saveptr){
+char *ptr, i = 0;	
 
 	if(str == NULL){
 		return NULL;
 	}
 
-    i = 0;
+	// save pointer for return
+	ptr = str;
 
-	while(*str && i < len){
-		if(*str == token){
-			*str = '\0';  // end string
+	// search token, if finds it 
+	// replace it with string terminator character
+	while(*ptr && i < len){
+		if(*ptr == token){
+			*ptr = '\0';  
 			break;
 		}
-		str += 1;
-        i++;
+		ptr += 1;
+		i++;
 	}
 
+	// if token was not found return null
     if ( i == len ){
         return NULL;
 	}
 
-	return (char*)(str - i);
+	// if specified, return pointer to remaining string
+	if( saveptr != NULL ){
+		*saveptr = ptr + 1;
+	}
+
+	// return pointer to substring
+	return str;
 }
 
 char xstrcmp(char *str1, char *str2){
