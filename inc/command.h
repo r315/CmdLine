@@ -28,9 +28,20 @@ enum{
     CMD_BAD_PARAM
 };
 
-#define CMD_MAX_LINE 16
+/*
 
-char cmdProcess(char *, CmdLine *, uint8_t);
+class Command{
+	const char name[10];
+
+	char help(void *ptr);
+
+public:
+	char execute(void *ptr);
+};*/
+
+#define CMD_MAX_LINE 64
+
+char cmdExecute(char *, CmdLine *, uint8_t);
 char cmdNextChar(char **line);
 uint32_t cmdNextHex(char **line);
 

@@ -23,21 +23,21 @@ char c;
     return c;
 }
 
-char cmdProcess(char *line, CmdLine *commands, uint8_t ncommands){
+char cmdExecute(char *line, CmdLine *comdList, uint8_t listSize){
 CmdLine *pcmd;
-char *tmp, res;
+char *param, res;
 uint8_t i;
   
-    tmp = stringSplit(line,' ', CMD_MAX_LINE);
+    param = strtok_s(line, ' ', CMD_MAX_LINE, &line);
 
-    if(tmp == NULL)
-			tmp = (char*)"";
+    if(param == NULL)
+			param = (char*)"";
 
     pcmd = NULL;
 
-    for(i = 0; i < ncommands; i++, commands++){
-        if( xstrcmp((char*)commands->name, tmp) == 0){
-            pcmd = commands;
+    for(i = 0; i < listSize; i++, comdList++){
+        if( xstrcmp((char*)comdList->name, param) == 0){
+            pcmd = comdList;
             break;
         }
     }
@@ -46,7 +46,7 @@ uint8_t i;
         res = CMD_NOT_FOUND;
     }
     else{
-        res = pcmd->callCmd((void*)(line + strlen(tmp) + 1)); // pass arguments       
+        res = pcmd->callCmd((void*)line);
     }
     return res;
 }
