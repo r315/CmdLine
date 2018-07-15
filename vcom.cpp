@@ -6,15 +6,6 @@
 #include "usbserial.h"
 #include "strfunctions.h"
 
-static Vcom vcom1;
-Vcom *vcom = &vcom1;
-
-// ---------------------------------------------------
-// workaround for calling putc from c
-// ---------------------------------------------------
-void c_putc(char c){
-	vcom->putc(c);
-}
 //-------------------------------------------
 // Standard input output functions
 //-------------------------------------------
@@ -148,7 +139,6 @@ void Vcom::printf (const char* str, ...)
 	va_list arp;
 	int d, r, w, s, l,f;
 
-
 	va_start(arp, str);
 
 	while ((d = *str++) != 0) {
@@ -186,18 +176,18 @@ void Vcom::printf (const char* str, ...)
 		 if(d == 'f'){
 			if(!f)
 				w = 6;						// dafault 6 decimal places
-			vftoa(c_putc, va_arg(arp, double), w);			
+			puts(pftoa(va_arg(arp, double), w));			
 			continue;
 		}	
 		if (!r) break;
 		if (s) w = -w;
 		if (l) {
-			hitoa(c_putc, (long)va_arg(arp, long), r, w);
+			puts(pitoa((long)va_arg(arp, long), r, w));
 		} else {
 			if (r > 0)
-				hitoa(c_putc, (unsigned long)va_arg(arp, int), r, w);
+				puts(pitoa((unsigned long)va_arg(arp, int), r, w));
 			else
-				hitoa(c_putc, (long)va_arg(arp, int), r, w);
+				puts(pitoa((long)va_arg(arp, int), r, w));
 		}
 	}
 
