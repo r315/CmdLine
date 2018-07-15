@@ -8,17 +8,15 @@ extern "C" {
 #include <stdint.h>
 #include <stdlib.h>
 
-#define FLOAT_MAX_PRECISION 6
-
 char *strtok_s(char *str, const char token, uint8_t len, char **saveptr);
 char xstrcmp(char *str1, char *str2);
 int yatoi(char *str);
 int hatoi(char *str);
 int xatoi (char **str, long *res);
-void vftoa(void (*putc)(char), double f, char places);
+char *pftoa(double f, char places);
+char* pitoa (long val, int radix, int len);
 char * strchr ( const char *str, int c);
 size_t strlen(const char *str);
-void hitoa (void (*putc)(char), long val, int radix, int len);
 
 #ifdef __cplusplus
 }

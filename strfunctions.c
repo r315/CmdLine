@@ -1,6 +1,8 @@
 
 #include "strfunctions.h"
 
+#define FLOAT_MAX_PRECISION 6
+
 size_t strlen(const char *str){
 size_t count = 0;
 	while(*str++){
@@ -133,43 +135,6 @@ char c;
 }
 
 
-// convert integer to string
-void hitoa (void (*putc)(char), long val, int radix, int len)
-{
-	uint8_t c, r, sgn = 0, pad = ' ';
-	uint8_t s[20], i = 0;
-	uint32_t v;
-
-
-	if (radix < 0) {
-		radix = -radix;
-		if (val < 0) {
-			val = -val;
-			sgn = '-';
-		}
-	}
-	v = val;
-	r = radix;
-	if (len < 0) {
-		len = -len;
-		pad = '0';
-	}
-	if (len > 20) return;
-	do {
-		c = (uint8_t)(v % r);
-		if (c >= 10) c += 7;
-		c += '0';
-		s[i++] = c;
-		v /= r;
-	} while (v);
-	if (sgn) s[i++] = sgn;
-	while (i < len)
-		s[i++] = pad;
-	do
-		putc(s[--i]);
-	while (i);
-}
-
 /* Original code by ELM_ChaN. Modified by Martin Thomas */
 int xatoi (char **str, long *res)
 {
@@ -223,6 +188,112 @@ int xatoi (char **str, long *res)
 	return 1;
 }
 
+/**
+ * Convert integer to string
+ * 
+ * \param val		value to be converted
+ * \param radix		base of convertion [-10,10,16]
+ * \param len 		number of digits, len > 0 pad with ' ', len < 0 pad with '0' 
+ * \return 			pointer to string
+ * */
+#define XTOA_BUF_SIZE 20
+char* pitoa (long val, int radix, int len)
+{
+	static uint8_t s[XTOA_BUF_SIZE];
+	uint8_t i, c, r, sgn = 0, pad = ' ';
+	uint32_t v;
+
+	if (radix < 0) {
+		radix = -radix;
+		if (val < 0) {
+			val = -val;
+			sgn = '-';
+		}
+	}
+
+	v = val;
+	r = radix;
+
+	if (len < 0) {
+		len = -len;
+		pad = '0';
+	}
+
+	if (len > XTOA_BUF_SIZE){
+		s[0] = '\0';
+		return (char*)&s[0];
+	}		
+
+	len = XTOA_BUF_SIZE - len;
+	i = XTOA_BUF_SIZE;
+	s[--i] = '\0';
+
+	do {
+		c = (uint8_t)(v % r);
+		if (c >= 10) c += 7;
+		c += '0';
+		s[--i] = c;		
+		v /= r;
+	} while (v);
+
+	if (sgn) s[--i] = sgn;
+
+	while (i > len){
+		s[--i] = pad;
+	}
+
+	return (char*)(s + i);
+}
+
+/**
+ * Convert integer to string
+ * 
+ * https://en.wikipedia.org/wiki/Single-precision_floating-point_format
+ * https://wirejungle.wordpress.com/2011/08/06/displaying-floating-point-numbers
+ * 
+ * \param f			value to be converted
+ * \param places	number of decimal places
+ * \return 			pointer to string
+ * */
+char *pftoa(double f, char places){
+long int_part, frac_part;
+char prec;
+static char s[XTOA_BUF_SIZE], *pstr, *pdst;
+
+    int_part = (long)(f);  
+    
+	if(places > FLOAT_MAX_PRECISION)
+		places = FLOAT_MAX_PRECISION;
+		
+	frac_part = 0;
+	prec = 0;
+
+	while ((prec++) < places){
+		f *= 10;
+		frac_part = (frac_part * 10) + (long)f - ((long)f / 10) * 10;  //((long)f%10);			
+	}
+
+	pdst = s;
+    pstr = pitoa(int_part, -10, 0);
+
+	while(*pstr){
+		*(pdst++) = (*pstr++);
+	}
+    
+	*pdst++ = '.';
+
+    pstr = pitoa(abs(frac_part), 10, -places); 
+
+	do{
+		*(pdst++) = (*pstr);
+	}while(*pstr++);
+
+	return s;
+}
+
+//-----------------------------------------------------------
+//
+//-----------------------------------------------------------
 void * memcpy ( void * destination, const void * source, size_t num ){
 	for(size_t i = 0; i < num; i++){
 		*((uint8_t*)destination + i) = *((uint8_t*)source);
@@ -236,72 +307,4 @@ void * memset ( void * ptr, int value, size_t num ){
 		*((uint8_t*)ptr + i) = (uint8_t)value;
 	}
 	return ptr;
-}
-//-----------------------------------------------------------
-//
-//-----------------------------------------------------------
-void vitoa (void (*putc)(char), long val, signed char radix, signed char len){
-	unsigned char c, r, sgn = 0, pad = ' ';
-	unsigned char s[16], i = 0;
-	unsigned int v;
-
-	if (radix < 0) {
-		radix = -radix;
-		if (val < 0) {
-			val = -val;
-			sgn = '-';
-		}
-	}
-	
-	v = val;
-	r = radix;
-	
-	if (len < 0) {
-		len = -len;
-		pad = '0';
-	}
-	
-	if (len > 16) len = 16;
-	
-	do {
-		c = (unsigned char)(v % r);
-		if (c >= 10) c += 7;
-		c += '0';
-		s[i++] = c;
-		v /= r;
-	} while (v);
-	
-	if(sgn) 
-		s[i++] = sgn;
-	
-	while (i < len)
-		s[i++] = pad;
-		
-	do{
-		putc(s[--i]);
-	}while (i);
-}
-//-----------------------------------------------------------
-//https://en.wikipedia.org/wiki/Single-precision_floating-point_format
-//https://wirejungle.wordpress.com/2011/08/06/displaying-floating-point-numbers
-//-----------------------------------------------------------
-void vftoa(void (*putc)(char), double f, char places){
-long int_part, frac_part;
-char prec;
-  
-    int_part = (long)(f);  
-    
-	if(places > FLOAT_MAX_PRECISION)
-		places = FLOAT_MAX_PRECISION;
-		
-	frac_part = 0;
-	prec = 0;
-	while ((prec++) < places){
-			f *= 10;
-			frac_part = (frac_part * 10) + (long)f - ((long)f / 10) * 10;  //((long)f%10);			
-	}
-
-    vitoa(putc, int_part, -10, 0);
-    putc('.');   
-    vitoa(putc, abs(frac_part), 10, -places);  
 }
