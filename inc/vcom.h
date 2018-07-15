@@ -108,7 +108,7 @@ public:
 	int putchar(int c);
 };
 
-extern Vcom *vcom;
+//extern Vcom *vcom;
 
 #ifdef __cplusplus
 }

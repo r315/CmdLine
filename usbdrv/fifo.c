@@ -36,7 +36,7 @@ uint8_t fifo_put(fifo_t *fifo, uint8_t c)
  * @param fifo:		pointer to target fifo
  * @param pc:		placeholder for retrieved char
  * returns			1 if one char was placed on placeholder, 0 no data on fifo
- * /
+ * */
 uint8_t fifo_get(fifo_t *fifo, uint8_t *pc)
 {
 	int next;
