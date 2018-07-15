@@ -16,6 +16,12 @@ extern "C" {
 #define COMMAND_MAX_CMD  10
 #define COMMAND_MAX_LINE 64
 
+enum{
+	CMD_OK,
+    CMD_NOT_FOUND,
+    CMD_BAD_PARAM
+};
+
 class Command{
 
 private:

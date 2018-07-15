@@ -15,7 +15,7 @@ char Command::parse(char *line){
 char res = CMD_NOT_FOUND, *cmdname, *param;  
 Command **cmd = cmdList;
 
-    cmdname = strtok_s(line, ' ', CMD_MAX_LINE, &param);
+    cmdname = strtok_s(line, ' ', COMMAND_MAX_LINE, &param);
 
     while (*cmd != NULL){
         if((*cmd)->checkCommand(cmdname) != 0){
@@ -53,12 +53,13 @@ char c;
     return c;
 }
 
+/*
 char cmdExecute(char *line, CmdLine *comdList, uint8_t listSize){
 CmdLine *pcmd;
 char *param, res;
 uint8_t i;
   
-    param = strtok_s(line, ' ', CMD_MAX_LINE, &line);
+    param = strtok_s(line, ' ', COMMAND_MAX_LINE, &line);
 
     if(param == NULL)
 			param = (char*)"";
@@ -80,3 +81,4 @@ uint8_t i;
     }
     return res;
 }
+*/
