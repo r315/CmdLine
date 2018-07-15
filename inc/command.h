@@ -6,44 +6,47 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include <string.h>
+
 #include "type.h"
+#include "vcom.h"
+#include "strfunctions.h"
 
-typedef void (*CmdCB) (void *ptr);
-typedef char (CallCmd)(void *);
 
-typedef struct _CmdLine{
-	const char *name;
-	CallCmd *callCmd;
-	uint8_t type;
-}CmdLine;
-
-typedef struct _CmdParam{
-	const char *name;
-	void *param;
-}CmdParam;
-
-enum{
-	CMD_OK,
-    CMD_NOT_FOUND,
-    CMD_BAD_PARAM
-};
-
-/*
+#define COMMAND_MAX_CMD  10
+#define COMMAND_MAX_LINE 64
 
 class Command{
-	const char name[10];
 
-	char help(void *ptr);
+private:
+Command *cmdList[COMMAND_MAX_CMD];
+
+protected:
+	const char *name;
+	Vcom *vcom;
 
 public:
-	char execute(void *ptr);
-};*/
+	const char *getName(void) { return name; }
 
-#define CMD_MAX_LINE 64
+	void toString(void) { vcom->puts(this->name); }
 
-char cmdExecute(char *, CmdLine *, uint8_t);
-char cmdNextChar(char **line);
-uint32_t cmdNextHex(char **line);
+	char checkCommand(char *cmd){ return xstrcmp(cmd, (char*)this->name) == 0; }
+
+	virtual char execute(void *ptr){ return CMD_OK; }
+
+	void add(Command *cmd);
+	char parse(char *line);
+
+    Command(const char *nm, Vcom *vc){
+        vcom = vc;
+        name = nm;
+    }
+
+	Command(){
+		memset(cmdList, 0 ,sizeof(cmdList));
+	}
+};
+
 
 #ifdef __cplusplus
 }
