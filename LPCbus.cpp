@@ -4,6 +4,7 @@
 #include "vcom.h"
 #include "cmdecho.h"
 #include "cmdpwm.h"
+#include "cmdgpio.h"
 
 //void abort(void){}
 
@@ -13,15 +14,16 @@ int main()
 	uint8_t i;
 
 	Vcom vcom1;
-	Command cmd;
 	
 	Command cmd(&vcom1);	
 	CmdEcho echo(&vcom1);
 	CmdPwm pwm(&vcom1);
+	CmdGpio gpio(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
 	cmd.add(&pwm);
+	cmd.add(&gpio);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
