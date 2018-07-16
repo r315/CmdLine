@@ -1,0 +1,23 @@
+#ifndef _cmd%NAME%_h_
+#define _cmd%NAME%_h_
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include "command.h"
+
+class Cmd%NAME% : public Command{
+
+public:
+    Cmd%NAME% (Vcom *vc) : Command("%NAME%", vc) { }
+    char execute(void *ptr){ return CMD_OK;}
+};
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

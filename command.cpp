@@ -2,6 +2,17 @@
 #include "command.h"
 #include "strfunctions.h"
 
+void Command::help(void){
+    
+     vcom->puts("Available commands:\n\n");
+    // first entry is this help
+    for (uint8_t i = 1; i < COMMAND_MAX_CMD; i++){
+        if(cmdList[i] != NULL)
+            vcom->printf("%s\n",cmdList[i]->getName());
+    }
+    vcom->putc('\n');
+}
+
 void Command::add(Command *cmd){
     for (uint8_t i = 0; i < COMMAND_MAX_CMD; i++){
         if (cmdList[i] == NULL){
@@ -32,26 +43,15 @@ Command **cmd = cmdList;
     return res;
 }
 
-char *cmdNextParameter(char *line){
-    line = strchr(line, ' ');
-    if(*line != '\0')
-        line++;
-    return line;
+char Command::execute(void *ptr){
+    
+    //if(xstrcmp((char*)ptr, "help") == 0){
+        help();
+    
+    //}
+    return CMD_OK; 
 }
 
-uint32_t cmdNextHex(char **line){
-uint32_t hex;    
-    hex = hatoi(*line);
-    *line = cmdNextParameter(*line);
-    return hex;
-}
-
-char cmdNextChar(char **line){
-char c;    
-    c = *line[0];
-    *line = cmdNextParameter(*line);
-    return c;
-}
 
 /*
 char cmdExecute(char *line, CmdLine *comdList, uint8_t listSize){

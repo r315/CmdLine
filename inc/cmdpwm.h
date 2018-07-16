@@ -8,9 +8,6 @@ extern "C" {
 #include "command.h"
 
 
-
-
-
 void pwm_start(void *ptr);
 
 class CmdPwm : public Command{
@@ -26,6 +23,7 @@ public:
     }
     void start(void);
     char execute(void *ptr);
+    void help(void);
 };
 
 typedef struct _Fmap{

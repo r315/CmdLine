@@ -9,15 +9,17 @@
 
 int main()
 {
-    char line[10];
+    char line[COMMAND_MAX_LINE];
 	uint8_t i;
 
 	Vcom vcom1;
 	Command cmd;
 	
+	Command cmd(&vcom1);	
 	CmdEcho echo(&vcom1);
 	CmdPwm pwm(&vcom1);
 	
+	cmd.add(&cmd);
 	cmd.add(&echo);
 	cmd.add(&pwm);
 
@@ -40,6 +42,7 @@ int main()
 		}while(!i);		
 
 		cmd.parse(line);
+		memset(line,0 , COMMAND_MAX_LINE);
 		
 	}	
 	return 0;

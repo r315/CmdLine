@@ -32,24 +32,27 @@ protected:
 	Vcom *vcom;
 
 public:
-	const char *getName(void) { return name; }
+	const char *getName(void) { return this->name; }
 
 	void toString(void) { vcom->puts(this->name); }
 
 	char checkCommand(char *cmd){ return xstrcmp(cmd, (char*)this->name) == 0; }
 
-	virtual char execute(void *ptr){ return CMD_OK; }
+	virtual char execute(void *ptr);
+	virtual void help(void);
 
 	void add(Command *cmd);
 	char parse(char *line);
 
     Command(const char *nm, Vcom *vc){
-        vcom = vc;
-        name = nm;
+        this->vcom = vc;
+        this->name = nm;
     }
 
-	Command(){
+	Command(Vcom *vc){
 		memset(cmdList, 0 ,sizeof(cmdList));
+		this->name = "help";
+		this->vcom = vc;
 	}
 };
 
