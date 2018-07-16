@@ -20,6 +20,35 @@ char * strchr ( const char *str, int c){
 	return (char*)str;
 }
 
+char *nextParameter(char *line){
+    line = strchr(line, ' ');
+    if(*line != '\0')
+        line++;
+    return line;
+}
+
+uint32_t nextHex(char **line){
+uint32_t hex;    
+    hex = hatoi(*line);
+    *line = nextParameter(*line);
+    return hex;
+}
+
+int32_t nextInt(char **line){
+int32_t rint;    
+    rint = yatoi(*line);
+    *line = nextParameter(*line);
+    return rint;
+}
+
+char cmdNextChar(char **line){
+char c;    
+    c = *line[0];
+    *line = nextParameter(*line);
+    return c;
+}
+
+
 /**
  * get first occuring substring from a token split of a given string
  * 
@@ -29,7 +58,7 @@ char * strchr ( const char *str, int c){
  * @param len:		length of the given string
  * @param saveptr:	pointer for saving the remaining string
  * 
- * returns: 		pointer for found sub string
+ * returns: 		pointer for found sub string or nul if not splitted
  **/
 
 char *strtok_s(char *str, const char token, uint8_t len, char **saveptr){
@@ -53,10 +82,13 @@ char *ptr, i = 0;
 		i++;
 	}
 
-	// if token was not found return null
-    if ( i == len ){
+	// got to the end of the string and token was not found return null
+	// or string is empty
+    if ( i == len || ptr == str){
         return NULL;
 	}
+
+	
 
 	// if specified, return pointer to remaining string
 	if( saveptr != NULL ){
@@ -78,16 +110,24 @@ char xstrcmp(char *str1, char *str2){
 // convert decimal str to integer
 int yatoi(char *str){
 int val=0;	
-char c,radix = 10;
+char c, radix = 10, s = 0;
+	if(*str == '-'){
+		s = 1;
+		str++;
+	}
 	while(*str){
 		c = *str;
-		if(c < '0' || c > '9')
-			return -1;
+		if(c < '0' || c > '9'){
+			if(c == ' ' || c == '\n'){
+				break;
+			}
+			return 0;
+		}
 		c -= '0';
-		val = val*radix + c;
+		val = val * radix + c;
 		str +=1;
 	}
-	return val;
+	return s? -val : val;
 }
 
 #if 0
@@ -220,11 +260,10 @@ char* pitoa (long val, int radix, int len)
 	}
 
 	if (len > XTOA_BUF_SIZE){
-		s[0] = '\0';
-		return (char*)&s[0];
+		len = XTOA_BUF_SIZE;
 	}		
 
-	len = XTOA_BUF_SIZE - len;
+	len = XTOA_BUF_SIZE - 1 - len;
 	i = XTOA_BUF_SIZE;
 	s[--i] = '\0';
 
