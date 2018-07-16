@@ -173,7 +173,7 @@ void Vcom::printf (const char* str, ...)
 		if (d == 'd') r = -10;
 		if (d == 'X' || d == 'x') r = 16; // 'x' added by mthomas in increase compatibility
 		if (d == 'b') r = 2;
-		 if(d == 'f'){
+		if(d == 'f'){
 			if(!f)
 				w = 6;						// dafault 6 decimal places
 			puts(pftoa(va_arg(arp, double), w));			
