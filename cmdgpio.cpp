@@ -55,25 +55,57 @@ uint32_t value;
 }
 
 void CmdGpio::help(void){
-	
+ 	vcom->printf("Usage: gpio -p <port> [option] \n\n");  
+    vcom->printf("\t -p, port 0-3\n");
+    vcom->printf("\t -r, read 32bit port\n");
+    vcom->printf("\t -b <bit>, set bit value\n");
 }
 
 char CmdGpio::execute(void *ptr){
 GPIO_PORT_TYPE *ports[4] = {LPC_GPIO0,LPC_GPIO1,LPC_GPIO2,LPC_GPIO3};
-uint8_t args[3], i = 0;
+uint8_t port, readport, setbit, setstate;
+char *p1;
 
-	if( *((char*)ptr) == '\0'){
+	p1 = (char*)ptr;
+
+	 // check parameters
+    if( p1 == NULL || *p1 == '\0'){
+        help();
+        return CMD_OK;
+    }
+
+	port = 255;
+	readport = 0;
+	setbit = 255;  
+
+	// parse options
+	while(*p1 != '\0'){
+		if( !xstrcmp(p1,"-p")){
+			p1 = nextParameter(p1);
+			port = nextInt(&p1);
+		}else if( !xstrcmp(p1,"-r")){
+			p1 = nextParameter(p1);
+			readport = 1;
+		}else if( !xstrcmp(p1,"-b")){
+			p1 = nextParameter(p1);
+			setbit = nextInt(&p1);
+			setstate = nextInt(&p1);
+		}else{
+			p1 = nextParameter(p1);
+		}
+	}
+
+	if(port > 3){
 		return CMD_BAD_PARAM;
 	}
 
-	while( *((uint8_t*)ptr) != '\0'){
-		args[i++] = nextInt((char**)&ptr);
+	if(readport){
+		getPortState(ports[port]);
+	}else if(setbit < 32){
+		setPinState(ports[port], setbit, setstate);
 	}
-	
-	 for(int j=0 ; j < 3; j++){
-      vcom->printf("%d ", args[j]);
-  	}
-	//getPortState(ports[args[0]]);
-	setPinState(ports[args[0]], args[1], args[2]);
+
+	//vcom->printf(" Port %d, Read %d, Bit %d\n", port,readport,setbit);
+
 	return CMD_OK;
 }
