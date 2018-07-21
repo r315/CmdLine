@@ -1,2 +1,5 @@
 .vscode
 obj/
+*.cfg
+*.elf
+

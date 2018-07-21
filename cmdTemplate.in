@@ -12,7 +12,8 @@ class Cmd%NAME% : public Command{
 
 public:
     Cmd%NAME% (Vcom *vc) : Command("%NAME%", vc) { }
-    char execute(void *ptr){ return CMD_OK;}
+    char execute(void *ptr){ }
+    void help(void){ return CMD_OK;}
 };
 
 

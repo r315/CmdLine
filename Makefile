@@ -18,10 +18,10 @@ CHECKSUM =$(BSPPATH)/tools/checksum
 TARGET = LPCbus
 PRJPATH =. usbdrv
 INCSPATH =. usbdrv
-CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c command.c strfunctions.c
+CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunctions.c #command.c #cmdbase.c
 CSRCS += #spi_lpc1768.c cmdgpio.c cmdspi.c cmdavr.c
 CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c
-CPPSRCS =LPCbus.cpp vcom.cpp
+CPPSRCS =LPCbus.cpp vcom.cpp command.cpp cmdecho.cpp cmdpwm.cpp cmdgpio.cpp #cmdbase.cpp
 
 #########################################################
 #Startup files and libraries
@@ -33,8 +33,9 @@ LIBSPATH +=
 OBJPATH =obj
 
 GCSYMBOLS =-D__NEWLIB__ -D__BB__
-GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables #-ffunction-sections
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -lstdc++ -fno-exceptions -fno-unwind-tables -Wl,--gc-sections -nostartfiles 
+GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables #-ffunction-sections
+GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
+LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles 
 
 CSRCS   +=startup_lpc1768.c #syscalls.c
 LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
@@ -98,6 +99,11 @@ flash-openocd: $(TARGET).bin $(TARGET).cfg
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
+
+TEMPLATEIN =cmdTemplate.in
+command:
+	cat  $(TEMPLATEIN) > inc/cmd$(CMDNAME).h
+	sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
 ########################################################
 $(OBJPATH)/%.o : %.c
 	@echo "---- Compile" $< "---->" $@
@@ -105,7 +111,7 @@ $(OBJPATH)/%.o : %.c
 
 $(OBJPATH)/%.obj : %.cpp
 	@echo "---- Compile" $< "---->" $@
-	@$(GPP) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
+	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
 $(OBJPATH)/%.o : %.S
 	@echo "---- Assemble" $< "---->" $@
