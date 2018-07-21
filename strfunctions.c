@@ -99,11 +99,11 @@ char *ptr, i = 0;
 	return str;
 }
 
-char xstrcmp(char *str1, char *str2){
+char xstrcmp(char const *str1, char const *str2){
 	do{
 		if(*str1 != *str2)
 			return (*str1 - *str2);		
-	}while(*str1++ && *str2++);
+	}while(*(++str1) && *(++str2));
 	return 0;
 }
 

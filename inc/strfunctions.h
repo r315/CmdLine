@@ -12,7 +12,7 @@ char *nextParameter(char *line);
 int32_t nextInt(char **line);
 uint32_t nextHex(char **line);
 char *strtok_s(char *str, const char token, uint8_t len, char **saveptr);
-char xstrcmp(char *str1, char *str2);
+char xstrcmp(char const *str1, char const *str2);
 int yatoi(char *str);
 int hatoi(char *str);
 int xatoi (char **str, long *res);
