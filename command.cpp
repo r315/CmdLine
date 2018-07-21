@@ -8,7 +8,7 @@ void Command::help(void){
     // first entry is this help
     for (uint8_t i = 1; i < COMMAND_MAX_CMD; i++){
         if(cmdList[i] != NULL)
-            vcom->printf("%s\n",cmdList[i]->getName());
+            vcom->printf("\t%s\n",cmdList[i]->getName());
     }
     vcom->putc('\n');
 }
@@ -31,24 +31,22 @@ Command **cmd = cmdList;
     while (*cmd != NULL){
         if((*cmd)->checkCommand(cmdname) != 0){
             res = (*cmd)->execute((void*)param);
-            if (res == CMD_NOT_FOUND){
-                vcom->printf("Command not found\n");
-            }else if(res == CMD_BAD_PARAM){ 
-                vcom->printf("Bad parameter \n");
-            break;			
-            }
+            break;
         }
         cmd += 1;
     }
+
+    if (res == CMD_NOT_FOUND){
+        vcom->printf("Command not found\n");
+    }else if(res == CMD_BAD_PARAM){ 
+        vcom->printf("Bad parameter \n");
+    }
+
     return res;
 }
 
 char Command::execute(void *ptr){
-    
-    //if(xstrcmp((char*)ptr, "help") == 0){
-        help();
-    
-    //}
+    help();
     return CMD_OK; 
 }
 
