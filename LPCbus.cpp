@@ -5,6 +5,7 @@
 #include "cmdecho.h"
 #include "cmdpwm.h"
 #include "cmdgpio.h"
+#include "cmdled.h"
 
 //void abort(void){}
 
@@ -19,11 +20,13 @@ int main()
 	CmdEcho echo(&vcom1);
 	CmdPwm pwm(&vcom1);
 	CmdGpio gpio(&vcom1);
+	CmdLed led(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
 	cmd.add(&pwm);
 	cmd.add(&gpio);
+	cmd.add(&led);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
@@ -36,15 +39,15 @@ int main()
 
 	while(1)
 	{
+		memset(line,0 , COMMAND_MAX_LINE);
+		
 		do{
-			line[0] = '\0';
 			vcom1.puts("\rLPC BUS: ");
 			i = vcom1.getLine(line, sizeof(line));
 			vcom1.puts("\n\r");
 		}while(!i);		
 
 		cmd.parse(line);
-		memset(line,0 , COMMAND_MAX_LINE);
 		
 	}	
 	return 0;
