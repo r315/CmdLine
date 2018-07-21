@@ -57,13 +57,13 @@ uint32_t value;
 void CmdGpio::help(void){
  	vcom->printf("Usage: gpio -p <port> [option] \n\n");  
     vcom->printf("\t -p, port 0-3\n");
-    vcom->printf("\t -r, read 32bit port\n");
+    //vcom->printf("\t -r, read 32bit port\n");
     vcom->printf("\t -b <bit>, set bit value\n");
 }
 
 char CmdGpio::execute(void *ptr){
 GPIO_PORT_TYPE *ports[4] = {LPC_GPIO0,LPC_GPIO1,LPC_GPIO2,LPC_GPIO3};
-uint8_t port, readport, setbit, setstate;
+uint8_t port, setbit, setstate;
 char *p1;
 
 	p1 = (char*)ptr;
@@ -75,7 +75,6 @@ char *p1;
     }
 
 	port = 255;
-	readport = 0;
 	setbit = 255;  
 
 	// parse options
@@ -85,7 +84,6 @@ char *p1;
 			port = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-r")){
 			p1 = nextParameter(p1);
-			readport = 1;
 		}else if( !xstrcmp(p1,"-b")){
 			p1 = nextParameter(p1);
 			setbit = nextInt(&p1);
@@ -99,10 +97,10 @@ char *p1;
 		return CMD_BAD_PARAM;
 	}
 
-	if(readport){
-		getPortState(ports[port]);
-	}else if(setbit < 32){
+	if(setbit < 32){
 		setPinState(ports[port], setbit, setstate);
+	}else{
+		getPortState(ports[port]);
 	}
 
 	//vcom->printf(" Port %d, Read %d, Bit %d\n", port,readport,setbit);
