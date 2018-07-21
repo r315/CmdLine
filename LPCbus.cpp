@@ -6,6 +6,7 @@
 #include "cmdpwm.h"
 #include "cmdgpio.h"
 #include "cmdled.h"
+#include "cmdmem.h"
 
 //void abort(void){}
 
@@ -21,12 +22,14 @@ int main()
 	CmdPwm pwm(&vcom1);
 	CmdGpio gpio(&vcom1);
 	CmdLed led(&vcom1);
+	CmdMem mem(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
 	cmd.add(&pwm);
 	cmd.add(&gpio);
 	cmd.add(&led);
+	cmd.add(&mem);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
