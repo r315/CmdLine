@@ -91,15 +91,6 @@ typedef struct {
 #define FEA_REMOTE_WAKEUP		0x01
 #define FEA_TEST_MODE			0x02
 
-/*
-	USB descriptors
-*/
-
-/** USB descriptor header */
-typedef struct {
-	U8	bLength;			/**< descriptor length */
-	U8	bDescriptorType;	/**< descriptor type */
-} TUSBDescHeader;
 
 #define DESC_DEVICE				1
 #define DESC_CONFIGURATION		2
@@ -109,6 +100,7 @@ typedef struct {
 #define DESC_DEVICE_QUALIFIER	6
 #define DESC_OTHER_SPEED		7
 #define DESC_INTERFACE_POWER	8
+#define DESC_TYPE_IAD           11
 
 #define DESC_HID_HID			0x21
 #define DESC_HID_REPORT			0x22

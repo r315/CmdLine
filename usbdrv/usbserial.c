@@ -102,23 +102,27 @@ static fifo_t *txfifo, *rxfifo;
 
 static const U8 abDescriptors[] = {
 
-// device descriptor
-	0x12,
-	DESC_DEVICE,
+/***************************************************
+ * Device descriptor
+ ************************************************** */
+	0x12,                       // bLength
+	DESC_DEVICE,                // bDescriptorType
 	LE_WORD(0x0101),			// bcdUSB
 	0x02,						// bDeviceClass
 	0x00,						// bDeviceSubClass
 	0x00,						// bDeviceProtocol
 	MAX_PACKET_SIZE0,			// bMaxPacketSize
-	LE_WORD(VID),			// idVendor
-	LE_WORD(PID),			// idProduct
+	LE_WORD(VID),               // idVendor
+	LE_WORD(PID),               // idProduct
 	LE_WORD(0x0100),			// bcdDevice
 	0x01,						// iManufacturer
 	0x02,						// iProduct
 	0x03,						// iSerialNumber
 	0x01,						// bNumConfigurations
 
-// configuration descriptor one
+/****************************************************
+ * Configuration descriptor one
+ **************************************************** */
 	0x09,
 	DESC_CONFIGURATION,
 	LE_WORD(67),				// wTotalLength
@@ -127,9 +131,25 @@ static const U8 abDescriptors[] = {
 	0x00,						// iConfiguration
 	0xC0,						// bmAttributes
 	0x32,						// bMaxPower
-// control class interface
-	0x09,
-	DESC_INTERFACE,
+
+/****************************************************
+ * Interface Association Descriptor to associate the 
+ * two CDC interfaces
+ **************************************************** */
+ /*   0x08,                       // bLength
+    DESC_TYPE_IAD,              // bDescriptorType
+    0x00,                       // bFirstInterface
+    0x02,                       // bInterfaceCount
+    0x02,                       // bFunctionClass
+    0x02,                       // bFunctionSubClass
+    0x01,                       // bFunctionProtocol
+    0x02,                       // iFunction
+*/
+/****************************************************
+ * Interface descriptor for CDC[0]
+ *************************************************** */ 
+	0x09,                       // bLength
+	DESC_INTERFACE,             // bDescriptorType
 	0x00,						// bInterfaceNumber
 	0x00,						// bAlternateSetting
 	0x01,						// bNumEndPoints
@@ -137,36 +157,42 @@ static const U8 abDescriptors[] = {
 	0x02,						// bInterfaceSubClass
 	0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
 	0x00,						// iInterface
+
 // header functional descriptor
 	0x05,
 	CS_INTERFACE,
 	0x00,
 	LE_WORD(0x0110),
+
 // call management functional descriptor
 	0x05,
 	CS_INTERFACE,
 	0x01,
 	0x01,						// bmCapabilities = device handles call management
 	0x01,						// bDataInterface
+	
 // ACM functional descriptor
 	0x04,
 	CS_INTERFACE,
 	0x02,
 	0x02,						// bmCapabilities
+
 // union functional descriptor
 	0x05,
 	CS_INTERFACE,
 	0x06,
 	0x00,						// bMasterInterface
 	0x01,						// bSlaveInterface0
-// notification EP
+
+// EndPoint Descriptor for Interrupt endpoint
 	0x07,
 	DESC_ENDPOINT,
 	INT_IN_EP,					// bEndpointAddress
 	0x03,						// bmAttributes = intr
 	LE_WORD(8),					// wMaxPacketSize
 	0x0A,						// bInterval
-// data class interface descriptor
+
+// Data class interface descriptor
 	0x09,
 	DESC_INTERFACE,
 	0x01,						// bInterfaceNumber
@@ -176,26 +202,34 @@ static const U8 abDescriptors[] = {
 	0x00,						// bInterfaceSubClass
 	0x00,						// bInterfaceProtocol
 	0x00,						// iInterface
-// data EP OUT
+
+
+// EndPoint Descriptor for Output endpoint
 	0x07,
 	DESC_ENDPOINT,
 	BULK_OUT_EP,				// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
 	0x00,						// bInterval
-// data EP in
+// EndPoint Descriptor for Input endpoint
 	0x07,
 	DESC_ENDPOINT,
 	BULK_IN_EP,					// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
 	0x00,						// bInterval
-	
-	// string descriptors
+
+
+
+/****************************************************
+ * String descriptors
+************************************************** */	
+	// String Descriptor Zero
 	0x04,
 	DESC_STRING,
 	LE_WORD(0x0409),
 
+	// String Descriptors
 	0x0E,
 	DESC_STRING,
 	'L', 0, 'P', 0, 'C', 0, 'U', 0, 'S', 0, 'B', 0,
