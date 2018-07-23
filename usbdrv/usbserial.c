@@ -459,7 +459,7 @@ void USB_IRQHandler(void)
 	@param [in] bEP
 	@param [in] bEPStatus
  */
-static void BulkOut(U8 bEP, U8 bEPStatus)
+static void USBSERIAL_BulkOut(U8 bEP, U8 bEPStatus)
 {
 	int i, iLen;
 	bEPStatus = bEPStatus;
@@ -487,7 +487,7 @@ static void BulkOut(U8 bEP, U8 bEPStatus)
 	@param [in] bEP
 	@param [in] bEPStatus
  */
-static void BulkIn(U8 bEP, U8 bEPStatus)
+static void USBSERIAL_BulkIn(U8 bEP, U8 bEPStatus)
 {
 	int i, iLen;
 	bEPStatus = bEPStatus;
@@ -519,7 +519,7 @@ static void BulkIn(U8 bEP, U8 bEPStatus)
 	@param [out] piLen
 	@param [out] ppbData
  */
-static BOOL HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
+static BOOL USBSERIAL_HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
 {
 	int i;
 	switch (pSetup->bRequest) {
@@ -553,7 +553,7 @@ static BOOL HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **ppbData)
 	return TRUE;
 }
 
-static void USBFrameHandler(U16 wFrame)
+static void USBSERIAL_FrameHandler(U16 wFrame)
 {
 	wFrame = wFrame;
 	if (fifo_avail(txfifo) > 0) {
@@ -567,7 +567,7 @@ static void USBFrameHandler(U16 wFrame)
 	
 	@param [in] bDevStatus	Device status
  */
-static void HandleUsbReset(U8 bDevStatus)
+static void USBSERIAL_HandleUsbReset(U8 bDevStatus)
 {
 	if (bDevStatus & DEV_STATUS_RESET) {
 		DBG("\n!");
@@ -588,7 +588,7 @@ void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
 
 	
 	// register bus reset handler
-	USBHwRegisterDevIntHandler(HandleUsbReset);
+	USBHwRegisterDevIntHandler(USBSERIAL_HandleUsbReset);
 	
 	// register control transfer handler on EP0
 	USBHwRegisterEPIntHandler(0x00, USBHandleControlTransfer);
@@ -606,15 +606,15 @@ void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
 	USBRegisterDescriptors(abDescriptors);
 
 	// register class request handler
-	USBRegisterRequestHandler(REQTYPE_TYPE_CLASS, HandleClassRequest, abClassReqData);
+	USBRegisterRequestHandler(REQTYPE_TYPE_CLASS, USBSERIAL_HandleClassRequest, abClassReqData);
 
 	// register endpoint handlers
 	USBHwRegisterEPIntHandler(INT_IN_EP, NULL);
-	USBHwRegisterEPIntHandler(BULK_IN_EP, BulkIn);
-	USBHwRegisterEPIntHandler(BULK_OUT_EP, BulkOut);
+	USBHwRegisterEPIntHandler(BULK_IN_EP, USBSERIAL_BulkIn);
+	USBHwRegisterEPIntHandler(BULK_OUT_EP, USBSERIAL_BulkOut);
 	
 	// register frame handler
-	USBHwRegisterFrameHandler(USBFrameHandler);
+	USBHwRegisterFrameHandler(USBSERIAL_FrameHandler);
 
 	// enable bulk-in interrupts on NAKs
 	USBHwNakIntEnable(INACK_BI);
