@@ -100,6 +100,169 @@ static U8	abStdReqData[8];
 
 static fifo_t *txfifo, *rxfifo;
 
+#if 0
+static const U8 abDescriptors[] = {
+
+/***************************************************
+ * Device descriptor
+ ************************************************** */
+	0x12,                       // bLength
+	DESC_DEVICE,                // bDescriptorType
+	LE_WORD(0x0101),			// bcdUSB
+	0x00,						// bDeviceClass
+	0x00,						// bDeviceSubClass
+	0x00,						// bDeviceProtocol
+	MAX_PACKET_SIZE0,			// bMaxPacketSize
+	LE_WORD(VID),               // idVendor
+	LE_WORD(PID),               // idProduct
+	LE_WORD(0x0100),			// bcdDevice
+	0x01,						// iManufacturer
+	0x02,						// iProduct
+	0x03,						// iSerialNumber
+	0x01,						// bNumConfigurations
+
+/****************************************************
+ * Configuration descriptor one
+ **************************************************** */
+	0x09,
+	DESC_CONFIGURATION,
+	LE_WORD(55),                // wTotalLength
+	0x01,						// bNumInterfaces
+	0x01,						// bConfigurationValue
+	0x00,						// iConfiguration
+	0xC0,						// bmAttributes
+	0x32,						// bMaxPower
+
+/****************************************************
+ * Interface descriptor for CDC[0]
+ *************************************************** */ 
+	0x09,                       // bLength
+	DESC_INTERFACE,             // bDescriptorType
+	0x00,						// bInterfaceNumber
+	0x00,						// bAlternateSetting
+	0x03,						// bNumEndPoints
+	0x02,						// bInterfaceClass
+	0x02,						// bInterfaceSubClass
+	0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
+	0x05,						// iInterface
+
+// EndPoint Descriptor for Input endpoint
+	0x07,
+	DESC_ENDPOINT,
+	BULK_IN_EP,		            // bEndpointAddress (IN endpoint 2)
+	0x02,						// bmAttributes = bulk
+	LE_WORD(8),					// wMaxPacketSize
+	0x0A,						// bInterval
+
+// EndPoint Descriptor for Output endpoint
+	0x07,
+	DESC_ENDPOINT,
+	BULK_OUT_EP,	            // bEndpointAddress (OUT endpoint 5)
+	0x02,						// bmAttributes = bulk
+	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
+	0x00,						// bInterval
+
+/****************************************************
+ * Interface descriptor for CDC[1]
+ *************************************************** */ 
+	0x09,                       // bLength
+	DESC_INTERFACE,             // bDescriptorType
+	0x01,						// bInterfaceNumber
+	0x00,						// bAlternateSetting
+	0x02,						// bNumEndPoints
+	0x02,						// bInterfaceClass
+	0x02,						// bInterfaceSubClass
+	0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
+	0x05,						// iInterface
+
+	// EndPoint Descriptor for Interrupt endpoint
+	0x07,
+	DESC_ENDPOINT,
+	0x83,			            // bEndpointAddress (IN endpoint 3)
+	0x02,						// bmAttributes = intr
+	LE_WORD(8),					// wMaxPacketSize
+	0x0A,						// bInterval
+
+// EndPoint Descriptor for Output endpoint
+	0x07,
+	DESC_ENDPOINT,
+	0x04,			         	// bEndpointAddress (OUT endpoint 4)
+	0x02,						// bmAttributes = bulk
+	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
+	0x00,						// bInterval
+
+/****************************************************
+ * String descriptors
+************************************************** */	
+	// String Descriptor Zero
+	0x04,
+	DESC_STRING,
+	LE_WORD(0x0409),
+
+	// String Descriptors
+	0x0E,
+	DESC_STRING,
+	'L', 0, 'P', 0, 'C', 0, 'U', 0, 'S', 0, 'B', 0,
+
+	0x14,
+	DESC_STRING,
+	'U', 0, 'S', 0, 'B', 0, 'S', 0, 'e', 0, 'r', 0, 'i', 0, 'a', 0, 'l', 0,
+	
+	0x12,
+	DESC_STRING,
+	'1', 0, '2', 0, '3', 0, '4', 0, '5', 0, '6', 0, '7', 0, '8', 0,
+
+	34,
+    DESC_STRING,
+    'D',0,
+	'u',0,
+	'a',0,
+	'l',0,
+	' ',0,
+	'S',0,
+	'e',0,
+	'r',0,
+	'i',0,
+	'a',0,
+	'l',0,
+	' ',0,
+	'p',0,
+	'o',0,
+	'r',0,
+	't',0,
+
+	16,
+    DESC_STRING,
+    'S',0,
+	'e',0,
+	'r',0,
+	'i',0,
+	'a',0,
+	'l',0,
+	'1',0,
+
+	16,
+    DESC_STRING,
+    'S',0,
+	'e',0,
+	'r',0,
+	'i',0,
+	'a',0,
+	'l',0,
+	'2',0,
+
+	12,
+    DESC_STRING,
+    'S',0,
+	'T',0,
+	'R',0,
+	'0',0,
+	'2',0,
+
+	0
+};
+
+#else
 static const U8 abDescriptors[] = {
 
 /***************************************************
@@ -133,20 +296,7 @@ static const U8 abDescriptors[] = {
 	0x32,						// bMaxPower
 
 /****************************************************
- * Interface Association Descriptor to associate the 
- * two CDC interfaces
- **************************************************** */
- /*   0x08,                       // bLength
-    DESC_TYPE_IAD,              // bDescriptorType
-    0x00,                       // bFirstInterface
-    0x02,                       // bInterfaceCount
-    0x02,                       // bFunctionClass
-    0x02,                       // bFunctionSubClass
-    0x01,                       // bFunctionProtocol
-    0x02,                       // iFunction
-*/
-/****************************************************
- * Interface descriptor for CDC[0]
+ * Interface descriptor for CDC
  *************************************************** */ 
 	0x09,                       // bLength
 	DESC_INTERFACE,             // bDescriptorType
@@ -156,7 +306,7 @@ static const U8 abDescriptors[] = {
 	0x02,						// bInterfaceClass
 	0x02,						// bInterfaceSubClass
 	0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
-	0x00,						// iInterface
+	0x05,						// iInterface
 
 // header functional descriptor
 	0x05,
@@ -219,8 +369,6 @@ static const U8 abDescriptors[] = {
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
 	0x00,						// bInterval
 
-
-
 /****************************************************
  * String descriptors
 ************************************************** */	
@@ -240,12 +388,60 @@ static const U8 abDescriptors[] = {
 
 	0x12,
 	DESC_STRING,
-	'D', 0, 'E', 0, 'A', 0, 'D', 0, 'C', 0, '0', 0, 'D', 0, 'E', 0,
+	'1', 0, '2', 0, '3', 0, '4', 0, '5', 0, '6', 0, '7', 0, '8', 0,
+
+	34,
+    DESC_STRING,
+    'D',0,
+	'u',0,
+	'a',0,
+	'l',0,
+	' ',0,
+	'S',0,
+	'e',0,
+	'r',0,
+	'i',0,
+	'a',0,
+	'l',0,
+	' ',0,
+	'p',0,
+	'o',0,
+	'r',0,
+	't',0,
+
+	16,
+    DESC_STRING,
+    'S',0,
+	'e',0,
+	'r',0,
+	'i',0,
+	'a',0,
+	'l',0,
+	'1',0,
+
+	16,
+    DESC_STRING,
+    'S',0,
+	'e',0,
+	'r',0,
+	'i',0,
+	'a',0,
+	'l',0,
+	'2',0,
+
+	12,
+    DESC_STRING,
+    'S',0,
+	'T',0,
+	'R',0,
+	'0',0,
+	'2',0,
 
 // terminating zero
 	0
 };
 
+#endif
 /**
 	Interrupt handler
 	
