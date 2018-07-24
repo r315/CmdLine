@@ -14,7 +14,7 @@ uint32_t nextHex(char **line);
 char *strtok_s(char *str, const char token, uint8_t len, char **saveptr);
 char xstrcmp(char const *str1, char const *str2);
 int yatoi(char *str);
-int hatoi(char *str);
+uint32_t hatoi(char *str);
 int xatoi (char **str, long *res);
 char *pftoa(double f, char places);
 char* pitoa (long val, int radix, int len);

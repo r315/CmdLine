@@ -152,24 +152,25 @@ char c;
 #endif
 
 // convert hex str to integer
-int hatoi(char *str){
-int val = 0;	
-char c;
+uint32_t hatoi(char *str){
+uint32_t val = 0;	
+char c = *str;
 	do{
         val <<= 4;
-        c = (*str);
         if(c > '`' && c < 'g'){
             c -= 'W'; 
         }else if((c >'@' && c < 'G')){
             c -= '7';
         }else if(c > '/' && c < ':'){
 			c -= '0';
-        }		
-		else
-			return -1;			
+        }else{
+			return -1;
+		}
+
 		val |= c;		
-		str +=1;
-	}while(*str);
+		c = *(++str);
+        
+	}while( c != '\0' && c != ' ' && c != '\n' );
 
 	return val;
 }
