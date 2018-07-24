@@ -12,7 +12,11 @@ class CmdEcho : public Command{
 
 public:
     CmdEcho (Vcom *vc) : Command("echo", vc) { }
-    char execute(void *ptr);
+    char execute(void *ptr){
+        vcom->printf("%s\n", (char*)ptr);
+        return CMD_OK;
+    }
+    void help(void){}
 };
 
 
