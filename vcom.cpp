@@ -196,12 +196,12 @@ void Vcom::printf (const char* str, ...)
 
 
 void Vcom::bufferHex(uint8_t *buf, uint8_t len){
-	putc('\n');
+	printf("[ ");
 	while(len--){
 		uint8_t data = *buf++;
 		if(data < 16)
 			putc('0');
 		printf("%X ", data);
 	}
-	putc('\n');
+	printf("]\n");
 }

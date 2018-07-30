@@ -7,6 +7,7 @@
 #include "cmdgpio.h"
 #include "cmdled.h"
 #include "cmdmem.h"
+#include "cmdi2c.h"
 
 //void abort(void){}
 
@@ -23,6 +24,7 @@ int main()
 	CmdGpio gpio(&vcom1);
 	CmdLed led(&vcom1);
 	CmdMem mem(&vcom1);
+	CmdI2c i2c(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
@@ -30,6 +32,7 @@ int main()
 	cmd.add(&gpio);
 	cmd.add(&led);
 	cmd.add(&mem);
+	cmd.add(&i2c);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();

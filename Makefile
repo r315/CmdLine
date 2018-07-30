@@ -20,8 +20,8 @@ PRJPATH =. usbdrv
 INCSPATH =. usbdrv
 CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunctions.c #command.c #cmdbase.c
 CSRCS += #spi_lpc1768.c cmdgpio.c cmdspi.c cmdavr.c
-CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c
-CPPSRCS =LPCbus.cpp vcom.cpp command.cpp cmdecho.cpp cmdpwm.cpp cmdgpio.cpp #cmdbase.cpp
+CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c
+CPPSRCS =LPCbus.cpp vcom.cpp command.cpp cmdmem.cpp cmdpwm.cpp cmdgpio.cpp cmdi2c.cpp #cmdbase.cpp
 
 #########################################################
 #Startup files and libraries
@@ -44,6 +44,7 @@ OBJECTS =$(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) $(addprefix $(OBJPATH)/,$(CSRCS
 VPATH = $(PRJPATH) $(BSPPATH)/lpc17xx/ $(LIBEMB_PATH)/display $(LIBEMB_PATH)/drv/tft $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
 $(LIBEMB_PATH)/drv/pwm \
+$(LIBEMB_PATH)/drv/i2c \
 
 ifeq ($(LIBEMB_PATH), )
 erro:
@@ -55,7 +56,7 @@ all: $(TARGET).elf stats
 
 $(TARGET).elf:  $(OBJECTS)
 	@echo "---- Linking ---->" $@
-	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
+	$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j $(TARGET).elf $(TARGET).hex
