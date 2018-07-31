@@ -41,7 +41,7 @@ int main()
 	//LCD_Rotation(LCD_LANDSCAPE);
 	LCD_Bkl(ON);
 
-    vcom1.init();	
+    vcom1.init();
 
 	while(1)
 	{
