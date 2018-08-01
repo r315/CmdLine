@@ -4,7 +4,15 @@
 
 I2C_Controller *bus[I2C_MAX_ITF];
 
+Vcom *_this;
 uint8_t data[256];
+
+extern "C" void cb(void *data){
+     (dynamic_cast<Vcom*>(_this))->bufferHex((uint8_t*)data,16);
+     (dynamic_cast<Vcom*>(_this))->putc(' ');
+     (dynamic_cast<Vcom*>(_this))->bufferAscii((uint8_t*)data,16);
+     (dynamic_cast<Vcom*>(_this))->putc('\n');
+}
 
 void CmdI2c::help(void){
     vcom->printf("Usage: i2c -b <bus> [option] \n\n");  
@@ -64,12 +72,15 @@ char *p1;
         bus[busnum]->device = slave;
 	}
 
+    _this = this->vcom;
+
     if(op == I2C_WRITE){
         I2C_Write(busnum, (uint8_t*)"\x00\x00\x30serial number 123456", 20);
     }else{
         I2C_Write(busnum, (uint8_t*)"\x00\x00", 2);
-        I2C_Read(busnum, data, 16);
-        vcom->bufferHex(data,16);
+        //I2C_Read(busnum, data, 16);
+        //vcom->bufferHex(data,16);       
+        I2C_ReadAsync(busnum, data, 16, cb);
     }
 
     //I2C_Read(I2C_IF0, data, 16);
