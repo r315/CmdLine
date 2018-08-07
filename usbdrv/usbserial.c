@@ -72,9 +72,11 @@ void VCOM_gets_echo(char *str); // gets string terminated in '\r' or '\n' and ec
 
 #define BAUD_RATE	    115200
 
-#define INT_IN_EP		0x81
-#define BULK_OUT_EP		0x05
-#define BULK_IN_EP		0x82
+#define INT_IN_EP01		0x81		// Control
+#define BULK_IN_EP02	0x82		// Interrupt
+#define BULK_OUT_EP02	0x02		// Interrupt
+#define BULK_OUT_EP05	0x05		// Bulk
+
 
 #define MAX_PACKET_SIZE	64
 
@@ -88,8 +90,8 @@ void VCOM_gets_echo(char *str); // gets string terminated in '\r' or '\n' and ec
 #define	GET_LINE_CODING			0x21
 #define	SET_CONTROL_LINE_STATE	0x22
 
-#define VID                     0xFFFF
-#define PID                     0x0005
+#define VID                     0x04D8 //0xFFFF
+#define PID                     0xFB00 //0x0005
 
 static TLineCoding LineCoding = {115200, 0, 0, 8};
 static U8 abBulkBuf[64];
@@ -100,7 +102,138 @@ static U8	abStdReqData[8];
 
 static fifo_t *txfifo, *rxfifo;
 
-#if 0
+#if 1
+static const U8 abDescriptors[] = {
+/***************************************************
+ * Device descriptor (Bus pirate V4)
+ ************************************************** */
+	0x12,                       // bLength
+	DESC_DEVICE,                // bDescriptorType
+	LE_WORD(0x0101),			// bcdUSB
+	0x02,						// bDeviceClass
+	0x00,						// bDeviceSubClass
+	0x00,						// bDeviceProtocol
+	MAX_PACKET_SIZE0,	        // bMaxPacketSize
+	LE_WORD(VID),               // idVendor
+	LE_WORD(PID),               // idProduct
+	LE_WORD(0x0100),			// bcdDevice
+	0x01,						// iManufacturer
+	0x02,						// iProduct
+	0x03,						// iSerialNumber
+	0x01,						// bNumConfigurations
+
+/****************************************************
+ * Configuration descriptor
+ **************************************************** */
+	0x09,
+	DESC_CONFIGURATION,
+	LE_WORD(9 + 58),	        // wTotalLength
+	0x02,						// bNumInterfaces
+	0x01,						// bConfigurationValue
+	0x00,						// iConfiguration
+	0xC0,						// bmAttributes
+	0x32,						// bMaxPower
+
+/****************************************************
+ * Interface descriptor
+ *************************************************** */ 
+	0x09,                       // bLength
+	DESC_INTERFACE,             // bDescriptorType
+	0x00,						// bInterfaceNumber
+	0x00,						// bAlternateSetting
+	0x01,						// bNumEndPoints
+	0x02,						// bInterfaceClass
+	0x02,						// bInterfaceSubClass
+	0x01,						// bInterfaceProtocol
+	0x00,						// iInterface
+
+// ------------ CDC Header ------------------
+	0x05,
+	CS_INTERFACE,
+	0,
+	LE_WORD(0x0110),            // bcdCDC
+
+// ------------ CDC ACM ------------------	
+	0x04,
+	CS_INTERFACE,
+	0x02,
+	0x02,						// bmCapabilities
+
+// -------------- CDC Union ------------------	
+	0x05,
+	CS_INTERFACE,
+	0x06,
+	0x00,						// bMasterInterface
+	0x01,						// bSlaveInterface0
+	
+// ------------ CDC Call Management ------------------
+	0x05,
+	CS_INTERFACE,
+	0x01,
+	0x01,						// bmCapabilities
+	0x01,					    // bDataInterface
+
+// ------------ Endpoint descriptor ------------------
+	0x07,
+	DESC_ENDPOINT,
+	INT_IN_EP01,	            // bEndpointAddress
+	0x03,						// bmAttributes = intr
+	LE_WORD(8),  				// wMaxPacketSize
+	0x0A,						// bInterval
+
+/****************************************************
+ * Interface descriptor
+ *************************************************** */ 
+	0x09,                       // bLength
+	DESC_INTERFACE,             // bDescriptorType
+	0x01,						// bInterfaceNumber
+	0x00,						// bAlternateSetting
+	0x02,						// bNumEndPoints
+	0x0A,						// bInterfaceClass
+	0x00,						// bInterfaceSubClass
+	0x00,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
+	0x00,						// iInterface
+
+// ------------ Endpoint descriptor Out ------------------
+	0x07,
+	DESC_ENDPOINT,
+	BULK_OUT_EP05,				// bEndpointAddress
+	0x02,						// bmAttributes = bulk
+	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
+	0x40,						// bInterval
+
+// ------------ Endpoint descriptor IN ------------------
+	0x07,
+	DESC_ENDPOINT,
+	BULK_IN_EP02,			    // bEndpointAddress
+	0x02,						// bmAttributes = bulk
+	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
+	0x40,						// bInterval
+
+/****************************************************
+ * String descriptors
+************************************************** */	
+	// String Descriptor Zero
+	0x04,
+	DESC_STRING,
+	LE_WORD(0x0409),
+
+	// String Descriptors
+	0x14,
+	DESC_STRING,
+	'P',0,'i',0,'r',0,'a',0,'t',0,'e',0,'b',0,'u',0,'s',0,
+	
+	0x1E,
+	DESC_STRING,
+	'L',0,'o',0,'g',0,'i',0,'c',0,' ',0,'A',0,'n',0,'a',0,'l',0,'y',0,'s',0,'e',0,'r',0,
+	
+	0x12,
+	DESC_STRING,
+	'1',0,'2',0,'3',0,'4',0,'A',0,'B',0,'D',0,'C',0,
+
+	0
+};
+#elif 1
 static const U8 abDescriptors[] = {
 
 /***************************************************
@@ -109,7 +242,7 @@ static const U8 abDescriptors[] = {
 	0x12,                       // bLength
 	DESC_DEVICE,                // bDescriptorType
 	LE_WORD(0x0101),			// bcdUSB
-	0x00,						// bDeviceClass
+	0x02,						// bDeviceClass
 	0x00,						// bDeviceSubClass
 	0x00,						// bDeviceProtocol
 	MAX_PACKET_SIZE0,			// bMaxPacketSize
@@ -122,71 +255,116 @@ static const U8 abDescriptors[] = {
 	0x01,						// bNumConfigurations
 
 /****************************************************
- * Configuration descriptor one
+ * Configuration descriptor
  **************************************************** */
 	0x09,
 	DESC_CONFIGURATION,
-	LE_WORD(55),                // wTotalLength
-	0x01,						// bNumInterfaces
+	LE_WORD(9 + 58 + 23),			// wTotalLength
+	0x02,						// bNumInterfaces
 	0x01,						// bConfigurationValue
 	0x00,						// iConfiguration
 	0xC0,						// bmAttributes
 	0x32,						// bMaxPower
 
 /****************************************************
- * Interface descriptor for CDC[0]
+ * Interface descriptor for CDC
  *************************************************** */ 
 	0x09,                       // bLength
 	DESC_INTERFACE,             // bDescriptorType
 	0x00,						// bInterfaceNumber
 	0x00,						// bAlternateSetting
-	0x03,						// bNumEndPoints
+	0x01,						// bNumEndPoints
 	0x02,						// bInterfaceClass
 	0x02,						// bInterfaceSubClass
 	0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
 	0x05,						// iInterface
 
-// EndPoint Descriptor for Input endpoint
+// header functional descriptor
+	0x05,
+	CS_INTERFACE,
+	0x00,
+	LE_WORD(0x0110),
+
+// call management functional descriptor
+	0x05,
+	CS_INTERFACE,
+	0x01,
+	0x01,						// bmCapabilities = device handles call management
+	0x01,						// bDataInterface
+	
+// ACM functional descriptor
+	0x04,
+	CS_INTERFACE,
+	0x02,
+	0x02,						// bmCapabilities
+
+// union functional descriptor
+	0x05,
+	CS_INTERFACE,
+	0x06,
+	0x00,						// bMasterInterface
+	0x01,						// bSlaveInterface0
+
+// EndPoint Descriptor for Interrupt endpoint
 	0x07,
 	DESC_ENDPOINT,
-	BULK_IN_EP,		            // bEndpointAddress (IN endpoint 2)
-	0x02,						// bmAttributes = bulk
+	INT_IN_EP,					// bEndpointAddress
+	0x03,						// bmAttributes = intr
 	LE_WORD(8),					// wMaxPacketSize
 	0x0A,						// bInterval
+
+/*************************************************** 
+* Data class interface descriptor
+ *************************************************** */ 
+	0x09,
+	DESC_INTERFACE,
+	0x01,						// bInterfaceNumber
+	0x00,						// bAlternateSetting
+	0x02,						// bNumEndPoints
+	0x0A,						// bInterfaceClass = data
+	0x00,						// bInterfaceSubClass
+	0x00,						// bInterfaceProtocol
+	0x00,						// iInterface
 
 // EndPoint Descriptor for Output endpoint
 	0x07,
 	DESC_ENDPOINT,
-	BULK_OUT_EP,	            // bEndpointAddress (OUT endpoint 5)
+	BULK_OUT_EP,				// bEndpointAddress
+	0x02,						// bmAttributes = bulk
+	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
+	0x00,						// bInterval
+// EndPoint Descriptor for Input endpoint
+	0x07,
+	DESC_ENDPOINT,
+	BULK_IN_EP,					// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
 	0x00,						// bInterval
 
-/****************************************************
- * Interface descriptor for CDC[1]
+/*************************************************** 
+* Data class interface descriptor
  *************************************************** */ 
-	0x09,                       // bLength
-	DESC_INTERFACE,             // bDescriptorType
-	0x01,						// bInterfaceNumber
+	0x09,
+	DESC_INTERFACE,
+	0x02,						// bInterfaceNumber
 	0x00,						// bAlternateSetting
 	0x02,						// bNumEndPoints
-	0x02,						// bInterfaceClass
-	0x02,						// bInterfaceSubClass
-	0x01,						// bInterfaceProtocol, linux requires value of 1 for the cdc_acm module
-	0x05,						// iInterface
-
-	// EndPoint Descriptor for Interrupt endpoint
-	0x07,
-	DESC_ENDPOINT,
-	0x83,			            // bEndpointAddress (IN endpoint 3)
-	0x02,						// bmAttributes = intr
-	LE_WORD(8),					// wMaxPacketSize
-	0x0A,						// bInterval
+	0x0A,						// bInterfaceClass = data
+	0x00,						// bInterfaceSubClass
+	0x00,						// bInterfaceProtocol
+	0x00,						// iInterface
 
 // EndPoint Descriptor for Output endpoint
 	0x07,
 	DESC_ENDPOINT,
-	0x04,			         	// bEndpointAddress (OUT endpoint 4)
+	BULK_OUT_EP11,				// bEndpointAddress
+	0x02,						// bmAttributes = bulk
+	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
+	0x00,						// bInterval
+// EndPoint Descriptor for Input endpoint
+	0x07,
+	DESC_ENDPOINT,
+	BULK_IN_EP8,					// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
 	0x00,						// bInterval
@@ -513,6 +691,28 @@ static void USBSERIAL_BulkIn(U8 bEP, U8 bEPStatus)
 
 
 /**
+	Local function to handle incoming bulk data
+		
+	@param [in] bEP
+	@param [in] bEPStatus
+ */
+static void USBSERIAL_BulkOut_2(U8 bEP, U8 bEPStatus){
+	int iLen;
+	iLen = USBHwEPRead(bEP, abBulkBuf, sizeof(abBulkBuf));
+}
+
+
+/**
+	Local function to handle outgoing bulk data
+		
+	@param [in] bEP
+	@param [in] bEPStatus
+ */
+static void USBSERIAL_BulkIn_2(U8 bEP, U8 bEPStatus){
+
+}
+
+/**
 	Local function to handle the USB-CDC class requests
 		
 	@param [in] pSetup
@@ -585,7 +785,6 @@ void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
 	
 	// init hardware
 	USBHwInit();
-
 	
 	// register bus reset handler
 	USBHwRegisterDevIntHandler(USBSERIAL_HandleUsbReset);
@@ -609,9 +808,12 @@ void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
 	USBRegisterRequestHandler(REQTYPE_TYPE_CLASS, USBSERIAL_HandleClassRequest, abClassReqData);
 
 	// register endpoint handlers
-	USBHwRegisterEPIntHandler(INT_IN_EP, NULL);
-	USBHwRegisterEPIntHandler(BULK_IN_EP, USBSERIAL_BulkIn);
-	USBHwRegisterEPIntHandler(BULK_OUT_EP, USBSERIAL_BulkOut);
+	USBHwRegisterEPIntHandler(INT_IN_EP01, NULL);
+	USBHwRegisterEPIntHandler(BULK_IN_EP02, USBSERIAL_BulkIn);
+	USBHwRegisterEPIntHandler(BULK_OUT_EP05, USBSERIAL_BulkOut);
+	//USBHwRegisterEPIntHandler(BULK_OUT_EP02, USBSERIAL_BulkOut);
+	//USBHwRegisterEPIntHandler(BULK_IN_EP8, USBSERIAL_BulkIn_2);
+	//USBHwRegisterEPIntHandler(BULK_OUT_EP11, USBSERIAL_BulkOut_2);
 	
 	// register frame handler
 	USBHwRegisterFrameHandler(USBSERIAL_FrameHandler);
