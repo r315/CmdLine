@@ -44,7 +44,7 @@ int main()
 	CLOCK_InitUSBCLK();
 
     DISPLAY_Init(ON);
-	//LCD_Rotation(LCD_LANDSCAPE);
+	LCD_Rotation(LCD_LANDSCAPE);
 	LCD_Bkl(ON);
 
     vcom1.init();
