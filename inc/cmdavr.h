@@ -2,13 +2,26 @@
 #define _cmdavr_h_
 
 
+#ifdef __cplusplus
+extern "C" {
+#endif
 
-char avrCmd(void *);
-char avrHelp(void *);
-char avrWrite(void *);
-char avrRead(void *);
-char avrEnable(void *);
-char avrTest(void *ptr);
-char avrFuses(void *ptr);
-char avrErase(void *ptr);
+#include <common.h>     // all drivers headers should be placed here 
+#include "command.h"
+
+class CmdAvr : public Command{
+
+public:
+    CmdAvr (Vcom *vc) : Command("avr", vc) { }
+    char execute(void *ptr);
+    void help(void);
+    char avrFuses(void *ptr);
+};
+
+
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
