@@ -19,9 +19,8 @@ TARGET = LPCbus
 PRJPATH =. usbdrv
 INCSPATH =. usbdrv
 CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunctions.c #command.c #cmdbase.c
-CSRCS += #spi_lpc1768.c cmdgpio.c cmdspi.c cmdavr.c
-CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c
-CPPSRCS =LPCbus.cpp vcom.cpp command.cpp cmdmem.cpp cmdpwm.cpp cmdgpio.cpp cmdi2c.cpp #cmdbase.cpp
+CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c spi_lpc1768.c
+CPPSRCS =LPCbus.cpp vcom.cpp command.cpp cmdmem.cpp cmdpwm.cpp cmdgpio.cpp cmdi2c.cpp cmdspi.cpp cmdavr.cpp #cmdbase.cpp
 
 #########################################################
 #Startup files and libraries
@@ -40,7 +39,7 @@ LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfile
 CSRCS   +=startup_lpc1768.c #syscalls.c
 LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
 ##########################################################
-OBJECTS =$(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) $(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) $(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj))
+OBJECTS =$(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj)) $(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) $(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) 
 VPATH = $(PRJPATH) $(BSPPATH)/lpc17xx/ $(LIBEMB_PATH)/display $(LIBEMB_PATH)/drv/tft $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
 $(LIBEMB_PATH)/drv/pwm \
@@ -64,7 +63,7 @@ $(TARGET).hex: $(TARGET).elf
 bin: $(TARGET).bin
 
 $(TARGET).bin: $(TARGET).elf
-	@$(OBJCOPY) -O binary  -j .startup -j .text -j .data -j .loader $(TARGET).elf $@
+	@$(OBJCOPY) -O binary  $(TARGET).elf $@
 	hd -n 128 $@
 	$(CHECKSUM) $@
 

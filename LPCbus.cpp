@@ -8,6 +8,8 @@
 #include "cmdled.h"
 #include "cmdmem.h"
 #include "cmdi2c.h"
+#include "cmdspi.h"
+#include "cmdavr.h"
 
 //void abort(void){}
 
@@ -25,6 +27,8 @@ int main()
 	CmdLed led(&vcom1);
 	CmdMem mem(&vcom1);
 	CmdI2c i2c(&vcom1);
+    CmdSpi spi(&vcom1);
+    CmdAvr avr(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
@@ -33,6 +37,8 @@ int main()
 	cmd.add(&led);
 	cmd.add(&mem);
 	cmd.add(&i2c);
+    cmd.add(&spi);
+    cmd.add(&avr);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
@@ -48,9 +54,9 @@ int main()
 		memset(line,0 , COMMAND_MAX_LINE);
 		
 		do{
-			vcom1.puts("\rLPC BUS: ");
+			vcom1.printf("LPC BUS: ");
 			i = vcom1.getLine(line, sizeof(line));
-			vcom1.puts("\n\r");
+			vcom1.putc('\n');
 		}while(!i);		
 
 		cmd.parse(line);
