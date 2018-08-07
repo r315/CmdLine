@@ -20,8 +20,9 @@ public:
 };
 
 
-#define I2C_WRITE 0
-#define I2C_READ  1
+#define I2C_WRITE   0
+#define I2C_READ    1
+#define I2C_SCAN    2
 
 #ifdef __cplusplus
 }
