@@ -98,6 +98,7 @@ public:
 	char getLine(char *line, uint8_t max);
 	void printf(const char* str, ...); // Original code by Elm_CHaN. Modified by Martin Thomas
 	void bufferHex(uint8_t *buf, uint8_t len);
+	void bufferAscii(uint8_t *buf, uint8_t len);
 	
 	/*
 		Writes one character to VCOM port

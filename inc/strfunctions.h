@@ -11,6 +11,7 @@ extern "C" {
 char *nextParameter(char *line);
 int32_t nextInt(char **line);
 uint32_t nextHex(char **line);
+char nextChar(char **line);
 char *strtok_s(char *str, const char token, uint8_t len, char **saveptr);
 char xstrcmp(char const *str1, char const *str2);
 int yatoi(char *str);

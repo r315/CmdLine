@@ -56,6 +56,7 @@ void Vcom::puts(const char* str)
 	{
 		putchar(*str++);
 	}
+    putchar('\n');
 }
 
 char Vcom::getc()
@@ -203,5 +204,16 @@ void Vcom::bufferHex(uint8_t *buf, uint8_t len){
 			putc('0');
 		printf("%X ", data);
 	}
-	printf("]\n");
+	printf("]");
+}
+
+
+void Vcom::bufferAscii(uint8_t *buf, uint8_t len){
+	while(len--){
+		uint8_t data = *buf++;
+		if(data < ' ' || data > 'z')
+			putc('.');
+		else
+			putc(data);		
+	}	
 }

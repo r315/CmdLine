@@ -41,7 +41,7 @@ int32_t rint;
     return rint;
 }
 
-char cmdNextChar(char **line){
+char nextChar(char **line){
 char c;    
     c = *line[0];
     *line = nextParameter(*line);
