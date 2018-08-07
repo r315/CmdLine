@@ -45,6 +45,17 @@ int Vcom::getchar(void)
 	return fifo_get(&rxfifo, &c) ? c : EOF;
 }
 
+char Vcom::getc()
+{
+	int c;
+	c = EOF;
+	while(c == EOF)
+	{
+		c = getchar();
+	}
+	return (char)c;
+}
+
 void Vcom::putc(char c)
 {
 	while(putchar(c) == EOF);
@@ -57,17 +68,6 @@ void Vcom::puts(const char* str)
 		putchar(*str++);
 	}
     putchar('\n');
-}
-
-char Vcom::getc()
-{
-	int c;
-	c = EOF;
-	while(c == EOF)
-	{
-		c = getchar();
-	}
-	return (char)c;
 }
 
 void Vcom::putHex(uint8_t hex)

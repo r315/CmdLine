@@ -689,7 +689,7 @@ static void USBSERIAL_BulkIn(U8 bEP, U8 bEPStatus)
 	}
 }
 
-
+#if 0
 /**
 	Local function to handle incoming bulk data
 		
@@ -711,6 +711,7 @@ static void USBSERIAL_BulkOut_2(U8 bEP, U8 bEPStatus){
 static void USBSERIAL_BulkIn_2(U8 bEP, U8 bEPStatus){
 
 }
+#endif
 
 /**
 	Local function to handle the USB-CDC class requests

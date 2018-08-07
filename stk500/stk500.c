@@ -8,7 +8,7 @@
 
 
 #include "types.h"
-#include "spi.h"
+#include "spi_avr.h"
 #include "stk500.h"
 #include "stk500_proto.h"
 

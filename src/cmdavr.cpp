@@ -19,24 +19,21 @@
 
 #define AVR_PROGRAMMING_ACTIVE  (1<<0)
 
-#define AVR_RST_PIN_PORT       LPC_GPIO0
-#define AVR_RST_PIN            (1<<24)
-
 #define AVR_DISABLE_RESET               \
             DelayMs(100);               \
             AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN; \
             devicestatus = 0;           \
 
-#define AVR_RST0 AVR_RST_PIN_PORT->FIOCLR = AVR_RST_PIN
-#define AVR_RST1 AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN
+
 #define AVR_RSTZ AVR_RST_PIN_PORT->FIODIR &= ~AVR_RST_PIN  
 #define AVR_RSTY AVR_RST_PIN_PORT->FIODIR |= AVR_RST_PIN  
 
 #define AVR_DW_SYNC_TIMEOUT     10
 #define AVR_INSTRUCTION_SIZE    4
+
 enum{
     AVR_RESPONSE_OK = 0,
-    AVR_RESPONSE_FAIL
+    AVR_RESPONSE_FAIL = -1
 };
 
 
@@ -138,23 +135,21 @@ uint32_t autobaud;
     return 0;
 }
 
-char avrProgrammingEnable(void){
+char avrProgrammingEnable(uint8_t trydW){
 
     serial_instruction.len = AVR_INSTRUCTION_SIZE;
 
     memcpy(serial_instruction.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
-
-    if(devicestatus & AVR_PROGRAMMING_ACTIVE)
-        return AVR_RESPONSE_OK;
     
     AVR_RSTY;
 
     for (uint8_t i = 0; i < AVR_ENABLE_RETRIES; i++){
+        AVR_RST1;
+        DelayMs(2);
         AVR_RST0;
         DelayMs(20);
         spiWriteBuffer(&serial_instruction);
         if(serial_instruction.data[2] == 0x53){
-            devicestatus |= AVR_PROGRAMMING_ACTIVE;
             return AVR_RESPONSE_OK;
         }
 
@@ -162,46 +157,36 @@ char avrProgrammingEnable(void){
             break;
         
         memcpy(serial_instruction.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
-        //VCOM_printf("\nNo device detected, Disabling debugWire..\n");
-        avrDisable_dW();
-        DelayMs(2);
+        if(trydW) 
+            avrDisable_dW();       
     }
-    //VCOM_printf("fail to enable programming\n");
+    AVR_RST1;
     return AVR_RESPONSE_FAIL; 
 }
 
-uint32_t avrDeviceCode(void){
-uint32_t dcode;
-
+void avrDeviceCode(uint8_t *buf){
 
     serial_instruction.len = AVR_INSTRUCTION_SIZE; 
 
     memcpy(serial_instruction.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
     spiWriteBuffer(&serial_instruction);
-    dcode = serial_instruction.data[3] << 16;
+    buf[0] = serial_instruction.data[3] << 16;
 
     memcpy(serial_instruction.data, DEVICE_CODE1_CMD, AVR_INSTRUCTION_SIZE);
     spiWriteBuffer(&serial_instruction);
-    dcode |= serial_instruction.data[3] << 8;
+    buf[1] = serial_instruction.data[3] << 8;
 
     memcpy(serial_instruction.data, DEVICE_CODE2_CMD, AVR_INSTRUCTION_SIZE);
     spiWriteBuffer(&serial_instruction);
-    dcode |= serial_instruction.data[3];  
-
-    return dcode;
+    buf[2] = serial_instruction.data[3];
 }
 
-uint32_t avrEnable(void){
-uint32_t sig;
-    if( avrProgrammingEnable() == AVR_RESPONSE_FAIL) {
-        AVR_DISABLE_RESET;
+uint32_t avrSignature(uint8_t *buf){
+    if( avrProgrammingEnable(YES) == AVR_RESPONSE_FAIL) {
         return AVR_RESPONSE_FAIL;
     }
 
-    sig =  avrDeviceCode();    
-   
-    AVR_DISABLE_RESET;
-    return sig;
+    avrDeviceCode(buf);
 }
 
 
@@ -247,15 +232,13 @@ void avrErase(void){
     serial_instruction.len = AVR_INSTRUCTION_SIZE;
     memcpy(serial_instruction.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
 
-    if( avrProgrammingEnable() ) {        
-        AVR_DISABLE_RESET;
+    if( avrProgrammingEnable(YES) ) {        
         return;
     }
 
     spiWriteBuffer(&serial_instruction);
 
     while(avrPollRdy());
-    AVR_DISABLE_RESET;
 }
 
 //--------------------------------------
@@ -276,7 +259,6 @@ void CmdAvr::help(void){
 }
 
 char CmdAvr::execute(void *ptr){
-uint8_t slave, op;
 uint32_t signature;
 char *p1;
 
@@ -294,7 +276,7 @@ char *p1;
 	while(*p1 != '\0'){
 		if( !xstrcmp(p1,"-s")){
 			p1 = nextParameter(p1);
-            signature = avrEnable();
+            avrSignature((uint8_t*)&signature);
             if(signature == AVR_RESPONSE_FAIL){
                 vcom->printf("fail to enable programming\n");
             }else{
@@ -303,7 +285,7 @@ char *p1;
 		    //busnum = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-p")){
 			p1 = nextParameter(p1);
-            avrProgrammingEnable();
+            avrProgrammingEnable(YES);
             //slave = nextHex(&p1);
 		}else if( !xstrcmp(p1,"-e")){
 			p1 = nextParameter(p1);
@@ -330,7 +312,7 @@ char CmdAvr::avrFuses(void *ptr){
 uint8_t lh;
 int fuses;
 
-    if( avrProgrammingEnable() ) {        
+    if( avrProgrammingEnable(YES) ) {        
         AVR_DISABLE_RESET;
         return CMD_OK;
     }
@@ -353,7 +335,7 @@ int fuses;
         AVR_DISABLE_RESET;
     }  
 
-    if( avrProgrammingEnable() ) {        
+    if( avrProgrammingEnable(YES) ) {        
         AVR_DISABLE_RESET;
         return CMD_OK;
     }  

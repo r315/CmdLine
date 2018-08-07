@@ -12,6 +12,8 @@
 #include "cmdavr.h"
 
 //void abort(void){}
+void stk500_ServiceInit(Vcom *vc);
+void stk500_Service(void);
 
 int main()
 {
@@ -48,6 +50,10 @@ int main()
 	LCD_Bkl(ON);
 
     vcom1.init();
+
+    stk500_ServiceInit(&vcom1);
+    while(1)
+        stk500_Service();
 
 	while(1)
 	{

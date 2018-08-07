@@ -27,6 +27,7 @@ public:
 };
 
 void spiWriteBuffer(SpiBuffer *buf);
+void spiWrite(uint8_t *data, uint32_t len);
 
 #ifdef __cplusplus
 }
