@@ -11,9 +11,25 @@ typedef struct _SpiBuffer{
 }SpiBuffer;
 
 
-char spiCmd(void *);
-char spiHelp(void *);
-char spiWrite(void *);
-char spiRead(void *);
-char spiWriteBuffer(SpiBuffer *);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <common.h>     // all drivers headers should be placed here 
+#include "command.h"
+
+class CmdSpi : public Command{
+
+public:
+    CmdSpi (Vcom *vc) : Command("spi", vc) { }
+    char execute(void *ptr);
+    void help(void);
+};
+
+void spiWriteBuffer(SpiBuffer *buf);
+
+#ifdef __cplusplus
+}
+#endif
+
 #endif
