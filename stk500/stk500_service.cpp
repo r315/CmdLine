@@ -35,65 +35,83 @@ typedef struct _Service{
 static Vcom *vcom;
 static Service stkService;
 
-
+//------------------------------------------------------------
+//
+//------------------------------------------------------------
 void spi_setup(void){}
+
 int spi_start(void){ 
     return  avrProgrammingEnable(NO);
 }
+
 void spi_stop(void){
     AVR_RST1;
 }
 
+void spi_read_signature(uint8_t *buf){
+    avrDeviceCode(buf);
+}
+
 void spi_chip_erase(void){
-    avrErase();
+    avrChipErase();
 }
 
 uint16_t spi_read_program(uint16_t addr){
-    return 0;
+    return avrReadProgram(addr);
 }
 
 void spi_load_program_page(uint8_t addr, uint16_t value){
-
+    avrLoadProgramPage(addr,value);
 }
+
 void spi_write_program_page(uint16_t addr){
+    avrWriteProgramPage(addr);
+}
 
-}
-uint8_t spi_read_eeprom(uint16_t addr){
-return 0;
-}
-void spi_write_eeprom(uint16_t addr, uint8_t value){
-
-}
-uint8_t spi_read_lock_bits(void){
-return 0;
-}
 void spi_write_lock_bits(uint8_t value){
 
 }
-void spi_read_signature(uint8_t *buf){
-    avrSignature(buf);
-}
+
 void spi_write_fuse_bits(uint8_t value){
 
 }
+
 void spi_write_fuse_high_bits(uint8_t value){
 
 }
+
 void spi_write_extended_fuse_bits(uint8_t value){
 
 }
+
 uint8_t spi_read_fuse_bits(void){
 return 0;
 }
+
 uint8_t spi_read_extended_fuse_bits(void){
 return 0;
 }
+
 uint8_t spi_read_fuse_high_bits(void){
 return 0;
 }
+
 void spi_read_calibration_bytes(uint8_t *buf){
 
 }
+
+uint8_t spi_read_eeprom(uint16_t addr){
+    return 0;
+}
+
+void spi_write_eeprom(uint16_t addr, uint8_t value){
+
+}
+
+uint8_t spi_read_lock_bits(void){
+    return 0;
+}
+
 uint8_t spi_write_read(uint8_t *buf){
    spiWrite(buf, AVR_INSTRUCTION_SIZE);
 return buf[3];

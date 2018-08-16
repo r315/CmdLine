@@ -1,35 +1,40 @@
 
 #include "cmdavr.h"
 #include "cmdspi.h"
+#include "debug.h"
 
+#define READ_PROGRAM_PAGE_L "\x20\x00\x00\x00"
+#define READ_PROGRAM_PAGE_H "\x28\x00\x00\x00"
 
 #define DEVICE_CODE0_CMD    "\x30\x00\x00\x00"
 #define DEVICE_CODE1_CMD    "\x30\x00\x01\x00"
 #define DEVICE_CODE2_CMD    "\x30\x00\x02\x00"
 
+#define LOAD_PROGRAM_PAGE_L "\x40\x00\x00\x00"
+#define LOAD_PROGRAM_PAGE_H "\x48\x00\x00\x00"
+#define WRITE_PROGRAM_PAGE  "\x4C\x00\x00\x00"
+
 #define READ_FUSE_L         "\x50\x00\x00\x00"
 #define READ_FUSE_H         "\x58\x08\x00\x00"
+
 #define WRITE_FUSE_L        "\xAC\xA0\x00\x00"
 #define WRITE_FUSE_H        "\xAC\xA8\x00\x00"
 #define CHIP_ERASE          "\xAC\x80\x00\x00"
+#define DEVICE_PROG_ENABLE  "\xAC\x53\x00\x00"
+
 #define POLL_RDY            "\xF0\x00\x00\x00"
 
-#define DEVICE_PROG_ENABLE  "\xAC\x53\x00\x00"
 #define AVR_ENABLE_RETRIES  2
 
 #define AVR_PROGRAMMING_ACTIVE  (1<<0)
 
 #define AVR_DISABLE_RESET               \
             DelayMs(100);               \
-            AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN; \
-            devicestatus = 0;           \
+            AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN;
 
 
 #define AVR_RSTZ AVR_RST_PIN_PORT->FIODIR &= ~AVR_RST_PIN  
 #define AVR_RSTY AVR_RST_PIN_PORT->FIODIR |= AVR_RST_PIN  
-
-#define AVR_DW_SYNC_TIMEOUT     10
-#define AVR_INSTRUCTION_SIZE    4
 
 enum{
     AVR_RESPONSE_OK = 0,
@@ -39,7 +44,6 @@ enum{
 
 Vcom *_vcom;
 
-static uint8_t devicestatus = 0;
 volatile uint32_t tbit;
 
 uint8_t instruction[AVR_INSTRUCTION_SIZE];
@@ -47,6 +51,19 @@ SpiBuffer serial_instruction = {
     .len = AVR_INSTRUCTION_SIZE,
     .data = instruction,
 };
+
+
+static inline void avrWaitReady(void){
+uint32_t timeout = 0x100000;
+    while(timeout--){
+        serial_instruction.len = AVR_INSTRUCTION_SIZE; 
+        memcpy(serial_instruction.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
+        spiWriteBuffer(&serial_instruction);
+        if( !(serial_instruction.data[3] & 0x01)){
+            return;
+        }                
+    }
+}
 
 // Called when a falling edge is detected on P0.23 
 void autoBaudCb(void *ptr){
@@ -181,14 +198,6 @@ void avrDeviceCode(uint8_t *buf){
     buf[2] = serial_instruction.data[3];
 }
 
-uint32_t avrSignature(uint8_t *buf){
-    if( avrProgrammingEnable(YES) == AVR_RESPONSE_FAIL) {
-        return AVR_RESPONSE_FAIL;
-    }
-
-    avrDeviceCode(buf);
-}
-
 
 void avrWriteFuses(uint8_t lh, uint8_t fuses){
 
@@ -202,6 +211,8 @@ void avrWriteFuses(uint8_t lh, uint8_t fuses){
     serial_instruction.len = AVR_INSTRUCTION_SIZE;
 
     spiWriteBuffer(&serial_instruction);
+
+    avrWaitReady();
 }
 
 uint32_t avrReadFuses(void){
@@ -220,26 +231,71 @@ uint32_t fuses;
     return fuses;
 }
 
-uint8_t avrPollRdy(void){
-    serial_instruction.len = AVR_INSTRUCTION_SIZE; 
-    memcpy(serial_instruction.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
-    spiWriteBuffer(&serial_instruction);
-    return serial_instruction.data[3] & 0x01;
-}
 
-void avrErase(void){
+
+void avrChipErase(void){
 
     serial_instruction.len = AVR_INSTRUCTION_SIZE;
     memcpy(serial_instruction.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
 
-    if( avrProgrammingEnable(YES) ) {        
-        return;
-    }
-
     spiWriteBuffer(&serial_instruction);
 
-    while(avrPollRdy());
+    avrWaitReady();
 }
+
+uint16_t avrReadProgram(uint16_t addr){
+uint16_t value = 0;
+
+    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+
+    /* read high byte */
+    memcpy(serial_instruction.data, READ_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
+    serial_instruction.data[1] = HIGH_BYTE(addr);
+    serial_instruction.data[2] = LOW_BYTE(addr);
+    spiWriteBuffer(&serial_instruction);
+    value = serial_instruction.data[3];
+
+    value <<= 8;
+
+    /* read low byte */
+    memcpy(serial_instruction.data, READ_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
+    serial_instruction.data[1] = HIGH_BYTE(addr);
+    serial_instruction.data[2] = LOW_BYTE(addr);
+    spiWriteBuffer(&serial_instruction);
+    value |= serial_instruction.data[3];    
+
+    return value;
+}
+
+void avrLoadProgramPage(uint8_t addr, uint16_t value){
+
+    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+
+    /* load low byte */
+    memcpy(serial_instruction.data, LOAD_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
+    serial_instruction.data[2] = addr;
+    serial_instruction.data[3] = LOW_BYTE(value);
+    spiWriteBuffer(&serial_instruction);
+    
+    /* load high byte */
+    memcpy(serial_instruction.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
+    serial_instruction.data[2] = addr;
+    serial_instruction.data[3] = HIGH_BYTE(value);
+    spiWriteBuffer(&serial_instruction);
+}
+
+void avrWriteProgramPage(uint16_t addr){
+
+    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+
+    memcpy(serial_instruction.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
+    serial_instruction.data[1] = HIGH_BYTE(addr);
+    serial_instruction.data[2] = LOW_BYTE(addr);
+    spiWriteBuffer(&serial_instruction);
+
+    avrWaitReady();
+}
+
 
 //--------------------------------------
 //
@@ -259,14 +315,14 @@ void CmdAvr::help(void){
 }
 
 char CmdAvr::execute(void *ptr){
-uint32_t signature;
+int32_t signature;
 char *p1;
 
 	p1 = (char*)ptr;
 
     //_vcom = this->vcom;
 
-	 // check parameters
+	// check parameters
     if( p1 == NULL || *p1 == '\0'){
         help();
         return CMD_OK;
@@ -276,7 +332,7 @@ char *p1;
 	while(*p1 != '\0'){
 		if( !xstrcmp(p1,"-s")){
 			p1 = nextParameter(p1);
-            avrSignature((uint8_t*)&signature);
+            avrDeviceCode((uint8_t*)&signature);
             if(signature == AVR_RESPONSE_FAIL){
                 vcom->printf("fail to enable programming\n");
             }else{
@@ -289,7 +345,7 @@ char *p1;
             //slave = nextHex(&p1);
 		}else if( !xstrcmp(p1,"-e")){
 			p1 = nextParameter(p1);
-            avrErase();
+            avrChipErase();
             //op = I2C_READ;
 		}else if( !xstrcmp(p1,"-f")){
 			p1 = nextParameter(p1);
@@ -301,7 +357,12 @@ char *p1;
         }else{
 			p1 = nextParameter(p1);
 		}
-	}   
+	}  
+
+   /* if( avrProgrammingEnable(YES) == AVR_RESPONSE_FAIL) {
+        return AVR_RESPONSE_FAIL;
+    }*/
+ 
 
     return CMD_OK;
 }
@@ -311,11 +372,6 @@ char *p1;
 char CmdAvr::avrFuses(void *ptr){
 uint8_t lh;
 int fuses;
-
-    if( avrProgrammingEnable(YES) ) {        
-        AVR_DISABLE_RESET;
-        return CMD_OK;
-    }
 
     lh = nextChar((char**)&ptr); 
 
@@ -331,17 +387,10 @@ int fuses;
 
     if(lh == 0 || lh == 1){
         avrWriteFuses(lh,fuses);
-        while(avrPollRdy());
-        AVR_DISABLE_RESET;
-    }  
-
-    if( avrProgrammingEnable(YES) ) {        
-        AVR_DISABLE_RESET;
-        return CMD_OK;
     }  
 
     fuses = avrReadFuses();
     vcom->printf("Fuses: H=%X L=%X\n", (fuses >> 8) & 255, fuses & 255 );
-    AVR_DISABLE_RESET;
+
     return CMD_OK;
 }
