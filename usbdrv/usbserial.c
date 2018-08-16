@@ -90,8 +90,8 @@ void VCOM_gets_echo(char *str); // gets string terminated in '\r' or '\n' and ec
 #define	GET_LINE_CODING			0x21
 #define	SET_CONTROL_LINE_STATE	0x22
 
-#define VID                     0x04D8 //0xFFFF
-#define PID                     0xFB00 //0x0005
+#define VID                     0xB00B
+#define PID                     0x0001
 
 static TLineCoding LineCoding = {115200, 0, 0, 8};
 static U8 abBulkBuf[64];
@@ -219,13 +219,13 @@ static const U8 abDescriptors[] = {
 	LE_WORD(0x0409),
 
 	// String Descriptors
-	0x14,
-	DESC_STRING,
-	'P',0,'i',0,'r',0,'a',0,'t',0,'e',0,'b',0,'u',0,'s',0,
-	
-	0x1E,
-	DESC_STRING,
-	'L',0,'o',0,'g',0,'i',0,'c',0,' ',0,'A',0,'n',0,'a',0,'l',0,'y',0,'s',0,'e',0,'r',0,
+    0x08,
+    DESC_STRING,
+    'M',0,'e',0,'h',0,
+    
+    0x12,
+    DESC_STRING,
+    'L',0,'P',0,'C',0,' ',0,'V',0,'C',0,'O',0,'M',0,
 	
 	0x12,
 	DESC_STRING,
