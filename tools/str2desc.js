@@ -18,6 +18,7 @@ function strDescToByte(descriptor){
     console.log(`${toHex(size)},`)
     console.log(descriptor.TYPE + ',')
     str.forEach(c => process.stdout.write(`'${c}',0,`))
+	console.log("\n");
 }
 
 str_desc.TYPE = 'DESC_STRING'

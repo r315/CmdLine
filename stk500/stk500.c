@@ -234,7 +234,7 @@ static void read_flash_page
   unsigned int count;
   uint16_t value;
 
-  page_addr /= 2;
+  //page_addr /= 2;  // BUG ?????
 
   for (count = size / 2; count; --count, ++page_addr, buf += 2)
     {
