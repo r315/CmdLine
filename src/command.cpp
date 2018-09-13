@@ -2,6 +2,14 @@
 #include "command.h"
 #include "strfunctions.h"
 
+
+ // Called only once by default command object
+Command::Command(Vcom *vc){
+		memset(cmdList, 0 , COMMAND_MAX_CMD * sizeof(Command*));
+		this->name = "help";
+		this->vcom = vc;
+}
+
 void Command::help(void){
     
      vcom->puts("Available commands:\n\n");
@@ -20,6 +28,7 @@ void Command::add(Command *cmd){
             return;
         }
     }
+    vcom->printf("Command list full!");
 }
 
 char Command::parse(char *line){
@@ -28,8 +37,11 @@ Command **cmd = cmdList;
 
     cmdname = strtok_s(line, ' ', COMMAND_MAX_LINE, &param);
 
-    while (*cmd != NULL){
-        if((*cmd)->checkCommand(cmdname) != 0){
+    for (uint8_t i = 0; i < COMMAND_MAX_CMD; i++){
+        if(*cmd == NULL){
+            break;
+        }
+        if((*cmd)->isNameEqual(cmdname) != 0){
             res = (*cmd)->execute((void*)param);
             break;
         }

@@ -13,7 +13,7 @@ extern "C" {
 #include "strfunctions.h"
 
 
-#define COMMAND_MAX_CMD  10
+#define COMMAND_MAX_CMD  50
 #define COMMAND_MAX_LINE 64
 
 enum{
@@ -36,7 +36,7 @@ public:
 
 	void toString(void) { vcom->puts(this->name); }
 
-	char checkCommand(char *cmd){ return xstrcmp(cmd, (char*)this->name) == 0; }
+	char isNameEqual(char *cmd){ return xstrcmp(cmd, (char*)this->name) == 0; }
 
 	virtual char execute(void *ptr);
 	virtual void help(void);
@@ -49,11 +49,7 @@ public:
         this->name = nm;
     }
 
-	Command(Vcom *vc){
-		memset(cmdList, 0 ,sizeof(cmdList));
-		this->name = "help";
-		this->vcom = vc;
-	}
+    Command(Vcom *vc);   
 };
 
 
