@@ -10,6 +10,8 @@
 #include "cmdi2c.h"
 #include "cmdspi.h"
 #include "cmdavr.h"
+#include "cmdtest.h"
+#include "cmdawg.h"
 
 //void abort(void){}
 void stk500_ServiceInit(Vcom *vc);
@@ -31,6 +33,8 @@ int main()
 	CmdI2c i2c(&vcom1);
     CmdSpi spi(&vcom1);
     CmdAvr avr(&vcom1);
+    CmdTest test(&vcom1);
+    CmdAwg awg(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
@@ -41,6 +45,8 @@ int main()
 	cmd.add(&i2c);
     cmd.add(&spi);
     cmd.add(&avr);
+    cmd.add(&test);
+    cmd.add(&awg);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
@@ -51,10 +57,11 @@ int main()
 
     vcom1.init();
 
-    stk500_ServiceInit(&vcom1);
-    while(1)
+  //  stk500_ServiceInit(&vcom1);
+   /* while(1){
         stk500_Service();
-
+    }
+*/
 	while(1)
 	{
 		memset(line,0 , COMMAND_MAX_LINE);
