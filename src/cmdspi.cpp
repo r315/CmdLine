@@ -2,10 +2,15 @@
 #include <spi.h>
 #include "cmdspi.h"
 
+Spi_Type spi;
+
 char spistatus = 0;
 
 void spiInit(void){
-	SSP_Init(SPI_IF, 1000, 8);
+    spi.bus = 1;
+    spi.freq = 500000;
+    spi.cfg  = SPI_MODE0 | SPI_8BIT;
+    SPI_Init(&spi);
 	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;
 	spistatus |= SPI_INIT;
 }
@@ -43,7 +48,7 @@ void spiWrite(uint8_t *data, uint32_t len){
 	if((spistatus & SPI_INIT) == 0){
 		spiInit();
 	}	
-	SSP_Transfer(SPI_IF, data, len);
+    SPI_Transfer(&spi, data, len);
 }
 #endif
 
