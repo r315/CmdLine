@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-#include <common.h>
 #include "command.h"
 
 class CmdI2c : public Command{

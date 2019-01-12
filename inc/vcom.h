@@ -88,7 +88,9 @@ public:
  */
 
 	void init(void);
+    char kbhit(void);
 	int getchar(void);
+    char getCharNonBlocking(char *c);
 	void puts(const char* str); //writes a null terminated string. 
 	void putc(char c); // writes a character.
 	void putHex(uint8_t hex); // writes 0x.. hex value on the terminal.
@@ -96,6 +98,7 @@ public:
 	void gets(char* str); // returns a string. '\r' or '\n' will terminate character collection.
 	char getc_echo(); // returns character entered and echoes the same back.
 	char getLine(char *line, uint8_t max);
+    char getLineNonBlocking(char *line, uint8_t *curLen, uint8_t max);
 	void printf(const char* str, ...); // Original code by Elm_CHaN. Modified by Martin Thomas
 	void bufferHex(uint8_t *buf, uint8_t len);
 	void bufferAscii(uint8_t *buf, uint8_t len);

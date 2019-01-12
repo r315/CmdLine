@@ -11,7 +11,7 @@
 #include "spi_avr.h"
 #include "stk500.h"
 #include "stk500_proto.h"
-
+#include <string.h>
 
 
 /* persistent state */
@@ -40,13 +40,13 @@ static void init_state(struct state* st)
 
 
 /* helpers */
-
+#if 0
 static void memcpy(unsigned char* to, unsigned char* from, unsigned int size)
 {
   for (; size; --size, ++to, ++from)
     *to = *from;
 }
-
+#endif
 
 /* param accessors */
 
@@ -137,9 +137,7 @@ static int get_param(unsigned char k, unsigned char* v)
 
 static int set_param(unsigned char k, unsigned char v)
 {
-  k; v;
-
-  return 0;
+   return 0;
 }
 
 
@@ -149,15 +147,12 @@ static void set_dev_settings(unsigned char* buf)
 {
   /* buf points on the first setting */
 
-  buf;
-
   STATE_SET_FLAG(&state, HAS_DEV_SETTINGS);
 }
 
 
 static void set_ext_settings(unsigned char* buf, unsigned int n)
 {
-  buf; n;
 
   STATE_SET_FLAG(&state, HAS_DEV_SETTINGS);
 }
@@ -811,8 +806,5 @@ void stk500_timeout
  unsigned int* osize
 )
 {
-  buf ;
-  isize ;
-
   *osize = 0;
 }

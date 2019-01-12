@@ -36,11 +36,10 @@
 #define DEBUG_MESSAGES 1
 
 #define DEBUG_OUT_DISPLAY 1
-
 #if DEBUG_MESSAGES
    #if DEBUG_OUT_DISPLAY
-      #include <display.h>
-      #define DBG	DISPLAY_printf
+      #include "board.h"
+      #define DBG DISPLAY_printf
    #else
       #define DBG printf
    #endif

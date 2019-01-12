@@ -6,8 +6,8 @@
  * usage: avrdude -c stk500v1 -P /dev/ttyACM0 -p t13
  * */
 
-#include <libemb.h>
 #include <stdio.h>
+#include "board.h"
 #include "vcom.h"
 #include "stk500.h"
 #include "types.h"

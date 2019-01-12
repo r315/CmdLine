@@ -1,5 +1,5 @@
 
-#include <common.h>
+#include "board.h"
 #include "command.h"
 #include "cmdawg.h"
 #include "strfunctions.h"
@@ -16,7 +16,7 @@ void CmdAwg::help(void){
 }
 
 char CmdAwg::execute(void *ptr){
-uint16_t buf [256];
+//uint16_t buf [256];
 
     DAC_Init();
 

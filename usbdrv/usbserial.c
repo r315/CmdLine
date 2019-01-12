@@ -73,10 +73,16 @@ void VCOM_gets_echo(char *str); // gets string terminated in '\r' or '\n' and ec
 #define BAUD_RATE	    115200
 
 #define INT_IN_EP01		0x81		// Control
-#define BULK_IN_EP02	0x82		// Interrupt
-#define BULK_OUT_EP02	0x02		// Interrupt
+
+#define BULK_IN_EP02	0x82		// Bulk
+#define BULK_OUT_EP02	0x02		// Bulk
+
+#define BULK_IN_EP05	0x85		// Bulk
 #define BULK_OUT_EP05	0x05		// Bulk
 
+#define BULK_IN_EP08	0x88		// Bulk
+
+#define BULK_OUT_EP11	0x0B		// Bulk
 
 #define MAX_PACKET_SIZE	64
 
@@ -102,8 +108,8 @@ static U8	abStdReqData[8];
 
 static fifo_t *txfifo, *rxfifo;
 
-#if 1
 static const U8 abDescriptors[] = {
+#if 1
 /***************************************************
  * Device descriptor (Bus pirate V4)
  ************************************************** */
@@ -234,15 +240,13 @@ static const U8 abDescriptors[] = {
 	0
 };
 #elif 1
-static const U8 abDescriptors[] = {
-
 /***************************************************
  * Device descriptor
  ************************************************** */
 	0x12,                       // bLength
 	DESC_DEVICE,                // bDescriptorType
 	LE_WORD(0x0101),			// bcdUSB
-	0x02,						// bDeviceClass
+	0x00,						// bDeviceClass
 	0x00,						// bDeviceSubClass
 	0x00,						// bDeviceProtocol
 	MAX_PACKET_SIZE0,			// bMaxPacketSize
@@ -259,12 +263,12 @@ static const U8 abDescriptors[] = {
  **************************************************** */
 	0x09,
 	DESC_CONFIGURATION,
-	LE_WORD(9 + 58 + 23),			// wTotalLength
-	0x02,						// bNumInterfaces
+	LE_WORD(9 + 35 + 23 + 23),	// wTotalLength
+	0x03,						// bNumInterfaces
 	0x01,						// bConfigurationValue
 	0x00,						// iConfiguration
 	0xC0,						// bmAttributes
-	0x32,						// bMaxPower
+	0x2D,						// bMaxPower
 
 /****************************************************
  * Interface descriptor for CDC
@@ -303,12 +307,13 @@ static const U8 abDescriptors[] = {
 	CS_INTERFACE,
 	0x06,
 	0x00,						// bMasterInterface
-	0x01,						// bSlaveInterface0
+	//0x01,						// bSlaveInterface0
+    0x02,						// bSlaveInterface1
 
 // EndPoint Descriptor for Interrupt endpoint
 	0x07,
 	DESC_ENDPOINT,
-	INT_IN_EP,					// bEndpointAddress
+	INT_IN_EP01,    			// bEndpointAddress
 	0x03,						// bmAttributes = intr
 	LE_WORD(8),					// wMaxPacketSize
 	0x0A,						// bInterval
@@ -329,17 +334,17 @@ static const U8 abDescriptors[] = {
 // EndPoint Descriptor for Output endpoint
 	0x07,
 	DESC_ENDPOINT,
-	BULK_OUT_EP,				// bEndpointAddress
+	BULK_OUT_EP05,				// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
-	0x00,						// bInterval
+	0x40,						// bInterval
 // EndPoint Descriptor for Input endpoint
 	0x07,
 	DESC_ENDPOINT,
-	BULK_IN_EP,					// bEndpointAddress
+	BULK_IN_EP02,				// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
-	0x00,						// bInterval
+	0x40,						// bInterval
 
 /*************************************************** 
 * Data class interface descriptor
@@ -360,14 +365,14 @@ static const U8 abDescriptors[] = {
 	BULK_OUT_EP11,				// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
-	0x00,						// bInterval
+	0x40,						// bInterval
 // EndPoint Descriptor for Input endpoint
 	0x07,
 	DESC_ENDPOINT,
-	BULK_IN_EP8,					// bEndpointAddress
+	BULK_IN_EP08,				// bEndpointAddress
 	0x02,						// bmAttributes = bulk
 	LE_WORD(MAX_PACKET_SIZE),	// wMaxPacketSize
-	0x00,						// bInterval
+	0x40,						// bInterval
 
 /****************************************************
  * String descriptors
@@ -441,8 +446,6 @@ static const U8 abDescriptors[] = {
 };
 
 #else
-static const U8 abDescriptors[] = {
-
 /***************************************************
  * Device descriptor
  ************************************************** */
@@ -697,8 +700,9 @@ static void USBSERIAL_BulkIn(U8 bEP, U8 bEPStatus)
 	@param [in] bEPStatus
  */
 static void USBSERIAL_BulkOut_2(U8 bEP, U8 bEPStatus){
-	int iLen;
-	iLen = USBHwEPRead(bEP, abBulkBuf, sizeof(abBulkBuf));
+	//int iLen;
+	//iLen = USBHwEPRead(bEP, abBulkBuf, sizeof(abBulkBuf));
+    USBSERIAL_BulkOut(bEP, bEPStatus);
 }
 
 
@@ -709,7 +713,7 @@ static void USBSERIAL_BulkOut_2(U8 bEP, U8 bEPStatus){
 	@param [in] bEPStatus
  */
 static void USBSERIAL_BulkIn_2(U8 bEP, U8 bEPStatus){
-
+    USBSERIAL_BulkIn(bEP, bEPStatus);
 }
 #endif
 
@@ -812,8 +816,7 @@ void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
 	USBHwRegisterEPIntHandler(INT_IN_EP01, NULL);
 	USBHwRegisterEPIntHandler(BULK_IN_EP02, USBSERIAL_BulkIn);
 	USBHwRegisterEPIntHandler(BULK_OUT_EP05, USBSERIAL_BulkOut);
-	//USBHwRegisterEPIntHandler(BULK_OUT_EP02, USBSERIAL_BulkOut);
-	//USBHwRegisterEPIntHandler(BULK_IN_EP8, USBSERIAL_BulkIn_2);
+	//USBHwRegisterEPIntHandler(BULK_IN_EP08, USBSERIAL_BulkIn_2);
 	//USBHwRegisterEPIntHandler(BULK_OUT_EP11, USBSERIAL_BulkOut_2);
 	
 	// register frame handler

@@ -19,7 +19,7 @@ TARGET = LPCbus
 PRJPATH =src usbdrv stk500
 INCSPATH =inc usbdrv
 CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunctions.c #command.c #cmdbase.c
-CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c spi_lpc1768.c dac_lpc17xx.c dma_lpc17xx.c
+CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c spi_lpc17xx.c dac_lpc17xx.c dma_lpc17xx.c button.c
 CSRCS +=stk500.c
 CPPSRCS =LPCbus.cpp vcom.cpp command.cpp cmdmem.cpp cmdpwm.cpp cmdgpio.cpp cmdi2c.cpp cmdspi.cpp cmdavr.cpp stk500_service.cpp cmdawg.cpp #cmdbase.cpp
 
@@ -32,7 +32,7 @@ INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc
 LIBSPATH +=
 OBJPATH =obj
 
-GCSYMBOLS =-D__NEWLIB__ -D__BB__
+GCSYMBOLS =-D__NEWLIB__
 GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables #-ffunction-sections
 GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
 LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles 
@@ -52,6 +52,7 @@ $(LIBEMB_PATH)/drv/pwm \
 $(LIBEMB_PATH)/drv/i2c \
 $(LIBEMB_PATH)/drv/dac \
 $(LIBEMB_PATH)/drv/dma \
+$(LIBEMB_PATH)/button \
 
 ifeq ($(LIBEMB_PATH), )
 erro:

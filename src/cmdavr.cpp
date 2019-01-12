@@ -1,4 +1,4 @@
-
+#include "board.h"
 #include "cmdavr.h"
 #include "cmdspi.h"
 #include "debug.h"

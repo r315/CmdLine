@@ -14,7 +14,9 @@ extern "C" {
 
 
 #define COMMAND_MAX_CMD  50
-#define COMMAND_MAX_LINE 64
+#define COMMAND_MAX_LEN 64
+#define ON   1
+#define OFF  0
 
 enum{
 	CMD_OK,

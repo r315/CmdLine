@@ -15,7 +15,6 @@ typedef struct _SpiBuffer{
 extern "C" {
 #endif
 
-#include <common.h>     // all drivers headers should be placed here 
 #include "command.h"
 
 class CmdSpi : public Command{

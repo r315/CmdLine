@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include <common.h>
+
 #include "command.h"
 
 

@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-#include <common.h>     // all drivers headers should be placed here 
 #include "command.h"
 
 void LCD_Command(uint8_t ins) ;

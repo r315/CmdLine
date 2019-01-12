@@ -34,6 +34,9 @@ int Vcom::putchar(int c)
 	return fifo_put(&txfifo, c) ? c : EOF;
 }
 
+char Vcom::kbhit(void){
+    return fifo_avail(&rxfifo);
+}
 /**
 	Reads one character from VCOM port
 	
@@ -43,6 +46,10 @@ int Vcom::getchar(void)
 {
 	uint8_t c;	
 	return fifo_get(&rxfifo, &c) ? c : EOF;
+}
+
+char Vcom::getCharNonBlocking(char *c){
+	return fifo_get(&rxfifo, (uint8_t*)c);
 }
 
 char Vcom::getc()
@@ -134,6 +141,39 @@ char s = 0;
 	*line = '\0';
 	return s;
 }
+
+char Vcom::getLineNonBlocking(char *line, uint8_t *curLen, uint8_t max){
+char c;
+uint8_t len = 0;
+
+	if(getCharNonBlocking(&c)){
+		len = *curLen;
+		if(c == '\b'){
+			if(len > 0){
+				putchar(c);
+				putchar(' ');
+				putchar(c);
+				len--;				
+			}
+		}else{
+			if(len < max){
+				putchar(c);
+			   *(line + len) = c;
+			   len++;
+			}			
+		}
+		
+		*curLen = len;
+		
+		if((c == '\n') || (c == '\r')){
+			*(line+len) = '\0';			
+		}else{
+			len = 0;
+		}		
+	}
+	return len;
+}
+
 
 void Vcom::printf (const char* str, ...)
 {
