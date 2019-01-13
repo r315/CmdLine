@@ -28,6 +28,7 @@ extern "C" {
 #define LOW_BYTE(W) (uint8_t)(((W) >> 0) & 0xff)
 #define HIGH_BYTE(W) (uint8_t)(((W) >> 8) & 0xff)
 
+#define DEFAULT_AVR_SPI_FREQ        100000UL
 
 class CmdAvr : public Command{
 

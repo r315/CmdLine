@@ -8,11 +8,19 @@ char spistatus = 0;
 
 void spiInit(void){
     spi.bus = 1;
-    spi.freq = 50000;
+    spi.freq = 500000;
     spi.cfg  = SPI_MODE0 | SPI_8BIT;
     SPI_Init(&spi);
 	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;
 	spistatus |= SPI_INIT;
+}
+
+void spiSetFrequency(uint32_t freq){
+    if((spistatus & SPI_INIT) == 0){
+		spiInit();
+	}    
+    spi.freq = 100000;    
+    SPI_Init(&spi);
 }
 
 #ifdef SPI_BITBANG

@@ -163,7 +163,7 @@ char avrProgrammingEnable(uint8_t trydW){
 
     serial_instruction.len = AVR_INSTRUCTION_SIZE;
 
-    memcpy(serial_instruction.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
+    spiSetFrequency(DEFAULT_AVR_SPI_FREQ);
     
     AVR_RSTY;
 
