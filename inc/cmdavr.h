@@ -17,6 +17,13 @@ extern "C" {
 
 #define AVR_RST0 AVR_RST_PIN_PORT->FIOCLR = AVR_RST_PIN
 #define AVR_RST1 AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN
+#define AVR_RSTZ AVR_RST_PIN_PORT->FIODIR &= ~AVR_RST_PIN       // Set RST Pin input
+#define AVR_RSTY AVR_RST_PIN_PORT->FIODIR |= AVR_RST_PIN        // Set RST Pin output 
+
+#define AVR_DISABLE_RESET               \
+            DelayMs(100);               \
+            AVR_RST1;
+
 
 #define LOW_BYTE(W) (uint8_t)(((W) >> 0) & 0xff)
 #define HIGH_BYTE(W) (uint8_t)(((W) >> 8) & 0xff)

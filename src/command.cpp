@@ -35,7 +35,7 @@ char Command::parse(char *line){
 char res = CMD_NOT_FOUND, *cmdname, *param;  
 Command **cmd = cmdList;
 
-    cmdname = strtok_s(line, ' ', COMMAND_MAX_LINE, &param);
+    cmdname = strtok_s(line, ' ', COMMAND_MAX_LEN, &param);
 
     for (uint8_t i = 0; i < COMMAND_MAX_CMD; i++){
         if(*cmd == NULL){

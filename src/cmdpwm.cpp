@@ -24,7 +24,7 @@ char CmdPwm::execute(void *ptr){
     uint16_t arg;
     
     // Check is has parameters
-    p1 = strtok_s((char*)ptr, ' ', COMMAND_MAX_LINE - 10, &p2);
+    p1 = strtok_s((char*)ptr, ' ', COMMAND_MAX_LEN - 10, &p2);
 
     // if not show help
     if( p1 == NULL){

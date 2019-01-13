@@ -28,13 +28,6 @@
 
 #define AVR_PROGRAMMING_ACTIVE  (1<<0)
 
-#define AVR_DISABLE_RESET               \
-            DelayMs(100);               \
-            AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN;
-
-
-#define AVR_RSTZ AVR_RST_PIN_PORT->FIODIR &= ~AVR_RST_PIN  
-#define AVR_RSTY AVR_RST_PIN_PORT->FIODIR |= AVR_RST_PIN  
 
 enum{
     AVR_RESPONSE_OK = 0,
