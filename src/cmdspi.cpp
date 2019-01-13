@@ -8,7 +8,7 @@ char spistatus = 0;
 
 void spiInit(void){
     spi.bus = 1;
-    spi.freq = 500000;
+    spi.freq = 50000;
     spi.cfg  = SPI_MODE0 | SPI_8BIT;
     SPI_Init(&spi);
 	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;

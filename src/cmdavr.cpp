@@ -27,7 +27,7 @@
 #define AVR_ENABLE_RETRIES  2
 
 #define AVR_PROGRAMMING_ACTIVE  (1<<0)
-
+ 
 
 enum{
     AVR_RESPONSE_OK = 0,
@@ -117,11 +117,14 @@ void avrSend_dW(uint8_t data){
 // TODO: Dpcument debug wire
 char avrDisable_dW(void){
 uint32_t autobaud;
-    AVR_RST0;
+
+    AVR_RST1; DelayMs(5);
+    AVR_RST0; DelayMs(5);    
     TIMER_CAP_Init(LPC_TIM3, 0, CAP_FE, autoBaudCb);
     tbit = 0;
-    AVR_RSTZ;
+    AVR_RSTZ; DelayMs(50);
     AVR_RST1;
+    AVR_RSTY;    
     while(!tbit);
 #if 0
     count = AVR_DW_SYNC_TIMEOUT;
@@ -189,7 +192,7 @@ char avrProgrammingEnable(uint8_t trydW){
 
 void avrDeviceCode(uint8_t *buf){
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE; 
+    serial_instruction.len = AVR_INSTRUCTION_SIZE;
 
     memcpy(serial_instruction.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
     spiWriteBuffer(&serial_instruction);
@@ -311,7 +314,7 @@ void CmdAvr::help(void){
     vcom->printf("\t -s, Device signature\n");
     vcom->printf("\t -e, Erase device\n");
     vcom->printf("\t -f, Read fuses\n");
-    vcom->printf("\t -p, programming mode\n");
+    vcom->printf("\t -p, <dw> programming mode, try debug wire \n");
     vcom->puts("  Avr Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
@@ -347,7 +350,9 @@ char *p1;
 		    //busnum = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-p")){
 			p1 = nextParameter(p1);
-            avrProgrammingEnable(YES);
+            uint8_t dw = nextInt(&p1);
+            if(dw) vcom->printf("Using debug wire, pulse P0.23 to GNG to stop autobaud\n");
+            avrProgrammingEnable(dw);
             //slave = nextHex(&p1);
 		}else if( !xstrcmp(p1,"-e")){
 			p1 = nextParameter(p1);
@@ -356,10 +361,7 @@ char *p1;
 		}else if( !xstrcmp(p1,"-f")){
 			p1 = nextParameter(p1);
             avrFuses(p1);
-            //op = I2C_WRITE;
-        }else if( !xstrcmp(p1,"-s")){
-			p1 = nextParameter(p1);
-            //op = I2C_SCAN;
+            //op = I2C_WRITE;       
         }else{
 			p1 = nextParameter(p1);
 		}
