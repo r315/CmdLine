@@ -68,14 +68,19 @@ void Vcom::putc(char c)
 	while(putchar(c) == EOF);
 }
 
-void Vcom::puts(const char* str)
-{
-	while(*str != '\0')
+void Vcom::sputs(const char* str){
+    while(*str != '\0')
 	{
 		putchar(*str++);
 	}
+}
+
+void Vcom::puts(const char* str)
+{
+	sputs(str);
     putchar('\n');
 }
+
 
 void Vcom::putHex(uint8_t hex)
 {
@@ -217,18 +222,18 @@ void Vcom::printf (const char* str, ...)
 		if(d == 'f'){
 			if(!f)
 				w = 6;						// dafault 6 decimal places
-			puts(pftoa(va_arg(arp, double), w));			
+			sputs(pftoa(va_arg(arp, double), w));			
 			continue;
 		}	
 		if (!r) break;
 		if (s) w = -w;
 		if (l) {
-			puts(pitoa((long)va_arg(arp, long), r, w));
+			sputs(pitoa((long)va_arg(arp, long), r, w));
 		} else {
 			if (r > 0)
-				puts(pitoa((unsigned long)va_arg(arp, int), r, w));
+				sputs(pitoa((unsigned long)va_arg(arp, int), r, w));
 			else
-				puts(pitoa((long)va_arg(arp, int), r, w));
+				sputs(pitoa((long)va_arg(arp, int), r, w));
 		}
 	}
 

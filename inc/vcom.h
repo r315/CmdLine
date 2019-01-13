@@ -79,6 +79,8 @@ extern "C" {
 class Vcom{
 	fifo_t txfifo;
     fifo_t rxfifo;
+
+    void sputs(const char* str);
 public:   
 
    /**
@@ -91,7 +93,7 @@ public:
     char kbhit(void);
 	int getchar(void);
     char getCharNonBlocking(char *c);
-	void puts(const char* str); //writes a null terminated string. 
+	void puts(const char* str); //writes a null terminated string, adds new line ate the end. 
 	void putc(char c); // writes a character.
 	void putHex(uint8_t hex); // writes 0x.. hex value on the terminal.
 	char getc(); // returns character entered in the terminal. blocking function
