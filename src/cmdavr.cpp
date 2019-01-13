@@ -77,6 +77,17 @@ void bitTime(void *ptr){
     tbit = 1;
 }
 
+/**
+ *                               
+ * RESET     _______           _________   _   _   _   _   _______________
+ *                  |         |         | | | | | | | | | |
+ *                  |_________|         |_| |_| |_| |_| |_|
+ * 
+ *                  |<-150us->|         [      0x55       ]
+ * 
+ * 
+ * */
+
 void avrSend_dW(uint8_t data){
 
     TIMER_Match_Init(LPC_TIM3, 0, (tbit >> 1) , bitTime);
@@ -103,7 +114,7 @@ void avrSend_dW(uint8_t data){
     AVR_RST1;
 }
 
-
+// TODO: Dpcument debug wire
 char avrDisable_dW(void){
 uint32_t autobaud;
     AVR_RST0;
@@ -163,10 +174,12 @@ char avrProgrammingEnable(uint8_t trydW){
             return AVR_RESPONSE_OK;
         }
 
+        // TODO: If fail, try using lower SCK
         if(i == AVR_ENABLE_RETRIES) 
             break;
         
         memcpy(serial_instruction.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
+
         if(trydW) 
             avrDisable_dW();       
     }

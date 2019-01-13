@@ -38,7 +38,9 @@ static Service stkService;
 //------------------------------------------------------------
 //
 //------------------------------------------------------------
-void spi_setup(void){}
+void spi_setup(void){
+    // spiInit is called if spi is not initialized
+}
 
 int spi_start(void){ 
     return  avrProgrammingEnable(NO);
