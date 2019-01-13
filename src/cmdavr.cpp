@@ -34,50 +34,36 @@ enum{
     AVR_RESPONSE_FAIL = -1
 };
 
-
-Vcom *_vcom;
+typedef struct _AvrDevice{
+    uint8_t data[AVR_INSTRUCTION_SIZE];
+    uint8_t status;
+}AvrDevice;
 
 volatile uint32_t tbit;
-
+/*
 uint8_t instruction[AVR_INSTRUCTION_SIZE];
+
 SpiBuffer serial_instruction = {
     .len = AVR_INSTRUCTION_SIZE,
     .data = instruction,
 };
+*/
 
+static AvrDevice Device;
 
 static inline void avrWaitReady(void){
 uint32_t timeout = 0x100000;
     while(timeout--){
-        serial_instruction.len = AVR_INSTRUCTION_SIZE; 
-        memcpy(serial_instruction.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
-        spiWriteBuffer(&serial_instruction);
-        if( !(serial_instruction.data[3] & 0x01)){
+        
+        memcpy(Device.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
+        spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+        if( !(Device.data[3] & 0x01)){
             return;
         }                
     }
 }
-
-// Called when a falling edge is detected on P0.23 
-void autoBaudCb(void *ptr){
-    static uint32_t count = 0;
-	if(count == 0){
-		count = *((uint32_t*)ptr);
-	}else{
-		count = *((uint32_t*)ptr) - count - 1;
-		
-		TIM_Stop(LPC_TIM3);
-        tbit = count - 2;
-		count = 0;
-	}
-}
-
-// Called each time the timer expires
-void bitTime(void *ptr){
-    tbit = 1;
-}
-
-/**
+/****************************************************************************
+ * Debug wire is a serial protocol used on AVR chips for debuging
  *                               
  * RESET     _______           _________   _   _   _   _   _______________
  *                  |         |         | | | | | | | | | |
@@ -85,8 +71,34 @@ void bitTime(void *ptr){
  * 
  *                  |<-150us->|         [      0x55       ]
  * 
+ * Note: debugWire only available if fuse bit DWEN is programmed
+ * 
+ * If the DWEN bit is programmed the protocol is enabled and 
+ * starts upon a reset by sending a sync byte 0x55. This byte is used
+ * to determin the baudrate by measuring each pulse length. 
+ * The autobaud configures timer3 to capture the duration of the 
+ * first low pulse and then try to communicate using that time.
  * 
  * */
+
+// Called when a falling edge is detected on P0.23 
+void autoBaudCb(void *capValue){
+    static uint32_t count = 0;
+	if(count == 0){
+		count = *((uint32_t*)capValue);
+	}else{
+		count = *((uint32_t*)capValue) - count - 1;
+		
+		TIM_Stop(LPC_TIM3);
+        tbit = count - 2;
+		count = 0;
+	}
+}
+
+// Called avery bit time
+void bitTime(void *ptr){
+    tbit = 1;
+}
 
 void avrSend_dW(uint8_t data){
 
@@ -114,12 +126,12 @@ void avrSend_dW(uint8_t data){
     AVR_RST1;
 }
 
-// TODO: Dpcument debug wire
+// TODO: this needs to be optimized and tested
 char avrDisable_dW(void){
 uint32_t autobaud;
 
     AVR_RST1; DelayMs(5);
-    AVR_RST0; DelayMs(5);    
+    AVR_RST0; DelayMs(5);
     TIMER_CAP_Init(LPC_TIM3, 0, CAP_FE, autoBaudCb);
     tbit = 0;
     AVR_RSTZ; DelayMs(50);
@@ -159,9 +171,19 @@ uint32_t autobaud;
     return 0;
 }
 
+/**
+ * Program mode is entered if the device echoes the second 
+ * sent byte. On this action the programming mode is enable and the reset line is left 
+ * on low state.
+ * */
 char avrProgrammingEnable(uint8_t trydW){
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+    if(Device.status & AVR_PROGRAMMING_ACTIVE)
+    {
+        return AVR_RESPONSE_OK; 
+    }
+
+    memcpy(Device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
 
     spiSetFrequency(DEFAULT_AVR_SPI_FREQ);
     
@@ -172,8 +194,9 @@ char avrProgrammingEnable(uint8_t trydW){
         DelayMs(2);
         AVR_RST0;
         DelayMs(20);
-        spiWriteBuffer(&serial_instruction);
-        if(serial_instruction.data[2] == 0x53){
+        spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+        if(Device.data[2] == 0x53){
+            Device.status |= AVR_PROGRAMMING_ACTIVE;
             return AVR_RESPONSE_OK;
         }
 
@@ -181,7 +204,7 @@ char avrProgrammingEnable(uint8_t trydW){
         if(i == AVR_ENABLE_RETRIES) 
             break;
         
-        memcpy(serial_instruction.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
+        memcpy(Device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
 
         if(trydW) 
             avrDisable_dW();       
@@ -192,34 +215,42 @@ char avrProgrammingEnable(uint8_t trydW){
 
 void avrDeviceCode(uint8_t *buf){
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return;
+    }
 
-    memcpy(serial_instruction.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
-    spiWriteBuffer(&serial_instruction);
-    buf[0] = serial_instruction.data[3] << 16;
+    memcpy(Device.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    buf[2] = Device.data[3];
 
-    memcpy(serial_instruction.data, DEVICE_CODE1_CMD, AVR_INSTRUCTION_SIZE);
-    spiWriteBuffer(&serial_instruction);
-    buf[1] = serial_instruction.data[3] << 8;
+    memcpy(Device.data, DEVICE_CODE1_CMD, AVR_INSTRUCTION_SIZE);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    buf[1] = Device.data[3];
 
-    memcpy(serial_instruction.data, DEVICE_CODE2_CMD, AVR_INSTRUCTION_SIZE);
-    spiWriteBuffer(&serial_instruction);
-    buf[2] = serial_instruction.data[3];
+    memcpy(Device.data, DEVICE_CODE2_CMD, AVR_INSTRUCTION_SIZE);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    buf[0] = Device.data[3];
+
+    buf[3] = 0;
 }
 
 
 void avrWriteFuses(uint8_t lh, uint8_t fuses){
 
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return;
+    }
+
     if (lh == 1){
-        memcpy(serial_instruction.data, WRITE_FUSE_H, AVR_INSTRUCTION_SIZE);
+        memcpy(Device.data, WRITE_FUSE_H, AVR_INSTRUCTION_SIZE);
     }else{
-        memcpy(serial_instruction.data, WRITE_FUSE_L, AVR_INSTRUCTION_SIZE);
+        memcpy(Device.data, WRITE_FUSE_L, AVR_INSTRUCTION_SIZE);
     }   
 
-    serial_instruction.data[3] = fuses;
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+    Device.data[3] = fuses;
+    
 
-    spiWriteBuffer(&serial_instruction);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -227,27 +258,30 @@ void avrWriteFuses(uint8_t lh, uint8_t fuses){
 uint32_t avrReadFuses(void){
 uint32_t fuses;
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;  
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return -1;
+    }
 
-    memcpy(serial_instruction.data, READ_FUSE_L, AVR_INSTRUCTION_SIZE);
-    spiWriteBuffer(&serial_instruction);
-    fuses = serial_instruction.data[3];
+    memcpy(Device.data, READ_FUSE_L, AVR_INSTRUCTION_SIZE);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    fuses = Device.data[3];
 
-    memcpy(serial_instruction.data, READ_FUSE_H, AVR_INSTRUCTION_SIZE);
-    spiWriteBuffer(&serial_instruction);
-    fuses |= serial_instruction.data[3] << 8;    
+    memcpy(Device.data, READ_FUSE_H, AVR_INSTRUCTION_SIZE);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    fuses |= Device.data[3] << 8;    
 
     return fuses;
 }
 
-
-
 void avrChipErase(void){
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
-    memcpy(serial_instruction.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return;
+    }
 
-    spiWriteBuffer(&serial_instruction);
+    memcpy(Device.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
+
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -255,52 +289,58 @@ void avrChipErase(void){
 uint16_t avrReadProgram(uint16_t addr){
 uint16_t value = 0;
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return value;
+    }
 
     /* read high byte */
-    memcpy(serial_instruction.data, READ_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
-    serial_instruction.data[1] = HIGH_BYTE(addr);
-    serial_instruction.data[2] = LOW_BYTE(addr);
-    spiWriteBuffer(&serial_instruction);
-    value = serial_instruction.data[3];
+    memcpy(Device.data, READ_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
+    Device.data[1] = HIGH_BYTE(addr);
+    Device.data[2] = LOW_BYTE(addr);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    value = Device.data[3];
 
     value <<= 8;
 
     /* read low byte */
-    memcpy(serial_instruction.data, READ_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
-    serial_instruction.data[1] = HIGH_BYTE(addr);
-    serial_instruction.data[2] = LOW_BYTE(addr);
-    spiWriteBuffer(&serial_instruction);
-    value |= serial_instruction.data[3];    
+    memcpy(Device.data, READ_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
+    Device.data[1] = HIGH_BYTE(addr);
+    Device.data[2] = LOW_BYTE(addr);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    value |= Device.data[3];    
 
     return value;
 }
 
 void avrLoadProgramPage(uint8_t addr, uint16_t value){
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return;
+    }
 
     /* load low byte */
-    memcpy(serial_instruction.data, LOAD_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
-    serial_instruction.data[2] = addr;
-    serial_instruction.data[3] = LOW_BYTE(value);
-    spiWriteBuffer(&serial_instruction);
+    memcpy(Device.data, LOAD_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
+    Device.data[2] = addr;
+    Device.data[3] = LOW_BYTE(value);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
     
     /* load high byte */
-    memcpy(serial_instruction.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
-    serial_instruction.data[2] = addr;
-    serial_instruction.data[3] = HIGH_BYTE(value);
-    spiWriteBuffer(&serial_instruction);
+    memcpy(Device.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
+    Device.data[2] = addr;
+    Device.data[3] = HIGH_BYTE(value);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
 }
 
-void avrWriteProgramPage(uint16_t addr){
+void avrWriteProgramPage(uint16_t addr){ 
 
-    serial_instruction.len = AVR_INSTRUCTION_SIZE;
+    if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        return;
+    }  
 
-    memcpy(serial_instruction.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
-    serial_instruction.data[1] = HIGH_BYTE(addr);
-    serial_instruction.data[2] = LOW_BYTE(addr);
-    spiWriteBuffer(&serial_instruction);
+    memcpy(Device.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
+    Device.data[1] = HIGH_BYTE(addr);
+    Device.data[2] = LOW_BYTE(addr);
+    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -329,13 +369,13 @@ char *p1;
 
 	p1 = (char*)ptr;
 
-    //_vcom = this->vcom;
-
 	// check parameters
     if( p1 == NULL || *p1 == '\0'){
         help();
         return CMD_OK;
     }
+
+    Device.status = 0;
 
 	// parse options
 	while(*p1 != '\0'){
@@ -365,12 +405,7 @@ char *p1;
         }else{
 			p1 = nextParameter(p1);
 		}
-	}  
-
-   /* if( avrProgrammingEnable(YES) == AVR_RESPONSE_FAIL) {
-        return AVR_RESPONSE_FAIL;
-    }*/
- 
+	}
 
     return CMD_OK;
 }
