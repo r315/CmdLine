@@ -30,8 +30,8 @@ typedef struct _option{
 
 
 option_type options[] = {
-	{"LPC Bus", 1},
-	{"stk500", 0},
+	{"LPC Bus",TRUE},
+	{"stk500", FALSE},
 };
 
 void printOptions(option_type *opt, uint8_t nopt){
@@ -96,7 +96,7 @@ static uint8_t lineLen;
 int main()
 {
     
-	uint8_t mode, i;
+	uint8_t mode;
 
 	Vcom vcom1;	
 
@@ -133,11 +133,14 @@ int main()
 
     vcom1.init();
 
+    stk500_ServiceInit(&vcom1);
+    /* while(1){
+        stk500_Service();
+    } */
+
 	LCD_Clear(BLACK);
 
     printOptions(options, sizeof(options) / sizeof(option_type));
-
-    stk500_ServiceInit(&vcom1);
 
 	while(1)
 	{	
