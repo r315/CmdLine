@@ -121,7 +121,7 @@ char c, radix = 10, s = 0;
 			if(c == ' ' || c == '\n'){
 				break;
 			}
-			return 0;
+			return s? -val : val;
 		}
 		c -= '0';
 		val = val * radix + c;
