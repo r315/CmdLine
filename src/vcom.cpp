@@ -208,7 +208,7 @@ void Vcom::printf (const char* str, ...)
 		}
 		if (!d) break;
 		if (d == 's') {
-			puts(va_arg(arp, char*));
+			sputs(va_arg(arp, char*));
 			continue;
 		}
 		if (d == 'c') {
