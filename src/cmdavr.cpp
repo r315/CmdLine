@@ -102,7 +102,7 @@ void bitTime(void *ptr){
 
 void avrSend_dW(uint8_t data){
 
-    TIMER_Match_Init(LPC_TIM3, 0, (tbit >> 1) , bitTime);
+    TIMER_Periodic(LPC_TIM3, 0, (tbit >> 1) , bitTime, NULL);
     AVR_RST0;
 
 	for(uint8_t i = 0; i < 8; i++){
@@ -160,7 +160,7 @@ uint32_t autobaud;
 #endif
     autobaud = tbit;
     //VCOM_printf("Tbit = %dus\n",tbit/2);
-    TIMER_Match_Init(LPC_TIM3, 0, tbit * 7, bitTime);
+    TIMER_Periodic(LPC_TIM3, 0, tbit * 7, bitTime, NULL);
     TIM_Restart(LPC_TIM3);
     tbit = 0;
     while(!tbit);
