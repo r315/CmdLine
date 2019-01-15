@@ -118,10 +118,7 @@ char c, radix = 10, s = 0;
 	while(*str){
 		c = *str;
 		if(c < '0' || c > '9'){
-			if(c == ' ' || c == '\n'){
-				break;
-			}
-			return s? -val : val;
+            break;
 		}
 		c -= '0';
 		val = val * radix + c;
