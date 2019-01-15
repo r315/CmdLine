@@ -11,6 +11,7 @@
 #include "cmdavr.h"
 #include "cmdtest.h"
 #include "cmdawg.h"
+#include "cmdsbus.h"
 
 
 enum {
@@ -111,6 +112,7 @@ int main()
     CmdAvr avr(&vcom1);
     CmdTest test(&vcom1);
     CmdAwg awg(&vcom1);
+    CmdSbus sbus(&vcom1);
 	
 	cmd.add(&cmd);
 	cmd.add(&echo);
@@ -123,9 +125,12 @@ int main()
     cmd.add(&avr);
     cmd.add(&test);
     cmd.add(&awg);
+    cmd.add(&sbus);
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
+
+    BOARD_Init();
 
     DISPLAY_Init(ON);
 	LCD_Rotation(LCD_LANDSCAPE);
@@ -134,10 +139,7 @@ int main()
     vcom1.init();
 
     stk500_ServiceInit(&vcom1);
-    /* while(1){
-        stk500_Service();
-    } */
-
+  
 	LCD_Clear(BLACK);
 
     printOptions(options, sizeof(options) / sizeof(option_type));
