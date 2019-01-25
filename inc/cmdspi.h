@@ -15,12 +15,13 @@ typedef struct _SpiBuffer{
 extern "C" {
 #endif
 
-#include "command.h"
+#include "console.h"
 
-class CmdSpi : public Command{
-
+class CmdSpi : public ConsoleCommand{
+    Console *console;
 public:
-    CmdSpi (Vcom *vc) : Command("spi", vc) { }
+    CmdSpi () : ConsoleCommand("spi") { }
+    void init(void *params){console = static_cast<Console*>(params);}
     char execute(void *ptr);
     void help(void);
 };

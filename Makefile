@@ -18,22 +18,24 @@ CHECKSUM =$(BSPPATH)/tools/checksum
 TARGET = LPCbus
 PRJPATH =src usbdrv stk500
 INCSPATH =inc usbdrv
-CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunctions.c #command.c #cmdbase.c
+CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunc.c vcom.c #command.c #cmdbase.c
 CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c spi_lpc17xx.c dac_lpc17xx.c dma_lpc17xx.c button.c
 CSRCS +=stk500.c
+
 CPPSRCS = \
 LPCbus.cpp \
-vcom.cpp \
-command.cpp \
-cmdmem.cpp \
-cmdpwm.cpp \
-cmdgpio.cpp \
-cmdi2c.cpp \
+console.cpp \
 cmdspi.cpp \
-cmdavr.cpp \
 stk500_service.cpp \
-cmdawg.cpp \
-cmdsbus.cpp
+cmdavr.cpp \
+#cmdmem.cpp \
+#cmdpwm.cpp \
+#cmdgpio.cpp \
+#cmdi2c.cpp \
+#cmdawg.cpp \
+#cmdsbus.cpp \
+
+#command.cpp \
 
 #########################################################
 #Startup files and libraries
@@ -47,12 +49,16 @@ OBJPATH =obj
 GCSYMBOLS =-D__NEWLIB__
 GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables #-ffunction-sections
 GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles 
+LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles -lstdc++ 
 
 CSRCS   +=startup_lpc1768.c #syscalls.c
 LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
 ##########################################################
-OBJECTS =$(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj)) $(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) $(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) 
+OBJECTS = \
+$(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj)) \
+$(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) \
+$(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) \
+
 VPATH = \
 $(PRJPATH) \
 $(BSPPATH)/lpc17xx/ \
@@ -65,6 +71,8 @@ $(LIBEMB_PATH)/drv/i2c \
 $(LIBEMB_PATH)/drv/dac \
 $(LIBEMB_PATH)/drv/dma \
 $(LIBEMB_PATH)/button \
+$(LIBEMB_PATH)/console \
+$(LIBEMB_PATH)/misc \
 
 ifeq ($(LIBEMB_PATH), )
 erro:

@@ -11,7 +11,7 @@ extern "C" {
 class CmdAwg : public Command{
 
 public:
-    CmdAwg (Vcom *vc) : Command("awg", vc) { }
+    CmdAwg () : Command("awg") { }
     char execute(void *ptr);
     void help(void);
 };

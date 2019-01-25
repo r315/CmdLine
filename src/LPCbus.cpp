@@ -1,17 +1,23 @@
 #include "board.h"
 
-#include "vcom.h"
+//#include "vcom.h"
+#include <console.h>
+#include "cmdhelp.h"
 #include "cmdecho.h"
-#include "cmdpwm.h"
+#include "cmdspi.h"
+#include "cmdavr.h"
+/*#include "cmdpwm.h"
 #include "cmdgpio.h"
 #include "cmdled.h"
 #include "cmdmem.h"
 #include "cmdi2c.h"
-#include "cmdspi.h"
-#include "cmdavr.h"
 #include "cmdtest.h"
 #include "cmdawg.h"
 #include "cmdsbus.h"
+*/
+
+extern ConsoleOut uart;
+extern ConsoleOut vcom;
 
 
 enum {
@@ -20,7 +26,7 @@ enum {
 };
 
 //void abort(void){}
-void stk500_ServiceInit(Vcom *vc);
+void stk500_ServiceInit(ConsoleOut *sp);
 void stk500_Service(void);
 void lpcBus_Service(void);
 
@@ -81,51 +87,10 @@ uint8_t curSelected = selectedOption(opt, nopt);;
     return curSelected;
 }
 
-void lpcBus_Service(Vcom *vcom, Command *cmd){
-static char line[COMMAND_MAX_LEN];
-static uint8_t lineLen;
-
-    if(vcom->getLineNonBlocking(line, &lineLen, COMMAND_MAX_LEN)){
-        vcom->putc('\n');
-        cmd->parse(line);
-        lineLen = 0;
-		vcom->printf("LPC BUS: ");
-        memset(line,0 , COMMAND_MAX_LEN);
-    }
-}
-
 int main()
-{
-    
+{    
 	uint8_t mode;
-
-	Vcom vcom1;	
-
-    Command cmd(&vcom1);	
-	CmdEcho echo(&vcom1);
-	CmdPwm pwm(&vcom1);
-	CmdGpio gpio(&vcom1);
-	CmdLed led(&vcom1);
-	CmdMem mem(&vcom1);
-	CmdI2c i2c(&vcom1);
-    CmdSpi spi(&vcom1);
-    CmdAvr avr(&vcom1);
-    CmdTest test(&vcom1);
-    CmdAwg awg(&vcom1);
-    CmdSbus sbus(&vcom1);
-	
-	cmd.add(&cmd);
-	cmd.add(&echo);
-	cmd.add(&pwm);
-	cmd.add(&gpio);
-	cmd.add(&led);
-	cmd.add(&mem);
-	cmd.add(&i2c);
-    cmd.add(&spi);
-    cmd.add(&avr);
-    cmd.add(&test);
-    cmd.add(&awg);
-    cmd.add(&sbus);
+    Console console;
 
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
@@ -136,9 +101,41 @@ int main()
 	LCD_Rotation(LCD_LANDSCAPE);
 	LCD_Bkl(ON);
 
-    vcom1.init();
+    vcom.init();
+    console.init(&vcom, "LPC BUS>");    
+	CmdEcho echo;
+    ConsoleHelp help;
+    CmdSpi spi;
+    CmdAvr avr;
 
-    stk500_ServiceInit(&vcom1);
+    console.addCommand(&help);
+    console.addCommand(&echo);
+    console.addCommand(&spi);
+    console.addCommand(&avr);
+
+	/*CmdPwm pwm();
+	CmdGpio gpio();
+	CmdLed led();
+	CmdMem mem();
+	CmdI2c i2c();
+    CmdTest test();
+    CmdAwg awg();
+    CmdSbus sbus();*/
+	
+	//console.addCommand(&echo);
+	/*console.addCommand(&pwm);
+	console.addCommand(&gpio);
+	console.addCommand(&led);
+	console.addCommand(&mem);
+	console.addCommand(&i2c);
+    console.addCommand(&spi);
+    console.addCommand(&avr);
+    console.addCommand(&test);
+    console.addCommand(&awg);
+    console.addCommand(&sbus);
+    */   
+
+    stk500_ServiceInit(&vcom);
   
 	LCD_Clear(BLACK);
 
@@ -151,7 +148,7 @@ int main()
             mode = checkOptions(options, sizeof(options) / sizeof(option_type));
 			switch(mode){
                 case MODE_LPCBUS:
-                    lpcBus_Service(&vcom1, &cmd);
+                    console.process();
                     break;
                 case MODE_STK500:
                     stk500_Service();

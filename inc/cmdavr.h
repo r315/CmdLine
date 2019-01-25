@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#include "command.h"
+#include "console.h"
 
 
 #define AVR_DW_SYNC_TIMEOUT     10
@@ -30,10 +30,13 @@ extern "C" {
 
 #define DEFAULT_AVR_SPI_FREQ        100000UL
 
-class CmdAvr : public Command{
-
+class CmdAvr : public ConsoleCommand{
+    Console *console;
 public:
-    CmdAvr (Vcom *vc) : Command("avr", vc) { }
+    void init(void *params) {
+		console = static_cast<Console*>(params);		
+	}
+    CmdAvr () : ConsoleCommand("avr") { }
     char execute(void *ptr);
     void help(void);
     char avrFuses(void *ptr);

@@ -6,14 +6,15 @@
 extern "C" {
 #endif
  
-#include "command.h"
+#include "console.h"
 
-class Cmd%NAME% : public Command{
-
+class Cmd%NAME% : public ConsoleCommand{
+    Console *console;
 public:
-    Cmd%NAME% (Vcom *vc) : Command("%NAME%", vc) { }
-    char execute(void *ptr){ return CMD_OK; }
-    void help(void){ }
+    Cmd%NAME% (Vcom *vc) : ConsoleCommand("%NAME%", vc) { }
+    void init(void *params) { console = static_cast<Console*>(params); }
+    char execute(void *ptr);
+    void help(void);
 };
 
 

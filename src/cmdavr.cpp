@@ -350,12 +350,12 @@ void avrWriteProgramPage(uint16_t addr){
 //
 //--------------------------------------
 void CmdAvr::help(void){
-    vcom->printf("Usage: avr [option] \n\n");  
-    vcom->printf("\t -s, Device signature\n");
-    vcom->printf("\t -e, Erase device\n");
-    vcom->printf("\t -f, Read fuses\n");
-    vcom->printf("\t -p, <dw> programming mode, try debug wire \n");
-    vcom->puts("  Avr Pins\n"
+    console->print("Usage: avr [option] \n\n");  
+    console->print("\t -s, Device signature\n");
+    console->print("\t -e, Erase device\n");
+    console->print("\t -f, Read fuses\n");
+    console->print("\t -p, <dw> programming mode, try debug wire \n");
+    console->puts("  Avr Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
                     "\tMOSI  P0.9\n"
@@ -383,15 +383,15 @@ char *p1;
 			p1 = nextParameter(p1);
             avrDeviceCode((uint8_t*)&signature);
             if(signature == AVR_RESPONSE_FAIL){
-                vcom->printf("fail to enable programming\n");
+                console->print("fail to enable programming\n");
             }else{
-                vcom->printf("Device signature 0x%X\n", signature);
+                console->print("Device signature 0x%X\n", signature);
             }
 		    //busnum = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-p")){
 			p1 = nextParameter(p1);
             uint8_t dw = nextInt(&p1);
-            if(dw) vcom->printf("Using debug wire, pulse P0.23 to GNG to stop autobaud\n");
+            if(dw) console->print("Using debug wire, pulse P0.23 to GNG to stop autobaud\n");
             avrProgrammingEnable(dw);
             //slave = nextHex(&p1);
 		}else if( !xstrcmp(p1,"-e")){
@@ -433,7 +433,7 @@ int fuses;
     }  
 
     fuses = avrReadFuses();
-    vcom->printf("Fuses: H=%X L=%X\n", (fuses >> 8) & 255, fuses & 255 );
+    console->print("Fuses: H=%X L=%X\n", (fuses >> 8) & 255, fuses & 255 );
 
     return CMD_OK;
 }

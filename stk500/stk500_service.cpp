@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include "board.h"
-#include "vcom.h"
+#include "consoleout.h"
 #include "stk500.h"
 #include "types.h"
 #include "spi_avr.h"
@@ -32,7 +32,7 @@ typedef struct _Service{
     unsigned char buf[STK500_BUF_MAX_SIZE];
 }Service;
 
-static Vcom *vcom;
+static ConsoleOut *serialport;
 static Service stkService;
 
 //------------------------------------------------------------
@@ -119,8 +119,8 @@ uint8_t spi_write_read(uint8_t *buf){
 return buf[3];
 }
 
-void stk500_ServiceInit(Vcom *vc){
-    vcom = vc;    
+void stk500_ServiceInit(ConsoleOut *sp){
+    serialport = sp;    
     stkService.state = STK500_ERROR_SUCCESS;
     stkService.isize = 0;
     stkService.osize = 0;
@@ -129,31 +129,29 @@ void stk500_ServiceInit(Vcom *vc){
 
 void serial_write(uint8_t * s, uint32_t len){
     while(len--)
-        vcom->putc(*(s++));
+        serialport->putchar(*(s++));
 }
 
 int read_uint8(uint8_t *c, uint8_t do_timeout){
 
 #if !NO_SERVICE
-int rc = vcom->getchar();    
-    if( rc == EOF){
+    if(!serialport->kbhit())
         return -1;
-    }
-    *c = (uint8_t)rc;
+    *c = (uint8_t)serialport->getchar();    
 #else
 uint32_t ticks;
 int rc;
     if(do_timeout){
         ticks = GetTicks();
         while(ElapsedTicks(ticks) < 1000){
-            rc = vcom->getchar();
+            rc = serialport->getchar();
             if(rc != EOF){
                 *c = (uint8_t)rc;
                 return 0;
             }
         }
     }else{
-        *c = vcom->getc();
+        *c = serialport->getc();
         return 0;
     }
     return -1;
