@@ -1,7 +1,7 @@
 
 #include <stdint.h>
 #include <stdio.h>
-#include <consoleout.h>
+#include <stdout.h>
 
 #include "usbserial.h"
 #include "strfunc.h"
@@ -44,7 +44,7 @@ uint8_t vc_getCharNonBlocking(char *c){
    return fifo_get(&rxfifo, (uint8_t*)c);
 }
 
-ConsoleOut vcom = {
+StdOut vcom = {
     .init = vc_init,
     .getchar = vc_getchar,
     .putchar = vc_putchar,

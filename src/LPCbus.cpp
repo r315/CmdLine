@@ -6,6 +6,7 @@
 #include "cmdecho.h"
 #include "cmdspi.h"
 #include "cmdavr.h"
+#include "cmdreset.h"
 /*#include "cmdpwm.h"
 #include "cmdgpio.h"
 #include "cmdled.h"
@@ -13,12 +14,10 @@
 #include "cmdi2c.h"
 #include "cmdtest.h"
 #include "cmdawg.h"
-#include "cmdsbus.h"
 */
+#include "cmdsbus.h"
 
-extern ConsoleOut uart;
-extern ConsoleOut vcom;
-
+extern StdOut vcom;
 
 enum {
     MODE_LPCBUS = 0,
@@ -26,7 +25,7 @@ enum {
 };
 
 //void abort(void){}
-void stk500_ServiceInit(ConsoleOut *sp);
+void stk500_ServiceInit(StdOut *sp);
 void stk500_Service(void);
 void lpcBus_Service(void);
 
@@ -95,23 +94,29 @@ int main()
     CLOCK_Init(72);
 	CLOCK_InitUSBCLK();
 
-    BOARD_Init();
+    BOARD_Init();    
 
     DISPLAY_Init(ON);
 	LCD_Rotation(LCD_LANDSCAPE);
 	LCD_Bkl(ON);
 
     vcom.init();
+    DelayMs(500);
     console.init(&vcom, "LPC BUS>");    
+    
 	CmdEcho echo;
     ConsoleHelp help;
     CmdSpi spi;
     CmdAvr avr;
+    CmdSbus sbus;
+    CmdReset rst;
 
     console.addCommand(&help);
     console.addCommand(&echo);
     console.addCommand(&spi);
     console.addCommand(&avr);
+    console.addCommand(&sbus);
+    console.addCommand(&rst);
 
 	/*CmdPwm pwm();
 	CmdGpio gpio();

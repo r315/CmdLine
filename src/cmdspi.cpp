@@ -80,6 +80,7 @@ char CmdSpi::execute(void *ptr){
 uint8_t i, data[8];
 char *p1;
 SpiBuffer spibuf;
+uint32_t aux;
 
 	p1 = (char*)ptr;
 
@@ -99,7 +100,8 @@ SpiBuffer spibuf;
 		if( !xstrcmp(p1,"-w")){
 			    p1 = nextParameter(p1);
             while(*p1 != '\0'){
-                spibuf.data[i] = nextHex(&p1);
+                nextHex(&p1, &aux);
+                spibuf.data[i] = aux;
                 i++;
             }
             spibuf.len = i;

@@ -18,9 +18,10 @@ CHECKSUM =$(BSPPATH)/tools/checksum
 TARGET = LPCbus
 PRJPATH =src usbdrv stk500
 INCSPATH =inc usbdrv
-CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c fifo.c strfunc.c vcom.c #command.c #cmdbase.c
-CSRCS +=ili9328.c lcd.c display.c blueboard.c clock.c timer.c pwm.c i2c.c spi_lpc17xx.c dac_lpc17xx.c dma_lpc17xx.c button.c
-CSRCS +=stk500.c
+CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c vcom.c \
+ili9328.c lcd.c display.c blueboard.c clock_lpc17xx.c timer.c pwm.c i2c.c \
+spi_lpc17xx.c dac_lpc17xx.c dma_lpc17xx.c uart_lpc17xx.c \
+fifo.c strfunc.c button.c stk500.c
 
 CPPSRCS = \
 LPCbus.cpp \
@@ -28,12 +29,12 @@ console.cpp \
 cmdspi.cpp \
 stk500_service.cpp \
 cmdavr.cpp \
+cmdsbus.cpp \
 #cmdmem.cpp \
 #cmdpwm.cpp \
 #cmdgpio.cpp \
 #cmdi2c.cpp \
 #cmdawg.cpp \
-#cmdsbus.cpp \
 
 #command.cpp \
 
@@ -47,9 +48,9 @@ LIBSPATH +=
 OBJPATH =obj
 
 GCSYMBOLS =-D__NEWLIB__
-GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables #-ffunction-sections
+GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables -ffunction-sections
 GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles -lstdc++ 
+LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles #-lstdc++ 
 
 CSRCS   +=startup_lpc1768.c #syscalls.c
 LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
@@ -62,7 +63,6 @@ $(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) \
 VPATH = \
 $(PRJPATH) \
 $(BSPPATH)/lpc17xx/ \
-$(LIBEMB_PATH)/display \
 $(LIBEMB_PATH)/drv/tft \
 $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
@@ -70,6 +70,9 @@ $(LIBEMB_PATH)/drv/pwm \
 $(LIBEMB_PATH)/drv/i2c \
 $(LIBEMB_PATH)/drv/dac \
 $(LIBEMB_PATH)/drv/dma \
+$(LIBEMB_PATH)/drv/clock \
+$(LIBEMB_PATH)/drv/uart \
+$(LIBEMB_PATH)/display \
 $(LIBEMB_PATH)/button \
 $(LIBEMB_PATH)/console \
 $(LIBEMB_PATH)/misc \
@@ -131,9 +134,13 @@ minicom:
 
 #make command CMDNAME=<name>
 TEMPLATEIN =cmdTemplate.in
-command:
-	cat  $(TEMPLATEIN) > inc/cmd$(CMDNAME).h
-	sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
+L1 =en
+SHELL := /bin/bash
+command:	
+	@cat  $(TEMPLATEIN) > inc/cmd$(CMDNAME).h
+	@sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
+	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" inc/cmd$(CMDNAME).h
+	
 ########################################################
 $(OBJPATH)/%.o : %.c
 	@echo "---- Compile" $< "---->" $@

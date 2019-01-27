@@ -6,12 +6,14 @@
 extern "C" {
 #endif
  
-#include "command.h"
+#include "console.h"
 
-class CmdSbus : public Command{
-
+class CmdSbus : public ConsoleCommand{
+    Console *console;
+    void Flags(void);
 public:
-    CmdSbus (Vcom *vc) : Command("sbus", vc) { }
+    CmdSbus () : ConsoleCommand("sbus") { }
+    void init(void *params) { console = static_cast<Console*>(params); }
     char execute(void *ptr);
     void help(void);
 };

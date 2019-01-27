@@ -8,7 +8,7 @@
 
 #include <stdio.h>
 #include "board.h"
-#include "consoleout.h"
+#include "stdout.h"
 #include "stk500.h"
 #include "types.h"
 #include "spi_avr.h"
@@ -32,7 +32,7 @@ typedef struct _Service{
     unsigned char buf[STK500_BUF_MAX_SIZE];
 }Service;
 
-static ConsoleOut *serialport;
+static StdOut *serialport;
 static Service stkService;
 
 //------------------------------------------------------------
@@ -119,7 +119,7 @@ uint8_t spi_write_read(uint8_t *buf){
 return buf[3];
 }
 
-void stk500_ServiceInit(ConsoleOut *sp){
+void stk500_ServiceInit(StdOut *sp){
     serialport = sp;    
     stkService.state = STK500_ERROR_SUCCESS;
     stkService.isize = 0;

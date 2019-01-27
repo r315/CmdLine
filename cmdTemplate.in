@@ -8,10 +8,10 @@ extern "C" {
  
 #include "console.h"
 
-class Cmd%NAME% : public ConsoleCommand{
+class Cmd%CLASSNAME% : public ConsoleCommand{
     Console *console;
 public:
-    Cmd%NAME% (Vcom *vc) : ConsoleCommand("%NAME%", vc) { }
+    Cmd%CLASSNAME% () : ConsoleCommand("%NAME%") { }
     void init(void *params) { console = static_cast<Console*>(params); }
     char execute(void *ptr);
     void help(void);

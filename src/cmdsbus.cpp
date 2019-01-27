@@ -28,7 +28,13 @@
 #include "board.h"
 #include "cmdsbus.h"
 
-#define FRAME_RATE   14000
+//static StdOut uart;
+
+#define FRAME_RATE      14000
+#define PWM_MIN_PULSE   1000
+#define PWM_MAX_PULSE   2000
+#define SBUS_BAUDRATE   100000
+#define UART_NUMBER     0
 
 typedef struct _Sbus{
     uint8_t start;
@@ -37,54 +43,89 @@ typedef struct _Sbus{
     uint8_t end;
 }SbusFrame;
 
+enum SbusState {NOT_RUNNING, RUNNING};
+
+typedef struct _SbusUart{
+    void *dev;
+    uint32_t baudrate;
+    uint8_t bits;       // 3-0: Number of bits, 4: Configure DMA
+    SbusState state = NOT_RUNNING;
+}SbusUart;
+
+
+
 static SbusFrame sframe;
-static uint8_t init = 0;
+static SbusUart sbusuart;
 
 void sendFrame(void *frame){
-    LED1_TOGGLE;
+    UART_Send((Uart*)&sbusuart, (uint8_t*)&sframe, sizeof(SbusFrame));
+}
+
+void CmdSbus::Flags(void){
+    console->print("CH7: %s\n", (sframe.flags & (1 << 7)) ? "ON" : "OFF" );  
+    console->print("CH8: %s\n", (sframe.flags & (1 << 6)) ? "ON" : "OFF" );
+    console->print("Frame lost: %s\n", (sframe.flags & (1 << 5)) ? "YES" : "NO" );  
+    console->print("Failsafe: %s\n", (sframe.flags & (1 << 4)) ? "ON" : "OFF" );
+    console->putc('\n');
 }
 
 
 void CmdSbus::help(void){
-    vcom->printf("Usage: sbus [option] \n\n");  
-    vcom->printf("\t -c <nr>, Display channel nr value \n");
-    vcom->printf("\t -c <nr> <value>, Set channel nr value \n");
+    console->print("Usage: sbus <ch> [value] [-f]\n\n");  
+    console->print("\t<ch>, Channel number 1-16\n");
+    console->print("\t[value], 1000-2000\n");
 }
 
 
 char CmdSbus::execute(void *ptr){
-char *p1;
+char *p1, channel = 255, flags;
+uint16_t pulse = 0;
+int32_t aux;
 
 	p1 = (char*)ptr;
 
-    if( p1 == NULL || *p1 == '\0'){
-        help();
-        return CMD_OK;
-    }
+	if (p1 == NULL || *p1 == '\0') {
+		help();
+		return CMD_OK;
+	}
 
-    if(init == 0){
-        TIMER_Periodic(LPC_TIM3, 0,FRAME_RATE , sendFrame, &sframe);
-        init = 1;
-    }
+	if (sbusuart.state == NOT_RUNNING) {
+        sbusuart.baudrate = SBUS_BAUDRATE;
+        UART_Init((Uart*)&sbusuart, UART_NUMBER);
+		sbusuart.state = RUNNING;
+		TIMER_Periodic(LPC_TIM3, 0, FRAME_RATE, sendFrame, &sframe);
+	}	
 
-    while(*p1 != '\0'){
-        if( !xstrcmp(p1,"-c")){
-            p1 = nextParameter(p1);
-		    int32_t val = nextInt(&p1);
-            
-		}else if( !xstrcmp(p1,"-p")){
+	while (*p1 != '\0') {
+		if (!xstrcmp(p1, "-f")) {
 			p1 = nextParameter(p1);
-            
-		}else if( !xstrcmp(p1,"-e")){
-			p1 = nextParameter(p1);
-           
-		}else if( !xstrcmp(p1,"-f")){
-			p1 = nextParameter(p1);
-            
+            if (nextInt(&p1, &aux)) {
+                flags = aux;	
+		    }else
+            {
+                Flags();
+                return CMD_OK;
+            }            
+		}else if (nextInt(&p1, &aux)){
+            if(channel == 255){
+                channel = aux;
+            }else if(pulse == 0) {
+                pulse = aux;
+            }
         }else{
-			p1 = nextParameter(p1);
-		}
+            p1 = nextParameter(p1);
+        }   
     }
 
-    return CMD_OK;
+	if (channel == -1 || pulse < PWM_MIN_PULSE || pulse > PWM_MAX_PULSE) {
+		return CMD_BAD_PARAM;
+	}
+
+    sframe.flags = flags;
+    sframe.data[0] = pulse;
+    sframe.data[1] = pulse>>8;
+    sframe.start = 0x12;
+    //UART_Send((Uart*)&sbusuart, (uint8_t*)&sframe, sizeof(SbusFrame));
+
+	return CMD_OK;
 }

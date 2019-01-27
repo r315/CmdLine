@@ -364,7 +364,7 @@ void CmdAvr::help(void){
 }
 
 char CmdAvr::execute(void *ptr){
-int32_t signature;
+int32_t signature, aux;
 char *p1;
 
 	p1 = (char*)ptr;
@@ -390,9 +390,9 @@ char *p1;
 		    //busnum = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-p")){
 			p1 = nextParameter(p1);
-            uint8_t dw = nextInt(&p1);
-            if(dw) console->print("Using debug wire, pulse P0.23 to GNG to stop autobaud\n");
-            avrProgrammingEnable(dw);
+            nextInt(&p1, &aux);
+            if(aux) console->print("Using debug wire, pulse P0.23 to GNG to stop autobaud\n");
+            avrProgrammingEnable(aux);
             //slave = nextHex(&p1);
 		}else if( !xstrcmp(p1,"-e")){
 			p1 = nextParameter(p1);
@@ -414,7 +414,7 @@ char *p1;
 
 char CmdAvr::avrFuses(void *ptr){
 uint8_t lh;
-int fuses;
+uint32_t fuses;
 
     lh = nextChar((char**)&ptr); 
 
@@ -423,9 +423,9 @@ int fuses;
     }else if( lh == 'h')
         lh = 1;
    
-    fuses = nextHex((char**)&ptr);
+    
 
-    if(fuses == -1)
+    if(!nextHex((char**)&ptr, &fuses))
         lh = 255;
 
     if(lh == 0 || lh == 1){
