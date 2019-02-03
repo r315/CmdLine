@@ -45,6 +45,7 @@ public:
 void avrDeviceCode(uint8_t *buf);
 void avrChipErase(void);
 char avrProgrammingEnable(uint8_t);
+void avrProgrammingDisable(void);
 
 uint16_t avrReadProgram(uint16_t addr);
 void avrLoadProgramPage(uint8_t addr, uint16_t value);

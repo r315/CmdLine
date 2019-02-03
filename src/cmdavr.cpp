@@ -173,8 +173,9 @@ uint32_t autobaud;
 
 /**
 * Program mode is entered if the device echoes the second 
- * sent byte. On this action the programming mode is enable and the reset line is left 
- * on low state.
+ * sent byte. On this action the programming mode is enable 
+ * and the reset line is left at low state. This should execute 
+ * prior to any operation.
  * */
 char avrProgrammingEnable(uint8_t trydW){
 
@@ -213,9 +214,21 @@ char avrProgrammingEnable(uint8_t trydW){
     return AVR_RESPONSE_FAIL; 
 }
 
+/**
+ * Clear programming active flag and release reset pin (HIGH state)
+ * */
+void avrProgrammingDisable(void){
+    Device.status &= ~(AVR_PROGRAMMING_ACTIVE);
+    AVR_RST1;
+}
+
+/**
+ * if present, place device signature on the given buffer
+ * */
 void avrDeviceCode(uint8_t *buf){
 
     if( avrProgrammingEnable(NO) != AVR_RESPONSE_OK){
+        *((int32_t*)buf) = AVR_RESPONSE_FAIL;
         return;
     }
 
