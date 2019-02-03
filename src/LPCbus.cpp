@@ -100,8 +100,7 @@ int main()
 	LCD_Rotation(LCD_LANDSCAPE);
 	LCD_Bkl(ON);
 
-    vcom.init();
-    DelayMs(500);
+    vcom.init();    
     console.init(&vcom, "LPC BUS>");    
     
 	CmdEcho echo;
@@ -145,7 +144,7 @@ int main()
 	LCD_Clear(BLACK);
 
     printOptions(options, sizeof(options) / sizeof(option_type));
-
+    
 	while(1)
 	{	
 		

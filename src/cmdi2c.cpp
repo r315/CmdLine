@@ -44,23 +44,23 @@ char *p1;
 	// parse options
 	while(*p1 != '\0'){
 		if( !xstrcmp(p1,"-b")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 		    busnum = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-d")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
             slave = nextHex(&p1);
 		}else if( !xstrcmp(p1,"-r")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
             op = I2C_READ;
 		}else if( !xstrcmp(p1,"-w")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
             data[0] = nextHex(&p1);
             op = I2C_WRITE;
         }else if( !xstrcmp(p1,"-s")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
             op = I2C_SCAN;
         }else{
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 		}
 	}
 

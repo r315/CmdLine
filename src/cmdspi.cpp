@@ -98,7 +98,7 @@ uint32_t aux;
 	// parse options
 	while(*p1 != '\0'){
 		if( !xstrcmp(p1,"-w")){
-			    p1 = nextParameter(p1);
+			    p1 = nextWord(p1);
             while(*p1 != '\0'){
                 nextHex(&p1, &aux);
                 spibuf.data[i] = aux;
@@ -107,7 +107,7 @@ uint32_t aux;
             spibuf.len = i;
             spiWriteBuffer(&spibuf);
         }else{
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 		}
 	}
 

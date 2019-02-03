@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdout.h>
 
+#include "board.h"
 #include "usbserial.h"
 #include "strfunc.h"
 #include "fifo.h"
@@ -15,10 +16,14 @@ static fifo_t rxfifo;
 void vc_init(void){
     rxfifo.size = VCOM_FIFO_SIZE;
 	txfifo.size = VCOM_FIFO_SIZE;
-
 	fifo_init(&txfifo);
 	fifo_init(&rxfifo);
+
 	USBSERIAL_Init(&txfifo, &rxfifo);
+    
+    DelayMs(1500);
+    fifo_flush(&txfifo);
+	fifo_flush(&rxfifo);    
 }   
 
 void vc_putchar(char c){

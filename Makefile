@@ -90,12 +90,13 @@ $(TARGET).elf:  $(OBJECTS)
 	$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
-	@$(OBJCOPY) -O ihex -j .startup -j .text -j $(TARGET).elf $(TARGET).hex
+	@$(OBJCOPY) -O ihex -j .startup -j .text $(TARGET).elf $(TARGET).hex
 
 bin: $(TARGET).bin
 
 $(TARGET).bin: $(TARGET).elf
-	@$(OBJCOPY) -O binary  $(TARGET).elf $@
+#@$(OBJCOPY) -O binary  $(TARGET).elf $@
+	$(OBJCOPY) -O binary -j .startup -j .text $(TARGET).elf $@
 	hd -n 128 $@
 	$(CHECKSUM) $@
 
@@ -119,8 +120,8 @@ $(TARGET).jlink:
 	@echo "Creating Jlink configuration file"
 	@echo "erase\nloadbin $(TARGET).bin , 0x0000000\nr\nq" > $(TARGET).jlink
 	
-flash-jlink: $(TARGET).jlink #tdso.bin #$(TARGET).bin
-	$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
+#flash-jlink: $(TARGET).jlink #tdso.bin #$(TARGET).bin
+#	$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"

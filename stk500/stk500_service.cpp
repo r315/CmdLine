@@ -47,7 +47,7 @@ int spi_start(void){
 }
 
 void spi_stop(void){
-    AVR_RST1;
+    avrProgrammingDisable();
 }
 
 void spi_read_signature(uint8_t *buf){

@@ -80,16 +80,16 @@ char *p1;
 	// parse options
 	while(*p1 != '\0'){
 		if( !xstrcmp(p1,"-p")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 			port = nextInt(&p1);
 		}else if( !xstrcmp(p1,"-r")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 		}else if( !xstrcmp(p1,"-b")){
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 			setbit = nextInt(&p1);
 			setstate = nextInt(&p1);
 		}else{
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 		}
 	}
 

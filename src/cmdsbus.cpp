@@ -157,8 +157,7 @@ int32_t aux;
 	}	
 
 	while (*p1 != '\0') {
-		if (!xstrcmp(p1, "-f")) {
-			p1 = nextParameter(p1);
+		if (isNextWord(&p1, "-f")) {			
             if (nextInt(&p1, &aux)) {
                 next_sframe.flags = aux;	
 		    }else
@@ -166,8 +165,7 @@ int32_t aux;
                 Flags();
                 return CMD_OK;
             }
-		}else if(!xstrcmp(p1, "arm")){
-            p1 = nextParameter(p1);
+		}else if(isNextWord(&p1, "arm")){            
             if (nextInt(&p1, &aux)) {
                 updateChannel(&next_sframe, ARM_CHANNEL, (aux == 1) ? ARM_VALUE : DISARM_VALUE);
                 updateChannel(&next_sframe, THROTLE_CHANNEL, PWM_MIN_PULSE);
@@ -183,7 +181,7 @@ int32_t aux;
                 pulse = aux;
             }
         }else{
-            p1 = nextParameter(p1);
+            p1 = nextWord(p1);
         }   
     }
 

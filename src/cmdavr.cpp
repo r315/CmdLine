@@ -26,7 +26,7 @@
 
 #define AVR_ENABLE_RETRIES  2
 
-#define AVR_PROGRAMMING_ACTIVE  (1<<0)
+#define AVR_PROGRAMMING_ACTIVE    (1<<0)
  
 
 enum{
@@ -172,7 +172,7 @@ uint32_t autobaud;
 }
 
 /**
- * Program mode is entered if the device echoes the second 
+* Program mode is entered if the device echoes the second 
  * sent byte. On this action the programming mode is enable and the reset line is left 
  * on low state.
  * */
@@ -180,7 +180,7 @@ char avrProgrammingEnable(uint8_t trydW){
 
     if(Device.status & AVR_PROGRAMMING_ACTIVE)
     {
-        return AVR_RESPONSE_OK; 
+       return AVR_RESPONSE_OK; 
     }
 
     memcpy(Device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
@@ -379,8 +379,7 @@ char *p1;
 
 	// parse options
 	while(*p1 != '\0'){
-		if( !xstrcmp(p1,"-s")){
-			p1 = nextParameter(p1);
+		if( isNextWord(&p1,"-s")){			
             avrDeviceCode((uint8_t*)&signature);
             if(signature == AVR_RESPONSE_FAIL){
                 console->print("fail to enable programming\n");
@@ -388,22 +387,19 @@ char *p1;
                 console->print("Device signature 0x%X\n", signature);
             }
 		    //busnum = nextInt(&p1);
-		}else if( !xstrcmp(p1,"-p")){
-			p1 = nextParameter(p1);
+		}else if( isNextWord(&p1,"-p")){			
             nextInt(&p1, &aux);
             if(aux) console->print("Using debug wire, pulse P0.23 to GNG to stop autobaud\n");
             avrProgrammingEnable(aux);
             //slave = nextHex(&p1);
-		}else if( !xstrcmp(p1,"-e")){
-			p1 = nextParameter(p1);
+		}else if( isNextWord(&p1,"-e")){			
             avrChipErase();
             //op = I2C_READ;
-		}else if( !xstrcmp(p1,"-f")){
-			p1 = nextParameter(p1);
+		}else if( isNextWord(&p1,"-f")){			
             avrFuses(p1);
             //op = I2C_WRITE;       
         }else{
-			p1 = nextParameter(p1);
+			p1 = nextWord(p1);
 		}
 	}
 
