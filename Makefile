@@ -21,7 +21,8 @@ INCSPATH =inc usbdrv
 CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c vcom.c \
 ili9328.c lcd.c display.c blueboard.c clock_lpc17xx.c timer.c pwm.c i2c.c \
 spi_lpc17xx.c dac_lpc17xx.c dma_lpc17xx.c uart_lpc17xx.c \
-fifo.c strfunc.c button.c stk500.c
+fifo.c strfunc.c button.c stk500.c \
+mmc.c pff.c \
 
 CPPSRCS = \
 LPCbus.cpp \
@@ -30,6 +31,7 @@ cmdspi.cpp \
 stk500_service.cpp \
 cmdavr.cpp \
 cmdsbus.cpp \
+cmdlsd.cpp \
 #cmdmem.cpp \
 #cmdpwm.cpp \
 #cmdgpio.cpp \
@@ -43,7 +45,7 @@ cmdsbus.cpp \
 #########################################################
 BSPPATH   = $(LIBEMB_PATH)/bsp
 
-INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc
+INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc $(LIBEMB_PATH)/pff
 LIBSPATH +=
 OBJPATH =obj
 
@@ -72,10 +74,12 @@ $(LIBEMB_PATH)/drv/dac \
 $(LIBEMB_PATH)/drv/dma \
 $(LIBEMB_PATH)/drv/clock \
 $(LIBEMB_PATH)/drv/uart \
+$(LIBEMB_PATH)/drv/mmc \
 $(LIBEMB_PATH)/display \
 $(LIBEMB_PATH)/button \
 $(LIBEMB_PATH)/console \
 $(LIBEMB_PATH)/misc \
+$(LIBEMB_PATH)/pff \
 
 ifeq ($(LIBEMB_PATH), )
 erro:

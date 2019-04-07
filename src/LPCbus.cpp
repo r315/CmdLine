@@ -7,6 +7,7 @@
 #include "cmdspi.h"
 #include "cmdavr.h"
 #include "cmdreset.h"
+#include "cmdsd.h"
 /*#include "cmdpwm.h"
 #include "cmdgpio.h"
 #include "cmdled.h"
@@ -109,6 +110,7 @@ int main()
     CmdAvr avr;
     CmdSbus sbus;
     CmdReset rst;
+    CmdSd sd;
 
     console.addCommand(&help);
     console.addCommand(&echo);
@@ -116,6 +118,7 @@ int main()
     console.addCommand(&avr);
     console.addCommand(&sbus);
     console.addCommand(&rst);
+    console.addCommand(&sd);
 
 	/*CmdPwm pwm();
 	CmdGpio gpio();
