@@ -129,7 +129,7 @@ void stk500_ServiceInit(StdOut *sp){
 
 void serial_write(uint8_t * s, uint32_t len){
     while(len--)
-        serialport->putchar(*(s++));
+        serialport->xputchar(*(s++));
 }
 
 int read_uint8(uint8_t *c, uint8_t do_timeout){
@@ -137,7 +137,7 @@ int read_uint8(uint8_t *c, uint8_t do_timeout){
 #if !NO_SERVICE
     if(!serialport->kbhit())
         return -1;
-    *c = (uint8_t)serialport->getchar();    
+    *c = (uint8_t)serialport->xgetchar();    
 #else
 uint32_t ticks;
 int rc;

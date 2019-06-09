@@ -119,7 +119,7 @@ void CmdSbus::Flags(void){
     console->print("CH8: %s\n", (sframe.flags & (1 << 6)) ? "ON" : "OFF" );
     console->print("Frame lost: %s\n", (sframe.flags & (1 << 5)) ? "YES" : "NO" );  
     console->print("Failsafe: %s\n", (sframe.flags & (1 << 4)) ? "ON" : "OFF" );
-    console->putc('\n');
+    console->xputchar('\n');
 }
 
 

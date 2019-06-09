@@ -10,7 +10,7 @@ SIZE = $(GCC_EXEC_PREFIX)-size
 OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
 OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
 DBG = $(GCC_EXEC_PREFIX)-insight
-REMOVE = rm -f
+REMOVE = rm -fR
 CHECKSUM =$(BSPPATH)/tools/checksum
 #########################################################
 # project files
@@ -47,7 +47,7 @@ BSPPATH   = $(LIBEMB_PATH)/bsp
 
 INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc $(LIBEMB_PATH)/pff
 LIBSPATH +=
-OBJPATH =obj
+OBJPATH =build
 
 GCSYMBOLS =-D__NEWLIB__
 GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables -ffunction-sections
@@ -112,7 +112,8 @@ aslist: $(TARGET).elf
 	@$(OBJDUMP) -D $(TARGET).elf > $(TARGET).lst
 
 clean:
-	$(REMOVE) $(OBJPATH)/*.obj $(OBJPATH)/*.o *.hex *.elf *.bin	
+#$(REMOVE) $(OBJPATH)/*.obj $(OBJPATH)/*.o *.hex *.elf *.bin	
+	$(REMOVE) $(OBJPATH)  
 
 rebuild: clean all
 
@@ -146,16 +147,19 @@ command:
 	@sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
 	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" inc/cmd$(CMDNAME).h
 	
+$(OBJPATH):
+	mkdir $@
+	
 ########################################################
-$(OBJPATH)/%.o : %.c
+$(OBJPATH)/%.o : %.c | $(OBJPATH)
 	@echo "---- Compile" $< "---->" $@
 	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 
-$(OBJPATH)/%.obj : %.cpp
+$(OBJPATH)/%.obj : %.cpp | $(OBJPATH)
 	@echo "---- Compile" $< "---->" $@
 	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
-$(OBJPATH)/%.o : %.S
+$(OBJPATH)/%.o : %.S | $(OBJPATH)
 	@echo "---- Assemble" $< "---->" $@
 	@$(AS) $(ASFLAGS) $< -o $@
 

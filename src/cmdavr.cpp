@@ -368,7 +368,7 @@ void CmdAvr::help(void){
     console->print("\t -e, Erase device\n");
     console->print("\t -f, Read fuses\n");
     console->print("\t -p, <dw> programming mode, try debug wire \n");
-    console->puts("  Avr Pins\n"
+    console->xputs("  Avr Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
                     "\tMOSI  P0.9\n"

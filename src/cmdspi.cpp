@@ -67,8 +67,8 @@ void spiWriteBuffer(SpiBuffer *buf){
 //
 //--------------------------------------
 void CmdSpi::help(void){
-    console->puts("\nUsage: spi -w [data]");
-    console->puts("  Spi Pins\n"
+    console->xputs("\nUsage: spi -w [data]");
+    console->xputs("  Spi Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
                     "\tMOSI  P0.9\n"
