@@ -153,7 +153,7 @@ command:
 	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" inc/cmd$(CMDNAME).h
 	
 $(BUILD_DIR):
-	mkdir $@
+	mkdir -p $@
 
 #########################################################
 # 
