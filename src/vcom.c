@@ -49,7 +49,7 @@ uint8_t vc_getCharNonBlocking(char *c){
    return fifo_get(&rxfifo, (uint8_t*)c);
 }
 
-StdOut vcom = {
+StdOut vcp = {
     .init = vc_init,
     .xgetchar = vc_getchar,
     .xputchar = vc_putchar,

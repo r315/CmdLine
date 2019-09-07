@@ -1,37 +1,43 @@
-#########################################################
-# 
-#########################################################
-GCC_EXEC_PREFIX = arm-none-eabi
-GCC = $(GCC_EXEC_PREFIX)-gcc
-GPP = $(GCC_EXEC_PREFIX)-g++
-AS = $(GCC_EXEC_PREFIX)-as
-LD = $(GCC_EXEC_PREFIX)-ld
-SIZE = $(GCC_EXEC_PREFIX)-size
-OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
-OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
-DBG = $(GCC_EXEC_PREFIX)-insight
-REMOVE = rm -fR
-CHECKSUM =$(BSPPATH)/tools/checksum
+
 #########################################################
 # project files
 #########################################################
-TARGET = LPCbus
-PRJPATH =src usbdrv stk500
-INCSPATH =inc usbdrv
-CSRCS =usbserial.c usbhw_lpc.c usbcontrol.c usbstdreq.c vcom.c \
-ili9328.c lcd.c display.c blueboard.c clock_lpc17xx.c timer.c pwm.c i2c.c \
-spi_lpc17xx.c dac_lpc17xx.c dma_lpc17xx.c uart_lpc17xx.c \
-fifo.c strfunc.c button.c stk500.c \
+TARGET = $(BUILD_DIR)/console_blueboard
+BUILD_DIR :=build
+PRJPATH =src usbdrv stk500 ../src
+INCSPATH =inc usbdrv ../inc
+
+CSRCS =usbserial.c \
+usbhw_lpc.c \
+usbcontrol.c \
+usbstdreq.c \
+vcom.c \
+ili9328.c \
+lcd.c \
+display.c \
+fonts.c \
+blueboard.c \
+clock_lpc17xx.c \
+timer.c pwm.c i2c.c \
+spi_lpc17xx.c \
+dac_lpc17xx.c \
+dma_lpc17xx.c \
+uart_lpc17xx.c \
+fifo.c \
+strfunc.c \
+button.c \
+stk500.c \
 mmc.c pff.c \
 
 CPPSRCS = \
-LPCbus.cpp \
+app.cpp \
+bb_main.cpp \
 console.cpp \
 cmdspi.cpp \
 stk500_service.cpp \
 cmdavr.cpp \
-cmdsbus.cpp \
 cmdlsd.cpp \
+#cmdsbus.cpp \
 #cmdmem.cpp \
 #cmdpwm.cpp \
 #cmdgpio.cpp \
@@ -47,24 +53,23 @@ BSPPATH   = $(LIBEMB_PATH)/bsp
 
 INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc $(LIBEMB_PATH)/pff
 LIBSPATH +=
-OBJPATH =build
 
-GCSYMBOLS =-D__NEWLIB__
+GCSYMBOLS =-D__NEWLIB__ -D__BB__
 GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables -ffunction-sections
 GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
 LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles #-lstdc++ 
 
 CSRCS   +=startup_lpc1768.c #syscalls.c
-LDSCRIPT =$(BSPPATH)/lpc17xx/lpc1768.ld
+LDSCRIPT =$(BSPPATH)/Blueboard/lpc1768.ld
 ##########################################################
 OBJECTS = \
-$(addprefix $(OBJPATH)/,$(CPPSRCS:.cpp=.obj)) \
-$(addprefix $(OBJPATH)/,$(CSRCS:.c=.o)) \
-$(addprefix $(OBJPATH)/,$(ASRCS:.S=.o)) \
+$(addprefix $(BUILD_DIR)/,$(CPPSRCS:.cpp=.obj)) \
+$(addprefix $(BUILD_DIR)/,$(CSRCS:.c=.o)) \
+$(addprefix $(BUILD_DIR)/,$(ASRCS:.S=.o)) \
 
 VPATH = \
 $(PRJPATH) \
-$(BSPPATH)/lpc17xx/ \
+$(BSPPATH)/Blueboard/ \
 $(LIBEMB_PATH)/drv/tft \
 $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
@@ -112,8 +117,8 @@ aslist: $(TARGET).elf
 	@$(OBJDUMP) -D $(TARGET).elf > $(TARGET).lst
 
 clean:
-#$(REMOVE) $(OBJPATH)/*.obj $(OBJPATH)/*.o *.hex *.elf *.bin	
-	$(REMOVE) $(OBJPATH)  
+#$(REMOVE) $(BUILD_DIR)/*.obj $(BUILD_DIR)/*.o *.hex *.elf *.bin	
+	$(REMOVE) $(BUILD_DIR)  
 
 rebuild: clean all
 
@@ -132,7 +137,7 @@ $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
 	echo "interface jlink\ntransport select swd\nsource [find target/lpc17xx.cfg]\nadapter_khz 4000" > $(TARGET).cfg
 
-flash-openocd: $(TARGET).bin $(TARGET).cfg
+program: $(TARGET).bin $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
 
 minicom:
@@ -147,19 +152,33 @@ command:
 	@sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
 	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" inc/cmd$(CMDNAME).h
 	
-$(OBJPATH):
+$(BUILD_DIR):
 	mkdir $@
-	
+
+#########################################################
+# 
+#########################################################
+GCC_EXEC_PREFIX = arm-none-eabi
+GCC = $(GCC_EXEC_PREFIX)-gcc
+GPP = $(GCC_EXEC_PREFIX)-g++
+AS = $(GCC_EXEC_PREFIX)-as
+LD = $(GCC_EXEC_PREFIX)-ld
+SIZE = $(GCC_EXEC_PREFIX)-size
+OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
+OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
+DBG = $(GCC_EXEC_PREFIX)-insight
+REMOVE = rm -fR
+CHECKSUM =$(BSPPATH)/tools/checksum	
 ########################################################
-$(OBJPATH)/%.o : %.c | $(OBJPATH)
+$(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
 	@echo "---- Compile" $< "---->" $@
 	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 
-$(OBJPATH)/%.obj : %.cpp | $(OBJPATH)
+$(BUILD_DIR)/%.obj : %.cpp | $(BUILD_DIR)
 	@echo "---- Compile" $< "---->" $@
 	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
-$(OBJPATH)/%.o : %.S | $(OBJPATH)
+$(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
 	@echo "---- Assemble" $< "---->" $@
 	@$(AS) $(ASFLAGS) $< -o $@
 

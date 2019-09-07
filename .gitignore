@@ -3,4 +3,4 @@ obj/
 *.cfg
 *.elf
 deprecated/
-
+build/
