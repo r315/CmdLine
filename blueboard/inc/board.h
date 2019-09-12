@@ -11,6 +11,7 @@ extern "C" {
 #include <ili9328.h>
 #include <lcd.h>
 #include <timer.h>
+#include <stdout.h>
 
 #define BOARD_Init BB_Init
 #define SW_Reset BB_SW_Reset
