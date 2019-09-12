@@ -1,0 +1,1907 @@
+Archive member included to satisfy reference by file (symbol)
+
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+                              build/strfunc.o (__aeabi_dadd)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_muldivdf3.o)
+                              build/strfunc.o (__aeabi_dmul)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_fixdfsi.o)
+                              build/strfunc.o (__aeabi_d2iz)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+                              build/stm32l4xx_hal_uart.o (__aeabi_uldivmod)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+                              c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o) (__udivmoddi4)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_dvmd_tls.o)
+                              c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o) (__aeabi_ldiv0)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+                              build/syscalls.o (__errno)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+                              c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o (exit)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+                              c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o) (_global_impure_ptr)
+c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+                              c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o (__libc_init_array)
+
+Allocating common symbols
+Common symbol       size              file
+
+hdma_usart2_rx      0x48              build/main.o
+uwTick              0x4               build/stm32l4xx_hal.o
+hdma_usart2_tx      0x48              build/main.o
+huart2              0x80              build/main.o
+
+Discarded input sections
+
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+ .data          0x00000000        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .text          0x00000000       0x74 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+ .ARM.extab     0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+ .ARM.exidx     0x00000000        0x8 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+ .ARM.attributes
+                0x00000000       0x20 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+ .text          0x00000000        0x0 build/main.o
+ .data          0x00000000        0x0 build/main.o
+ .bss           0x00000000        0x0 build/main.o
+ .text          0x00000000        0x0 build/stm32l4xx_it.o
+ .data          0x00000000        0x0 build/stm32l4xx_it.o
+ .bss           0x00000000        0x0 build/stm32l4xx_it.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_msp.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_msp.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_msp.o
+ .text.HAL_UART_MspDeInit
+                0x00000000       0x40 build/stm32l4xx_hal_msp.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_tim.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_tim.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_tim.o
+ .debug_info    0x00000000      0x295 build/stm32l4xx_hal_tim.o
+ .debug_abbrev  0x00000000       0xab build/stm32l4xx_hal_tim.o
+ .debug_aranges
+                0x00000000       0x18 build/stm32l4xx_hal_tim.o
+ .debug_line    0x00000000      0x268 build/stm32l4xx_hal_tim.o
+ .debug_str     0x00000000      0x416 build/stm32l4xx_hal_tim.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_tim.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_tim.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_tim_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_tim_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_tim_ex.o
+ .debug_info    0x00000000      0x295 build/stm32l4xx_hal_tim_ex.o
+ .debug_abbrev  0x00000000       0xab build/stm32l4xx_hal_tim_ex.o
+ .debug_aranges
+                0x00000000       0x18 build/stm32l4xx_hal_tim_ex.o
+ .debug_line    0x00000000      0x268 build/stm32l4xx_hal_tim_ex.o
+ .debug_str     0x00000000      0x419 build/stm32l4xx_hal_tim_ex.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_tim_ex.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_tim_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_uart.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_uart.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_uart.o
+ .text.UART_EndTxTransfer
+                0x00000000       0x10 build/stm32l4xx_hal_uart.o
+ .text.UART_TxISR_8BIT
+                0x00000000       0x42 build/stm32l4xx_hal_uart.o
+ .text.UART_TxISR_16BIT
+                0x00000000       0x46 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_MspInit
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_MspDeInit
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_DeInit
+                0x00000000       0x38 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_Transmit_IT
+                0x00000000       0x70 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_Transmit_DMA
+                0x00000000       0xa4 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_Receive_DMA
+                0x00000000       0xac build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_DMAPause
+                0x00000000       0x6a build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_DMAResume
+                0x00000000       0x5a build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_DMAStop
+                0x00000000       0x86 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_Abort
+                0x00000000       0xa4 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortTransmit
+                0x00000000       0x4e build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortReceive
+                0x00000000       0x68 build/stm32l4xx_hal_uart.o
+ .text.UART_DMATransmitCplt
+                0x00000000       0x32 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_TxHalfCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.UART_DMATxHalfCplt
+                0x00000000        0xa build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_RxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.UART_DMAReceiveCplt
+                0x00000000       0x3e build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_RxHalfCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.UART_DMARxHalfCplt
+                0x00000000        0xa build/stm32l4xx_hal_uart.o
+ .text.UART_DMAError
+                0x00000000       0x50 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_Abort_IT
+                0x00000000       0xdc build/stm32l4xx_hal_uart.o
+ .text.UART_DMARxAbortCallback
+                0x00000000       0x3c build/stm32l4xx_hal_uart.o
+ .text.UART_DMATxAbortCallback
+                0x00000000       0x32 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortTransmitCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortTransmit_IT
+                0x00000000       0x64 build/stm32l4xx_hal_uart.o
+ .text.UART_DMATxOnlyAbortCallback
+                0x00000000       0x14 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortReceiveCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_AbortReceive_IT
+                0x00000000       0x80 build/stm32l4xx_hal_uart.o
+ .text.UART_DMARxOnlyAbortCallback
+                0x00000000       0x24 build/stm32l4xx_hal_uart.o
+ .text.HAL_MultiProcessor_EnterMuteMode
+                0x00000000        0xc build/stm32l4xx_hal_uart.o
+ .text.HAL_HalfDuplex_EnableTransmitter
+                0x00000000       0x38 build/stm32l4xx_hal_uart.o
+ .text.HAL_HalfDuplex_EnableReceiver
+                0x00000000       0x38 build/stm32l4xx_hal_uart.o
+ .text.HAL_LIN_SendBreak
+                0x00000000       0x2e build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_GetState
+                0x00000000        0x8 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_GetError
+                0x00000000        0x4 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_Receive
+                0x00000000      0x11c build/stm32l4xx_hal_uart.o
+ .text.HAL_HalfDuplex_Init
+                0x00000000       0x6e build/stm32l4xx_hal_uart.o
+ .text.HAL_LIN_Init
+                0x00000000       0x92 build/stm32l4xx_hal_uart.o
+ .text.HAL_MultiProcessor_Init
+                0x00000000       0x8a build/stm32l4xx_hal_uart.o
+ .text.HAL_MultiProcessor_EnableMuteMode
+                0x00000000       0x2c build/stm32l4xx_hal_uart.o
+ .text.HAL_MultiProcessor_DisableMuteMode
+                0x00000000       0x2c build/stm32l4xx_hal_uart.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_uart_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_uart_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_uart_ex.o
+ .text.UARTEx_Wakeup_AddressConfig
+                0x00000000       0x2e build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_RS485Ex_Init
+                0x00000000       0x82 build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_UARTEx_EnableClockStopMode
+                0x00000000       0x26 build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_UARTEx_DisableClockStopMode
+                0x00000000       0x26 build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_MultiProcessorEx_AddressLength_Set
+                0x00000000       0x32 build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_UARTEx_StopModeWakeUpSourceConfig
+                0x00000000       0x82 build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_UARTEx_EnableStopMode
+                0x00000000       0x26 build/stm32l4xx_hal_uart_ex.o
+ .text.HAL_UARTEx_DisableStopMode
+                0x00000000       0x26 build/stm32l4xx_hal_uart_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal.o
+ .text.HAL_MspInit
+                0x00000000        0x2 build/stm32l4xx_hal.o
+ .text.HAL_MspDeInit
+                0x00000000        0x2 build/stm32l4xx_hal.o
+ .text.HAL_DeInit
+                0x00000000       0x2c build/stm32l4xx_hal.o
+ .text.HAL_GetTickPrio
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_SetTickFreq
+                0x00000000       0x30 build/stm32l4xx_hal.o
+ .text.HAL_GetTickFreq
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_SuspendTick
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_ResumeTick
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_GetHalVersion
+                0x00000000        0x6 build/stm32l4xx_hal.o
+ .text.HAL_GetREVID
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_GetDEVID
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_GetUIDw0
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_GetUIDw1
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_GetUIDw2
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_DBGMCU_EnableDBGSleepMode
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_DBGMCU_DisableDBGSleepMode
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_DBGMCU_EnableDBGStopMode
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_DBGMCU_DisableDBGStopMode
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_DBGMCU_EnableDBGStandbyMode
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_DBGMCU_DisableDBGStandbyMode
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_SYSCFG_SRAM2Erase
+                0x00000000       0x1c build/stm32l4xx_hal.o
+ .text.HAL_SYSCFG_EnableMemorySwappingBank
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_SYSCFG_DisableMemorySwappingBank
+                0x00000000        0xc build/stm32l4xx_hal.o
+ .text.HAL_SYSCFG_EnableIOAnalogSwitchBooster
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text.HAL_SYSCFG_DisableIOAnalogSwitchBooster
+                0x00000000       0x10 build/stm32l4xx_hal.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_i2c.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_i2c.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_i2c.o
+ .text.I2C_Flush_TXDR
+                0x00000000       0x22 build/stm32l4xx_hal_i2c.o
+ .text.I2C_TransferConfig
+                0x00000000       0x36 build/stm32l4xx_hal_i2c.o
+ .text.I2C_Enable_IRQ
+                0x00000000       0x80 build/stm32l4xx_hal_i2c.o
+ .text.I2C_Disable_IRQ
+                0x00000000       0xb8 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ConvertOtherXferOptions
+                0x00000000       0x1e build/stm32l4xx_hal_i2c.o
+ .text.I2C_IsAcknowledgeFailed
+                0x00000000       0x90 build/stm32l4xx_hal_i2c.o
+ .text.I2C_WaitOnTXISFlagUntilTimeout
+                0x00000000       0x56 build/stm32l4xx_hal_i2c.o
+ .text.I2C_WaitOnFlagUntilTimeout
+                0x00000000       0x52 build/stm32l4xx_hal_i2c.o
+ .text.I2C_RequestMemoryWrite
+                0x00000000       0x70 build/stm32l4xx_hal_i2c.o
+ .text.I2C_RequestMemoryRead
+                0x00000000       0x70 build/stm32l4xx_hal_i2c.o
+ .text.I2C_WaitOnSTOPFlagUntilTimeout
+                0x00000000       0x50 build/stm32l4xx_hal_i2c.o
+ .text.I2C_WaitOnRXNEFlagUntilTimeout
+                0x00000000       0x98 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_MspInit
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Init
+                0x00000000       0xbc build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_MspDeInit
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_DeInit
+                0x00000000       0x32 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Transmit
+                0x00000000      0x17c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Receive
+                0x00000000      0x17c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Transmit
+                0x00000000      0x18c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Receive
+                0x00000000      0x16a build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Transmit_IT
+                0x00000000       0x98 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Receive_IT
+                0x00000000       0x98 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Transmit_IT
+                0x00000000       0x64 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Receive_IT
+                0x00000000       0x64 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Transmit_DMA
+                0x00000000      0x150 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Receive_DMA
+                0x00000000      0x150 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Transmit_DMA
+                0x00000000       0xec build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Receive_DMA
+                0x00000000       0xf0 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Mem_Write
+                0x00000000      0x1a4 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Mem_Read
+                0x00000000      0x1ac build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Mem_Write_IT
+                0x00000000       0xe4 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Mem_Read_IT
+                0x00000000       0xe4 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Mem_Write_DMA
+                0x00000000      0x168 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Mem_Read_DMA
+                0x00000000      0x16c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_IsDeviceReady
+                0x00000000      0x170 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Seq_Transmit_IT
+                0x00000000       0xb4 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Seq_Transmit_DMA
+                0x00000000      0x16c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Seq_Receive_IT
+                0x00000000       0xb4 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Seq_Receive_DMA
+                0x00000000      0x16c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Seq_Transmit_IT
+                0x00000000       0xd0 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Seq_Transmit_DMA
+                0x00000000      0x198 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Seq_Receive_IT
+                0x00000000       0xd0 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Slave_Seq_Receive_DMA
+                0x00000000      0x194 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_EnableListen_IT
+                0x00000000       0x28 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_DisableListen_IT
+                0x00000000       0x38 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_Master_Abort_IT
+                0x00000000       0x68 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_EV_IRQHandler
+                0x00000000       0x10 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_MasterTxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_MasterRxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITMasterSeqCplt
+                0x00000000       0x54 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_SlaveTxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_SlaveRxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITSlaveSeqCplt
+                0x00000000       0x5c build/stm32l4xx_hal_i2c.o
+ .text.I2C_DMASlaveTransmitCplt
+                0x00000000       0x1e build/stm32l4xx_hal_i2c.o
+ .text.I2C_DMASlaveReceiveCplt
+                0x00000000       0x24 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_AddrCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITAddrCplt
+                0x00000000       0x9c build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_ListenCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITListenCplt
+                0x00000000       0x64 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_MemTxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_MemRxCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_ErrorCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_AbortCpltCallback
+                0x00000000        0x2 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITError
+                0x00000000       0xf4 build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITSlaveCplt
+                0x00000000      0x120 build/stm32l4xx_hal_i2c.o
+ .text.I2C_Slave_ISR_IT
+                0x00000000      0x14e build/stm32l4xx_hal_i2c.o
+ .text.I2C_ITMasterCplt
+                0x00000000       0xe2 build/stm32l4xx_hal_i2c.o
+ .text.I2C_Master_ISR_IT
+                0x00000000      0x17c build/stm32l4xx_hal_i2c.o
+ .text.I2C_Slave_ISR_DMA
+                0x00000000       0xf8 build/stm32l4xx_hal_i2c.o
+ .text.I2C_Master_ISR_DMA
+                0x00000000      0x140 build/stm32l4xx_hal_i2c.o
+ .text.I2C_DMAError
+                0x00000000       0x16 build/stm32l4xx_hal_i2c.o
+ .text.I2C_DMAMasterTransmitCplt
+                0x00000000       0x5a build/stm32l4xx_hal_i2c.o
+ .text.I2C_DMAMasterReceiveCplt
+                0x00000000       0x5a build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_ER_IRQHandler
+                0x00000000       0x6a build/stm32l4xx_hal_i2c.o
+ .text.I2C_DMAAbort
+                0x00000000       0x2a build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_GetState
+                0x00000000        0x6 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_GetMode
+                0x00000000        0x6 build/stm32l4xx_hal_i2c.o
+ .text.HAL_I2C_GetError
+                0x00000000        0x4 build/stm32l4xx_hal_i2c.o
+ .debug_info    0x00000000     0x3bfd build/stm32l4xx_hal_i2c.o
+ .debug_abbrev  0x00000000      0x2ab build/stm32l4xx_hal_i2c.o
+ .debug_loc     0x00000000     0x516f build/stm32l4xx_hal_i2c.o
+ .debug_aranges
+                0x00000000      0x288 build/stm32l4xx_hal_i2c.o
+ .debug_ranges  0x00000000      0x278 build/stm32l4xx_hal_i2c.o
+ .debug_line    0x00000000     0x1769 build/stm32l4xx_hal_i2c.o
+ .debug_str     0x00000000     0x1151 build/stm32l4xx_hal_i2c.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_i2c.o
+ .debug_frame   0x00000000      0x8fc build/stm32l4xx_hal_i2c.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_i2c.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_i2c_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_i2c_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_i2c_ex.o
+ .text.HAL_I2CEx_ConfigAnalogFilter
+                0x00000000       0x5c build/stm32l4xx_hal_i2c_ex.o
+ .text.HAL_I2CEx_ConfigDigitalFilter
+                0x00000000       0x58 build/stm32l4xx_hal_i2c_ex.o
+ .text.HAL_I2CEx_EnableWakeUp
+                0x00000000       0x54 build/stm32l4xx_hal_i2c_ex.o
+ .text.HAL_I2CEx_DisableWakeUp
+                0x00000000       0x54 build/stm32l4xx_hal_i2c_ex.o
+ .text.HAL_I2CEx_EnableFastModePlus
+                0x00000000       0x2c build/stm32l4xx_hal_i2c_ex.o
+ .text.HAL_I2CEx_DisableFastModePlus
+                0x00000000       0x2c build/stm32l4xx_hal_i2c_ex.o
+ .debug_info    0x00000000      0xc70 build/stm32l4xx_hal_i2c_ex.o
+ .debug_abbrev  0x00000000      0x1b8 build/stm32l4xx_hal_i2c_ex.o
+ .debug_loc     0x00000000      0x25c build/stm32l4xx_hal_i2c_ex.o
+ .debug_aranges
+                0x00000000       0x48 build/stm32l4xx_hal_i2c_ex.o
+ .debug_ranges  0x00000000       0x38 build/stm32l4xx_hal_i2c_ex.o
+ .debug_line    0x00000000      0x462 build/stm32l4xx_hal_i2c_ex.o
+ .debug_str     0x00000000      0xb04 build/stm32l4xx_hal_i2c_ex.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_i2c_ex.o
+ .debug_frame   0x00000000       0x80 build/stm32l4xx_hal_i2c_ex.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_i2c_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_rcc.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_rcc.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_DeInit
+                0x00000000       0xe0 build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_MCOConfig
+                0x00000000       0x4c build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_GetOscConfig
+                0x00000000      0x148 build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_GetClockConfig
+                0x00000000       0x3c build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_EnableCSS
+                0x00000000       0x10 build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_CSSCallback
+                0x00000000        0x2 build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_NMI_IRQHandler
+                0x00000000       0x20 build/stm32l4xx_hal_rcc.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_rcc_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_rcc_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_GetPeriphCLKConfig
+                0x00000000       0x88 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_GetPeriphCLKFreq
+                0x00000000      0x568 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_WakeUpStopCLKConfig
+                0x00000000       0x14 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_StandbyMSIRangeConfig
+                0x00000000       0x18 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_EnableLSECSS
+                0x00000000       0x14 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_DisableLSECSS
+                0x00000000       0x1c build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_EnableLSECSS_IT
+                0x00000000       0x30 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_LSECSS_Callback
+                0x00000000        0x2 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_LSECSS_IRQHandler
+                0x00000000       0x20 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_EnableLSCO
+                0x00000000       0xa0 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_DisableLSCO
+                0x00000000       0x6c build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_EnableMSIPLLMode
+                0x00000000       0x10 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_DisableMSIPLLMode
+                0x00000000       0x10 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRSConfig
+                0x00000000       0x4c build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRSSoftwareSynchronizationGenerate
+                0x00000000       0x10 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRSGetSynchronizationInfo
+                0x00000000       0x24 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRSWaitSynchronization
+                0x00000000       0xac build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRS_SyncOkCallback
+                0x00000000        0x2 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRS_SyncWarnCallback
+                0x00000000        0x2 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRS_ExpectedSyncCallback
+                0x00000000        0x2 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRS_ErrorCallback
+                0x00000000        0x2 build/stm32l4xx_hal_rcc_ex.o
+ .text.HAL_RCCEx_CRS_IRQHandler
+                0x00000000       0x8c build/stm32l4xx_hal_rcc_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_flash.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_flash.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_flash.o
+ .text.FLASH_Program_DoubleWord
+                0x00000000       0x20 build/stm32l4xx_hal_flash.o
+ .text.FLASH_Program_Fast
+                0x00000000       0x34 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_Program_IT
+                0x00000000       0x88 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_EndOfOperationCallback
+                0x00000000        0x2 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_OperationErrorCallback
+                0x00000000        0x2 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_IRQHandler
+                0x00000000      0x14c build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_Unlock
+                0x00000000       0x30 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_Lock
+                0x00000000       0x14 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_OB_Unlock
+                0x00000000       0x28 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_OB_Lock
+                0x00000000       0x14 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_GetError
+                0x00000000        0xc build/stm32l4xx_hal_flash.o
+ .text.FLASH_WaitForLastOperation
+                0x00000000       0x90 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_Program
+                0x00000000       0xb0 build/stm32l4xx_hal_flash.o
+ .text.HAL_FLASH_OB_Launch
+                0x00000000       0x1c build/stm32l4xx_hal_flash.o
+ .data.pFlash   0x00000000       0x20 build/stm32l4xx_hal_flash.o
+ .debug_info    0x00000000      0x8d5 build/stm32l4xx_hal_flash.o
+ .debug_abbrev  0x00000000      0x319 build/stm32l4xx_hal_flash.o
+ .debug_loc     0x00000000      0x5c2 build/stm32l4xx_hal_flash.o
+ .debug_aranges
+                0x00000000       0x88 build/stm32l4xx_hal_flash.o
+ .debug_ranges  0x00000000       0x78 build/stm32l4xx_hal_flash.o
+ .debug_line    0x00000000      0x53d build/stm32l4xx_hal_flash.o
+ .debug_str     0x00000000      0x6e6 build/stm32l4xx_hal_flash.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_flash.o
+ .debug_frame   0x00000000      0x140 build/stm32l4xx_hal_flash.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_flash.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_flash_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_flash_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_MassErase
+                0x00000000       0x20 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_GetWRP
+                0x00000000       0x34 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_GetRDP
+                0x00000000       0x20 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_GetUser
+                0x00000000       0x10 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_GetPCROP
+                0x00000000       0x44 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_WRPConfig
+                0x00000000       0x60 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_RDPConfig
+                0x00000000       0x40 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_UserConfig
+                0x00000000      0x118 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_OB_PCROPConfig
+                0x00000000       0x78 build/stm32l4xx_hal_flash_ex.o
+ .text.HAL_FLASHEx_OBProgram
+                0x00000000       0x94 build/stm32l4xx_hal_flash_ex.o
+ .text.HAL_FLASHEx_OBGetConfig
+                0x00000000       0x4e build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_PageErase
+                0x00000000       0x28 build/stm32l4xx_hal_flash_ex.o
+ .text.HAL_FLASHEx_Erase_IT
+                0x00000000       0xb8 build/stm32l4xx_hal_flash_ex.o
+ .text.FLASH_FlushCaches
+                0x00000000       0x5c build/stm32l4xx_hal_flash_ex.o
+ .text.HAL_FLASHEx_Erase
+                0x00000000       0xf4 build/stm32l4xx_hal_flash_ex.o
+ .debug_info    0x00000000      0xa54 build/stm32l4xx_hal_flash_ex.o
+ .debug_abbrev  0x00000000      0x26c build/stm32l4xx_hal_flash_ex.o
+ .debug_loc     0x00000000      0x751 build/stm32l4xx_hal_flash_ex.o
+ .debug_aranges
+                0x00000000       0x90 build/stm32l4xx_hal_flash_ex.o
+ .debug_ranges  0x00000000       0x80 build/stm32l4xx_hal_flash_ex.o
+ .debug_line    0x00000000      0x559 build/stm32l4xx_hal_flash_ex.o
+ .debug_str     0x00000000      0x738 build/stm32l4xx_hal_flash_ex.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_flash_ex.o
+ .debug_frame   0x00000000      0x168 build/stm32l4xx_hal_flash_ex.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_flash_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_flash_ramfunc.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_flash_ramfunc.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_flash_ramfunc.o
+ .RamFunc       0x00000000       0x48 build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_info    0x00000000      0x3db build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_abbrev  0x00000000      0x103 build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_aranges
+                0x00000000       0x28 build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_ranges  0x00000000       0x18 build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_line    0x00000000      0x30a build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_str     0x00000000      0x4ed build/stm32l4xx_hal_flash_ramfunc.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_flash_ramfunc.o
+ .debug_frame   0x00000000       0x30 build/stm32l4xx_hal_flash_ramfunc.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_flash_ramfunc.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_gpio.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_gpio.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_gpio.o
+ .text.HAL_GPIO_DeInit
+                0x00000000       0xf4 build/stm32l4xx_hal_gpio.o
+ .text.HAL_GPIO_ReadPin
+                0x00000000        0xe build/stm32l4xx_hal_gpio.o
+ .text.HAL_GPIO_TogglePin
+                0x00000000        0xe build/stm32l4xx_hal_gpio.o
+ .text.HAL_GPIO_LockPin
+                0x00000000       0x2e build/stm32l4xx_hal_gpio.o
+ .text.HAL_GPIO_EXTI_Callback
+                0x00000000        0x2 build/stm32l4xx_hal_gpio.o
+ .text.HAL_GPIO_EXTI_IRQHandler
+                0x00000000       0x1c build/stm32l4xx_hal_gpio.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_dma.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_dma.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_dma.o
+ .text.DMA_SetConfig
+                0x00000000       0x30 build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_DeInit
+                0x00000000       0xc8 build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_Start
+                0x00000000       0x52 build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_Start_IT
+                0x00000000       0x76 build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_Abort
+                0x00000000       0x4a build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_PollForTransfer
+                0x00000000       0xda build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_RegisterCallback
+                0x00000000       0x50 build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_UnRegisterCallback
+                0x00000000       0x5e build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_GetState
+                0x00000000        0x6 build/stm32l4xx_hal_dma.o
+ .text.HAL_DMA_GetError
+                0x00000000        0x4 build/stm32l4xx_hal_dma.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_dma_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_dma_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_dma_ex.o
+ .debug_info    0x00000000      0x295 build/stm32l4xx_hal_dma_ex.o
+ .debug_abbrev  0x00000000       0xab build/stm32l4xx_hal_dma_ex.o
+ .debug_aranges
+                0x00000000       0x18 build/stm32l4xx_hal_dma_ex.o
+ .debug_line    0x00000000      0x268 build/stm32l4xx_hal_dma_ex.o
+ .debug_str     0x00000000      0x419 build/stm32l4xx_hal_dma_ex.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_dma_ex.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_dma_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_pwr.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_pwr.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_DeInit
+                0x00000000       0x18 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnableBkUpAccess
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_DisableBkUpAccess
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_ConfigPVD
+                0x00000000       0x84 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnablePVD
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_DisablePVD
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnableWakeUpPin
+                0x00000000       0x20 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_DisableWakeUpPin
+                0x00000000       0x14 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnterSLEEPMode
+                0x00000000       0x4c build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnterSTOPMode
+                0x00000000       0x18 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnterSTANDBYMode
+                0x00000000       0x24 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnableSleepOnExit
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_DisableSleepOnExit
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_EnableSEVOnPend
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_DisableSEVOnPend
+                0x00000000       0x10 build/stm32l4xx_hal_pwr.o
+ .text.HAL_PWR_PVDCallback
+                0x00000000        0x2 build/stm32l4xx_hal_pwr.o
+ .debug_info    0x00000000      0xc04 build/stm32l4xx_hal_pwr.o
+ .debug_abbrev  0x00000000      0x1a7 build/stm32l4xx_hal_pwr.o
+ .debug_loc     0x00000000      0x1bd build/stm32l4xx_hal_pwr.o
+ .debug_aranges
+                0x00000000       0x98 build/stm32l4xx_hal_pwr.o
+ .debug_ranges  0x00000000       0x88 build/stm32l4xx_hal_pwr.o
+ .debug_line    0x00000000      0x470 build/stm32l4xx_hal_pwr.o
+ .debug_str     0x00000000      0x8ce build/stm32l4xx_hal_pwr.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_pwr.o
+ .debug_frame   0x00000000      0x120 build/stm32l4xx_hal_pwr.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_pwr.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_pwr_ex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_pwr_ex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableBatteryCharging
+                0x00000000       0x1c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableBatteryCharging
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableVddUSB
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableVddUSB
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableInternalWakeUpLine
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableInternalWakeUpLine
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableGPIOPullUp
+                0x00000000       0x8c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableGPIOPullUp
+                0x00000000       0x68 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableGPIOPullDown
+                0x00000000       0x8c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableGPIOPullDown
+                0x00000000       0x6c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnablePullUpPullDownConfig
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisablePullUpPullDownConfig
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableSRAM2ContentRetention
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableSRAM2ContentRetention
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableBORPVD_ULP
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableBORPVD_ULP
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableExtSMPS_0V95
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableExtSMPS_0V95
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnablePVM1
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisablePVM1
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnablePVM3
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisablePVM3
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnablePVM4
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisablePVM4
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_ConfigPVM
+                0x00000000      0x16c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnableLowPowerRunMode
+                0x00000000       0x10 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_DisableLowPowerRunMode
+                0x00000000       0x50 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnterSTOP0Mode
+                0x00000000       0x38 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnterSTOP1Mode
+                0x00000000       0x3c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnterSTOP2Mode
+                0x00000000       0x3c build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_EnterSHUTDOWNMode
+                0x00000000       0x24 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_PVM1Callback
+                0x00000000        0x2 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_PVM3Callback
+                0x00000000        0x2 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_PVM4Callback
+                0x00000000        0x2 build/stm32l4xx_hal_pwr_ex.o
+ .text.HAL_PWREx_PVD_PVM_IRQHandler
+                0x00000000       0x64 build/stm32l4xx_hal_pwr_ex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_cortex.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_cortex.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_DisableIRQ
+                0x00000000       0x24 build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_SystemReset
+                0x00000000       0x24 build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_GetPriorityGrouping
+                0x00000000       0x10 build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_GetPriority
+                0x00000000       0x60 build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_SetPendingIRQ
+                0x00000000       0x1c build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_GetPendingIRQ
+                0x00000000       0x24 build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_ClearPendingIRQ
+                0x00000000       0x1c build/stm32l4xx_hal_cortex.o
+ .text.HAL_NVIC_GetActive
+                0x00000000       0x24 build/stm32l4xx_hal_cortex.o
+ .text.HAL_SYSTICK_CLKSourceConfig
+                0x00000000       0x20 build/stm32l4xx_hal_cortex.o
+ .text.HAL_SYSTICK_Callback
+                0x00000000        0x2 build/stm32l4xx_hal_cortex.o
+ .text.HAL_SYSTICK_IRQHandler
+                0x00000000        0x8 build/stm32l4xx_hal_cortex.o
+ .text.HAL_MPU_Disable
+                0x00000000       0x20 build/stm32l4xx_hal_cortex.o
+ .text.HAL_MPU_Enable
+                0x00000000       0x24 build/stm32l4xx_hal_cortex.o
+ .text.HAL_MPU_ConfigRegion
+                0x00000000       0x54 build/stm32l4xx_hal_cortex.o
+ .text          0x00000000        0x0 build/stm32l4xx_hal_exti.o
+ .data          0x00000000        0x0 build/stm32l4xx_hal_exti.o
+ .bss           0x00000000        0x0 build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_SetConfigLine
+                0x00000000       0xdc build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_GetConfigLine
+                0x00000000       0xbc build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_ClearConfigLine
+                0x00000000       0x90 build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_RegisterCallback
+                0x00000000        0xc build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_GetHandle
+                0x00000000        0xc build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_IRQHandler
+                0x00000000       0x2c build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_GetPending
+                0x00000000       0x20 build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_ClearPending
+                0x00000000       0x1c build/stm32l4xx_hal_exti.o
+ .text.HAL_EXTI_GenerateSWI
+                0x00000000       0x1c build/stm32l4xx_hal_exti.o
+ .debug_info    0x00000000      0x8f4 build/stm32l4xx_hal_exti.o
+ .debug_abbrev  0x00000000      0x1d9 build/stm32l4xx_hal_exti.o
+ .debug_loc     0x00000000      0xb1d build/stm32l4xx_hal_exti.o
+ .debug_aranges
+                0x00000000       0x60 build/stm32l4xx_hal_exti.o
+ .debug_ranges  0x00000000       0x50 build/stm32l4xx_hal_exti.o
+ .debug_line    0x00000000      0x46e build/stm32l4xx_hal_exti.o
+ .debug_str     0x00000000      0x6b4 build/stm32l4xx_hal_exti.o
+ .comment       0x00000000       0x7f build/stm32l4xx_hal_exti.o
+ .debug_frame   0x00000000       0xf4 build/stm32l4xx_hal_exti.o
+ .ARM.attributes
+                0x00000000       0x39 build/stm32l4xx_hal_exti.o
+ .text          0x00000000        0x0 build/system_stm32l4xx.o
+ .data          0x00000000        0x0 build/system_stm32l4xx.o
+ .bss           0x00000000        0x0 build/system_stm32l4xx.o
+ .text.SystemCoreClockUpdate
+                0x00000000       0xd8 build/system_stm32l4xx.o
+ .text          0x00000000        0x0 build/syscalls.o
+ .data          0x00000000        0x0 build/syscalls.o
+ .bss           0x00000000        0x0 build/syscalls.o
+ .text.initialise_monitor_handles
+                0x00000000        0x2 build/syscalls.o
+ .text._getpid  0x00000000        0x4 build/syscalls.o
+ .text._kill    0x00000000       0x10 build/syscalls.o
+ .text._exit    0x00000000        0xc build/syscalls.o
+ .text._read    0x00000000       0x1c build/syscalls.o
+ .text._write   0x00000000       0x1c build/syscalls.o
+ .text._sbrk    0x00000000       0x3c build/syscalls.o
+ .text._close   0x00000000        0x6 build/syscalls.o
+ .text._fstat   0x00000000        0xa build/syscalls.o
+ .text._isatty  0x00000000        0x4 build/syscalls.o
+ .text._lseek   0x00000000        0x4 build/syscalls.o
+ .text._open    0x00000000        0xa build/syscalls.o
+ .text._wait    0x00000000       0x10 build/syscalls.o
+ .text._unlink  0x00000000       0x10 build/syscalls.o
+ .text._times   0x00000000        0x6 build/syscalls.o
+ .text._stat    0x00000000        0xa build/syscalls.o
+ .text._link    0x00000000       0x10 build/syscalls.o
+ .text._fork    0x00000000       0x10 build/syscalls.o
+ .text._execve  0x00000000       0x10 build/syscalls.o
+ .bss.__env     0x00000000        0x4 build/syscalls.o
+ .bss.heap_end.7234
+                0x00000000        0x4 build/syscalls.o
+ .data.environ  0x00000000        0x4 build/syscalls.o
+ .debug_info    0x00000000     0x114b build/syscalls.o
+ .debug_abbrev  0x00000000      0x2d3 build/syscalls.o
+ .debug_loc     0x00000000      0x51b build/syscalls.o
+ .debug_aranges
+                0x00000000       0xb0 build/syscalls.o
+ .debug_ranges  0x00000000       0xa0 build/syscalls.o
+ .debug_line    0x00000000      0x3ac build/syscalls.o
+ .debug_str     0x00000000      0x82f build/syscalls.o
+ .comment       0x00000000       0x7f build/syscalls.o
+ .debug_frame   0x00000000      0x1a8 build/syscalls.o
+ .ARM.attributes
+                0x00000000       0x39 build/syscalls.o
+ .text          0x00000000        0x0 build/vcp.o
+ .data          0x00000000        0x0 build/vcp.o
+ .bss           0x00000000        0x0 build/vcp.o
+ .text          0x00000000        0x0 build/strfunc.o
+ .data          0x00000000        0x0 build/strfunc.o
+ .bss           0x00000000        0x0 build/strfunc.o
+ .text.nextChar
+                0x00000000       0x12 build/strfunc.o
+ .text.isNextWord
+                0x00000000       0x26 build/strfunc.o
+ .text.xstrcpy  0x00000000       0x1e build/strfunc.o
+ .text.fatoi    0x00000000       0xb8 build/strfunc.o
+ .text.nextDouble
+                0x00000000       0x1e build/strfunc.o
+ .text.xatoi    0x00000000       0xbc build/strfunc.o
+ .text          0x00000000        0x0 build/fifo.o
+ .data          0x00000000        0x0 build/fifo.o
+ .bss           0x00000000        0x0 build/fifo.o
+ .text.fifo_free
+                0x00000000        0xe build/fifo.o
+ .text          0x00000000       0x14 build/startup_stm32l412xx.o
+ .data          0x00000000        0x0 build/startup_stm32l412xx.o
+ .bss           0x00000000        0x0 build/startup_stm32l412xx.o
+ .text          0x00000000        0x0 build/console.o
+ .data          0x00000000        0x0 build/console.o
+ .bss           0x00000000        0x0 build/console.o
+ .text._ZN7Console5xgetsEPc
+                0x00000000       0x32 build/console.o
+ .text._ZN7Console8xgetcharEv
+                0x00000000       0x1a build/console.o
+ .text._ZN7Console5kbhitEv
+                0x00000000        0xc build/console.o
+ .text._ZN7Console10historyGetEv
+                0x00000000       0x10 build/console.o
+ .text._ZN7ConsoleC2EP7_StdOutPKc
+                0x00000000        0xc build/console.o
+ .text._ZN7Console7getlineEPch
+                0x00000000       0xd0 build/console.o
+ .group         0x00000000        0x8 build/app.o
+ .group         0x00000000        0x8 build/app.o
+ .group         0x00000000        0x8 build/app.o
+ .group         0x00000000        0x8 build/app.o
+ .group         0x00000000        0xc build/app.o
+ .group         0x00000000        0xc build/app.o
+ .group         0x00000000        0xc build/app.o
+ .group         0x00000000        0xc build/app.o
+ .text          0x00000000        0x0 build/app.o
+ .data          0x00000000        0x0 build/app.o
+ .bss           0x00000000        0x0 build/app.o
+ .group         0x00000000        0x8 build/cmdmem.o
+ .text          0x00000000        0x0 build/cmdmem.o
+ .data          0x00000000        0x0 build/cmdmem.o
+ .bss           0x00000000        0x0 build/cmdmem.o
+ .text          0x00000000      0x378 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+ .debug_frame   0x00000000       0xac c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+ .ARM.attributes
+                0x00000000       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_addsubdf3.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_muldivdf3.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_muldivdf3.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_fixdfsi.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_fixdfsi.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+ .ARM.extab     0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_dvmd_tls.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_dvmd_tls.o)
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .text.__errno  0x00000000        0xc c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .debug_frame   0x00000000       0x20 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .ARM.attributes
+                0x00000000       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-errno.o)
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+ .text.exit     0x00000000       0x28 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+ .debug_frame   0x00000000       0x28 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+ .ARM.attributes
+                0x00000000       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-exit.o)
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .data._impure_ptr
+                0x00000000        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .data.impure_data
+                0x00000000       0x60 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .rodata._global_impure_ptr
+                0x00000000        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .ARM.attributes
+                0x00000000       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-impure.o)
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtend.o
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtend.o
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtend.o
+ .eh_frame      0x00000000        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtend.o
+ .ARM.attributes
+                0x00000000       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtend.o
+ .text          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+ .data          0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+ .bss           0x00000000        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+
+Memory Configuration
+
+Name             Origin             Length             Attributes
+RAM              0x20000000         0x0000a000         xrw
+FLASH            0x08000000         0x00020000         xr
+*default*        0x00000000         0xffffffff
+
+Linker script and memory map
+
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard/crt0.o
+LOAD build/main.o
+LOAD build/stm32l4xx_it.o
+LOAD build/stm32l4xx_hal_msp.o
+LOAD build/stm32l4xx_hal_tim.o
+LOAD build/stm32l4xx_hal_tim_ex.o
+LOAD build/stm32l4xx_hal_uart.o
+LOAD build/stm32l4xx_hal_uart_ex.o
+LOAD build/stm32l4xx_hal.o
+LOAD build/stm32l4xx_hal_i2c.o
+LOAD build/stm32l4xx_hal_i2c_ex.o
+LOAD build/stm32l4xx_hal_rcc.o
+LOAD build/stm32l4xx_hal_rcc_ex.o
+LOAD build/stm32l4xx_hal_flash.o
+LOAD build/stm32l4xx_hal_flash_ex.o
+LOAD build/stm32l4xx_hal_flash_ramfunc.o
+LOAD build/stm32l4xx_hal_gpio.o
+LOAD build/stm32l4xx_hal_dma.o
+LOAD build/stm32l4xx_hal_dma_ex.o
+LOAD build/stm32l4xx_hal_pwr.o
+LOAD build/stm32l4xx_hal_pwr_ex.o
+LOAD build/stm32l4xx_hal_cortex.o
+LOAD build/stm32l4xx_hal_exti.o
+LOAD build/system_stm32l4xx.o
+LOAD build/syscalls.o
+LOAD build/vcp.o
+LOAD build/strfunc.o
+LOAD build/fifo.o
+LOAD build/startup_stm32l412xx.o
+LOAD build/console.o
+LOAD build/app.o
+LOAD build/cmdmem.o
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libm.a
+START GROUP
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a
+END GROUP
+START GROUP
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libnosys.a
+END GROUP
+START GROUP
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libnosys.a
+END GROUP
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtend.o
+LOAD c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+                0x2000a000                _estack = 0x2000a000
+                0x00000200                _Min_Heap_Size = 0x200
+                0x00000400                _Min_Stack_Size = 0x400
+
+.isr_vector     0x08000000      0x190
+                0x08000000                . = ALIGN (0x8)
+ *(.isr_vector)
+ .isr_vector    0x08000000      0x18c build/startup_stm32l412xx.o
+                0x08000000                g_pfnVectors
+                0x08000190                . = ALIGN (0x8)
+ *fill*         0x0800018c        0x4 
+
+.text           0x08000190     0x3230
+                0x08000190                . = ALIGN (0x8)
+ *(.text)
+ .text          0x08000190       0x40 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .text          0x080001d0      0x424 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_muldivdf3.o)
+                0x080001d0                __aeabi_dmul
+                0x080001d0                __muldf3
+                0x08000424                __divdf3
+                0x08000424                __aeabi_ddiv
+ .text          0x080005f4       0x50 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_fixdfsi.o)
+                0x080005f4                __aeabi_d2iz
+                0x080005f4                __fixdfsi
+ .text          0x08000644       0x30 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+                0x08000644                __aeabi_uldivmod
+ .text          0x08000674      0x2cc c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+                0x08000674                __udivmoddi4
+ .text          0x08000940        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_dvmd_tls.o)
+                0x08000940                __aeabi_idiv0
+                0x08000940                __aeabi_ldiv0
+ *(.text*)
+ .text.MX_GPIO_Init
+                0x08000944       0x64 build/main.o
+ .text.MX_DMA_Init
+                0x080009a8       0x44 build/main.o
+ .text.MX_USART2_UART_Init
+                0x080009ec       0x30 build/main.o
+ .text.SystemClock_Config
+                0x08000a1c       0x74 build/main.o
+                0x08000a1c                SystemClock_Config
+ .text.main     0x08000a90       0x1c build/main.o
+                0x08000a90                main
+ .text.Error_Handler
+                0x08000aac        0x2 build/main.o
+                0x08000aac                Error_Handler
+ .text.NMI_Handler
+                0x08000aae        0x2 build/stm32l4xx_it.o
+                0x08000aae                NMI_Handler
+ .text.HardFault_Handler
+                0x08000ab0        0x2 build/stm32l4xx_it.o
+                0x08000ab0                HardFault_Handler
+ .text.MemManage_Handler
+                0x08000ab2        0x2 build/stm32l4xx_it.o
+                0x08000ab2                MemManage_Handler
+ .text.BusFault_Handler
+                0x08000ab4        0x2 build/stm32l4xx_it.o
+                0x08000ab4                BusFault_Handler
+ .text.UsageFault_Handler
+                0x08000ab6        0x2 build/stm32l4xx_it.o
+                0x08000ab6                UsageFault_Handler
+ .text.SVC_Handler
+                0x08000ab8        0x2 build/stm32l4xx_it.o
+                0x08000ab8                SVC_Handler
+ .text.DebugMon_Handler
+                0x08000aba        0x2 build/stm32l4xx_it.o
+                0x08000aba                DebugMon_Handler
+ .text.PendSV_Handler
+                0x08000abc        0x2 build/stm32l4xx_it.o
+                0x08000abc                PendSV_Handler
+ .text.SysTick_Handler
+                0x08000abe        0x8 build/stm32l4xx_it.o
+                0x08000abe                SysTick_Handler
+ *fill*         0x08000ac6        0x2 
+ .text.DMA1_Channel6_IRQHandler
+                0x08000ac8       0x10 build/stm32l4xx_it.o
+                0x08000ac8                DMA1_Channel6_IRQHandler
+ .text.DMA1_Channel7_IRQHandler
+                0x08000ad8       0x10 build/stm32l4xx_it.o
+                0x08000ad8                DMA1_Channel7_IRQHandler
+ .text.USART2_IRQHandler
+                0x08000ae8       0x10 build/stm32l4xx_it.o
+                0x08000ae8                USART2_IRQHandler
+ .text.HAL_MspInit
+                0x08000af8       0x30 build/stm32l4xx_hal_msp.o
+                0x08000af8                HAL_MspInit
+ .text.HAL_UART_MspInit
+                0x08000b28       0xfc build/stm32l4xx_hal_msp.o
+                0x08000b28                HAL_UART_MspInit
+ .text.UART_EndRxTransfer
+                0x08000c24       0x1e build/stm32l4xx_hal_uart.o
+ *fill*         0x08000c42        0x2 
+ .text.HAL_UART_Receive_IT
+                0x08000c44       0xd4 build/stm32l4xx_hal_uart.o
+                0x08000c44                HAL_UART_Receive_IT
+ .text.HAL_UART_TxCpltCallback
+                0x08000d18        0x2 build/stm32l4xx_hal_uart.o
+                0x08000d18                HAL_UART_TxCpltCallback
+ .text.UART_EndTransmit_IT
+                0x08000d1a       0x1a build/stm32l4xx_hal_uart.o
+ .text.UART_RxISR_8BIT
+                0x08000d34       0x62 build/stm32l4xx_hal_uart.o
+ .text.UART_RxISR_16BIT
+                0x08000d96       0x60 build/stm32l4xx_hal_uart.o
+ .text.HAL_UART_ErrorCallback
+                0x08000df6        0x2 build/stm32l4xx_hal_uart.o
+                0x08000df6                HAL_UART_ErrorCallback
+ .text.HAL_UART_IRQHandler
+                0x08000df8      0x15c build/stm32l4xx_hal_uart.o
+                0x08000df8                HAL_UART_IRQHandler
+ .text.UART_DMAAbortOnError
+                0x08000f54       0x14 build/stm32l4xx_hal_uart.o
+ .text.UART_SetConfig
+                0x08000f68      0x3a8 build/stm32l4xx_hal_uart.o
+                0x08000f68                UART_SetConfig
+ .text.UART_AdvFeatureConfig
+                0x08001310       0xca build/stm32l4xx_hal_uart.o
+                0x08001310                UART_AdvFeatureConfig
+ .text.UART_WaitOnFlagUntilTimeout
+                0x080013da       0x60 build/stm32l4xx_hal_uart.o
+                0x080013da                UART_WaitOnFlagUntilTimeout
+ .text.HAL_UART_Transmit
+                0x0800143a       0xd8 build/stm32l4xx_hal_uart.o
+                0x0800143a                HAL_UART_Transmit
+ .text.UART_CheckIdleState
+                0x08001512       0x6c build/stm32l4xx_hal_uart.o
+                0x08001512                UART_CheckIdleState
+ .text.HAL_UART_Init
+                0x0800157e       0x62 build/stm32l4xx_hal_uart.o
+                0x0800157e                HAL_UART_Init
+ .text.HAL_UARTEx_WakeupCallback
+                0x080015e0        0x2 build/stm32l4xx_hal_uart_ex.o
+                0x080015e0                HAL_UARTEx_WakeupCallback
+ *fill*         0x080015e2        0x2 
+ .text.HAL_InitTick
+                0x080015e4       0x50 build/stm32l4xx_hal.o
+                0x080015e4                HAL_InitTick
+ .text.HAL_Init
+                0x08001634       0x1e build/stm32l4xx_hal.o
+                0x08001634                HAL_Init
+ *fill*         0x08001652        0x2 
+ .text.HAL_IncTick
+                0x08001654       0x18 build/stm32l4xx_hal.o
+                0x08001654                HAL_IncTick
+ .text.HAL_GetTick
+                0x0800166c        0xc build/stm32l4xx_hal.o
+                0x0800166c                HAL_GetTick
+ .text.HAL_Delay
+                0x08001678       0x28 build/stm32l4xx_hal.o
+                0x08001678                HAL_Delay
+ .text.RCC_SetFlashLatencyFromMSIRange
+                0x080016a0       0x90 build/stm32l4xx_hal_rcc.o
+ .text.HAL_RCC_GetSysClockFreq
+                0x08001730       0xb4 build/stm32l4xx_hal_rcc.o
+                0x08001730                HAL_RCC_GetSysClockFreq
+ .text.HAL_RCC_OscConfig
+                0x080017e4      0x6a8 build/stm32l4xx_hal_rcc.o
+                0x080017e4                HAL_RCC_OscConfig
+ .text.HAL_RCC_ClockConfig
+                0x08001e8c      0x158 build/stm32l4xx_hal_rcc.o
+                0x08001e8c                HAL_RCC_ClockConfig
+ .text.HAL_RCC_GetHCLKFreq
+                0x08001fe4        0xc build/stm32l4xx_hal_rcc.o
+                0x08001fe4                HAL_RCC_GetHCLKFreq
+ .text.HAL_RCC_GetPCLK1Freq
+                0x08001ff0       0x24 build/stm32l4xx_hal_rcc.o
+                0x08001ff0                HAL_RCC_GetPCLK1Freq
+ .text.HAL_RCC_GetPCLK2Freq
+                0x08002014       0x24 build/stm32l4xx_hal_rcc.o
+                0x08002014                HAL_RCC_GetPCLK2Freq
+ .text.HAL_RCCEx_PeriphCLKConfig
+                0x08002038      0x234 build/stm32l4xx_hal_rcc_ex.o
+                0x08002038                HAL_RCCEx_PeriphCLKConfig
+ .text.HAL_GPIO_Init
+                0x0800226c      0x188 build/stm32l4xx_hal_gpio.o
+                0x0800226c                HAL_GPIO_Init
+ .text.HAL_GPIO_WritePin
+                0x080023f4        0xa build/stm32l4xx_hal_gpio.o
+                0x080023f4                HAL_GPIO_WritePin
+ *fill*         0x080023fe        0x2 
+ .text.HAL_DMA_Init
+                0x08002400       0xf8 build/stm32l4xx_hal_dma.o
+                0x08002400                HAL_DMA_Init
+ .text.HAL_DMA_Abort_IT
+                0x080024f8       0x50 build/stm32l4xx_hal_dma.o
+                0x080024f8                HAL_DMA_Abort_IT
+ .text.HAL_DMA_IRQHandler
+                0x08002548       0xc4 build/stm32l4xx_hal_dma.o
+                0x08002548                HAL_DMA_IRQHandler
+ .text.HAL_PWREx_GetVoltageRange
+                0x0800260c       0x10 build/stm32l4xx_hal_pwr_ex.o
+                0x0800260c                HAL_PWREx_GetVoltageRange
+ .text.HAL_PWREx_ControlVoltageScaling
+                0x0800261c       0x90 build/stm32l4xx_hal_pwr_ex.o
+                0x0800261c                HAL_PWREx_ControlVoltageScaling
+ .text.HAL_NVIC_SetPriorityGrouping
+                0x080026ac       0x24 build/stm32l4xx_hal_cortex.o
+                0x080026ac                HAL_NVIC_SetPriorityGrouping
+ .text.HAL_NVIC_SetPriority
+                0x080026d0       0x68 build/stm32l4xx_hal_cortex.o
+                0x080026d0                HAL_NVIC_SetPriority
+ .text.HAL_NVIC_EnableIRQ
+                0x08002738       0x1c build/stm32l4xx_hal_cortex.o
+                0x08002738                HAL_NVIC_EnableIRQ
+ .text.HAL_SYSTICK_Config
+                0x08002754       0x2c build/stm32l4xx_hal_cortex.o
+                0x08002754                HAL_SYSTICK_Config
+ .text.SystemInit
+                0x08002780       0x48 build/system_stm32l4xx.o
+                0x08002780                SystemInit
+ .text.vc_init  0x080027c8       0x44 build/vcp.o
+                0x080027c8                vc_init
+ .text.vc_putchar
+                0x0800280c       0x20 build/vcp.o
+                0x0800280c                vc_putchar
+ .text.vc_puts  0x0800282c       0x14 build/vcp.o
+                0x0800282c                vc_puts
+ .text.vc_kbhit
+                0x08002840       0x10 build/vcp.o
+                0x08002840                vc_kbhit
+ .text.vc_getchar
+                0x08002850       0x20 build/vcp.o
+                0x08002850                vc_getchar
+ .text.vc_getCharNonBlocking
+                0x08002870       0x10 build/vcp.o
+                0x08002870                vc_getCharNonBlocking
+ .text.HAL_UART_RxCpltCallback
+                0x08002880       0x24 build/vcp.o
+                0x08002880                HAL_UART_RxCpltCallback
+ .text.strlen   0x080028a4       0x14 build/strfunc.o
+                0x080028a4                strlen
+ .text.chrinstr
+                0x080028b8       0x16 build/strfunc.o
+                0x080028b8                chrinstr
+ .text.nextWord
+                0x080028ce       0x10 build/strfunc.o
+                0x080028ce                nextWord
+ .text.strsub   0x080028de       0x3e build/strfunc.o
+                0x080028de                strsub
+ .text.xstrcmp  0x0800291c       0x1a build/strfunc.o
+                0x0800291c                xstrcmp
+ .text.yatoi    0x08002936       0x54 build/strfunc.o
+                0x08002936                yatoi
+ .text.nextInt  0x0800298a       0x1e build/strfunc.o
+                0x0800298a                nextInt
+ .text.hatoi    0x080029a8       0x52 build/strfunc.o
+                0x080029a8                hatoi
+ .text.nextHex  0x080029fa       0x1e build/strfunc.o
+                0x080029fa                nextHex
+ .text.pitoa    0x08002a18       0x8c build/strfunc.o
+                0x08002a18                pitoa
+ .text.pftoa    0x08002aa4       0xe8 build/strfunc.o
+                0x08002aa4                pftoa
+ .text.memcpy   0x08002b8c       0x1c build/strfunc.o
+                0x08002b8c                memcpy
+ .text.memset   0x08002ba8        0xe build/strfunc.o
+                0x08002ba8                memset
+ .text.fifo_init
+                0x08002bb6        0x8 build/fifo.o
+                0x08002bb6                fifo_init
+ .text.fifo_put
+                0x08002bbe       0x26 build/fifo.o
+                0x08002bbe                fifo_put
+ .text.fifo_get
+                0x08002be4       0x28 build/fifo.o
+                0x08002be4                fifo_get
+ .text.fifo_avail
+                0x08002c0c       0x14 build/fifo.o
+                0x08002c0c                fifo_avail
+ .text.fifo_flush
+                0x08002c20        0x8 build/fifo.o
+                0x08002c20                fifo_flush
+ .text.Reset_Handler
+                0x08002c28       0x50 build/startup_stm32l412xx.o
+                0x08002c28                Reset_Handler
+ .text.Default_Handler
+                0x08002c78        0x2 build/startup_stm32l412xx.o
+                0x08002c78                RTC_Alarm_IRQHandler
+                0x08002c78                EXTI2_IRQHandler
+                0x08002c78                TIM1_CC_IRQHandler
+                0x08002c78                TSC_IRQHandler
+                0x08002c78                TIM6_IRQHandler
+                0x08002c78                TAMP_STAMP_IRQHandler
+                0x08002c78                EXTI3_IRQHandler
+                0x08002c78                LPTIM2_IRQHandler
+                0x08002c78                I2C3_ER_IRQHandler
+                0x08002c78                EXTI0_IRQHandler
+                0x08002c78                I2C2_EV_IRQHandler
+                0x08002c78                FPU_IRQHandler
+                0x08002c78                TIM1_UP_TIM16_IRQHandler
+                0x08002c78                ADC1_2_IRQHandler
+                0x08002c78                SPI1_IRQHandler
+                0x08002c78                DMA2_Channel2_IRQHandler
+                0x08002c78                DMA1_Channel4_IRQHandler
+                0x08002c78                USART3_IRQHandler
+                0x08002c78                DMA2_Channel1_IRQHandler
+                0x08002c78                QUADSPI_IRQHandler
+                0x08002c78                I2C1_EV_IRQHandler
+                0x08002c78                DMA2_Channel4_IRQHandler
+                0x08002c78                RCC_IRQHandler
+                0x08002c78                TIM1_TRG_COM_IRQHandler
+                0x08002c78                DMA1_Channel1_IRQHandler
+                0x08002c78                Default_Handler
+                0x08002c78                DMA2_Channel7_IRQHandler
+                0x08002c78                EXTI15_10_IRQHandler
+                0x08002c78                I2C3_EV_IRQHandler
+                0x08002c78                EXTI9_5_IRQHandler
+                0x08002c78                RTC_WKUP_IRQHandler
+                0x08002c78                PVD_PVM_IRQHandler
+                0x08002c78                SPI2_IRQHandler
+                0x08002c78                DMA2_Channel5_IRQHandler
+                0x08002c78                CRS_IRQHandler
+                0x08002c78                DMA1_Channel5_IRQHandler
+                0x08002c78                EXTI4_IRQHandler
+                0x08002c78                RNG_IRQHandler
+                0x08002c78                DMA1_Channel3_IRQHandler
+                0x08002c78                COMP_IRQHandler
+                0x08002c78                WWDG_IRQHandler
+                0x08002c78                LPUART1_IRQHandler
+                0x08002c78                DMA2_Channel6_IRQHandler
+                0x08002c78                TIM2_IRQHandler
+                0x08002c78                EXTI1_IRQHandler
+                0x08002c78                I2C2_ER_IRQHandler
+                0x08002c78                DMA1_Channel2_IRQHandler
+                0x08002c78                FLASH_IRQHandler
+                0x08002c78                USART1_IRQHandler
+                0x08002c78                I2C1_ER_IRQHandler
+                0x08002c78                LPTIM1_IRQHandler
+                0x08002c78                DMA2_Channel3_IRQHandler
+                0x08002c78                TIM1_BRK_TIM15_IRQHandler
+ .text._ZN7ConsoleC2Ev
+                0x08002c7a        0x2 build/console.o
+                0x08002c7a                Console::Console()
+                0x08002c7a                Console::Console()
+ .text._ZN7Console5xputsEPKc
+                0x08002c7c       0x1c build/console.o
+                0x08002c7c                Console::xputs(char const*)
+ .text._ZN7Console10addCommandEP14ConsoleCommand
+                0x08002c98       0x38 build/console.o
+                0x08002c98                Console::addCommand(ConsoleCommand*)
+ .text._ZN7Console12parseCommandEPc
+                0x08002cd0       0x98 build/console.o
+                0x08002cd0                Console::parseCommand(char*)
+ .text._ZN7Console8xputcharEi
+                0x08002d68       0x12 build/console.o
+                0x08002d68                Console::xputchar(int)
+ .text._ZN7Console5printEPKcz
+                0x08002d7a      0x158 build/console.o
+                0x08002d7a                Console::print(char const*, ...)
+ *fill*         0x08002ed2        0x2 
+ .text._ZN7Console11historyDumpEv
+                0x08002ed4       0x34 build/console.o
+                0x08002ed4                Console::historyDump()
+ .text._ZN7Console10historyAddEPc
+                0x08002f08       0x6c build/console.o
+                0x08002f08                Console::historyAdd(char*)
+ .text._ZN7Console11historyBackEv
+                0x08002f74       0x3c build/console.o
+                0x08002f74                Console::historyBack()
+ .text._ZN7Console14historyForwardEv
+                0x08002fb0       0x50 build/console.o
+                0x08002fb0                Console::historyForward()
+ .text._ZN7Console12historyClearEv
+                0x08003000       0x32 build/console.o
+                0x08003000                Console::historyClear()
+ *fill*         0x08003032        0x2 
+ .text._ZN7Console4initEP7_StdOutPKc
+                0x08003034       0x4c build/console.o
+                0x08003034                Console::init(_StdOut*, char const*)
+ .text._ZN7Console10changeLineEPcS0_h
+                0x08003080       0x40 build/console.o
+                0x08003080                Console::changeLine(char*, char*, unsigned char)
+ .text._ZN7Console18getLineNonBlockingEPcPhh
+                0x080030c0       0xe4 build/console.o
+                0x080030c0                Console::getLineNonBlocking(char*, unsigned char*, unsigned char)
+ .text._ZN7Console7processEv
+                0x080031a4       0x34 build/console.o
+                0x080031a4                Console::process()
+ .text._ZN7CmdEcho4initEPv
+                0x080031d8        0x4 build/app.o
+                0x080031d8                CmdEcho::init(void*)
+ .text._ZN7CmdEcho4helpEv
+                0x080031dc        0x2 build/app.o
+                0x080031dc                CmdEcho::help()
+ .text._ZN7CmdHelp4initEPv
+                0x080031de        0x4 build/app.o
+                0x080031de                CmdHelp::init(void*)
+ .text._ZN7CmdHelp7executeEPv
+                0x080031e2        0xc build/app.o
+                0x080031e2                CmdHelp::execute(void*)
+ *fill*         0x080031ee        0x2 
+ .text._ZN7CmdEcho7executeEPv
+                0x080031f0       0x14 build/app.o
+                0x080031f0                CmdEcho::execute(void*)
+ .text._ZN7CmdHelp4helpEv
+                0x08003204       0x3c build/app.o
+                0x08003204                CmdHelp::help()
+ .text.App      0x08003240       0x7c build/app.o
+                0x08003240                App
+ .text._ZN6CmdMem4initEPv
+                0x080032bc        0x4 build/cmdmem.o
+                0x080032bc                CmdMem::init(void*)
+ .text._ZN6CmdMem4helpEv
+                0x080032c0       0x20 build/cmdmem.o
+                0x080032c0                CmdMem::help()
+ .text._ZN6CmdMem7executeEPv
+                0x080032e0       0x7c build/cmdmem.o
+                0x080032e0                CmdMem::execute(void*)
+ .text.__libc_init_array
+                0x0800335c       0x48 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+                0x0800335c                __libc_init_array
+ *(.glue_7)
+ .glue_7        0x080033a4        0x0 linker stubs
+ *(.glue_7t)
+ .glue_7t       0x080033a4        0x0 linker stubs
+ *(.eh_frame)
+ .eh_frame      0x080033a4        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ *(.init)
+ .init          0x080033a4        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x080033a4                _init
+ .init          0x080033a8        0x8 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+ *(.fini)
+ .fini          0x080033b0        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+                0x080033b0                _fini
+ .fini          0x080033b4        0x8 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+                0x080033c0                . = ALIGN (0x8)
+ *fill*         0x080033bc        0x4 
+                0x080033c0                _etext = .
+
+.vfp11_veneer   0x080033c0        0x0
+ .vfp11_veneer  0x080033c0        0x0 linker stubs
+
+.v4_bx          0x080033c0        0x0
+ .v4_bx         0x080033c0        0x0 linker stubs
+
+.iplt           0x080033c0        0x0
+ .iplt          0x080033c0        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+
+.rodata         0x080033c0      0x160
+                0x080033c0                . = ALIGN (0x8)
+ *(.rodata)
+ .rodata        0x080033c0       0x14 build/cmdmem.o
+                0x080033c0                vtable for CmdMem
+ *(.rodata*)
+ .rodata.AHBPrescTable
+                0x080033d4       0x10 build/system_stm32l4xx.o
+                0x080033d4                AHBPrescTable
+ .rodata.APBPrescTable
+                0x080033e4        0x8 build/system_stm32l4xx.o
+                0x080033e4                APBPrescTable
+ .rodata.MSIRangeTable
+                0x080033ec       0x30 build/system_stm32l4xx.o
+                0x080033ec                MSIRangeTable
+ .rodata.str1.4
+                0x0800341c       0x60 build/console.o
+ .rodata._ZTV7CmdEcho
+                0x0800347c       0x14 build/app.o
+                0x0800347c                vtable for CmdEcho
+ .rodata._ZTV7CmdHelp
+                0x08003490       0x14 build/app.o
+                0x08003490                vtable for CmdHelp
+ .rodata._ZN7CmdEcho7executeEPv.str1.4
+                0x080034a4        0x4 build/app.o
+ .rodata._ZN7CmdHelp4helpEv.str1.4
+                0x080034a8       0x1d build/app.o
+ *fill*         0x080034c5        0x3 
+ .rodata.str1.4
+                0x080034c8       0x1c build/app.o
+ .rodata.str1.4
+                0x080034e4       0x38 build/cmdmem.o
+                                 0x36 (size before relaxing)
+                0x08003520                . = ALIGN (0x8)
+ *fill*         0x0800351c        0x4 
+
+.ARM.extab      0x08003520        0x0
+                0x08003520                . = ALIGN (0x8)
+ *(.ARM.extab* .gnu.linkonce.armextab.*)
+                0x08003520                . = ALIGN (0x8)
+
+.ARM            0x08003520        0x8
+                0x08003520                . = ALIGN (0x8)
+                0x08003520                __exidx_start = .
+ *(.ARM.exidx*)
+ .ARM.exidx     0x08003520        0x8 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+                0x08003528                __exidx_end = .
+                0x08003528                . = ALIGN (0x8)
+
+.rel.dyn        0x08003528        0x0
+ .rel.iplt      0x08003528        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+
+.preinit_array  0x08003528        0x0
+                0x08003528                . = ALIGN (0x8)
+                0x08003528                PROVIDE (__preinit_array_start, .)
+ *(.preinit_array*)
+                0x08003528                PROVIDE (__preinit_array_end, .)
+                0x08003528                . = ALIGN (0x8)
+
+.init_array     0x08003528        0x8
+                0x08003528                . = ALIGN (0x8)
+                0x08003528                PROVIDE (__init_array_start, .)
+ *(SORT_BY_NAME(.init_array.*))
+ *(.init_array*)
+ .init_array    0x08003528        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x0800352c                PROVIDE (__init_array_end, .)
+                0x08003530                . = ALIGN (0x8)
+ *fill*         0x0800352c        0x4 
+
+.fini_array     0x08003530        0x8
+                0x08003530                . = ALIGN (0x8)
+                [!provide]                PROVIDE (__fini_array_start, .)
+ *(SORT_BY_NAME(.fini_array.*))
+ *(.fini_array*)
+ .fini_array    0x08003530        0x4 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                [!provide]                PROVIDE (__fini_array_end, .)
+                0x08003538                . = ALIGN (0x8)
+ *fill*         0x08003534        0x4 
+                0x08003538                _sidata = LOADADDR (.data)
+
+.data           0x20000000       0x28 load address 0x08003538
+                0x20000000                . = ALIGN (0x8)
+                0x20000000                _sdata = .
+ *(.data)
+ *(.data*)
+ .data.uwTickFreq
+                0x20000000        0x4 build/stm32l4xx_hal.o
+                0x20000000                uwTickFreq
+ .data.uwTickPrio
+                0x20000004        0x4 build/stm32l4xx_hal.o
+                0x20000004                uwTickPrio
+ .data.SystemCoreClock
+                0x20000008        0x4 build/system_stm32l4xx.o
+                0x20000008                SystemCoreClock
+ .data.vcp      0x2000000c       0x18 build/vcp.o
+                0x2000000c                vcp
+                0x20000028                . = ALIGN (0x8)
+ *fill*         0x20000024        0x4 
+                0x20000028                _edata = .
+
+.igot.plt       0x20000028        0x0 load address 0x08003560
+ .igot.plt      0x20000028        0x0 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+                0x20000028                . = ALIGN (0x4)
+
+.bss            0x20000028      0x57c load address 0x08003560
+                0x20000028                _sbss = .
+                0x20000028                __bss_start__ = _sbss
+ *(.bss)
+ .bss           0x20000028       0x1c c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ *(.bss*)
+ .bss.rx        0x20000044        0x1 build/vcp.o
+ *fill*         0x20000045        0x3 
+ .bss.rxfifo    0x20000048      0x20c build/vcp.o
+ .bss.txfifo    0x20000254      0x20c build/vcp.o
+ .bss.pdst.6226
+                0x20000460        0x4 build/strfunc.o
+ .bss.pstr.6225
+                0x20000464        0x4 build/strfunc.o
+ .bss.s.6205    0x20000468       0x14 build/strfunc.o
+ .bss.s.6224    0x2000047c       0x14 build/strfunc.o
+ *(COMMON)
+ COMMON         0x20000490      0x110 build/main.o
+                0x20000490                hdma_usart2_rx
+                0x200004d8                hdma_usart2_tx
+                0x20000520                huart2
+ COMMON         0x200005a0        0x4 build/stm32l4xx_hal.o
+                0x200005a0                uwTick
+                0x200005a4                . = ALIGN (0x4)
+                0x200005a4                _ebss = .
+                0x200005a4                __bss_end__ = _ebss
+
+._user_heap_stack
+                0x200005a4      0x604 load address 0x08003560
+                0x200005a8                . = ALIGN (0x8)
+ *fill*         0x200005a4        0x4 
+                0x200005a8                PROVIDE (end, .)
+                [!provide]                PROVIDE (_end, .)
+                0x200007a8                . = (. + _Min_Heap_Size)
+ *fill*         0x200005a8      0x200 
+                0x20000ba8                . = (. + _Min_Stack_Size)
+ *fill*         0x200007a8      0x400 
+                0x20000ba8                . = ALIGN (0x8)
+
+/DISCARD/
+ libc.a(*)
+ libm.a(*)
+ libgcc.a(*)
+
+.ARM.attributes
+                0x00000000       0x30
+ *(.ARM.attributes)
+ .ARM.attributes
+                0x00000000       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crti.o
+ .ARM.attributes
+                0x00000022       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtbegin.o
+ .ARM.attributes
+                0x00000056       0x39 build/main.o
+ .ARM.attributes
+                0x0000008f       0x39 build/stm32l4xx_it.o
+ .ARM.attributes
+                0x000000c8       0x39 build/stm32l4xx_hal_msp.o
+ .ARM.attributes
+                0x00000101       0x39 build/stm32l4xx_hal_uart.o
+ .ARM.attributes
+                0x0000013a       0x39 build/stm32l4xx_hal_uart_ex.o
+ .ARM.attributes
+                0x00000173       0x39 build/stm32l4xx_hal.o
+ .ARM.attributes
+                0x000001ac       0x39 build/stm32l4xx_hal_rcc.o
+ .ARM.attributes
+                0x000001e5       0x39 build/stm32l4xx_hal_rcc_ex.o
+ .ARM.attributes
+                0x0000021e       0x39 build/stm32l4xx_hal_gpio.o
+ .ARM.attributes
+                0x00000257       0x39 build/stm32l4xx_hal_dma.o
+ .ARM.attributes
+                0x00000290       0x39 build/stm32l4xx_hal_pwr_ex.o
+ .ARM.attributes
+                0x000002c9       0x39 build/stm32l4xx_hal_cortex.o
+ .ARM.attributes
+                0x00000302       0x39 build/system_stm32l4xx.o
+ .ARM.attributes
+                0x0000033b       0x39 build/vcp.o
+ .ARM.attributes
+                0x00000374       0x39 build/strfunc.o
+ .ARM.attributes
+                0x000003ad       0x39 build/fifo.o
+ .ARM.attributes
+                0x000003e6       0x21 build/startup_stm32l412xx.o
+ .ARM.attributes
+                0x00000407       0x39 build/console.o
+ .ARM.attributes
+                0x00000440       0x39 build/app.o
+ .ARM.attributes
+                0x00000479       0x39 build/cmdmem.o
+ .ARM.attributes
+                0x000004b2       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_muldivdf3.o)
+ .ARM.attributes
+                0x000004d4       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_fixdfsi.o)
+ .ARM.attributes
+                0x000004f6       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+ .ARM.attributes
+                0x00000518       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+ .ARM.attributes
+                0x0000054c       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_dvmd_tls.o)
+ .ARM.attributes
+                0x0000056e       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)
+ .ARM.attributes
+                0x000005a2       0x22 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard/crtn.o
+OUTPUT(build/console_nucleo.elf elf32-littlearm)
+
+.debug_info     0x00000000     0xe8c7
+ .debug_info    0x00000000     0x1366 build/main.o
+ .debug_info    0x00001366      0x9d5 build/stm32l4xx_it.o
+ .debug_info    0x00001d3b      0xfca build/stm32l4xx_hal_msp.o
+ .debug_info    0x00002d05     0x1faf build/stm32l4xx_hal_uart.o
+ .debug_info    0x00004cb4      0xbee build/stm32l4xx_hal_uart_ex.o
+ .debug_info    0x000058a2      0xc3d build/stm32l4xx_hal.o
+ .debug_info    0x000064df     0x107d build/stm32l4xx_hal_rcc.o
+ .debug_info    0x0000755c     0x1124 build/stm32l4xx_hal_rcc_ex.o
+ .debug_info    0x00008680      0xa6c build/stm32l4xx_hal_gpio.o
+ .debug_info    0x000090ec      0x9ed build/stm32l4xx_hal_dma.o
+ .debug_info    0x00009ad9      0xc40 build/stm32l4xx_hal_pwr_ex.o
+ .debug_info    0x0000a719     0x1104 build/stm32l4xx_hal_cortex.o
+ .debug_info    0x0000b81d      0x7b3 build/system_stm32l4xx.o
+ .debug_info    0x0000bfd0     0x1528 build/vcp.o
+ .debug_info    0x0000d4f8     0x1184 build/strfunc.o
+ .debug_info    0x0000e67c      0x24b build/fifo.o
+
+.debug_abbrev   0x00000000     0x22d2
+ .debug_abbrev  0x00000000      0x229 build/main.o
+ .debug_abbrev  0x00000229      0x167 build/stm32l4xx_it.o
+ .debug_abbrev  0x00000390      0x1cf build/stm32l4xx_hal_msp.o
+ .debug_abbrev  0x0000055f      0x282 build/stm32l4xx_hal_uart.o
+ .debug_abbrev  0x000007e1      0x233 build/stm32l4xx_hal_uart_ex.o
+ .debug_abbrev  0x00000a14      0x209 build/stm32l4xx_hal.o
+ .debug_abbrev  0x00000c1d      0x255 build/stm32l4xx_hal_rcc.o
+ .debug_abbrev  0x00000e72      0x23f build/stm32l4xx_hal_rcc_ex.o
+ .debug_abbrev  0x000010b1      0x213 build/stm32l4xx_hal_gpio.o
+ .debug_abbrev  0x000012c4      0x24f build/stm32l4xx_hal_dma.o
+ .debug_abbrev  0x00001513      0x1f8 build/stm32l4xx_hal_pwr_ex.o
+ .debug_abbrev  0x0000170b      0x33d build/stm32l4xx_hal_cortex.o
+ .debug_abbrev  0x00001a48      0x14f build/system_stm32l4xx.o
+ .debug_abbrev  0x00001b97      0x298 build/vcp.o
+ .debug_abbrev  0x00001e2f      0x358 build/strfunc.o
+ .debug_abbrev  0x00002187      0x14b build/fifo.o
+
+.debug_loc      0x00000000     0x6c73
+ .debug_loc     0x00000000       0xe9 build/main.o
+ .debug_loc     0x000000e9       0x80 build/stm32l4xx_it.o
+ .debug_loc     0x00000169       0xf3 build/stm32l4xx_hal_msp.o
+ .debug_loc     0x0000025c     0x1d44 build/stm32l4xx_hal_uart.o
+ .debug_loc     0x00001fa0      0x3d6 build/stm32l4xx_hal_uart_ex.o
+ .debug_loc     0x00002376      0x227 build/stm32l4xx_hal.o
+ .debug_loc     0x0000259d      0x814 build/stm32l4xx_hal_rcc.o
+ .debug_loc     0x00002db1     0x11d1 build/stm32l4xx_hal_rcc_ex.o
+ .debug_loc     0x00003f82      0x385 build/stm32l4xx_hal_gpio.o
+ .debug_loc     0x00004307      0x91a build/stm32l4xx_hal_dma.o
+ .debug_loc     0x00004c21      0x6f6 build/stm32l4xx_hal_pwr_ex.o
+ .debug_loc     0x00005317      0x65e build/stm32l4xx_hal_cortex.o
+ .debug_loc     0x00005975      0x1b8 build/system_stm32l4xx.o
+ .debug_loc     0x00005b2d      0x19a build/vcp.o
+ .debug_loc     0x00005cc7      0xe5f build/strfunc.o
+ .debug_loc     0x00006b26      0x14d build/fifo.o
+
+.debug_aranges  0x00000000      0x9d8
+ .debug_aranges
+                0x00000000       0x48 build/main.o
+ .debug_aranges
+                0x00000048       0x78 build/stm32l4xx_it.o
+ .debug_aranges
+                0x000000c0       0x30 build/stm32l4xx_hal_msp.o
+ .debug_aranges
+                0x000000f0      0x1f8 build/stm32l4xx_hal_uart.o
+ .debug_aranges
+                0x000002e8       0x60 build/stm32l4xx_hal_uart_ex.o
+ .debug_aranges
+                0x00000348      0x108 build/stm32l4xx_hal.o
+ .debug_aranges
+                0x00000450       0x88 build/stm32l4xx_hal_rcc.o
+ .debug_aranges
+                0x000004d8       0xd0 build/stm32l4xx_hal_rcc_ex.o
+ .debug_aranges
+                0x000005a8       0x58 build/stm32l4xx_hal_gpio.o
+ .debug_aranges
+                0x00000600       0x80 build/stm32l4xx_hal_dma.o
+ .debug_aranges
+                0x00000680      0x140 build/stm32l4xx_hal_pwr_ex.o
+ .debug_aranges
+                0x000007c0       0xa8 build/stm32l4xx_hal_cortex.o
+ .debug_aranges
+                0x00000868       0x28 build/system_stm32l4xx.o
+ .debug_aranges
+                0x00000890       0x50 build/vcp.o
+ .debug_aranges
+                0x000008e0       0xb0 build/strfunc.o
+ .debug_aranges
+                0x00000990       0x48 build/fifo.o
+
+.debug_ranges   0x00000000      0x9a0
+ .debug_ranges  0x00000000       0x38 build/main.o
+ .debug_ranges  0x00000038       0x68 build/stm32l4xx_it.o
+ .debug_ranges  0x000000a0       0x20 build/stm32l4xx_hal_msp.o
+ .debug_ranges  0x000000c0      0x1e8 build/stm32l4xx_hal_uart.o
+ .debug_ranges  0x000002a8       0x50 build/stm32l4xx_hal_uart_ex.o
+ .debug_ranges  0x000002f8       0xf8 build/stm32l4xx_hal.o
+ .debug_ranges  0x000003f0       0xb0 build/stm32l4xx_hal_rcc.o
+ .debug_ranges  0x000004a0       0xd8 build/stm32l4xx_hal_rcc_ex.o
+ .debug_ranges  0x00000578       0x48 build/stm32l4xx_hal_gpio.o
+ .debug_ranges  0x000005c0       0x70 build/stm32l4xx_hal_dma.o
+ .debug_ranges  0x00000630      0x130 build/stm32l4xx_hal_pwr_ex.o
+ .debug_ranges  0x00000760       0xf8 build/stm32l4xx_hal_cortex.o
+ .debug_ranges  0x00000858       0x18 build/system_stm32l4xx.o
+ .debug_ranges  0x00000870       0x40 build/vcp.o
+ .debug_ranges  0x000008b0       0xb8 build/strfunc.o
+ .debug_ranges  0x00000968       0x38 build/fifo.o
+
+.debug_line     0x00000000     0x56cd
+ .debug_line    0x00000000      0x3fa build/main.o
+ .debug_line    0x000003fa      0x38f build/stm32l4xx_it.o
+ .debug_line    0x00000789      0x37c build/stm32l4xx_hal_msp.o
+ .debug_line    0x00000b05      0xec1 build/stm32l4xx_hal_uart.o
+ .debug_line    0x000019c6      0x4b1 build/stm32l4xx_hal_uart_ex.o
+ .debug_line    0x00001e77      0x54d build/stm32l4xx_hal.o
+ .debug_line    0x000023c4      0x6e6 build/stm32l4xx_hal_rcc.o
+ .debug_line    0x00002aaa      0x7d7 build/stm32l4xx_hal_rcc_ex.o
+ .debug_line    0x00003281      0x45f build/stm32l4xx_hal_gpio.o
+ .debug_line    0x000036e0      0x57a build/stm32l4xx_hal_dma.o
+ .debug_line    0x00003c5a      0x6fc build/stm32l4xx_hal_pwr_ex.o
+ .debug_line    0x00004356      0x578 build/stm32l4xx_hal_cortex.o
+ .debug_line    0x000048ce      0x2fd build/system_stm32l4xx.o
+ .debug_line    0x00004bcb      0x419 build/vcp.o
+ .debug_line    0x00004fe4      0x500 build/strfunc.o
+ .debug_line    0x000054e4      0x1e9 build/fifo.o
+
+.debug_str      0x00000000     0x384c
+ .debug_str     0x00000000      0xfe0 build/main.o
+                               0x10a6 (size before relaxing)
+ .debug_str     0x00000fe0      0x11f build/stm32l4xx_it.o
+                                0x8ab (size before relaxing)
+ .debug_str     0x000010ff       0x93 build/stm32l4xx_hal_msp.o
+                                0xdab (size before relaxing)
+ .debug_str     0x00001192      0x7a9 build/stm32l4xx_hal_uart.o
+                               0x10ce (size before relaxing)
+ .debug_str     0x0000193b      0x1c5 build/stm32l4xx_hal_uart_ex.o
+                                0xa12 (size before relaxing)
+ .debug_str     0x00001b00      0x365 build/stm32l4xx_hal.o
+                                0xc84 (size before relaxing)
+ .debug_str     0x00001e65      0x285 build/stm32l4xx_hal_rcc.o
+                                0xa40 (size before relaxing)
+ .debug_str     0x000020ea      0x477 build/stm32l4xx_hal_rcc_ex.o
+                                0xc94 (size before relaxing)
+ .debug_str     0x00002561      0x10f build/stm32l4xx_hal_gpio.o
+                                0x78e (size before relaxing)
+ .debug_str     0x00002670      0x22e build/stm32l4xx_hal_dma.o
+                                0x85e (size before relaxing)
+ .debug_str     0x0000289e      0x50a build/stm32l4xx_hal_pwr_ex.o
+                                0xa14 (size before relaxing)
+ .debug_str     0x00002da8      0x45d build/stm32l4xx_hal_cortex.o
+                                0xd04 (size before relaxing)
+ .debug_str     0x00003205       0x3d build/system_stm32l4xx.o
+                                0x5ac (size before relaxing)
+ .debug_str     0x00003242      0x482 build/vcp.o
+                                0xc82 (size before relaxing)
+ .debug_str     0x000036c4      0x144 build/strfunc.o
+                                0x6f4 (size before relaxing)
+ .debug_str     0x00003808       0x44 build/fifo.o
+                                0x226 (size before relaxing)
+
+.comment        0x00000000       0x7e
+ .comment       0x00000000       0x7e build/main.o
+                                 0x7f (size before relaxing)
+ .comment       0x0000007e       0x7f build/stm32l4xx_it.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_msp.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_uart.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_uart_ex.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_rcc.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_rcc_ex.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_gpio.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_dma.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_pwr_ex.o
+ .comment       0x0000007e       0x7f build/stm32l4xx_hal_cortex.o
+ .comment       0x0000007e       0x7f build/system_stm32l4xx.o
+ .comment       0x0000007e       0x7f build/vcp.o
+ .comment       0x0000007e       0x7f build/strfunc.o
+ .comment       0x0000007e       0x7f build/fifo.o
+ .comment       0x0000007e       0x7f build/console.o
+ .comment       0x0000007e       0x7f build/app.o
+ .comment       0x0000007e       0x7f build/cmdmem.o
+
+.debug_frame    0x00000000     0x1884
+ .debug_frame   0x00000000       0xac build/main.o
+ .debug_frame   0x000000ac       0xf0 build/stm32l4xx_it.o
+ .debug_frame   0x0000019c       0x68 build/stm32l4xx_hal_msp.o
+ .debug_frame   0x00000204      0x57c build/stm32l4xx_hal_uart.o
+ .debug_frame   0x00000780       0xdc build/stm32l4xx_hal_uart_ex.o
+ .debug_frame   0x0000085c      0x220 build/stm32l4xx_hal.o
+ .debug_frame   0x00000a7c      0x18c build/stm32l4xx_hal_rcc.o
+ .debug_frame   0x00000c08      0x1e0 build/stm32l4xx_hal_rcc_ex.o
+ .debug_frame   0x00000de8       0xd8 build/stm32l4xx_hal_gpio.o
+ .debug_frame   0x00000ec0      0x16c build/stm32l4xx_hal_dma.o
+ .debug_frame   0x0000102c      0x268 build/stm32l4xx_hal_pwr_ex.o
+ .debug_frame   0x00001294      0x15c build/stm32l4xx_hal_cortex.o
+ .debug_frame   0x000013f0       0x30 build/system_stm32l4xx.o
+ .debug_frame   0x00001420       0xc4 build/vcp.o
+ .debug_frame   0x000014e4      0x20c build/strfunc.o
+ .debug_frame   0x000016f0       0x94 build/fifo.o
+ .debug_frame   0x00001784       0x50 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_muldivdf3.o)
+ .debug_frame   0x000017d4       0x24 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_arm_fixdfsi.o)
+ .debug_frame   0x000017f8       0x2c c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_aeabi_uldivmod.o)
+ .debug_frame   0x00001824       0x34 c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/thumb/v7e-m/fpv4-sp/hard\libgcc.a(_udivmoddi4.o)
+ .debug_frame   0x00001858       0x2c c:/program files (x86)/gnu tools arm embedded/7 2017-q4-major/bin/../lib/gcc/arm-none-eabi/7.2.1/../../../../arm-none-eabi/lib/thumb/v7e-m/fpv4-sp/hard\libc_nano.a(lib_a-init.o)

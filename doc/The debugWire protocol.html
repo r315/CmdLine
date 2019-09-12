@@ -1,0 +1,396 @@
+<html><head><title>The debugWire protocol</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+<meta content="The debugWire protocol" name="description">
+<meta content="debugWire" protocol="" avrdragon="" jtagice="" avr="" name="keywords">
+</head>
+<body>
+<h1 align="CENTER">The debugWire protocol</h1>
+<p align="LEFT">
+</p><hr>
+
+
+
+<h2>Connecting to the dW bus</h2>
+
+debugWire use the same format as rs232, the default baudrate is clock/128.<br>
+Using an ATmega32U2 I obtained many dumps of the protocol to try to decipher it, turns out it was easier than expected.<br>
+<br>
+Here is how I did it:<br>
+<br>
+Connect the target to a 16MHz crystal and clear CKDIV8 then connect a Dragon/JtagIce.<br>
+Connect the RX line of an ATmega32U2 with dumping FW to the dW/reset line and set the baud to 125kbps.<br>
+<br>
+UNTESTED<br>
+Connect the target to a 14.745MHz crystal and clear CKDIV8 then connect a Dragon/JtagIce.<br>
+Connect the RX line of a PC COM port via a level converter to the dW/reset line and set the baud to 115200bps.<br>
+UNTESTED<br>
+<br>
+For interactive access:<br>
+<b>Disconnect the Dragon/JtagIce first.</b><br>
+The TX line can then be connected via a transistor (open collector).<br>
+Connect the TX line to the emitter, VCC via a pullup to the base and VCC via another pullup to the collector.<br>
+10kOhm seems to work fine. Then use HTerm or something similar.<br>
+<br>
+<hr>
+
+
+
+<h2>Known debugWire commands. All commands are given in hex.</h2>
+
+It seems that the commands fall into four groups:<br>
+0x 1x 2x 3x is mostly for flow control.<br>
+4x 5x 6x 7x seems to be for setting flags, something like BCR on the JTAG OCD.<br>
+8x 9x Ax Bx is for baudrate control.<br>
+Cx Dx Ex Fx provides access to the PC, BreakPoint, Intruction, and Signature registers.<br>
+<br>
+To sync issue a break, this will also stop the target.<br>
+When there is a collision, the target issues a break.<br>
+Seems that the target issues a break when hitting a breakpoint.<br>
+All breaks are followed by 55 from the target, and the baud is reset to clock/128.<br>
+The 55 is used by the debugger (Dragon/JtagIce) to detect the baud rate.<br>
+<br>
+
+
+<h3>Flow control</h3>
+
+06 -- Disable dW, this enables ISP.<br>
+07 -- Reset, this is followed by a break and 55.<br>
+<br>
+20 -- GO when reading/writing memory<br>
+21 -- SS when ?reading?/writing a single register<br>
+22 -- not seen yet --<br>
+23 -- SS when executing an instruction loaded with D2<br>
+30 -- GO resume normal exection<br>
+31 -- SS seems to be SingleStep, the PC will increment twice.<br>
+32 -- not seen yet --<br>
+33 -- not seen yet --<br>
+<br>
+
+
+<h3>Setting the flags</h3>
+
+It seems that all commands starting with 01xx xxxx sets the flags.<br>
+<br>
+
+60 -- used before a GO<br>
+61 -- used before a Run to Cursor<br>
+63 -- used before a Step Out<br>
+79 -- used before a Step In and Auto Step<br>
+79 -- used before resuming a SW BP<br>
+7A -- used before a SingleStep<br>
+
+66 -- used before Reading/Writing memory<br>
+64 -- seen in Write Flash Page<br>
+44 -- seen in Write Flash Page<br>
+<br>
+
+It seems that bit 5 = 0 when "Run Timers" is set.<br>
+40 -- used instead of 60 when "Run Timers" is set<br>
+41 -- used instead of 61 when "Run Timers" is set<br>
+43 -- used instead of 63 when "Run Timers" is set --not seen yet--<br>
+46 -- used instead of 66 when "Run Timers" is set<br>
+59 -- used instead of 79 when "Run Timers" is set<br>
+5A -- used instead of 7A when "Run Timers" is set<br>
+<br>
+
+
+<h3>Setting the baudrate</h3>
+
+The following commands is used to set the baud rate to 125kbps. After setting the baud 0x55 is returned.<br>
+0x83 clk/128 16MHz -- Don't know why this is used, baud rate stays the same.<br>
+0x82 clk/64   8MHz<br>
+0x81 clk/32 ?   4MHz --not seen yet--<br>
+0x80 clk/16   2MHz<br>
+0xA0 clk/8    1MHz<br>
+0xA1 clk/4 ? --not seen yet--<br>
+0xA2 clk/2 ? --not seen yet--<br>
+0xA3 clk/1 ? --not seen yet--<br>
+<br>
+
+
+<h3>The registers</h3>
+
+Cx ll -- will set the low byte.<br>
+Ex ll -- will get the low byte.<br>
+<br>
+D0 hh ll -- set the PC to hhll<br>
+D1 hh ll -- set the HW BreakPoint to hhll<br>
+D2 hh ll -- set the instruction register to hhll<br>
+D3 hh ll -- Steffanx got lucky, this didn't change his signatures. :)<br>
+<br>
+The following reads the registers and returns hhll from the target.<br>
+F0 hh ll -- get the PC. TAKE NOTE after a break this will return PC+1.<br>
+F1 hh ll -- returns the previously set BP.<br>
+F2 hh ll -- returns the previously set instruction.<br>
+F3 hh ll -- returns the signature (dW ID).<br>
+<br>
+According to davidc__ the order of D0 D1 and C2 is not important.
+Steffanx dicovered that the commands repeat eg: F0 = F4 = F8 = FC.<br>
+This implies that only bits 0+1 are decoded and bits 2+3 are ignored.<br>
+This is true for all the register commands.<br>
+Reset also repeats 07 = 0F = 17 = 1F = 27 = 2F = 37 = 3F.<br>
+So does disable dW 06 = 0E = 16 = 1E = 26 = 2E = 36 = 3E.<br>
+<br>
+<hr>
+
+
+
+<h2>Practical use of the commands as seen in the dumps.</h2>
+
+
+<h3>Start of debugging</h3>
+
+00 -&gt; 55 -- the 00 is a break<br>
+83 -&gt; 55 --  set the baud<br>
+f3 -&gt; 94 89 -- 16u2 signature<br>
+00 -&gt; 55<br>
+07 -&gt; 00 55<br>
+83 -&gt; 55<br>
+F0 -&gt; 00 01 --PC = 0000--<br>
+
+
+<h3>End of debugging</h3>
+
+00 -&gt; 55<br>
+07 -&gt; 00 55<br>
+83 -&gt; 55<br>
+F0 -&gt; 00 01 --PC = 0000--<br>
+D0 00 00 60<br>
+D0 00 00 30 --GO--<br>
+
+
+<h3>Resuming execution</h3>
+
+D0 00 00 xx  -- set PC, xx = 40/60 - 41/61 - 59/79 - 5A/7A<br>
+D1 00 01     -- set breakpoint (single step in this case)<br>
+D0 00 00 30  -- set PC and GO<br>
+<br>
+<b>Resuming from a SW BP</b><br>
+D0 00 00 79/59  -- set PC<br>
+D1 00 01     -- set breakpoint (single step in this case)<br>
+D2 ii ii     -- load the instruction replaced by the break.<br>
+D0 00 00 32  -- set PC and GO<br>
+<br>
+<b>Step Out -- D1 isn't used</b><br>
+D0 00 00 63/43  -- set PC<br>
+D0 00 00 30  -- set PC and GO<br>
+
+
+<h3>Executing an instruction</h3>
+
+D2 hh ll 23 -- hhll is the hex code for the instruction.<br>
+Seems that its not possible to execute a 32 bit instruction this way.<br>
+The Dragon reflash the page to remove the SW BP, SS and then reflash again with the SW BP!!!<br>
+
+
+<h3>Selecting the Read/Write mode</h3>
+C2 xx<br>
+00 = Read SRAM<br>
+01 = Read Registers<br>
+02 = Read Flash<br>
+04 = Write SRAM<br>
+05 = Write Registers<br>
+
+
+<h3>Reading the registers</h3>
+
+66 D0 00 00 D1 00 20 C2 01 20 -&gt; target returns 32 bytes<br>
+<br>
+66<br>
+D0 00 00 -- Set the register to start at.<br>
+D1 00 20 -- Set the register to stop at + 1.<br>
+C2 01 -- Set mode to: read registers.<br>
+20 -- GO, start reading.<br>
+--32 bytes from target--<br>
+<br>
+0000: out  DWDR,r0 ----&gt; 001F: out  DWDR,r31 = 1F<br>
+
+
+<h3>Writing Registers</h3>
+
+66 D0 00 00 D1 00 20 C2 05 20 --32 bytes--<br>
+<br>
+66<br>
+D0 00 00 -- Set the register to start at.<br>
+D1 00 20 -- Set the register to stop at + 1.<br>
+C2 05 -- Set mode to: write registers.<br>
+20 -- GO, start writing.<br>
+--32 bytes to target--<br>
+<br>
+<b>Write a single register</b><br>
+66 D0 00 r D1 00 r+1 C2 05 21 xx -- TAKE NOTE: use 21 not 20.<br>
+Not sure if D1 is actually used since 21 seems to be SS.<br>
+<br>
+0000: in   r0,DWDR ----&gt; 001F: in   r31,DWDR<br>
+
+
+<h3>Reading SRAM</h3>
+
+66 D0 00 1E D1 00 20 C2 05 20 ll hh D0 00 00 C2 00 D1 00 02 20 xx<br>
+<br>
+66<br>
+D0 00 1E D1 00 20 C2 05 20 ll hh -- Z = hhll<br>
+<br>
+D0 00 00<br>
+C2 00 -- Read SRAM<br>
+D1 00 02<br>
+20 -- GO, start reading.<br>
+xx -- byte from target<br>
+<br>
+C0 00 20 xx will read the next location.<br>
+<br>
+0000: ld  r16,Z+<br>
+0001: out DWDR,r16<br>
+
+
+<h3>Writing SRAM</h3>
+
+66 D0 00 1E D1 00 20 C2 05 20 ll hh C2 04 D0 00 01 D1 00 03 20 xx<br>
+<br>
+66 D0 00 1E D1 00 20 C2 05 20 ll hh -- Z = hhll<br>
+<br>
+C2 04 -- Write SRAM<br>
+D0 00 01<br>
+D1 00 03<br>
+20 -- GO, start writing.<br>
+xx -- byte to target.<br>
+<br>
+C0 01 20 xx will write the next location ???<br>
+<br>
+0001: in  r16,DWDR<br>
+0002: st  Z+,r16<br>
+
+
+<h3>Reading a Flash Page</h3>
+
+66 D0 00 1E D1 00 20 C2 05 20 ll hh D0 00 00 C2 02 D1 01 00 20 --128 bytes--<br>
+<br>
+66<br>
+D0 00 1E D1 00 20 C2 05 20 ll hh -- Z = hhll<br>
+<br>
+D0 00 00<br>
+C2 02 -- Read Flash<br>
+D1 01 00<br>
+20 -- GO, start reading.<br>
+--128 bytes from target--<br>
+<br>
+0000: lpm  r?,Z+<br>
+0001: out  DWDR,r?<br>
+
+
+<h3>Writing a Flash Page</h3>
+
+66 D0 00 1A D1 00 20 C2 05 20 --03 01 05 40 00 00-- --Set XYZ--<br>
+<br>
+D0 1F 00 -- Set PC to 0x1F00, inside the boot section to enable spm--<br>
+64<br>
+D2 01 CF 23  movw r24,r30<br>
+D2 BF A7 23  out  SPMCSR,r26 = 03 = PGERS<br>
+D2 95 E8 33  spm<br>
+00 &lt;55&gt; 83 &lt;55&gt;<br>
+<br>
+44 - before the first one<br>
+And then repeat the following until the page is full.<br>
+<br>
+D0 1F 00       - set PC to bootsection for spm to work<br>
+D2 B6 01 23 ll - in r0,DWDR (ll)<br>
+D2 B6 11 23 hh - in r1,DWDR (hh)<br>
+D2 BF B7 23    - out SPMCSR,r27 = 01 = SPMEN<br>
+D2 95 E8 23    - spm<br>
+D2 96 32 23    - adiw Z,2<br>
+<br>
+<br>
+D0 1F 00<br>
+D2 01 FC 23  movw r30,r24<br>
+D2 BF C7 23  out  SPMCSR,r28 = 05 = PGWRT<br>
+D2 95 E8 33  spm<br>
+00 &lt;55&gt;<br>
+<br>
+D0 1F 00<br>
+D2 E1 C1 23  ldi  r28,0x11<br>
+D2 BF C7 23  out  SPMCSR,r28 = 11 = RWWSRE<br>
+D2 95 E8 33  spm<br>
+00 &lt;55&gt; 83 &lt;55&gt;<br>
+
+
+<h3>Reading Eeprom</h3>
+
+66 D0 00 1C D1 00 20 C2 05 20 --01 01 00 00-- --Set YZ--<br>
+64 D2 BD F2 23 D2 BD E1 23 D2 BB CF 23 D2 B4 00 23 D2 BE 01 23 xx<br>
+<br>
+66 D0 00 1C D1 00 20 C2 05 20 --01 01 00 00-- --Set YZ--<br>
+64<br>
+D2 BD F2 23  out EEARH,r31<br>
+D2 BD E1 23  out EEARL,r30<br>
+D2 BB CF 23  out EECR,r28 = 01 = EERE<br>
+D2 B4 00 23  in  r0,EEDR<br>
+D2 BE 01 23  out DWDR,r0<br>
+xx -- Byte from target<br>
+
+
+<h3>Writing Eeprom</h3>
+
+66 D0 00 1A D1 00 20 C2 05 20 --04 02 01 01 10 00-- --Set XYZ--<br>
+64 D2 BD F2 23 D2 BD E1 23 D2 B6 01 23 xx D2 BC 00 23 D2 BB AF 23 D2 BB BF 23<br>
+<br>
+64<br>
+D2 BD F2 23  out EEARH,r31 = 00<br>
+D2 BD E1 23  out EEARL,r30 = 10<br>
+D2 B6 01 23 xx in r0,DWDR = xx - byte to target<br>
+D2 BC 00 23  out EEDR,r0<br>
+D2 BB AF 23  out EECR,r26 = 04 = EEMWE<br>
+D2 BB BF 23  out EECR,r27 = 02 = EEWE<br>
+<br>
+AVRStudio then reads it back immediately.<br>
+
+<br>
+<hr>
+
+
+
+<h2>An explanation for C2</h2>
+
+I think that there are instructions implemented in hardware.<br>
+<br>
+C2 00      /   C2 04<br>
+ld r,Z+    /   st Z+,r<br>
+out DWDR,r /   in r,DWDR<br>
+<br>
+0:  1001 00Xr rrrr 0001   X=(C2 (bit3))<br>
+1:  1011 X11r rrrr 0001   X=!(C2 (bit3)) rrrrr=r16?<br>
+<br>
+These would wrap around. Needs to be tested.<br>
+C2 00 --&gt; 0 1 0 1 0 1... (2==0 when address space is only 2 in size)<br>
+C2 04 --&gt; 1 0 1 0 1 0...<br>
+<br>
+------------------------------------------------<br>
+<br>
+C2 01       /   C2 05<br>
+out DWDR,rn /   in rn,DWDR<br>
+<br>
+0000: 1011 X11r rrrr 0001   out DWDR,r / in r,DWDR<br>
+X=!(C2 (bit3))  rrrrr = (PC &amp; 1F) -- The register number is mapped to the PC.<br>
+<br>
+C2 01 &amp; C2 05 --&gt; 0 0 0 0 0 0...<br>
+<br>
+------------------------------------------------<br>
+<br>
+C2 02<br>
+<br>
+0000: lpm  r?,Z+<br>
+0001: out  DWDR,r?<br>
+<br>
+C2 02 -&gt; 0 1 0 1 0 1...<br>
+<br>
+<p></p>
+<hr>
+<br>
+Created 25 February 2011<br>
+By RikusW -- #avr on freenode.net --<br>
+<br>
+
+
+
+
+
+</body></html>
