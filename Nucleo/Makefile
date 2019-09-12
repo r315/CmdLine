@@ -30,6 +30,7 @@ OPT = -Og
 #######################################
 # Build path
 BUILD_DIR :=build
+APP_DIR :=../App
 
 ######################################
 # source
@@ -66,8 +67,9 @@ $(LIBEMB_PATH)/misc/fifo.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
-../src/app.cpp \
-../src/cmdmem.cpp \
+$(APP_DIR)/app.cpp \
+$(APP_DIR)/cmdmem.cpp \
+$(APP_DIR)/cmdrfinder.cpp \
 
 # ASM sources
 ASM_SOURCES =  \

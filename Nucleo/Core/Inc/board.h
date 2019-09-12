@@ -9,7 +9,6 @@ extern "C" {
 #include <stdout.h>
 #include "main.h"
 
-void App(void);
 
 typedef struct _Array{
 	uint8_t *data;
@@ -24,6 +23,7 @@ extern StdOut aux_uart;
 
 #define DelayMs(_X) HAL_Delay(_X)
 
+void App(void);
 
 #ifdef __cplusplus
 }

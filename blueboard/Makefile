@@ -4,7 +4,7 @@
 #########################################################
 TARGET = $(BUILD_DIR)/console_blueboard
 BUILD_DIR :=build
-PRJPATH =src usbdrv stk500 ../src
+PRJPATH =src usbdrv stk500 ../App
 INCSPATH =inc usbdrv ../inc
 
 CSRCS =usbserial.c \
