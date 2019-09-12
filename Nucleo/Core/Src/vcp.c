@@ -12,7 +12,6 @@
 
 static fifo_t txfifo;
 static fifo_t rxfifo;
-extern UART_HandleTypeDef huart2;
 static uint8_t rx;
 
 void vc_init(void){
@@ -39,9 +38,15 @@ void vc_puts(const char* str){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	//HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-	fifo_put(&rxfifo, rx);
-    HAL_UART_Receive_IT(&huart2, &rx, 1);
+	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+	if(huart == &huart2){
+		fifo_put(&rxfifo, rx);
+		HAL_UART_Receive_IT(&huart2, &rx, 1);
+		return;
+	}
+
+	((Array*)(aux_uart.user_ctx))->empty = 0;
+	HAL_UART_Receive_IT(&huart1, ((Array*)(aux_uart.user_ctx))->data, ((Array*)(aux_uart.user_ctx))->len);
 }
 // ------------------------------------------
 uint8_t vc_kbhit(void){
@@ -65,4 +70,44 @@ StdOut vcp = {
     .xputs = vc_puts,
     .getCharNonBlocking = vc_getCharNonBlocking,
     .kbhit = vc_kbhit
+};
+
+/**
+ *
+ */
+void aux_init(void){
+	HAL_UART_Receive_IT(&huart1, ((Array*)(aux_uart.user_ctx))->data, ((Array*)(aux_uart.user_ctx))->len);
+	((Array*)(aux_uart.user_ctx))->empty = 1;
+}
+
+void aux_putchar(char c){
+	HAL_UART_Transmit(&huart1, (uint8_t*)&c, 1, 1000);
+}
+
+void aux_puts(const char* str){
+	while(*str)
+		aux_putchar(*str++);
+}
+
+char aux_getchar(void){
+	char rx;
+	HAL_UART_Receive(&huart1, &rx, 1, 1000);
+	return rx;
+}
+
+uint8_t aux_getCharNonBlocking(char *c){
+	return 0;
+}
+
+uint8_t aux_kbhit(void){
+	return !((Array*)(aux_uart.user_ctx))->empty;
+}
+
+StdOut aux_uart = {
+	.init = aux_init,
+	.xgetchar = aux_getchar,
+	.xputchar = aux_putchar,
+	.xputs = aux_puts,
+	.getCharNonBlocking = aux_getCharNonBlocking,
+	.kbhit = aux_kbhit
 };

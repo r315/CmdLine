@@ -20,6 +20,7 @@ extern "C" {
 
 void App(void);
 
+extern StdOut vcp;
 
 #ifdef __cplusplus
 }

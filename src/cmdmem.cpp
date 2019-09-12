@@ -2,7 +2,7 @@
 
 
 void CmdMem::help(void){
-    console->print("Usage: mem [option] \n\n");
+    console->print("Usage: mem <address> [option] \n\n");
     console->print("\t n, number of bytes\n");
 }
 

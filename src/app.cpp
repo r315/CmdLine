@@ -3,6 +3,7 @@
 #include "cmdecho.h"
 #include "cmdhelp.h"
 #include "cmdmem.h"
+#include "cmdrfinder.h"
 
 #if defined(__BB__)
 //#include "vcom.h"
@@ -26,8 +27,6 @@
 #else
 
 #endif
-
-extern StdOut vcp;
 
 #if defined(__BB__)
 
@@ -181,13 +180,14 @@ void App(void){
 	CmdEcho echo;
 	CmdHelp help;
 	CmdMem mem;
+	CmdRfinder rfinder;
 	
 	vcp.init();
 	con.init(&vcp,"nucleo>");
 	con.addCommand(&echo);
 	con.addCommand(&help);
 	con.addCommand(&mem);
-
+	con.addCommand(&rfinder);
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);

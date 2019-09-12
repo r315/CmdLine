@@ -60,6 +60,10 @@ void App(void);
 /* Private defines -----------------------------------------------------------*/
 #define VCP_TX_Pin GPIO_PIN_2
 #define VCP_TX_GPIO_Port GPIOA
+#define SEC_TX_Pin GPIO_PIN_9
+#define SEC_TX_GPIO_Port GPIOA
+#define SEC_RX_Pin GPIO_PIN_10
+#define SEC_RX_GPIO_Port GPIOA
 #define SWDIO_Pin GPIO_PIN_13
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
