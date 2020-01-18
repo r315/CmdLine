@@ -92,7 +92,7 @@ void CmdSd::help(void){
 
 char CmdSd::execute(void *ptr){
 char c, *p1 = (char*)ptr;
-uint32_t operation, sector;
+uint32_t operation = 0, sector;
 
 	 // check parameters
     if( p1 == NULL || *p1 == '\0'){
