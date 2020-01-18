@@ -32,6 +32,13 @@ OPT = -Og
 BUILD_DIR :=build
 APP_DIR :=../App
 
+ifeq ($(shell uname -s), Linux)
+REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0
+else
+REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0
+endif
+
+
 ######################################
 # source
 ######################################
@@ -40,25 +47,25 @@ C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/stm32l4xx_it.c \
 Core/Src/stm32l4xx_hal_msp.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
-C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
+/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 Core/Src/system_stm32l4xx.c \
 Core/Src/syscalls.c \
 Core/Src/vcp.c \
@@ -137,11 +144,11 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -ICore/Inc \
--IC:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Inc \
--IC:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
--IC:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
--IC:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Include \
--IC:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0/Drivers/CMSIS/Include \
+-I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
+-I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
+-I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(LIBEMB_PATH)/include \
 -I../inc
 
