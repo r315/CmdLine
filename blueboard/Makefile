@@ -15,10 +15,12 @@ vcom.c \
 ili9328.c \
 lcd.c \
 display.c \
-fonts.c \
+font.c \
 blueboard.c \
 clock_lpc17xx.c \
-timer.c pwm.c i2c.c \
+timer.c \
+pwm.c \
+i2c_lpc17xx.c \
 spi_lpc17xx.c \
 dac_lpc17xx.c \
 dma_lpc17xx.c \
@@ -28,6 +30,7 @@ strfunc.c \
 button.c \
 stk500.c \
 mmc.c pff.c \
+debug.c \
 
 CPPSRCS = \
 app.cpp \
@@ -37,7 +40,7 @@ cmdspi.cpp \
 stk500_service.cpp \
 cmdavr.cpp \
 cmdlsd.cpp \
-#cmdsbus.cpp \
+cmdsbus.cpp \
 #cmdmem.cpp \
 #cmdpwm.cpp \
 #cmdgpio.cpp \
@@ -51,16 +54,16 @@ cmdlsd.cpp \
 #########################################################
 BSPPATH   = $(LIBEMB_PATH)/bsp
 
-INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc $(LIBEMB_PATH)/pff
+INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc $(LIBEMB_PATH)/pff $(BSPPATH)/blueboard
 LIBSPATH +=
 
-GCSYMBOLS =-D__NEWLIB__ -D__BB__
-GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -O0 -g #-fno-exceptions -fno-unwind-tables -ffunction-sections
-GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -O0 -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nostartfiles #-lstdc++ 
+GCSYMBOLS =-D__NEWLIB__ -D__BB__ -DENABLE_DEBUG
+GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Og -g #-ffunction-sections #-fno-exceptions -fno-unwind-tables 
+GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -Og -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
+LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nodefaultlibs #-nostartfiles #-lstdc++ 
 
 CSRCS   +=startup_lpc1768.c #syscalls.c
-LDSCRIPT =$(BSPPATH)/Blueboard/lpc1768.ld
+LDSCRIPT =$(BSPPATH)/blueboard/lpc1768.ld
 ##########################################################
 OBJECTS = \
 $(addprefix $(BUILD_DIR)/,$(CPPSRCS:.cpp=.obj)) \
@@ -69,7 +72,7 @@ $(addprefix $(BUILD_DIR)/,$(ASRCS:.S=.o)) \
 
 VPATH = \
 $(PRJPATH) \
-$(BSPPATH)/Blueboard/ \
+$(BSPPATH)/blueboard/ \
 $(LIBEMB_PATH)/drv/tft \
 $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
@@ -96,22 +99,23 @@ all: $(TARGET).elf stats
 
 $(TARGET).elf:  $(OBJECTS)
 	@echo "---- Linking ---->" $@
-	$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
+	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text $(TARGET).elf $(TARGET).hex
 
-bin: $(TARGET).bin
-
-$(TARGET).bin: $(TARGET).elf
+$(TARGET).bin: $(TARGET).elf $(CHECKSUM)
 #@$(OBJCOPY) -O binary  $(TARGET).elf $@
-	$(OBJCOPY) -O binary -j .startup -j .text $(TARGET).elf $@
-	hd -n 128 $@
+	$(OBJCOPY) -O binary -j .startup -j .text -j .ram_code $(TARGET).elf $@
+#hd -n 128 $@
 	$(CHECKSUM) $@
+
+bin: $(TARGET).bin
 
 stats: $(TARGET).elf
 	@echo "---- Sections Summary ---"
 	@$(SIZE) -A -x $<
+	@$(SIZE) -B $<
 
 aslist: $(TARGET).elf
 	@$(OBJDUMP) -D $(TARGET).elf > $(TARGET).lst
@@ -135,7 +139,10 @@ $(TARGET).jlink:
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
-	echo "interface jlink\ntransport select swd\nsource [find target/lpc17xx.cfg]\nadapter_khz 4000" > $(TARGET).cfg
+	@echo "interface jlink" > $(TARGET).cfg
+	@echo "transport select swd" >> $(TARGET).cfg
+	@echo "source [find target/lpc17xx.cfg]" >> $(TARGET).cfg
+	@echo "adapter_khz 4000" >> $(TARGET).cfg
 
 program: $(TARGET).bin $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
@@ -155,6 +162,8 @@ command:
 $(BUILD_DIR):
 	mkdir -p $@
 
+$(CHECKSUM):
+	$(MAKE) -C $(BSPPATH)/tools
 #########################################################
 # 
 #########################################################
@@ -168,7 +177,7 @@ OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
 OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
 DBG = $(GCC_EXEC_PREFIX)-insight
 REMOVE = rm -fR
-CHECKSUM =$(BSPPATH)/tools/checksum	
+CHECKSUM =$(LIBEMB_PATH)/tools/checksum	
 ########################################################
 $(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
 	@echo "---- Compile" $< "---->" $@

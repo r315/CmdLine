@@ -26,6 +26,11 @@ public:
     }
 };
 
+typedef struct _Array{
+	uint8_t *data;
+	uint8_t len;
+	uint8_t empty;
+}Array;
 
 #ifdef __cplusplus
 }

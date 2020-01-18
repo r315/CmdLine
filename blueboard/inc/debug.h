@@ -39,7 +39,9 @@
 #if DEBUG_MESSAGES
    #if DEBUG_OUT_DISPLAY
       #include "board.h"
+	  #include "dbg.h"
       #define DBG DISPLAY_printf
+	  #define DBG_PRINT dbg_printf
    #else
       #define DBG printf
    #endif

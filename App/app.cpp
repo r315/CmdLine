@@ -4,6 +4,8 @@
 #include "cmdhelp.h"
 #include "cmdmem.h"
 #include "cmdrfinder.h"
+#include "cmdadc.h"
+#include "cmdrst.h"
 
 #if defined(__BB__)
 //#include "vcom.h"
@@ -23,12 +25,6 @@
 #include "cmdawg.h"
 */
 #include "cmdsbus.h"
-
-#else
-
-#endif
-
-#if defined(__BB__)
 
 enum {
     MODE_LPCBUS = 0,
@@ -73,7 +69,7 @@ uint8_t i;
 }
 
 uint8_t checkOptions(option_type *opt, uint8_t nopt){
-uint8_t curSelected = selectedOption(opt, nopt);;
+uint8_t curSelected = selectedOption(opt, nopt);
 
 	if(BUTTON_Read() == BUTTON_PRESSED){
         switch(BUTTON_GetValue()){
@@ -98,6 +94,11 @@ uint8_t curSelected = selectedOption(opt, nopt);;
     return curSelected;
 }
 
+#ifdef ENABLE_DEBUG
+extern "C" void dbg_putc(char c){
+    vcp.xputchar(c);
+}
+#endif
 
 void App(void){
     
@@ -111,7 +112,7 @@ void App(void){
     CmdHelp help;
     CmdSpi spi;
     CmdAvr avr;
-    //CmdSbus sbus;
+    CmdSbus sbus;
     CmdReset rst;
     CmdSd sd;
 
@@ -119,7 +120,7 @@ void App(void){
     console.addCommand(&echo);
     console.addCommand(&spi);
     console.addCommand(&avr);
-    //console.addCommand(&sbus);
+    console.addCommand(&sbus);
     console.addCommand(&rst);
     console.addCommand(&sd);
 
@@ -166,8 +167,6 @@ void App(void){
             }
                       
 		}while(TRUE);		
-
-		
 	}	
 }
 
@@ -188,6 +187,35 @@ void App(void){
 	con.addCommand(&help);
 	con.addCommand(&mem);
 	con.addCommand(&rfinder);
+
+	while(1){
+		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+		 //con.print("Test\n");
+		con.process();
+		 HAL_Delay(100);
+	}
+}
+#elif defined(_BLUEPILL_)
+void App(void){
+
+	//uint8_t data[10];
+
+	Console con;
+	CmdEcho echo;
+	CmdHelp help;
+	CmdMem mem;
+	CmdRfinder rfinder;
+	CmdAdc adc;
+	CmdRst rst;
+	
+	vcp.init();
+	con.init(&vcp,"bluepill>");
+	con.addCommand(&echo);
+	con.addCommand(&help);
+	con.addCommand(&mem);
+	con.addCommand(&rfinder);
+	con.addCommand(&adc);
+	con.addCommand(&rst);
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
