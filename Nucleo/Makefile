@@ -80,7 +80,7 @@ $(APP_DIR)/cmdrfinder.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
-startup/startup_stm32l412xx.s
+Core/Startup/startup_stm32l412kbux.s
 
 
 #######################################
