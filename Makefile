@@ -1,38 +1,36 @@
-BUILD_DIR  =build
+BUILD_DIR  =../build
 
 all: bb
 
-$(BUILD_DIR):
-	mkdir -p $@
-	
 clean: 
-	@${RM} -rf $(BUILD_DIR)
-	@$(MAKE) -C blueboard clean
-	@$(MAKE) -C Nucleo clean
-	@$(MAKE) -C bluepill clean
+	@${RM} -rf build
+#@$(MAKE) -C blueboard clean
+#@$(MAKE) -C Nucleo clean
+#@$(MAKE) -C bluepill clean
 	
-emu: $(BUILD_DIR)
-	@$(MAKE) -C bsp/emu BUILD_DIR=../../$(BUILD_DIR)/emu
+emu:
+	@$(MAKE) -C bsp/emu BUILD_DIR=$(BUILD_DIR)/emu
 
 nuc:
-	@$(MAKE) -C Nucleo BUILD_DIR=../$(BUILD_DIR)/nucleo-l412
+	@$(MAKE) -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412
 
 pill:
-	@$(MAKE) -C bluepill BUILD_DIR=../$(BUILD_DIR)/bluepill
+	@$(MAKE) -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill
 
 bb:
-	@$(MAKE) -C blueboard BUILD_DIR=../$(BUILD_DIR)/blueboard
+	@$(MAKE) -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard
 # BUILD_DIR=../$(BUILD_DIR)/blueboard
+DISCO: 
+	@$(MAKE) -C bsp/Discovery BUILD_DIR=$(BUILD_DIR)/discovery
 	
 program-bb:
-	@$(MAKE) -C bsp/Blueboard BUILD_DIR=../../$(BUILD_DIR)/blueboard program
+	@$(MAKE) -C bsp/Blueboard BUILD_DIR=$(BUILD_DIR)/blueboard program
 
 program-pill:
-	@$(MAKE) -C bluepill BUILD_DIR=../../$(BUILD_DIR)/bluepill program
+	@$(MAKE) -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill program
 
-
-DISCO: 
-	@$(MAKE) -C bsp/Discovery BUILD_DIR=../../$(BUILD_DIR)/discovery
+program-nuc:
+	@$(MAKE) -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 program
 
 
 ifeq ($(GCC_COLORS),)

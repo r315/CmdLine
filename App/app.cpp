@@ -172,7 +172,7 @@ void App(void){
 
 #elif defined(__NUCLEO_L412KB__)
 void App(void){
-
+	uint32_t count = 0;
 	//uint8_t data[10];
 
 	Console con;
@@ -192,7 +192,11 @@ void App(void){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
 		 //con.print("Test\n");
 		con.process();
-		 HAL_Delay(100);
+		HAL_Delay(100);
+		count++;
+		if((count%10) == 0){
+			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+		}
 	}
 }
 #elif defined(_BLUEPILL_)

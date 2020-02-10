@@ -23,8 +23,6 @@ extern StdOut aux_uart;
 
 #define DelayMs(_X) HAL_Delay(_X)
 
-void App(void);
-
 #ifdef __cplusplus
 }
 #endif

@@ -90,9 +90,9 @@ void aux_puts(const char* str){
 }
 
 char aux_getchar(void){
-	char rx;
+	uint8_t rx;
 	HAL_UART_Receive(&huart1, &rx, 1, 1000);
-	return rx;
+	return (char)rx;
 }
 
 uint8_t aux_getCharNonBlocking(char *c){

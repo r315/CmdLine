@@ -188,7 +188,7 @@ LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -W
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 $(TARGET).cfg:
-	@echo "Creating opencod configuration file"
+	@echo "Creating opencod configuration file for jlink"
 	echo "interface jlink\ntransport select swd\nsource [find target/stm32l4x.cfg]\nadapter_khz 4000" > $(TARGET).cfg
 
 program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg

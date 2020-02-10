@@ -21,16 +21,11 @@ public:
     char execute(void *ptr);
     void help(void){
         //console->print("Usage: rfinder <> [option] \n\n");
+        console->print("** Range finder **  \n\n");
         console->print("Pin assignment: \n");
         console->print("\t PA9: TX\n\tPA10: RX\n\n");
     }
 };
-
-typedef struct _Array{
-	uint8_t *data;
-	uint8_t len;
-	uint8_t empty;
-}Array;
 
 #ifdef __cplusplus
 }
