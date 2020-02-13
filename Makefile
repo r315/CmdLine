@@ -1,4 +1,4 @@
-BUILD_DIR  =../build
+BUILD_DIR  :=../build
 
 all: bb
 
@@ -12,13 +12,13 @@ emu:
 	@$(MAKE) -C bsp/emu BUILD_DIR=$(BUILD_DIR)/emu
 
 nuc:
-	@$(MAKE) -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412
+	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412
 
 pill:
-	@$(MAKE) -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill
+	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill
 
 bb:
-	@$(MAKE) -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard
+	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard
 # BUILD_DIR=../$(BUILD_DIR)/blueboard
 DISCO: 
 	@$(MAKE) -C bsp/Discovery BUILD_DIR=$(BUILD_DIR)/discovery
