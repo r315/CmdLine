@@ -47,7 +47,10 @@ C_SOURCES =  \
 Core/Src/main.c \
 Core/Src/stm32l4xx_it.c \
 Core/Src/stm32l4xx_hal_msp.c \
-/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
+Core/Src/system_stm32l4xx.c \
+Core/Src/syscalls.c \
+Core/Src/vcp.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
@@ -66,9 +69,6 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-Core/Src/system_stm32l4xx.c \
-Core/Src/syscalls.c \
-Core/Src/vcp.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 
@@ -177,7 +177,7 @@ endif
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32L412KBUx_FLASH.ld
+LDSCRIPT =STM32L412KBUx_FLASH.ld
 
 # libraries
 LIBS = -lm# -lnosys 
@@ -193,6 +193,12 @@ $(TARGET).cfg:
 
 program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+
+test:
+#@echo $(CURDIR)
+	@echo ""; $(foreach d, $(OBJECTS), echo $(d);)
+	@echo $(sort $(dir $(C_SOURCES)))
+#@echo $(C_SOURCES)
 
 #######################################
 # build the application

@@ -1,3 +1,4 @@
+#include "app.h"
 #include "board.h"
 #include "cmdrfinder.h"
 

@@ -171,6 +171,7 @@ void App(void){
 }
 
 #elif defined(__NUCLEO_L412KB__)
+extern "C"
 void App(void){
 	uint32_t count = 0;
 	//uint8_t data[10];

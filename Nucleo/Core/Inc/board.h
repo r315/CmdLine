@@ -9,13 +9,6 @@ extern "C" {
 #include <stdout.h>
 #include "main.h"
 
-
-typedef struct _Array{
-	uint8_t *data;
-	uint8_t len;
-	uint8_t empty;
-}Array;
-
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
 extern StdOut vcp;
