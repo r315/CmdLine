@@ -4,9 +4,9 @@ all: bb
 
 clean: 
 	@${RM} -rf build
-#@$(MAKE) -C blueboard clean
-#@$(MAKE) -C Nucleo clean
-#@$(MAKE) -C bluepill clean
+	@$(MAKE) -C blueboard clean
+	@$(MAKE) -C Nucleo clean
+	@$(MAKE) -C bluepill clean
 	
 emu:
 	@$(MAKE) -C bsp/emu BUILD_DIR=$(BUILD_DIR)/emu
@@ -14,7 +14,7 @@ emu:
 nuc:
 	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412
 
-pill:
+bluepill:
 	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill
 
 bb:
@@ -37,3 +37,5 @@ ifeq ($(GCC_COLORS),)
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
 #unexport GCC_COLORS
 endif
+
+.PHONY: bluepill
