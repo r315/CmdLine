@@ -57,9 +57,6 @@ static inline void reenumerate_usb(void){
 	//	__asm__("nop");
 }
 
-#define LCD_W SSD1306_LCDWIDTH
-#define LCD_H SSD1306_LCDHEIGHT
-
 /**
  * PWM
  * 
@@ -136,6 +133,21 @@ void ADC_SetCallBack(void (*)(uint16_t*));
  ************************************************************ */
 uint16_t *ADC_LastConvertion(void);
 
+/* ************************************************************
+ * Servo API
+ * ************************************************************ */
+#define SERVO_PORT  GPIOB
+#define SERVO_PIN   9
+/**
+ * @brief start servo pulse, 1000-200us pulse every 20ms on pin PB9
+ * */
+void SERVO_Init(void);
+
+/**
+ * @brief set servo pulse width
+ * @param pulse : pulse width, 900 - 2100
+ * */
+void SERVO_SetPulse(uint16_t pulse);
 
  extern StdOut aux_uart;
  extern StdOut vcp;

@@ -3,6 +3,53 @@
 #include "usbd_cdc_if.h"
 #include <stdout.h>
 
+// Output
+#define GPO_2MHZ                (2 << 0)
+#define GPO_10MHZ               (1 << 0)
+#define GPO_50MHZ               (3 << 0)
+#define GPO_AF                  (2 << 2) // Must be or'd with suitable speed
+#define GPO_AF_OD               (3 << 2)
+// Input
+#define GPI_FLOAT               (1 << 2)
+#define GPI_ANALOG              (0 << 2)
+#define GPI_PD                  (2 << 2)
+#define GPI_PU                  (6 << 2)
+
+/**
+ * @brief Configure GPIO pin
+ * @param port : pin port
+ * @param pin : pin number 0 - 15
+ * @param mode : Output
+ *                  GPO_2MHZ
+ *                  GPO_10MHZ
+ *                  GPO_50MHZ
+ *                  GPO_AF | GPO_xxMHZ
+ *                  GPO_AF_OD | GPO_xxMHZ
+ *               Input
+ *                  GPI_FLOAT
+ *                  GPI_ANALOG
+ *                  GPI_PD
+ *                  GPI_PU
+ * */
+void gpioInit(GPIO_TypeDef *port, uint8_t pin, uint8_t mode) {
+    
+    if(mode == GPI_PD){
+        port->BRR = (1 << pin);
+    }
+
+    if(mode == GPI_PU){
+        port->BSRR = (1 << pin);
+    }    
+
+    mode &= 0x0f;
+
+    if(pin <  8){ 
+        port->CRL = (port->CRL & ~(15 << (pin << 2))) | (mode << (pin << 2));
+    }else{ 
+        port->CRH = (port->CRH & ~(15 << ((pin - 8) << 2))) | (mode << ((pin - 8) << 2)); 
+    }
+}
+
 
 void setInterval(void(*cb)(), uint32_t ms){
     // start loop, timer is configures on startup
@@ -66,6 +113,72 @@ void PWM_Set(uint8_t ch, uint16_t newvalue){
 uint16_t PWM_Get(uint8_t ch){
     uint32_t *ccr = (uint32_t*)&TIM3->CCR1;     
     return ccr[ch&3];
+}
+
+/**
+ * @brief Generate RC Servo signal on pin PB9
+ * */
+void SERVO_Init(void){
+     /* Configure Timer 3, same as pwm*/
+    RCC->APB1ENR  |= RCC_APB1ENR_TIM3EN;
+    RCC->APB1RSTR |= RCC_APB1ENR_TIM3EN;
+    RCC->APB1RSTR &= ~RCC_APB1ENR_TIM3EN;
+
+    TIM3->CR1 = TIM_CR1_ARPE;       // Enable auto-reload preload
+    //TIM3->CCMR1 = (6<<TIM_CCMR1_OC2M_Pos) | (6<<TIM_CCMR1_OC1M_Pos) | (TIM_CCMR1_OC2PE) | (TIM_CCMR1_OC1PE);  // PWM Mode 1
+    
+    TIM3->CCER = TIM_CCER_CC1E; // Enable channel 1
+    TIM3->PSC = (SystemCoreClock/1000000) - 1;
+
+    TIM3->ARR = 20000 - 1;
+    TIM3->CCR1 = 1500;
+    
+    TIM3->DIER |= TIM_DIER_CC1IE | TIM_DIER_UIE;
+
+    NVIC_EnableIRQ(TIM3_IRQn);
+
+    TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
+
+    gpioInit(SERVO_PORT, SERVO_PIN, GPO_2MHZ);
+    
+}
+
+/**
+ * @brief Set servo pulse
+ * @param pulse : pulse width in us 1000 - 2000
+ * */
+void SERVO_SetPulse(uint16_t pulse){
+    if(pulse < 900 || pulse > 2100){
+        return;
+    }
+
+    TIM3->CCR1 = pulse;
+}
+
+void SERVO_Stop(void){
+
+    TIM3->CR1 = 0;
+
+    NVIC_DisableIRQ(TIM3_IRQn);
+    
+    gpioInit(SERVO_PORT, SERVO_PIN, GPI_FLOAT);
+}
+
+uint16_t SERVO_Get(void){
+    return 0;
+}
+
+void TIM3_IRQHandler(void){
+
+    if(TIM3->SR & TIM_SR_CC1IF){
+        SERVO_PORT->BRR = (1 << SERVO_PIN);
+        TIM3->SR &= ~(TIM_SR_CC1IF); 
+    }
+
+    if(TIM3->SR & TIM_SR_UIF){
+        SERVO_PORT->BSRR = (1 << SERVO_PIN);
+        TIM3->SR &= ~(TIM_SR_UIF); 
+    }
 }
 
 /**

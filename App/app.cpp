@@ -6,6 +6,7 @@
 #include "cmdrfinder.h"
 #include "cmdadc.h"
 #include "cmdrst.h"
+#include "cmdservo.h"
 
 #if defined(__BB__)
 //#include "vcom.h"
@@ -212,6 +213,7 @@ void App(void){
 	CmdRfinder rfinder;
 	CmdAdc adc;
 	CmdRst rst;
+	CmdServo servo;
 	
 	vcp.init();
 	con.init(&vcp,"bluepill>");
@@ -221,6 +223,8 @@ void App(void){
 	con.addCommand(&rfinder);
 	con.addCommand(&adc);
 	con.addCommand(&rst);
+	con.addCommand(&servo);
+	SERVO_Init();
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);

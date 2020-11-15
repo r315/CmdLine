@@ -6,6 +6,7 @@
 
 #include "board.h"
 #include "fifo.h"
+#include "app.h"
 
 
 #define VCOM_FIFO_SIZE 512
