@@ -33,7 +33,7 @@ BUILD_DIR :=build
 APP_DIR :=../App
 
 ifeq ($(shell uname -s), Linux)
-REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0
+REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 else
 REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0
 endif
