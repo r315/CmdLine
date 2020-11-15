@@ -192,10 +192,10 @@ all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
-	echo "interface jlink" >> $@
+	echo "adapter driver jlink" >> $@
 	echo "transport select swd" >> $@
 	echo "source [find target/stm32f1x.cfg]" >> $@
-	echo "adapter_khz 4000" >> $@
+	echo "adapter speed 4000" >> $@
 
 program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"

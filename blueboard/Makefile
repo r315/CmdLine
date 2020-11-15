@@ -139,10 +139,10 @@ $(TARGET).jlink:
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
-	@echo "interface jlink" > $(TARGET).cfg
+	@echo "adapter driver jlink" > $(TARGET).cfg
 	@echo "transport select swd" >> $(TARGET).cfg
 	@echo "source [find target/lpc17xx.cfg]" >> $(TARGET).cfg
-	@echo "adapter_khz 4000" >> $(TARGET).cfg
+	@echo "adapter speed 4000" >> $(TARGET).cfg
 
 program: $(TARGET).bin $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
