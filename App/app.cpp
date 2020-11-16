@@ -7,8 +7,11 @@
 #include "cmdadc.h"
 #include "cmdrst.h"
 #include "cmdservo.h"
+#include "cmdspiflash.h"
+#include "cmdflashrom.h"
 
-#if defined(__BB__)
+
+#if defined (__BB__)
 //#include "vcom.h"
 #include <console.h>
 #include "cmdhelp.h"
@@ -171,7 +174,7 @@ void App(void){
 	}	
 }
 
-#elif defined(__NUCLEO_L412KB__)
+#elif defined (__NUCLEO_L412KB__)
 extern "C"
 void App(void){
 	uint32_t count = 0;
@@ -201,10 +204,8 @@ void App(void){
 		}
 	}
 }
-#elif defined(_BLUEPILL_)
+#elif defined (_BLUEPILL_)
 void App(void){
-
-	//uint8_t data[10];
 
 	Console con;
 	CmdEcho echo;
@@ -214,6 +215,8 @@ void App(void){
 	CmdAdc adc;
 	CmdRst rst;
 	CmdServo servo;
+	CmdSpiFlash spiflash;
+	CmdFlashRom flashrom;
 	
 	vcp.init();
 	con.init(&vcp,"bluepill>");
@@ -224,7 +227,12 @@ void App(void){
 	con.addCommand(&adc);
 	con.addCommand(&rst);
 	con.addCommand(&servo);
+	con.addCommand(&spiflash);
+	con.addCommand(&flashrom);
+
 	SERVO_Init();
+
+	SPI_Init();
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);

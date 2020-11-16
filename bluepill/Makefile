@@ -78,6 +78,7 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
+$(APP_DIR)/spi_flash.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \

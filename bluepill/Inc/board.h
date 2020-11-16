@@ -15,9 +15,9 @@ extern "C" {
  * HW symbols
  * */
 
-#define DBG_LED_TOGGLE HAL_GPIO_TogglePin(GPIOA, DBG_Pin)
-#define DBG_LED_ON HAL_GPIO_WritePin(GPIOA, DBG_Pin, GPIO_PIN_SET)
-#define DBG_LED_OFF HAL_GPIO_WritePin(GPIOA, DBG_Pin, GPIO_PIN_RESET)
+#define DBG_LED_TOGGLE HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin)
+#define DBG_LED_ON HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
+#define DBG_LED_OFF HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
 
 #define GetTicks HAL_GetTick
 #define DelayMs(d) HAL_Delay(d)
@@ -152,6 +152,17 @@ void SERVO_SetPulse(uint16_t pulse);
  extern StdOut aux_uart;
  extern StdOut vcp;
  
+/* ************************************************************
+ * SPI API
+ * ************************************************************ */
+#define SPI_XFER_TIMEOUT    1000
+
+void SPI_Init(void);
+uint32_t SPI_Read(uint8_t *dst, uint32_t size);
+uint32_t SPI_Write(uint8_t *src, uint32_t size);
+void SPI_SetCS(uint8_t cs);
+uint8_t SPI_Transfer(uint8_t *data, uint32_t timeout);
+
  
 #ifdef __cplusplus
 }
