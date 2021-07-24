@@ -78,6 +78,8 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
+$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
+$(LIBEMB_PATH)/drv/uart/uart_f10x.c \
 $(APP_DIR)/spi_flash.c \
 
 CPP_SOURCES = \
@@ -133,6 +135,7 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
+-DENABLE_UART \
 
 # CPP defines
 CPP_DEFS = \
@@ -229,7 +232,7 @@ $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	@echo "Linking " $<
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
+	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
 	$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)

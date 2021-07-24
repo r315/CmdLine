@@ -1,6 +1,7 @@
 BUILD_DIR  :=../build
 
-all: bb
+all:
+	@echo "specify board"
 
 clean: 
 	@${RM} -rf build
