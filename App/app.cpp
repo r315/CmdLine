@@ -10,24 +10,13 @@
 #include "cmdspiflash.h"
 #include "cmdflashrom.h"
 
+StdOut *userio;
 
 #if defined (__BB__)
-//#include "vcom.h"
-#include <console.h>
-#include "cmdhelp.h"
-#include "cmdecho.h"
 #include "cmdspi.h"
 #include "cmdavr.h"
 #include "cmdreset.h"
 #include "cmdsd.h"
-/*#include "cmdpwm.h"
-#include "cmdgpio.h"
-#include "cmdled.h"
-#include "cmdmem.h"
-#include "cmdi2c.h"
-#include "cmdtest.h"
-#include "cmdawg.h"
-*/
 #include "cmdsbus.h"
 
 enum {
@@ -50,7 +39,6 @@ option_type options[] = {
 	{"LPC Bus",TRUE},
 	{"stk500", FALSE},
 };
-
 
 void printOptions(option_type *opt, uint8_t nopt){
 	DISPLAY_Goto(0,0);
@@ -109,8 +97,10 @@ void App(void){
     uint8_t mode;
     Console console;
 
-    vcp.init();    
-    console.init(&vcp, "LPC BUS>");    
+	userio = &vcp;
+
+    userio->init();    
+    console.init(userio, "LPC BUS>");    
     
 	CmdEcho echo;
     CmdHelp help;
@@ -186,8 +176,10 @@ void App(void){
 	CmdMem mem;
 	CmdRfinder rfinder;
 	
-	vcp.init();
-	con.init(&vcp,"nucleo>");
+	stdout = &vcp;
+
+	stdout->init();
+	con.init(stdout,"nucleo>");
 	con.addCommand(&echo);
 	con.addCommand(&help);
 	con.addCommand(&mem);
@@ -218,8 +210,15 @@ void App(void){
 	CmdSpiFlash spiflash;
 	CmdFlashRom flashrom;
 	
-	vcp.init();
-	con.init(&vcp,"bluepill>");
+
+	#ifdef STDOUT_UART
+	userio = &uart;
+	#else
+	userio = &vcp;
+	#endif
+
+	userio->init();
+	con.init(userio,"bluepill>");
 	con.addCommand(&echo);
 	con.addCommand(&help);
 	con.addCommand(&mem);

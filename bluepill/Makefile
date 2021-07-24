@@ -136,12 +136,15 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DENABLE_UART \
+-DSTDOUT_UART \
+-DUART_IT \
 
 # CPP defines
 CPP_DEFS = \
 '-D__weak=__attribute__((weak))' \
 '-D__packed=__attribute__((__packed__))' \
 -DUSE_HAL_DRIVER \
+-DSTDOUT_UART \
 
 
 # AS includes
