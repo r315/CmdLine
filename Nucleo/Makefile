@@ -84,11 +84,28 @@ $(APP_DIR)/cmdbuz.cpp \
 ASM_SOURCES =  \
 Core/Startup/startup_stm32l412kbux.s
 
+#######################################
+# Include
+#######################################
+
+# AS includes
+AS_INCLUDES = 
+
+# C includes
+C_INCLUDES =  \
+-ICore/Inc \
+-I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
+-I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
+-I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
+-I$(LIBEMB_PATH)/include \
+-I../inc
 
 #######################################
 # binaries
 #######################################
-PREFIX = arm-none-eabi-
+PREFIX =arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
 # either it can be added to the PATH environment variable.
 ifdef _GCC_PATH
@@ -106,18 +123,38 @@ SZ = $(PREFIX)size
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
+TAG_COMMIT := $(shell git rev-list --abbrev-commit --tags --max-count=1)
+COMMIT := $(shell git rev-parse --short HEAD)
+TAG := $(shell git describe --abbrev=0 --tags ${TAG_COMMIT} 2>/dev/null || true)
+DATE := $(shell git log -1 --format=%cd --date=format:"%Y%m%d")
+#VERSION := $(TAG:v%=%)
+
+#ifneq ($(COMMIT), $(TAG_COMMIT))
+#    VERSION := $(VERSION)-next-$(COMMIT)-$(DATE)
+#endif
+
+ifeq ($(TAG),)
+    VERSION :=$(COMMIT)-$(DATE)
+else
+    VERSION :=$(TAG)-$(COMMIT)-$(DATE)
+endif
+
+ifneq ($(shell git status --porcelain),)
+    VERSION := $(VERSION)-dirty
+endif
+
 #######################################
 # CFLAGS
 #######################################
 # cpu
-CPU = -mcpu=cortex-m4
+CPU =-mcpu=cortex-m4
 
 # fpu
-FPU = -mfpu=fpv4-sp-d16
+FPU =-mfpu=fpv4-sp-d16
 
 # float-abi
-FLOAT-ABI = -mfloat-abi=hard
+FLOAT-ABI =-mfloat-abi=hard
 
 # mcu
 MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI) -D__NUCLEO_L412KB__ 
@@ -128,6 +165,7 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
+-DVERSION_STRING="$(VERSION)" \
 -DUSE_HAL_DRIVER \
 -DSTM32L412xx \
 
@@ -135,23 +173,9 @@ C_DEFS =  \
 CPP_DEFS = \
 '-D__weak=__attribute__((weak))' \
 '-D__packed=__attribute__((__packed__))' \
+'-DVERSION_STRING="$(VERSION)"' \
 -DUSE_HAL_DRIVER \
 -DSTM32L412xx \
-
-# AS includes
-AS_INCLUDES = 
-
-# C includes
-C_INCLUDES =  \
--ICore/Inc \
--I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
--I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
--I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(LIBEMB_PATH)/include \
--I../inc
-
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
@@ -161,11 +185,9 @@ CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-
 CPPFLAGS = $(MCU) $(CPP_DEFS) $(C_INCLUDES) $(OPT) -Wall -fmessage-length=0 -ffunction-sections -c -fno-exceptions -fno-rtti
 
  
-
 ifeq ($(DEBUG), 1)
 CFLAGS += -g -gdwarf-2
 endif
-
 
 # Generate dependency information
 #CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
@@ -184,8 +206,12 @@ LIBS = -lm# -lnosys
 LIBDIR = 
 LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -fno-exceptions -fno-rtti
 
+#######################################
+# Rules
+#######################################
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+	@echo $(VERSION)
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file for st-link"
@@ -199,9 +225,9 @@ program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 
 test:
-#@echo $(CURDIR)
-	@echo ""; $(foreach d, $(OBJECTS), echo $(d);)
-	@echo $(sort $(dir $(C_SOURCES)))
+	@echo $(VERSION)
+#@echo ""; $(foreach d, $(OBJECTS), echo $(d);)
+#@echo $(sort $(dir $(C_SOURCES)))
 #@echo $(C_SOURCES)
 
 #######################################
@@ -231,8 +257,8 @@ $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	@echo "Linking " $<
-	$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
-	$(SZ) $@
+	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
+	@$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@

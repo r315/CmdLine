@@ -13,7 +13,7 @@
 #include "cmdspiflash.h"
 #include "cmdflashrom.h"
 #include "cmdbuz.h"
-
+#include "cmdversion.h"
 
 
 StdOut *userio;
@@ -182,6 +182,7 @@ void App(void){
 	CmdMem mem;
 	//CmdRfinder rfinder;
 	CmdBuz buz;
+	CmdVersion ver;
 	
 	userio = &uart;
 	userio->init();
@@ -192,6 +193,7 @@ void App(void){
 	con.addCommand(&mem);
 	con.addCommand(&buz);
 	//con.addCommand(&rfinder);
+	con.addCommand(&ver);
 
 	buzInit();
 	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");
