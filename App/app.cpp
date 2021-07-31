@@ -1,5 +1,8 @@
-#include <console.h>
+
 #include "board.h"
+#include "buzzer.h"
+
+#include <console.h>
 #include "cmdecho.h"
 #include "cmdhelp.h"
 #include "cmdmem.h"
@@ -9,6 +12,9 @@
 #include "cmdservo.h"
 #include "cmdspiflash.h"
 #include "cmdflashrom.h"
+#include "cmdbuz.h"
+
+
 
 StdOut *userio;
 
@@ -174,16 +180,21 @@ void App(void){
 	CmdEcho echo;
 	CmdHelp help;
 	CmdMem mem;
-	CmdRfinder rfinder;
+	//CmdRfinder rfinder;
+	CmdBuz buz;
 	
-	stdout = &vcp;
+	userio = &uart;
+	userio->init();
 
-	stdout->init();
-	con.init(stdout,"nucleo>");
+	con.init(userio,"nucleo>");
 	con.addCommand(&echo);
 	con.addCommand(&help);
 	con.addCommand(&mem);
-	con.addCommand(&rfinder);
+	con.addCommand(&buz);
+	//con.addCommand(&rfinder);
+
+	buzInit();
+	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);

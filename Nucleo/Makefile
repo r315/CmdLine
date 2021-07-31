@@ -49,7 +49,7 @@ Core/Src/stm32l4xx_it.c \
 Core/Src/stm32l4xx_hal_msp.c \
 Core/Src/system_stm32l4xx.c \
 Core/Src/syscalls.c \
-Core/Src/vcp.c \
+Core/Src/serial.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
@@ -71,12 +71,14 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
+$(LIBEMB_PATH)/sound/stm32f1xx-buzzer.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdmem.cpp \
 $(APP_DIR)/cmdrfinder.cpp \
+$(APP_DIR)/cmdbuz.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -128,15 +130,13 @@ AS_DEFS =
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
 -DSTM32L412xx \
--DUSE_HAL_DRIVER \
--DSTM32L412xx
 
 # CPP defines
 CPP_DEFS = \
 '-D__weak=__attribute__((weak))' \
 '-D__packed=__attribute__((__packed__))' \
--DUSE_HAL_DRIVER -DSTM32L412xx \
-
+-DUSE_HAL_DRIVER \
+-DSTM32L412xx \
 
 # AS includes
 AS_INCLUDES = 
@@ -188,8 +188,12 @@ LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -W
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 
 $(TARGET).cfg:
-	@echo "Creating opencod configuration file for jlink"
-	echo "interface jlink\ntransport select swd\nsource [find target/stm32l4x.cfg]\nadapter_khz 4000" > $(TARGET).cfg
+	@echo "Creating opencod configuration file for st-link"
+	@echo "source [find interface/stlink.cfg]" >> $@
+	@echo "transport select "hla_swd"" >> $@
+	@echo "source [find target/stm32l4x.cfg]" >> $@
+	@echo "adapter speed 4000" >> $@
+	
 
 program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"

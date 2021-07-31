@@ -11,8 +11,8 @@ extern "C" {
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;
-extern StdOut vcp;
-extern StdOut aux_uart;
+extern StdOut uart;
+extern StdOut uart_aux;
 
 #define DelayMs(_X) HAL_Delay(_X)
 

@@ -151,7 +151,7 @@ void SERVO_SetPulse(uint16_t pulse);
 
 extern StdOut uart;
 extern StdOut vcp;
-extern StdOut aux_uart;
+extern StdOut uart_aux;
  
 /* ************************************************************
  * SPI API

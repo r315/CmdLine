@@ -4,11 +4,11 @@
 
 
 void startRanging(void){
-	aux_uart.xputchar(START_RANGING);
+	uart_aux.xputchar(START_RANGING);
 }
 
 uint8_t readFrame(void){
-	return aux_uart.kbhit();
+	return uart_aux.kbhit();
 }
 
 uint8_t checkSum(uint8_t *buf){
@@ -33,8 +33,8 @@ uint8_t m = 0;
 
 	help();
 
-	aux_uart.user_ctx = &arr;
-	aux_uart.init();
+	uart_aux.user_ctx = &arr;
+	uart_aux.init();
 
 
 	while(!console->kbhit()){

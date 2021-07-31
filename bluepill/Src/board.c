@@ -245,7 +245,7 @@ StdOut vcp = {
     .kbhit = vc_kbhit
 };
 
-StdOut aux_uart;
+StdOut uart_aux;
 
 /**
  * I2C DMA driver
