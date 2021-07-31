@@ -140,7 +140,7 @@ else
     VERSION :=$(TAG)-$(COMMIT)-$(DATE)
 endif
 
-ifneq ($(shell git status --porcelain),)
+ifneq ($(shell git status --porcelain | grep -v '^??'),)
     VERSION := $(VERSION)-dirty
 endif
 
@@ -203,7 +203,7 @@ LDSCRIPT =STM32L412KBUx_FLASH.ld
 
 # libraries
 LIBS = -lm# -lnosys 
-LIBDIR = 
+LIBDIR =
 LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -fno-exceptions -fno-rtti
 
 #######################################
@@ -211,7 +211,6 @@ LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -W
 #######################################
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
-	@echo $(VERSION)
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file for st-link"
