@@ -1,3 +1,3 @@
-# terminal
+# Command
 
-Simple command interperter for embedded systems
+Simple command line interpreter for embedded systems
