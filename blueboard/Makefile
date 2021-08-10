@@ -2,12 +2,13 @@
 #########################################################
 # project files
 #########################################################
-TARGET = $(BUILD_DIR)/console_blueboard
-BUILD_DIR :=build
-PRJPATH =src usbdrv stk500 ../App
-INCSPATH =inc usbdrv ../inc
+TARGET 		 =$(BUILD_DIR)/console_blueboard
+BUILD_DIR 	:=build
+APP_DIR 	:=../App
+PRJ_DIR 	:=.
 
-CSRCS =usbserial.c \
+CSRCS =\
+usbserial.c \
 usbhw_lpc.c \
 usbcontrol.c \
 usbstdreq.c \
@@ -52,18 +53,27 @@ cmdsbus.cpp \
 #########################################################
 #Startup files and libraries
 #########################################################
-BSPPATH   = $(LIBEMB_PATH)/bsp
+BSPPATH   = $(LIBEMB_PATH)/bsp/blueboard
 
-INCSPATH +=inc $(LIBEMB_PATH)/include $(BSPPATH)/CMSISv2p00_LPC17xx/inc $(LIBEMB_PATH)/pff $(BSPPATH)/blueboard
+INCSPATH =\
+$(PRJ_DIR)/inc \
+$(PRJ_DIR)/usbdrv \
+$(APP_DIR)/../inc \
+$(LIBEMB_PATH)/include \
+$(LIBEMB_PATH)/pff \
+$(BSPPATH) \
+$(BSPPATH)/CMSISv2p00_LPC17xx/inc \
+
+
 LIBSPATH +=
 
 GCSYMBOLS =-D__NEWLIB__ -D__BB__ -DENABLE_DEBUG
-GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Og -g #-ffunction-sections #-fno-exceptions -fno-unwind-tables 
-GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -Og -g -fno-exceptions -fno-unwind-tables -fno-rtti #-ffunction-sections 
+GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables 
+GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti
 LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nodefaultlibs #-nostartfiles #-lstdc++ 
 
-CSRCS   +=startup_lpc1768.c #syscalls.c
-LDSCRIPT =$(BSPPATH)/blueboard/lpc1768.ld
+CSRCS   +=startup_lpc1768.c
+LDSCRIPT =$(BSPPATH)/lpc1768.ld
 ##########################################################
 OBJECTS = \
 $(addprefix $(BUILD_DIR)/,$(CPPSRCS:.cpp=.obj)) \
@@ -71,8 +81,11 @@ $(addprefix $(BUILD_DIR)/,$(CSRCS:.c=.o)) \
 $(addprefix $(BUILD_DIR)/,$(ASRCS:.S=.o)) \
 
 VPATH = \
-$(PRJPATH) \
-$(BSPPATH)/blueboard/ \
+$(APP_DIR) \
+$(PRJ_DIR)/src \
+$(PRJ_DIR)/usbdrv \
+$(PRJ_DIR)/stk500 \
+$(BSPPATH) \
 $(LIBEMB_PATH)/drv/tft \
 $(LIBEMB_PATH)/drv/spi \
 $(LIBEMB_PATH)/drv/timer \
@@ -98,15 +111,15 @@ all: $(TARGET).elf stats
 
 
 $(TARGET).elf:  $(OBJECTS)
-	@echo "---- Linking ---->" $@
+	@echo "Linking" $@
 	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text $(TARGET).elf $(TARGET).hex
 
 $(TARGET).bin: $(TARGET).elf $(CHECKSUM)
-#@$(OBJCOPY) -O binary  $(TARGET).elf $@
-	$(OBJCOPY) -O binary -j .startup -j .text -j .ram_code $(TARGET).elf $@
+	@echo "Generating bin file" $@
+	$(OBJCOPY) -O binary -j .startup -j .text -j data -j .ram_code $(TARGET).elf $@
 #hd -n 128 $@
 	$(CHECKSUM) $@
 
@@ -163,7 +176,7 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 $(CHECKSUM):
-	$(MAKE) -C $(BSPPATH)/tools
+	$(MAKE) -C $(LIBEMB_PATH)/tools
 #########################################################
 # 
 #########################################################
@@ -180,14 +193,18 @@ REMOVE = rm -fR
 CHECKSUM =$(LIBEMB_PATH)/tools/checksum	
 ########################################################
 $(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
-	@echo "---- Compile" $< "---->" $@
+	@echo "Compile" $<
 	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 
 $(BUILD_DIR)/%.obj : %.cpp | $(BUILD_DIR)
-	@echo "---- Compile" $< "---->" $@
+	@echo "Compile" $<
 	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
 	
 $(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
-	@echo "---- Assemble" $< "---->" $@
+	@echo "Assemble" $<
 	@$(AS) $(ASFLAGS) $< -o $@
 
+ifeq ($(GCC_COLORS),)
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:locus=01:quote=01'
+unexport GCC_COLORS
+endif

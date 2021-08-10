@@ -1,4 +1,5 @@
-BUILD_DIR  :=../build
+BUILD_DIR  	:=$(PWD)/build
+APP_DIR 	:=$(PWD)/App
 
 all:
 	@echo "specify board"
@@ -8,35 +9,23 @@ clean:
 	@$(MAKE) -C blueboard clean
 	@$(MAKE) -C Nucleo clean
 	@$(MAKE) -C bluepill clean
-	
-emu:
-	@$(MAKE) -C bsp/emu BUILD_DIR=$(BUILD_DIR)/emu
 
 nuc:
-	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412
+	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
 
 bluepill:
-	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill
+	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill
 
 bb:
-	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard
-# BUILD_DIR=../$(BUILD_DIR)/blueboard
-DISCO: 
-	@$(MAKE) -C bsp/Discovery BUILD_DIR=$(BUILD_DIR)/discovery
+	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard
 	
 program-bb:
-	@$(MAKE) -C bsp/Blueboard BUILD_DIR=$(BUILD_DIR)/blueboard program
+	@$(MAKE) -C bsp/Blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard program
 
-program-pill:
-	@$(MAKE) -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill program
+program-bp:
+	@$(MAKE) -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill program
 
 program-nuc:
-	@$(MAKE) -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 program
-
-
-ifeq ($(GCC_COLORS),)
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-#unexport GCC_COLORS
-endif
+	@$(MAKE) -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo program
 
 .PHONY: bluepill

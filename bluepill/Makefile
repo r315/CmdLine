@@ -31,6 +31,7 @@ OPT = -Og
 # Build path
 BUILD_DIR :=build
 APP_DIR :=./../App
+PRJ_DIR :=.
 
 ifeq ($(shell uname -s), Linux)
 REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_F1_V1.8.0/
@@ -44,16 +45,16 @@ endif
 ######################################
 # C sources
 C_SOURCES =  \
-Src/main.c \
-Src/usbd_desc.c \
-Src/usbd_conf.c \
-Src/usb_device.c \
-Src/stm32f1xx_it.c \
-Src/usbd_cdc_if.c \
-Src/system_stm32f1xx.c \
-Src/stm32f1xx_hal_msp.c \
-Src/stm32f1xx_hal_timebase_tim.c \
-Src/board.c \
+$(PRJ_DIR)/Src/main.c \
+$(PRJ_DIR)/Src/usbd_desc.c \
+$(PRJ_DIR)/Src/usbd_conf.c \
+$(PRJ_DIR)/Src/usb_device.c \
+$(PRJ_DIR)/Src/stm32f1xx_it.c \
+$(PRJ_DIR)/Src/usbd_cdc_if.c \
+$(PRJ_DIR)/Src/system_stm32f1xx.c \
+$(PRJ_DIR)/Src/stm32f1xx_hal_msp.c \
+$(PRJ_DIR)/Src/stm32f1xx_hal_timebase_tim.c \
+$(PRJ_DIR)/Src/board.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
@@ -88,8 +89,10 @@ $(wildcard $(APP_DIR)/*cpp) \
 
 # ASM sources
 ASM_SOURCES =  \
-startup/startup_stm32f103xb.s
+$(PRJ_DIR)/startup/startup_stm32f103xb.s
 
+# link script
+LDSCRIPT =$(PRJ_DIR)/startup/STM32F103C8Tx_FLASH.ld
 
 #######################################
 # binaries
@@ -160,7 +163,7 @@ C_INCLUDES =  \
 -I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
 -I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 -I$(LIBEMB_PATH)/include \
--I../inc
+-I$(APP_DIR)/../inc
 
 
 # compile gcc flags
@@ -187,9 +190,6 @@ endif
 #######################################
 # LDFLAGS
 #######################################
-# link script
-LDSCRIPT = startup/STM32F103C8Tx_FLASH.ld
-
 # libraries
 LIBS = -lm# -lnosys 
 LIBDIR = 
@@ -197,6 +197,8 @@ LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -W
 
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+	@echo
+	@$(SZ) -B $(BUILD_DIR)/$(TARGET).elf
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
@@ -234,15 +236,16 @@ $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	@echo "Linking " $<
+	@echo "Linking " $@
 	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
-	$(SZ) $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
+	@echo "Building hex file:" $@
+	@$(HEX) $< $@
 	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
+	@echo "Building bin file:" $@
+	@$(BIN) $< $@	
 	
 $(BUILD_DIR):
 	mkdir -p $@		
@@ -256,6 +259,10 @@ clean:
 #######################################
 # dependencies
 #######################################
--include $(wildcard $(BUILD_DIR)/*.d)
+#-include $(wildcard $(BUILD_DIR)/*.d)
+ifeq ($(GCC_COLORS),)
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:locus=01:quote=01'
+unexport GCC_COLORS
+endif
 
 # *** EOF ***

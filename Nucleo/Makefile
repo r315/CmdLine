@@ -19,10 +19,13 @@ TARGET =console_nucleo
 ######################################
 # building variables
 ######################################
-# debug build?
-DEBUG = 1
-# optimization
-OPT = -Og
+ifeq ($(RELEASE), 1)
+DEBUG =0
+OPT =-Os
+else
+DEBUG =1
+OPT =-Og
+endif
 
 
 #######################################
@@ -31,9 +34,10 @@ OPT = -Og
 # Build path
 BUILD_DIR :=build
 APP_DIR :=../App
+PRJ_DIR :=.
 
 ifeq ($(shell uname -s), Linux)
-REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
+REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.17.0
 else
 REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0
 endif
@@ -44,12 +48,12 @@ endif
 ######################################
 # C sources
 C_SOURCES =  \
-Core/Src/main.c \
-Core/Src/stm32l4xx_it.c \
-Core/Src/stm32l4xx_hal_msp.c \
-Core/Src/system_stm32l4xx.c \
-Core/Src/syscalls.c \
-Core/Src/serial.c \
+$(PRJ_DIR)/Core/Src/main.c \
+$(PRJ_DIR)/Core/Src/stm32l4xx_it.c \
+$(PRJ_DIR)/Core/Src/stm32l4xx_hal_msp.c \
+$(PRJ_DIR)/Core/Src/system_stm32l4xx.c \
+$(PRJ_DIR)/Core/Src/syscalls.c \
+$(PRJ_DIR)/Core/Src/serial.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
@@ -82,7 +86,10 @@ $(APP_DIR)/cmdbuz.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
-Core/Startup/startup_stm32l412kbux.s
+$(PRJ_DIR)/Core/Startup/startup_stm32l412kbux.s
+
+# link script
+LDSCRIPT =$(PRJ_DIR)/STM32L412KBUx_FLASH.ld
 
 #######################################
 # Include
@@ -93,14 +100,14 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--ICore/Inc \
+-I$(PRJ_DIR)/Core/Inc \
 -I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
 -I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
 -I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
 -I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(LIBEMB_PATH)/include \
--I../inc
+-I$(APP_DIR)/../inc
 
 #######################################
 # binaries
@@ -120,6 +127,7 @@ CPP = $(PREFIX)g++
 AS = $(PREFIX)gcc -x assembler-with-cpp
 CP = $(PREFIX)objcopy
 SZ = $(PREFIX)size
+LD = $(PREFIX)gcc
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
@@ -157,32 +165,36 @@ FPU =-mfpu=fpv4-sp-d16
 FLOAT-ABI =-mfloat-abi=hard
 
 # mcu
-MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI) -D__NUCLEO_L412KB__ 
+MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 
 # macros for gcc
+COMMON_DEFS = \
+-D__NUCLEO_L412KB__\
+-DSTM32L412xx \
+-DUSE_HAL_DRIVER \
+'-DVERSION_STRING="$(VERSION)"' \
+
 # AS defines
 AS_DEFS = 
 
 # C defines
 C_DEFS =  \
--DVERSION_STRING="$(VERSION)" \
--DUSE_HAL_DRIVER \
--DSTM32L412xx \
+$(COMMON_DEFS) \
 
 # CPP defines
 CPP_DEFS = \
+$(COMMON_DEFS) \
 '-D__weak=__attribute__((weak))' \
 '-D__packed=__attribute__((__packed__))' \
-'-DVERSION_STRING="$(VERSION)"' \
--DUSE_HAL_DRIVER \
--DSTM32L412xx \
+
+COMMON_FLAGS =$(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections
 
 # compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)
 
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS =$(C_DEFS) $(C_INCLUDES) $(COMMON_FLAGS)
 
-CPPFLAGS = $(MCU) $(CPP_DEFS) $(C_INCLUDES) $(OPT) -Wall -fmessage-length=0 -ffunction-sections -c -fno-exceptions -fno-rtti
+CPPFLAGS =$(CPP_DEFS) $(C_INCLUDES) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
 
  
 ifeq ($(DEBUG), 1)
@@ -198,19 +210,23 @@ endif
 #######################################
 # LDFLAGS
 #######################################
-# link script
-LDSCRIPT =STM32L412KBUx_FLASH.ld
 
 # libraries
-LIBS = -lm# -lnosys 
+LIBS = -lm
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -fno-exceptions -fno-rtti
+LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections
 
 #######################################
 # Rules
 #######################################
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+	@echo
+ifeq ($(DEBUG), 1)
+	@$(SZ) -A -x $(BUILD_DIR)/$(TARGET).elf
+else
+	@$(SZ) -B -x $(BUILD_DIR)/$(TARGET).elf
+endif
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file for st-link"
@@ -255,15 +271,16 @@ $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	@echo "Linking " $<
-	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
-	@$(SZ) $@
+	@echo "Linking " $@
+	@$(LD) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(HEX) $< $@
+	@echo "Building hex file:" $@
+	@$(HEX) $< $@
 	
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
+	@echo "Building bin file:" $@
+	@$(BIN) $< $@	
 	
 $(BUILD_DIR):
 	mkdir -p $@		
@@ -277,6 +294,11 @@ clean:
 #######################################
 # dependencies
 #######################################
--include $(wildcard $(BUILD_DIR)/*.d)
+#-include $(wildcard $(BUILD_DIR)/*.d)
+
+ifeq ($(GCC_COLORS),)
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:locus=01:quote=01'
+unexport GCC_COLORS
+endif
 
 # *** EOF ***
