@@ -169,14 +169,10 @@ void App(void){
 #elif defined (__NUCLEO_L412KB__)
 extern "C"
 void App(void){
-	uint32_t count = 0;
-	//uint8_t data[10];
-
+	
 	Console con;
-	CmdEcho echo;
 	CmdHelp help;
 	CmdMem mem;
-	//CmdRfinder rfinder;
 	CmdBuz buz;
 	CmdVersion ver;
 	
@@ -184,25 +180,19 @@ void App(void){
 	userio->init();
 
 	con.init(userio,"nucleo>");
-	con.addCommand(&echo);
 	con.addCommand(&help);
 	con.addCommand(&mem);
 	con.addCommand(&buz);
 	//con.addCommand(&rfinder);
 	con.addCommand(&ver);
 
+	con.cls();
+
 	buzInit();
 	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");
 
 	while(1){
-		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-		 //con.print("Test\n");
 		con.process();
-		HAL_Delay(100);
-		count++;
-		if((count%10) == 0){
-			HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
-		}
 	}
 }
 #elif defined (_BLUEPILL_)

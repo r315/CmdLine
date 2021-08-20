@@ -39,7 +39,7 @@ void vc_puts(const char* str){
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-	HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);
+
 	if(huart == &huart2){
 		fifo_put(&rxfifo, rx);
 		HAL_UART_Receive_IT(&huart2, &rx, 1);

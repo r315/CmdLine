@@ -75,7 +75,7 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/sound/stm32f1xx-buzzer.c \
+$(LIBEMB_PATH)/sound/stm32-buzzer.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
