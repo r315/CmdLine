@@ -1,14 +1,18 @@
 BUILD_DIR  	:=$(PWD)/build
 APP_DIR 	:=$(PWD)/App
 
-all:
+norule:
 	@echo "specify board"
+	@echo "Available boards:"
+	@echo "	bb - blueboard"
+	@echo "	bp - bluepill"
+	@echo "	nuc - Nucleo"
 
 clean: 
 	@${RM} -rf build
-	@$(MAKE) -C blueboard clean
-	@$(MAKE) -C Nucleo clean
-	@$(MAKE) -C bluepill clean
+	@"$(MAKE)" -C blueboard clean
+	@"$(MAKE)" -C Nucleo clean
+	@"$(MAKE)" -C bluepill clean
 
 nuc:
 	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
@@ -20,12 +24,12 @@ bb:
 	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard
 	
 program-bb:
-	@$(MAKE) -C bsp/Blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard program
+	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard program
 
 program-bp:
-	@$(MAKE) -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill program
+	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill program
 
 program-nuc:
-	@$(MAKE) -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo program
+	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo program
 
 .PHONY: bluepill

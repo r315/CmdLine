@@ -10,7 +10,7 @@ extern "C" {
 #define VERSION_PATCH   0
 
 #ifndef VERSION_STRING
-#define VERSION_STRING  ""
+#define VERSION_STRING  "0.0.0"
 #endif
 
 #ifdef __cplusplus

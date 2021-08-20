@@ -24,6 +24,7 @@ StdOut *userio;
 #include "cmdreset.h"
 #include "cmdsd.h"
 #include "cmdsbus.h"
+#include "cmdpwm.h"
 
 enum {
     MODE_LPCBUS = 0,
@@ -106,7 +107,7 @@ void App(void){
 	userio = &vcp;
 
     userio->init();    
-    console.init(userio, "LPC BUS>");    
+    console.init(userio, "Blueboard>");    
     
 	CmdEcho echo;
     CmdHelp help;
@@ -115,6 +116,12 @@ void App(void){
     CmdSbus sbus;
     CmdReset rst;
     CmdSd sd;
+	CmdPwm pwm;
+	CmdVersion ver;
+	//CmdGpio gpio();
+	//CmdMem mem();
+	//CmdI2c i2c();
+    //CmdAwg awg();
 
     console.addCommand(&help);
     console.addCommand(&echo);
@@ -122,29 +129,18 @@ void App(void){
     console.addCommand(&avr);
     console.addCommand(&sbus);
     console.addCommand(&rst);
-    console.addCommand(&sd);
-
-	/*CmdPwm pwm();
-	CmdGpio gpio();
-	CmdLed led();
-	CmdMem mem();
-	CmdI2c i2c();
-    CmdTest test();
-    CmdAwg awg();
-    CmdSbus sbus();*/
-	
+    console.addCommand(&sd);	
 	//console.addCommand(&echo);
-	/*console.addCommand(&pwm);
-	console.addCommand(&gpio);
-	console.addCommand(&led);
-	console.addCommand(&mem);
-	console.addCommand(&i2c);
-    console.addCommand(&spi);
-    console.addCommand(&avr);
-    console.addCommand(&test);
-    console.addCommand(&awg);
-    console.addCommand(&sbus);
-    */   
+	console.addCommand(&pwm);
+	//console.addCommand(&gpio);
+	//console.addCommand(&led);
+	//console.addCommand(&mem);
+	//console.addCommand(&i2c);
+    //console.addCommand(&spi);
+    //console.addCommand(&avr);
+    //console.addCommand(&test);
+    //console.addCommand(&awg);
+	console.addCommand(&ver);
 
     stk500_ServiceInit(&vcp);
   

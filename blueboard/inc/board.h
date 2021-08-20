@@ -19,6 +19,7 @@ extern "C" {
 #include <timer.h>
 #include <stdout.h>
 #include <debug.h>
+#include <pwm.h>
 
 #define BOARD_Init BB_Init
 #define SW_Reset BB_SW_Reset

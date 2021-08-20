@@ -3,65 +3,74 @@
 
 
 void CmdPwm::help(void){
-    vcom->printf("Usage: pwm [option] \n\n");  
-    vcom->printf("\t -r, run pwm (50%)\n");
-    vcom->printf("\t -d duty, duty cycle 0-100 \n");
-    vcom->printf("\t -s, disable pwm\n");
-    vcom->printf("\t -t, enable pwm\n");
+    console->print("Usage: pwm <option> [params] \n\n");    
+    console->print("\t options:\n");
+    console->print("\t\tenable <ch> ,enable channel 1 - 6\n");
+    console->print("\t\tdisable <ch> ,disable channel 1 - 6\n");
 }
 
-
-void CmdPwm::start(void){
-        vcom->printf("1kHz square wave on P2.0 (TXD1) using pwm\n");
+void CmdPwm::enable(uint8_t ch){
+    if( (ch_en & (ch - 1)) == 0){
         PWM_Init(1000);
-	    PWM_Enable(1);
-	    PWM_Set(1, 50);
-        running = ON;
+    }
+
+    PWM_Enable(ch);
+    ch_en |= (1 << ch);
+}
+
+void CmdPwm::disable(uint8_t ch){
+    PWM_Disable(ch);
+    ch_en &= ~(1 << ch);
 }
 
 char CmdPwm::execute(void *ptr){
-    char *p1, *p2;
-    uint16_t arg;
-    
-    // Check is has parameters
-    p1 = strtok_s((char*)ptr, ' ', COMMAND_MAX_LEN - 10, &p2);
+    int32_t val1, val2;
+    char *argv[4];
+    int argc;
 
-    // if not show help
-    if( p1 == NULL){
+    argc = strToArray((char*)ptr, argv);
+
+    if(argc < 1){
         help();
-        return CMD_OK;
+        return CMD_BAD_PARAM;
     }
 
-    // get first option
-    arg = ((uint8_t*)ptr)[0] << 8;
-    arg |= ((uint8_t*)(ptr))[1];
+    if(xstrcmp("frequency", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){            
+            return CMD_OK;
+        }
+    }
 
-    // test first option
-    switch(arg){
-        case '-' *256 + 's':
-             PWM_Disable(1);
-            break;
+    if(xstrcmp("enable", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){
+            enable(val1);
+            return CMD_OK;
+        }
+    }
 
-        case '-' *256 + 't':
-             PWM_Enable(1);
-            break;
+    if(xstrcmp("disable", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){
+            disable(val1);
+            return CMD_OK;
+        }
+    }
 
-        case '-' *256 + 'r':
-            start();
-            break;
-
-        case '-' *256 + 'd':
-            arg = yatoi(p2);
-            if(arg >= 0 && arg < 101){
-                if (running == OFF){
-                    start();
-                }
-                PWM_Set(1, arg);
+    if(xstrcmp("set", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){
+            if(yatoi(argv[2], &val2)){
+                PWM_Set(val1, val2);
+                return CMD_OK;
             }
-            break;
-
-        default:
-            break;
+        }
     }
-    return CMD_OK;
+
+    if(xstrcmp("get", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){            
+            val2 = PWM_Get(val1);
+            console->print("PWM%d = %d\n", val1, val2);
+            return CMD_OK;            
+        }
+    }
+   
+    return CMD_BAD_PARAM;
 }

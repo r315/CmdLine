@@ -5,31 +5,20 @@
 extern "C" {
 #endif
 
-#include "command.h"
+#include "console.h"
 
-
-void pwm_start(void *ptr);
-
-class CmdPwm : public Command{
-/*Fmap functions [1] = {
-    {"-s", CmdPwm::start},
-};
-*/
-uint8_t running;
-
+class CmdPwm : public ConsoleCommand{
+    Console *console;
+    uint8_t ch_en;
 public:
-    CmdPwm (Vcom *vc) : Command("pwm", vc) { 
-        running = OFF;
-    }
-    void start(void);
+    CmdPwm() : ConsoleCommand("pwm") { ch_en = 0; }
+    void init(void *params) { console = static_cast<Console*>(params); }    
+    void enable(uint8_t ch);
+    void disable(uint8_t ch);
     char execute(void *ptr);
     void help(void);
 };
 
-typedef struct _Fmap{
-    const char *name;
-    //void CmdPwm::(*call)(void*);
-}Fmap;
 
 #ifdef __cplusplus
 }

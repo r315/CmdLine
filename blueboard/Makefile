@@ -20,7 +20,7 @@ font.c \
 blueboard.c \
 clock_lpc17xx.c \
 timer.c \
-pwm.c \
+pwm_lpc17xx.c \
 i2c_lpc17xx.c \
 spi_lpc17xx.c \
 dac_lpc17xx.c \
@@ -42,8 +42,8 @@ stk500_service.cpp \
 cmdavr.cpp \
 cmdlsd.cpp \
 cmdsbus.cpp \
+cmdpwm.cpp \
 #cmdmem.cpp \
-#cmdpwm.cpp \
 #cmdgpio.cpp \
 #cmdi2c.cpp \
 #cmdawg.cpp \
@@ -68,9 +68,9 @@ $(BSPPATH)/CMSISv2p00_LPC17xx/inc \
 LIBSPATH +=
 
 GCSYMBOLS =-D__NEWLIB__ -D__BB__ -DENABLE_DEBUG
-GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables 
-GPPFLAGS=-mcpu=cortex-m3 -mthumb -Wall -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc #-Wl,--gc-sections -nodefaultlibs #-nostartfiles #-lstdc++ 
+GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables
+GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
+LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -Wl,--gc-sections -nodefaultlibs #-nostartfiles #-lstdc++ 
 
 CSRCS   +=startup_lpc1768.c
 LDSCRIPT =$(BSPPATH)/lpc1768.ld
