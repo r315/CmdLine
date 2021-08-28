@@ -86,6 +86,7 @@ $(APP_DIR)/cmdmem.cpp \
 $(APP_DIR)/cmdrfinder.cpp \
 $(APP_DIR)/cmdbuz.cpp \
 $(APP_DIR)/cmdkeyfob.cpp \
+$(APP_DIR)/cmdpwm.cpp \
 
 # ASM sources
 ASM_SOURCES =  \

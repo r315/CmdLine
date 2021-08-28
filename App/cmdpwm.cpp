@@ -4,11 +4,12 @@
 
 void CmdPwm::help(void){
     console->print("Usage: pwm <option> [params] \n\n");    
-    console->print("\t options:\n");
-    console->print("\t\tstart <period> ,start pwm\n");
-    console->print("\t\tset <ch> <duty> , set duty(0 -100) for channel (1 - 6)\n");
-    console->print("\t\tenable <ch> ,enable channel (1 - 6)\n");
-    console->print("\t\tdisable <ch> ,disable channel (1 - 6)\n");    
+    console->print(" options:\n");
+    console->print("\tstart <period> ,start pwm with period [us]\n");
+    console->print("\tperiod <period> ,change pwm frequency through period [us]\n");
+    console->print("\tset <ch> <duty> , set duty(0 -100) for channel (1 - 6)\n");
+    console->print("\tenable <ch> ,enable channel (1 - 6)\n");
+    console->print("\tdisable <ch> ,disable channel (1 - 6)\n\n");    
 }
 
 void CmdPwm::start(uint32_t period){
@@ -18,7 +19,7 @@ void CmdPwm::start(uint32_t period){
 
 void CmdPwm::enable(uint8_t ch){
     if( (ch_en & (1 << 7)) == 0){
-        PWM_Init(1000);
+        start(1000);
     }
 
     PWM_Enable(ch);
@@ -39,12 +40,19 @@ char CmdPwm::execute(void *ptr){
 
     if(argc < 1){
         help();
-        return CMD_BAD_PARAM;
+        return CMD_OK;
     }
 
     if(xstrcmp("start", (const char*)argv[0]) == 0){
         if(yatoi(argv[1], &val1)){
             start(val1);
+            return CMD_OK;
+        }
+    }
+
+    if(xstrcmp("period", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){
+            PWM_Freq(val1);
             return CMD_OK;
         }
     }

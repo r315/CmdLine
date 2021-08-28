@@ -8,6 +8,7 @@ extern "C" {
 #include <stdint.h>
 #include <stdout.h>
 #include "main.h"
+#include "pwm.h"
 
 extern UART_HandleTypeDef huart1;
 extern UART_HandleTypeDef huart2;

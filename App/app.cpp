@@ -177,6 +177,7 @@ void App(void){
 	CmdBuz buz;
 	CmdVersion ver;
 	CmdKeyFob keyfob;
+	CmdPwm pwm;
 	
 	userio = &uart;
 	userio->init();
@@ -187,6 +188,7 @@ void App(void){
 	con.addCommand(&mem);
 	con.addCommand(&buz);
 	con.addCommand(&keyfob);
+	con.addCommand(&pwm);
 
 	con.cls();
 	con.print("Freq: %dMHz\n", SystemCoreClock / 1000000);

@@ -68,10 +68,7 @@ int main(void)
     MX_DMA_Init();
     MX_USART1_UART_Init();
     MX_USART2_UART_Init();
-
-    PWM_Init(1000);
-    PWM_Set(PWM_1, 50);
-    PWM_Enable(PWM_1);
+    
     App();
 
     while (1)
