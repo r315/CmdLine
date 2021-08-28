@@ -14,6 +14,7 @@
 #include "cmdflashrom.h"
 #include "cmdbuz.h"
 #include "cmdversion.h"
+#include "cmdkeyfob.h"
 
 
 StdOut *userio;
@@ -175,20 +176,23 @@ void App(void){
 	CmdMem mem;
 	CmdBuz buz;
 	CmdVersion ver;
+	CmdKeyFob keyfob;
 	
 	userio = &uart;
 	userio->init();
 
 	con.init(userio,"nucleo>");
 	con.addCommand(&help);
+	con.addCommand(&ver);
 	con.addCommand(&mem);
 	con.addCommand(&buz);
-	//con.addCommand(&rfinder);
-	con.addCommand(&ver);
+	con.addCommand(&keyfob);
 
 	con.cls();
+	con.print("Freq: %dMHz\n", SystemCoreClock / 1000000);
 
 	buzInit();
+	buzSetLevel(50);
 	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");
 
 	while(1){

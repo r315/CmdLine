@@ -14,6 +14,7 @@ extern UART_HandleTypeDef huart2;
 extern StdOut uart;
 extern StdOut uart_aux;
 
+// LED Pin PB3 (Arduino D13)
 #define LED_ON      HAL_GPIO_Write(LD3_GPIO_Port, LD3_Pin, GPIO_SET)
 #define LED_OFF     HAL_GPIO_Write(LD3_GPIO_Port, LD3_Pin, GPIO_RESET)
 

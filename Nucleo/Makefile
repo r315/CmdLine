@@ -39,7 +39,7 @@ PRJ_DIR :=.
 ifeq ($(shell uname -s), Linux)
 REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.17.0
 else
-REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.14.0
+REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 endif
 
 
@@ -75,7 +75,9 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/sound/stm32-buzzer.c \
+$(LIBEMB_PATH)/sound/stm32_buzzer.c \
+$(LIBEMB_PATH)/drv/timer/stm32_scapture.c \
+$(LIBEMB_PATH)/drv/pwm/pwm_stm32l4xx.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
@@ -83,6 +85,7 @@ $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdmem.cpp \
 $(APP_DIR)/cmdrfinder.cpp \
 $(APP_DIR)/cmdbuz.cpp \
+$(APP_DIR)/cmdkeyfob.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -189,17 +192,16 @@ $(COMMON_DEFS) \
 
 COMMON_FLAGS =$(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections
 
+ifeq ($(DEBUG), 1)
+COMMON_FLAGS +=-Og -g -gdwarf-2
+endif
+
 # compile gcc flags
 ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)
 
 CFLAGS =$(C_DEFS) $(C_INCLUDES) $(COMMON_FLAGS)
 
 CPPFLAGS =$(CPP_DEFS) $(C_INCLUDES) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
-
- 
-ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
-endif
 
 # Generate dependency information
 #CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
