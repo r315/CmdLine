@@ -98,7 +98,7 @@ uint8_t mask = (1<<0), bit;
 }
 
 void printSbusFrame(sbusframe_t *frame){
-uint16_t data[SBUS_NUM_CHANNELS];
+//uint16_t data[SBUS_NUM_CHANNELS];
 	//extractChannelData(data, frame);
     //for (uint32_t ch = 0; ch < SBUS_NUM_CHANNELS; ch++){       
     //    DBG_PRINT("CH[%u] = %u\n", ch, data[ch]);

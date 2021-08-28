@@ -3,7 +3,7 @@
 int main()
 {    
 
-    CLOCK_Init(72);
+    CLOCK_Init(100);
 	CLOCK_InitUSBCLK();
 
     BOARD_Init();    

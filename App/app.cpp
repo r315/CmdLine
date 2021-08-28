@@ -15,6 +15,7 @@
 #include "cmdbuz.h"
 #include "cmdversion.h"
 #include "cmdkeyfob.h"
+#include "cmdpwm.h"
 
 
 StdOut *userio;
@@ -25,7 +26,6 @@ StdOut *userio;
 #include "cmdreset.h"
 #include "cmdsd.h"
 #include "cmdsbus.h"
-#include "cmdpwm.h"
 
 enum {
     MODE_LPCBUS = 0,
