@@ -3,13 +3,14 @@
 
 
 void CmdPwm::help(void){
-    console->print("Usage: pwm <option> [params] \n\n");    
-    console->print(" options:\n");
-    console->print("\tstart <period> ,start pwm with period [us]\n");
-    console->print("\tperiod <period> ,change pwm frequency through period [us]\n");
-    console->print("\tset <ch> <duty> , set duty(0 -100) for channel (1 - 6)\n");
-    console->print("\tenable <ch> ,enable channel (1 - 6)\n");
-    console->print("\tdisable <ch> ,disable channel (1 - 6)\n\n");    
+    console->xputs("Usage: pwm <option> [params] \n");    
+    console->xputs("options:");
+    console->xputs("  start <period>,    Start pwm with period [us]");
+    console->xputs("  period <period>,   Change pwm frequency through period [us]");
+    console->xputs("  set <ch> <duty>,   Set duty(0 -100) for channel (1 - 6)");
+    console->xputs("  enable <ch>,       Enable channel (1 - 6)");
+    console->xputs("  disable <ch>,      Disable channel (1 - 6)");
+    console->xputs("  pol <ch> <pol>,    Polarity (1 - 0)\n");
 }
 
 void CmdPwm::start(uint32_t period){
@@ -85,6 +86,15 @@ char CmdPwm::execute(void *ptr){
             val2 = PWM_Get(val1);
             console->print("PWM%d = %d\n", val1, val2);
             return CMD_OK;            
+        }
+    }
+
+    if(xstrcmp("pol", (const char*)argv[0]) == 0){
+        if(yatoi(argv[1], &val1)){
+            if(yatoi(argv[2], &val2)){
+                PWM_Polarity(val1, val2);
+                return CMD_OK;
+            }
         }
     }
    
