@@ -193,6 +193,7 @@ void App(void){
 	con.cls();
 	con.print("Freq: %dMHz\n", SystemCoreClock / 1000000);
 
+	LED_OFF;
 	buzInit();
 	buzSetLevel(50);
 	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");
