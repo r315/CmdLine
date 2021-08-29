@@ -37,7 +37,7 @@ APP_DIR :=../App
 PRJ_DIR :=.
 
 ifeq ($(shell uname -s), Linux)
-REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.17.0
+REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 else
 REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 endif
@@ -73,11 +73,14 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_spi.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/sound/stm32_buzzer.c \
 $(LIBEMB_PATH)/drv/timer/stm32_scapture.c \
 $(LIBEMB_PATH)/drv/pwm/pwm_stm32l4xx.c \
+$(LIBEMB_PATH)/drv/tft/st7735.c \
+$(LIBEMB_PATH)/display/lcd.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
