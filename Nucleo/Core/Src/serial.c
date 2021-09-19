@@ -8,59 +8,50 @@
 #include "fifo.h"
 #include "app.h"
 
+#define VC_USART		USART2
 
-#define VCOM_FIFO_SIZE 512
+extern UART_HandleTypeDef huart1;
+static USART_TypeDef *usart;
 
 static fifo_t txfifo;
 static fifo_t rxfifo;
-static uint8_t rx;
 
-void vc_init(void){
-    rxfifo.size = VCOM_FIFO_SIZE;
-	txfifo.size = VCOM_FIFO_SIZE;
+static void vc_init(void){
 	fifo_init(&txfifo);
 	fifo_init(&rxfifo);
     fifo_flush(&txfifo);
 	fifo_flush(&rxfifo);
 
-    HAL_UART_Receive_IT(&huart2, &rx, 1);    
+	usart = VC_USART;
+
+	usart->CR1 |= USART_CR1_RXNEIE;
+
+	HAL_NVIC_EnableIRQ(USART2_IRQn);
 }   
 
-//------------------------------------------
-void vc_putchar(char c){
-    HAL_UART_Transmit(&huart2, (uint8_t*)&c, 1, 1000);
+static void vc_putchar(char c){
+    fifo_put(&txfifo, (uint8_t)c);
+	SET_BIT(usart->CR1, USART_CR1_TXEIE);
 }
 
-void vc_puts(const char* str){
-    //uint32_t len = strlen(str);
-	//HAL_UART_Transmit_DMA(&huart2, (uint8_t*)str, len);
-	while(*str)
-		vc_putchar(*str++);
-}
-
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
-
-	if(huart == &huart2){
-		fifo_put(&rxfifo, rx);
-		HAL_UART_Receive_IT(&huart2, &rx, 1);
-		return;
+static void vc_puts(const char* str){
+    while(*str){
+		fifo_put(&txfifo, *(uint8_t*)str++);
 	}
-
-	((Array*)(uart_aux.user_ctx))->empty = 0;
-	HAL_UART_Receive_IT(&huart1, ((Array*)(uart_aux.user_ctx))->data, ((Array*)(uart_aux.user_ctx))->len);
+	SET_BIT(usart->CR1, USART_CR1_TXEIE);
 }
-// ------------------------------------------
-uint8_t vc_kbhit(void){
+
+static uint8_t vc_kbhit(void){
     return fifo_avail(&rxfifo);
 }
 
-char vc_getchar(void){
+static char vc_getchar(void){
     char c;
     while(!fifo_get(&rxfifo, (uint8_t*)&c));
     return c;
 }
 
-uint8_t vc_getCharNonBlocking(char *c){
+static uint8_t vc_getCharNonBlocking(char *c){
    return fifo_get(&rxfifo, (uint8_t*)c);
 }
 
@@ -73,34 +64,60 @@ StdOut uart = {
     .kbhit = vc_kbhit
 };
 
+void SERIAL_IRQHandler(void){
+	
+	uint32_t isrflags = usart->ISR;
+	uint32_t cr1its = usart->CR1;
+
+	/* If no error occurs */
+	uint32_t errorflags = (isrflags & (uint32_t)(USART_ISR_PE |
+			USART_ISR_FE | USART_ISR_ORE | USART_ISR_NE | USART_ISR_RTOF));
+
+	if (errorflags == 0U){
+		if (((isrflags & USART_ISR_RXNE) != 0U)	&& ((cr1its & USART_CR1_RXNEIE) != 0U))	{
+			fifo_put(&rxfifo, (uint8_t)READ_REG(usart->RDR));
+		}
+
+		if (((isrflags & USART_ISR_TXE) != 0U)	&& ((cr1its & USART_CR1_TXEIE) != 0U)){
+			if(fifo_get(&txfifo, (uint8_t*)&usart->TDR) == 0U){
+				/* No data transmitted, disable TXE interrupt */
+				CLEAR_BIT(usart->CR1, USART_CR1_TXEIE);
+			}
+		}
+	}
+
+	//((Array*)(uart_aux.user_ctx))->empty = 0;
+	//HAL_UART_Receive_IT(&huart1, ((Array*)(uart_aux.user_ctx))->data, ((Array*)(uart_aux.user_ctx))->len);
+}
+
 /**
- *
+ * Auxiliary serial port
  */
-void aux_init(void){
+static void aux_init(void){
 	HAL_UART_Receive_IT(&huart1, ((Array*)(uart_aux.user_ctx))->data, ((Array*)(uart_aux.user_ctx))->len);
 	((Array*)(uart_aux.user_ctx))->empty = 1;
 }
 
-void aux_putchar(char c){
+static void aux_putchar(char c){
 	HAL_UART_Transmit(&huart1, (uint8_t*)&c, 1, 1000);
 }
 
-void aux_puts(const char* str){
+static void aux_puts(const char* str){
 	while(*str)
 		aux_putchar(*str++);
 }
 
-char aux_getchar(void){
+static char aux_getchar(void){
 	uint8_t rx;
 	HAL_UART_Receive(&huart1, &rx, 1, 1000);
 	return (char)rx;
 }
 
-uint8_t aux_getCharNonBlocking(char *c){
+static uint8_t aux_getCharNonBlocking(char *c){
 	return 0;
 }
 
-uint8_t aux_kbhit(void){
+static uint8_t aux_kbhit(void){
 	return !((Array*)(uart_aux.user_ctx))->empty;
 }
 

@@ -16,6 +16,7 @@
 #include "cmdversion.h"
 #include "cmdkeyfob.h"
 #include "cmdpwm.h"
+#include "cmdtft.h"
 
 
 StdOut *userio;
@@ -178,6 +179,7 @@ void App(void){
 	CmdVersion ver;
 	CmdKeyFob keyfob;
 	CmdPwm pwm;
+	CmdTft tft;
 	
 	userio = &uart;
 	userio->init();
@@ -189,6 +191,7 @@ void App(void){
 	con.addCommand(&buz);
 	con.addCommand(&keyfob);
 	con.addCommand(&pwm);
+	con.addCommand(&tft);
 
 	con.cls();
 	con.print("Freq: %dMHz\n", SystemCoreClock / 1000000);
