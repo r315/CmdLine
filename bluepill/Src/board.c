@@ -69,7 +69,7 @@ void setInterval(void(*cb)(), uint32_t ms){
  * \param initial - startup duty for each channel
  * 
  * */
-void PWM_Init(uint16_t *initial){
+void PWM_Init(uint32_t period){
 
      /* Configure Timer 3 */
     RCC->APB1ENR  |= RCC_APB1ENR_TIM3EN;
@@ -79,14 +79,9 @@ void PWM_Init(uint16_t *initial){
     TIM3->CR1 = TIM_CR1_ARPE;
     TIM3->CCMR1 = (6<<TIM_CCMR1_OC2M_Pos) | (6<<TIM_CCMR1_OC1M_Pos) | (TIM_CCMR1_OC2PE) | (TIM_CCMR1_OC1PE);  // PWM Mode 1
     TIM3->CCMR2 = (6<<TIM_CCMR2_OC4M_Pos) | (6<<TIM_CCMR2_OC3M_Pos) | (TIM_CCMR2_OC4PE) | (TIM_CCMR2_OC3PE); 
-    TIM3->CCER = TIM_CCER_CC4E | TIM_CCER_CC3E | TIM_CCER_CC2E | TIM_CCER_CC1E;
     TIM3->PSC = 1; // Timer3 freq = SystemClock / 2
 
     TIM3->ARR = (1<<PWM_RESOLUTION) - 1;
-    TIM3->CCR1 = initial[0];
-    TIM3->CCR2 = initial[1];
-    TIM3->CCR3 = initial[2];
-    TIM3->CCR4 = initial[3];
     
     TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
 
@@ -97,22 +92,113 @@ void PWM_Init(uint16_t *initial){
 }
 
 /**
- * Set new pwm value for the given channel
- * \param ch        channel to be updated 0-3
- * \param newvalue  New pwm value
+ * @brief Set new pwm value for the given channel
+ * 
+ * \param ch [in] :      Channel to be configured
+ *                       PWM_1 ... PWM_6
+ * \param duty [in] :    Duty cycle 0 - 100
  * */
-void PWM_Set(uint8_t ch, uint16_t newvalue){
+void PWM_Set(uint8_t ch, uint8_t duty){
 
-    if(newvalue >  PWM_MAX_VALUE || newvalue < PWM_MIN_VALUE)    
+     if(ch > PWM_MAX_CH)
         return;
 
+     if(duty > 100)
+        duty = 100;
+
+    uint32_t cmp = TIM3->ARR;
+    cmp *= duty;
+    cmp /= 100;
+
     uint32_t *ccr = (uint32_t*)&TIM3->CCR1;
-    ccr[ch&3] = newvalue;    
+
+    ccr[ch - 1] = cmp;    
 }
 
-uint16_t PWM_Get(uint8_t ch){
-    uint32_t *ccr = (uint32_t*)&TIM3->CCR1;     
-    return ccr[ch&3];
+/**
+ * @brief Get pwm duty from channel
+ * 
+ * \param ch [in] :  Channel to be configured
+ *                      PWM_1 ... PWM_6
+ * \retval duty :    Duty cycle 0 - 100
+ * */
+uint8_t PWM_Get(uint8_t ch){
+
+    if(ch > PWM_MAX_CH)
+        return 0;
+    
+    uint32_t *ccr = (uint32_t*)&TIM3->CCR1;
+
+    uint32_t cmp = ccr[ch - 1] * 100;    
+    
+    return cmp / TIM3->ARR;
+}
+
+/**
+ * PA6   ------> TIM1_CH1
+ * PA7   ------> TIM1_CH2
+ * PB0   ------> TIM1_CH3
+ * PB1   ------> TIM1_CH4
+ * */
+static void PWM_CfgGpio(uint8_t ch, uint8_t enable){
+    enable = (enable == 0) ? GPI_ANALOG :  GPO_AF | GPO_2MHZ;
+
+    switch(ch){
+        case PWM_1:
+            gpioInit(GPIOA, GPIO_PIN_6, enable);
+            break;
+
+        case PWM_2:
+            gpioInit(GPIOA, GPIO_PIN_7, enable);
+            break;
+
+        case PWM_3:
+            gpioInit(GPIOB, GPIO_PIN_0, enable);
+            break;
+
+        case PWM_4:
+            gpioInit(GPIOB, GPIO_PIN_1, enable);
+            break;
+
+        default:
+            break;
+    }
+}
+
+/**
+ * @brief Enables PWM channel and configure GPIO pin to PWM function
+ * 
+ * \param ch [in] Channel to be configured
+ *                  PWM_1
+ *                  ---
+ *                  PWM_6
+ * 
+ * PWM pins start on PA8
+ * */
+void PWM_Enable(uint8_t channel){
+    if(channel > PWM_MAX_CH)
+        return;
+
+    uint8_t shift = (channel - 1) << 2;
+    TIM3->CCER |= (TIM_CCER_CC1E << shift);
+
+    PWM_CfgGpio(channel, 1);
+}
+
+/**
+ * @brief Disables PWM channel and configure GPIO pin to default
+ * 
+ * \param ch [in] Channel to be configured
+ *                 PWM_1 ... PWM_6
+ * */
+void PWM_Disable(uint8_t channel){
+    if(channel > PWM_MAX_CH)
+        return;
+
+    uint8_t shift = (channel - 1) << 2;
+    TIM3->CCER &= ~(TIM_CCER_CC1E << shift);
+
+    PWM_CfgGpio(channel, 0);
 }
 
 /**
