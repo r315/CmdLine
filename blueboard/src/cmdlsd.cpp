@@ -4,7 +4,7 @@
 
 #define SECTOR_SIZE 512
 
-Spi_Type mmc_spi = {0};
+spidev_t mmc_spi = {0};
 FATFS sdcard;
 uint8_t sector_data[SECTOR_SIZE];
 /*  
@@ -58,14 +58,15 @@ void CmdSd::d_error(DRESULT res)
 void mmcSpiInit(void){
     mmc_spi.bus = 0;
     mmc_spi.freq = 500000;
-    mmc_spi.cfg  = SPI_MODE0 | SPI_8BIT;
+    mmc_spi.cfg  = SPI_MODE0;
     SPI_Init(&mmc_spi);
 	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;	
 }
 
 extern "C" uint8_t SPI(uint8_t outb) 
 {
-    return SPI_Send(&mmc_spi, outb);
+    SPI_Write(&mmc_spi, &outb, 1);
+    return 1;
 }
 
 //--------------------------------------

@@ -73,13 +73,14 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_spi.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/sound/stm32_buzzer.c \
 $(LIBEMB_PATH)/drv/timer/stm32_scapture.c \
 $(LIBEMB_PATH)/drv/pwm/pwm_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/tft/st7735.c \
+$(LIBEMB_PATH)/drv/rng/rng_stm32l4xx.c \
+$(LIBEMB_PATH)/drv/spi/spi_stm32l4xx.c \
 $(LIBEMB_PATH)/display/lcd.c \
 
 CPP_SOURCES = \
@@ -90,6 +91,7 @@ $(APP_DIR)/cmdrfinder.cpp \
 $(APP_DIR)/cmdbuz.cpp \
 $(APP_DIR)/cmdkeyfob.cpp \
 $(APP_DIR)/cmdpwm.cpp \
+$(APP_DIR)/cmdtft.cpp \
 
 # ASM sources
 ASM_SOURCES =  \

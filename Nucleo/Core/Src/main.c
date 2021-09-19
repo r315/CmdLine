@@ -26,6 +26,7 @@
 #include "board.h"
 #include "app.h"
 #include "pwm.h"
+#include "spi.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -46,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-SPI_HandleTypeDef hspi1;
+spidev_t spi1;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -60,27 +61,27 @@ static void MX_SPI1_Init(void);
   */
 int main(void)
 {
-    HAL_Init();
+	HAL_Init();
 
-    SystemClock_Config();
+	SystemClock_Config();
 
-    MX_GPIO_Init();
-    MX_DMA_Init();
-    MX_USART1_UART_Init();
-    MX_USART2_UART_Init();
-    MX_SPI1_Init();
+	MX_GPIO_Init();
+	MX_DMA_Init();
+	MX_USART1_UART_Init();
+	MX_USART2_UART_Init();
 
-    LCD_Init();
-    //LCD_Rotation(LCD_LANDSCAPE);
-    LCD_Clear(RED);
-    LCD_Bkl(1);
-    //DISPLAY_Init(0);
+	spi1.bus = SPI_BUS0;
+	spi1.freq = 4000;
+	spi1.cfg = SPI_SW_CS;
+	SPI_Init(&spi1);
+	
+	RNG_Init();
 
-    App();
+	App();
 
-    while (1)
-    {
-    }
+	while (1)
+	{
+	}
 }
 
 /**

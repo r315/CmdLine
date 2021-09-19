@@ -1,15 +1,15 @@
 
-#include <spi.h>
+#include "spi.h"
 #include "cmdspi.h"
 
-Spi_Type spi;
+spidev_t spi;
 
 char spistatus = 0;
 
 void spiInit(void){
     spi.bus = 1;
     spi.freq = 500000;
-    spi.cfg  = SPI_MODE0 | SPI_8BIT;
+    spi.cfg  = SPI_MODE0;
     SPI_Init(&spi);
 	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;
 	spistatus |= SPI_INIT;
@@ -56,7 +56,7 @@ void spiWrite(uint8_t *data, uint32_t len){
 	if((spistatus & SPI_INIT) == 0){
 		spiInit();
 	}	
-    SPI_Transfer(&spi, data, len);
+    SPI_Write(&spi, data, len);
 }
 #endif
 

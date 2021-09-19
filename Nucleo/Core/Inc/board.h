@@ -10,9 +10,9 @@ extern "C" {
 #include "main.h"
 #include "pwm.h"
 #include "lcd.h"
+#include "spi.h"
+#include "rng.h"
 
-extern UART_HandleTypeDef huart1;
-extern UART_HandleTypeDef huart2;
 extern StdOut uart;
 extern StdOut uart_aux;
 
@@ -38,9 +38,6 @@ extern StdOut uart_aux;
 #define TFT_H 160
 #endif
 
-#define SPI_BLOCK_XFER
-#include "st7735.h"
-
 #define LCD_CK_Pin          GPIO_PIN_1
 #define LCD_CK_GPIO_Port    GPIOA
 #define LCD_CS_Pin          GPIO_PIN_4
@@ -63,19 +60,7 @@ extern StdOut uart_aux;
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 
-extern SPI_HandleTypeDef hspi1;
-
-static inline void SPI_Send(uint8_t data){
-	HAL_SPI_Transmit(&hspi1, &data, 1, 1000);
-}
-
-static inline void SPI_Read(uint8_t *dst, uint32_t len){
-	HAL_SPI_Receive(&hspi1, dst, len, 1000);
-}
-
-static inline void SPI_Write(uint8_t *dst, uint32_t len){
-	HAL_SPI_Transmit(&hspi1, dst, len, 1000);
-}
+extern spidev_t spi1;
 
 #ifdef __cplusplus
 }
