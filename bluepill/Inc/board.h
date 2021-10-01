@@ -16,9 +16,10 @@ extern "C" {
  * HW symbols
  * */
 
-#define DBG_LED_TOGGLE HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin)
-#define DBG_LED_ON HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
-#define DBG_LED_OFF HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
+#define DBG_LED_TOGGLE  HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin)
+#define DBG_LED_ON      HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
+#define DBG_LED_OFF     HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
+#define LED_TOGGLE      DBG_LED_TOGGLE
 
 #define GetTicks HAL_GetTick
 #define DelayMs(d) HAL_Delay(d)
