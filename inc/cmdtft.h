@@ -17,6 +17,7 @@ public:
 
     char execute(void *ptr);
     void help(void);
+    uint32_t fps(void (*func)(void));
 };
 
 #ifdef __cplusplus

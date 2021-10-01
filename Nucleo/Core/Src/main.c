@@ -65,14 +65,14 @@ int main(void)
 
 	SystemClock_Config();
 
+	spi1.bus = SPI_BUS0;
+	spi1.freq = 40000;
+	spi1.cfg = SPI_SW_CS;
+
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
-
-	spi1.bus = SPI_BUS0;
-	spi1.freq = 4000;
-	spi1.cfg = SPI_SW_CS;
 	SPI_Init(&spi1);
 	
 	RNG_Init();
@@ -286,11 +286,11 @@ static void MX_GPIO_Init(void)
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
 
-		#ifdef SPI_SW_CS
-		GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
-		#else
-		GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin | LCD_CS_Pin;
-		#endif
+		if(spi1.cfg & SPI_SW_CS){
+			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
+		}else{
+			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin | LCD_CS_Pin;
+		}
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
@@ -298,11 +298,11 @@ static void MX_GPIO_Init(void)
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 		/*Configure GPIO pins : LCD_BKL_Pin LCD_CS_Pin LCD_CD_Pin */
-		#ifdef SPI_SW_CS
-		GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_CS_Pin;
-		#else
-		GPIO_InitStruct.Pin = LCD_CD_Pin;
-		#endif
+		if(spi1.cfg & SPI_SW_CS){
+			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_CS_Pin;
+		}else{
+			GPIO_InitStruct.Pin = LCD_CD_Pin;
+		}
 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
