@@ -48,19 +48,30 @@ extern StdOut uart_aux;
 #define LCD_DI_GPIO_Port    GPIOA
 #define LCD_RST_Pin
 #define LCD_RST_GPIO_Port
-#define LCD_BKL_Pin
-#define LCD_BKL_GPIO_Port
+#define LCD_BKL_Pin         GPIO_PIN_0
+#define LCD_BKL_GPIO_Port   GPIOA
 
 #define LCD_CS1             LCD_CS_GPIO_Port->BSRR = LCD_CS_Pin
 #define LCD_CS0             LCD_CS_GPIO_Port->BRR = LCD_CS_Pin
 #define LCD_CD1             LCD_CD_GPIO_Port->BSRR = LCD_CD_Pin
 #define LCD_CD0             LCD_CD_GPIO_Port->BRR = LCD_CD_Pin
-#define LCD_BKL1            //LCD_BKL_GPIO_Port->BSRR = LCD_BKL_Pin
-#define LCD_BKL0            //LCD_BKL_GPIO_Port->BRR = LCD_BKL_Pin
+#define LCD_BKL1            LCD_BKL_GPIO_Port->BSRR = LCD_BKL_Pin
+#define LCD_BKL0            LCD_BKL_GPIO_Port->BRR = LCD_BKL_Pin
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 
 extern spidev_t spi1;
+
+
+
+static inline uint32_t millis(){
+    return HAL_GetTick();
+}
+
+static inline void delay(uint32_t ms){
+    HAL_Delay(ms);
+}
+
 
 #ifdef __cplusplus
 }

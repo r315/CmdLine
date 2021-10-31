@@ -299,9 +299,9 @@ static void MX_GPIO_Init(void)
 
 		/*Configure GPIO pins : LCD_BKL_Pin LCD_CS_Pin LCD_CD_Pin */
 		if(spi1.cfg & SPI_SW_CS){
-			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_CS_Pin;
+			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin | LCD_CS_Pin;
 		}else{
-			GPIO_InitStruct.Pin = LCD_CD_Pin;
+			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin;
 		}
 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
