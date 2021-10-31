@@ -82,6 +82,7 @@ $(LIBEMB_PATH)/drv/tft/st7735.c \
 $(LIBEMB_PATH)/drv/rng/rng_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/spi/spi_stm32l4xx.c \
 $(LIBEMB_PATH)/display/lcd.c \
+$(APP_DIR)/agif/agif.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
@@ -92,6 +93,7 @@ $(APP_DIR)/cmdbuz.cpp \
 $(APP_DIR)/cmdkeyfob.cpp \
 $(APP_DIR)/cmdpwm.cpp \
 $(APP_DIR)/cmdtft.cpp \
+$(APP_DIR)/agif/AnimatedGIF.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -116,7 +118,8 @@ C_INCLUDES =  \
 -I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(LIBEMB_PATH)/include \
--I$(APP_DIR)/../inc
+-I$(APP_DIR)/../inc \
+-I$(APP_DIR)/agif \
 
 #######################################
 # binaries
