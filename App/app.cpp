@@ -17,6 +17,7 @@
 #include "cmdkeyfob.h"
 #include "cmdpwm.h"
 #include "cmdtft.h"
+#include "cmdencoder.h"
 
 
 StdOut *userio;
@@ -219,6 +220,7 @@ void App(void){
 	CmdSpiFlash spiflash;
 	CmdFlashRom flashrom;
 	CmdTft tft;
+	CmdEncoder enc;
 	
 
 	#ifdef STDOUT_UART
@@ -239,6 +241,7 @@ void App(void){
 	con.addCommand(&spiflash);
 	con.addCommand(&flashrom);
 	con.addCommand(&tft);
+	con.addCommand(&enc);
 
 	BOARD_Init();
 
