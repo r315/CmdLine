@@ -49,15 +49,15 @@ char CmdFlashRom::execute(void *ptr){
                 xfer_count = c;
                 idx = 0;
                 state = XFER;
-                SPI_SetCS(LOW);
+                BOARD_SPI_CS_LOW;
                 break;
 
             case XFER:                
-                SPI_Transfer((uint8_t*)&c, SPI_XFER_TIMEOUT);
+                c = (char)BOARD_SPI_Transfer(c, SPI_XFER_TIMEOUT);
                 buf[idx++] = (uint8_t)c;
                 
                 if(idx == xfer_count){
-                    SPI_SetCS(HIGH);
+                    BOARD_SPI_CS_HIGH;
                     for(idx = 0; idx < xfer_count; idx++){
                         vcp.xputchar(buf[idx]);  
                     }

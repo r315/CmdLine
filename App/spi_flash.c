@@ -10,11 +10,11 @@ uint32_t flashDevice_ID(void){
     
     id = 0xFFFFFF00 | (RDID << 00);    
 
-    SPI_SetCS(LOW);
-    SPI_Read((uint8_t*)&id, 4);
+    BOARD_SPI_CS_LOW;
+    BOARD_SPI_Read((uint8_t*)&id, 4);
     id = 0xFFFFFFFF;
-    SPI_Read((uint8_t*)&id, 3);
-    SPI_SetCS(HIGH);
+    BOARD_SPI_Read((uint8_t*)&id, 3);
+    BOARD_SPI_CS_HIGH;
 
     return id & 0x00FFFFFF;
 }
@@ -31,9 +31,9 @@ uint32_t flashJEDEC_ID(void){
     
     id = 0xFFFFFF00 | (JEDEC_ID << 00);    
 
-    SPI_SetCS(LOW);
-    SPI_Read((uint8_t*)&id, 4);
-    SPI_SetCS(HIGH);
+    BOARD_SPI_CS_LOW;
+    BOARD_SPI_Read((uint8_t*)&id, 4);
+    BOARD_SPI_CS_HIGH;
 
     return id;// & 0x00FFFFFF;
 }
@@ -50,11 +50,11 @@ uint32_t flashMFD_ID(void){
     
     id = 0xFFFFFF00 | (MFD_ID << 00);    
 
-    SPI_SetCS(LOW);
-    SPI_Read((uint8_t*)&id, 3);
+    BOARD_SPI_CS_LOW;
+    BOARD_SPI_Read((uint8_t*)&id, 3);
     id = 0xFFFFFFFF;
-    SPI_Read((uint8_t*)&id, 3);
-    SPI_SetCS(HIGH);
+    BOARD_SPI_Read((uint8_t*)&id, 3);
+    BOARD_SPI_CS_HIGH;
 
     return id & 0x00FFFFFF;
 }
@@ -65,17 +65,17 @@ uint8_t flashReadStatus(void){
     status[0] = RDSR;
     status[1] = 0xFF;
 
-    SPI_SetCS(LOW);
-    SPI_Read(status, 2);
-    SPI_SetCS(HIGH);
+    BOARD_SPI_CS_LOW;
+    BOARD_SPI_Read(status, 2);
+    BOARD_SPI_CS_HIGH;
 
     return status[1];
 }
 
 static void flashCommand(uint8_t *cmd, uint8_t size){
-    SPI_SetCS(LOW);
-    SPI_Write(cmd, size);
-    SPI_SetCS(HIGH);       
+    BOARD_SPI_CS_LOW;
+    BOARD_SPI_Write(cmd, size);
+    BOARD_SPI_CS_HIGH;       
 }
 /*
 static void flashWriteEnable(uint8_t en){
@@ -106,9 +106,9 @@ uint32_t flashRead(uint32_t addr, uint8_t *dst, uint32_t size){
     hdr[3] = (uint8_t)(addr >> 0);
     hdr[4] = 0xFF;
 
-    SPI_SetCS(LOW);
-    SPI_Write(hdr, sizeof(hdr));
-    SPI_Read(dst, size);
-    SPI_SetCS(HIGH);
+    BOARD_SPI_CS_LOW;
+    BOARD_SPI_Write(hdr, sizeof(hdr));
+    BOARD_SPI_Read(dst, size);
+    BOARD_SPI_CS_HIGH;
     return size; 
 }

@@ -45,6 +45,7 @@ endif
 ######################################
 # C sources
 C_SOURCES =  \
+$(APP_DIR)/spi_flash.c \
 $(PRJ_DIR)/Src/main.c \
 $(PRJ_DIR)/Src/usbd_desc.c \
 $(PRJ_DIR)/Src/usbd_conf.c \
@@ -79,15 +80,18 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
 $(LIBEMB_PATH)/drv/uart/uart_f10x.c \
-$(APP_DIR)/spi_flash.c \
+$(LIBEMB_PATH)/drv/spi/spi_stm32f1xx.c \
+$(LIBEMB_PATH)/drv/tft/st7735.c \
+$(LIBEMB_PATH)/display/lcd.c \
+#$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
+
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
 $(wildcard $(APP_DIR)/*cpp) \
 
-CPP_SOURCES := $(filter-out $(APP_DIR)/cmdtft.cpp, $(CPP_SOURCES))
+#CPP_SOURCES := $(filter-out $(APP_DIR)/cmdtft.cpp, $(CPP_SOURCES))
 
 # ASM sources
 ASM_SOURCES =  \
@@ -95,6 +99,22 @@ $(PRJ_DIR)/startup/startup_stm32f103xb.s
 
 # link script
 LDSCRIPT =$(PRJ_DIR)/startup/STM32F103C8Tx_FLASH.ld
+
+# AS includes
+AS_INCLUDES = 
+
+# C includes
+C_INCLUDES =  \
+-IInc \
+-I$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
+-I$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
+-I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
+-I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
+-I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
+-I$(LIBEMB_PATH)/include \
+-I$(APP_DIR)/../inc \
+-I$(APP_DIR)/agif
 
 #######################################
 # binaries
@@ -149,23 +169,6 @@ CPP_DEFS = \
 '-D__packed=__attribute__((__packed__))' \
 -DUSE_HAL_DRIVER \
 -D_STDOUT_UART \
-
-
-# AS includes
-AS_INCLUDES = 
-
-# C includes
-C_INCLUDES =  \
--IInc \
--I$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
--I$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
--I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
--I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
--I$(LIBEMB_PATH)/include \
--I$(APP_DIR)/../inc
-
 
 # compile gcc flags
 ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections

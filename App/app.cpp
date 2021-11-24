@@ -218,6 +218,7 @@ void App(void){
 	CmdServo servo;
 	CmdSpiFlash spiflash;
 	CmdFlashRom flashrom;
+	CmdTft tft;
 	
 
 	#ifdef STDOUT_UART
@@ -237,10 +238,9 @@ void App(void){
 	con.addCommand(&servo);
 	con.addCommand(&spiflash);
 	con.addCommand(&flashrom);
+	con.addCommand(&tft);
 
-	SERVO_Init();
-
-	SPI_Init();
+	BOARD_Init();
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);

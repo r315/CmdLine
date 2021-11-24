@@ -62,7 +62,10 @@ extern StdOut uart_aux;
 
 extern spidev_t spi1;
 
+#define BOARD_SPIDEV    &spi1
+#define TFT_SPIDEV      BOARD_SPIDEV
 
+#define BOARD_GPIO_Init(_P, _IO, _M) // TODO as in bluepill
 
 static inline uint32_t millis(){
     return HAL_GetTick();

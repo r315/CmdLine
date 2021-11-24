@@ -11,6 +11,9 @@ extern "C" {
 #include "stm32f1xx.h"
 #include <fifo.h>
 #include "pwm.h"
+#include "spi.h"
+#include "rng.h"
+#include "pinName.h"
 
 /**
  * HW symbols
@@ -23,6 +26,15 @@ extern "C" {
 
 #define GetTicks HAL_GetTick
 #define DelayMs(d) HAL_Delay(d)
+#define delay(d)    DelayMs(d)
+#define millis      HAL_GetTick
+
+
+/* 
+ *
+ * */
+void BOARD_GPIO_Init(GPIO_TypeDef *port, uint8_t pin, uint8_t mode);
+void BOARD_Init(void);
 
 static inline uint32_t ElapsedTicks(uint32_t start_ticks){ 
     uint32_t current = GetTicks(); 
@@ -133,16 +145,76 @@ extern StdOut uart_aux;
  
 /* ************************************************************
  * SPI API
+ *
+ * PB15 AF -> MOSI
+ * PB14 IF <- MISO
+ * PB13 AF -> SCLK
+ * PB12 GPO -> CS
+ * 
  * ************************************************************ */
 #define SPI_XFER_TIMEOUT    1000
+#define BOARD_SPI_PORT      GPIOB
+#define BOARD_SPI_DO_PIN    15
+#define BOARD_SPI_DI_PIN    14
+#define BOARD_SPI_CK_PIN    13
+#define BOARD_SPI_CS_PIN    12
 
-void SPI_Init(void);
-uint32_t SPI_Read(uint8_t *dst, uint32_t size);
-uint32_t SPI_Write(uint8_t *src, uint32_t size);
-void SPI_SetCS(uint8_t cs);
-uint8_t SPI_Transfer(uint8_t *data, uint32_t timeout);
+#define BOARD_SPI_CS_LOW    PIN_RESET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
+#define BOARD_SPI_CS_HIGH   PIN_SET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
 
- 
+void BOARD_SPI_Init(void);
+void BOARD_SPI_SetCS(uint8_t cs);
+uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
+uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
+uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
+
+#define BOARD_SPIDEV_CTRL spi2
+#define BOARD_SPIDEV    (&BOARD_SPIDEV_CTRL)
+extern spidev_t BOARD_SPIDEV_CTRL;
+
+extern StdOut *userio;
+#define STDOUT  userio
+
+/**
+ * Macros for TFT
+ * */
+#define TFT_SPIDEV      BOARD_SPIDEV
+
+/**
+ * TFT stuff
+ */
+#if 0
+#define TFT_W 80
+#define TFT_H 160  // 162 on GRAM
+
+#define TFT_OFFSET_SOURCE	26
+#define TFT_OFFSET_GATE		1
+#define TFT_BGR_FILTER
+#else
+#define TFT_W 128
+#define TFT_H 160
+#endif
+
+#define LCD_CK_Pin          GPIO_PIN_13
+#define LCD_CK_GPIO_Port    GPIOB
+#define LCD_CD_Pin          GPIO_PIN_14
+#define LCD_CD_GPIO_Port    GPIOB
+#define LCD_DI_Pin          GPIO_PIN_15
+#define LCD_DI_GPIO_Port    GPIOB
+#define LCD_RST_Pin
+#define LCD_RST_GPIO_Port
+#define LCD_BKL_Pin         GPIO_PIN_0
+#define LCD_BKL_GPIO_Port   GPIOA
+
+#define LCD_CS0             BOARD_SPI_CS_LOW
+#define LCD_CS1             BOARD_SPI_CS_HIGH
+#define LCD_CD0             LCD_CD_GPIO_Port->BRR = LCD_CD_Pin
+#define LCD_CD1             LCD_CD_GPIO_Port->BSRR = LCD_CD_Pin
+#define LCD_BKL0            //LCD_BKL_GPIO_Port->BRR = LCD_BKL_Pin
+#define LCD_BKL1            //LCD_BKL_GPIO_Port->BSRR = LCD_BKL_Pin
+#define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
+#define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
+
 #ifdef __cplusplus
 }
 #endif

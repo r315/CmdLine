@@ -3,17 +3,20 @@
 #include "usbd_cdc_if.h"
 #include <stdout.h>
 
-// Output
-#define GPO_2MHZ                (2 << 0)
-#define GPO_10MHZ               (1 << 0)
-#define GPO_50MHZ               (3 << 0)
-#define GPO_AF                  (2 << 2) // Must be or'd with suitable speed
-#define GPO_AF_OD               (3 << 2)
-// Input
-#define GPI_FLOAT               (1 << 2)
-#define GPI_ANALOG              (0 << 2)
-#define GPI_PD                  (2 << 2)
-#define GPI_PU                  (6 << 2)
+
+void BOARD_Init(void){
+    BOARD_SPIDEV->bus = SPI_BUS1;
+    BOARD_SPIDEV->freq = 1000000;
+    BOARD_SPIDEV->cfg = SPI_SW_CS;
+
+    SPI_Init(BOARD_SPIDEV);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DO_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CK_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CS_PIN, PIN_OUT_2MHZ);
+
+    SERVO_Init();
+}
 
 /**
  * @brief Configure GPIO pin
@@ -31,13 +34,11 @@
  *                  GPI_PD
  *                  GPI_PU
  * */
-void gpioInit(GPIO_TypeDef *port, uint8_t pin, uint8_t mode) {
+void BOARD_GPIO_Init(GPIO_TypeDef *port, uint8_t pin, uint8_t mode) {
     
-    if(mode == GPI_PD){
+    if(mode == PIN_IN_PD){
         port->BRR = (1 << pin);
-    }
-
-    if(mode == GPI_PU){
+    }else if(mode == PIN_IN_PU){
         port->BSRR = (1 << pin);
     }    
 
@@ -141,23 +142,23 @@ uint8_t PWM_Get(uint8_t ch){
  * PB1   ------> TIM1_CH4
  * */
 static void PWM_CfgGpio(uint8_t ch, uint8_t enable){
-    enable = (enable == 0) ? GPI_ANALOG :  GPO_AF | GPO_2MHZ;
+    enable = (enable == 0) ? PIN_IN_ANALOG :  PIN_OUT_AF | PIN_OUT_2MHZ;
 
     switch(ch){
         case PWM_1:
-            gpioInit(GPIOA, GPIO_PIN_6, enable);
+            BOARD_GPIO_Init(GPIOA, GPIO_PIN_6, enable);
             break;
 
         case PWM_2:
-            gpioInit(GPIOA, GPIO_PIN_7, enable);
+            BOARD_GPIO_Init(GPIOA, GPIO_PIN_7, enable);
             break;
 
         case PWM_3:
-            gpioInit(GPIOB, GPIO_PIN_0, enable);
+            BOARD_GPIO_Init(GPIOB, GPIO_PIN_0, enable);
             break;
 
         case PWM_4:
-            gpioInit(GPIOB, GPIO_PIN_1, enable);
+            BOARD_GPIO_Init(GPIOB, GPIO_PIN_1, enable);
             break;
 
         default:
@@ -225,8 +226,7 @@ void SERVO_Init(void){
 
     TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
 
-    gpioInit(SERVO_PORT, SERVO_PIN, GPO_2MHZ);
-    
+    BOARD_GPIO_Init(SERVO_PORT, SERVO_PIN, PIN_OUT_2MHZ);    
 }
 
 /**
@@ -247,7 +247,7 @@ void SERVO_Stop(void){
 
     NVIC_DisableIRQ(TIM3_IRQn);
     
-    gpioInit(SERVO_PORT, SERVO_PIN, GPI_FLOAT);
+    BOARD_GPIO_Init(SERVO_PORT, SERVO_PIN, PIN_IN_FLOAT);
 }
 
 uint16_t SERVO_Get(void){
@@ -561,172 +561,27 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 #define DMA_CCR_PSIZE_16    (1<<8)
 #define DMA_CCR_PSIZE_8     (0<<8)
 
-
-
-typedef struct spihandle{
-    SPI_TypeDef *spi;
-    DMA_Channel_TypeDef *dma;
-    volatile uint32_t count;
-}spihandle_t;
-
-static spihandle_t spi2handle;
-
-void SPI_Init(void){
-    RCC->APB1ENR |= RCC_APB1ENR_SPI2EN;
-    RCC->APB1RSTR |= RCC_APB1RSTR_SPI2RST;
-    RCC->APB1RSTR &= ~RCC_APB1RSTR_SPI2RST;
-    RCC->AHBENR |= RCC_AHBENR_DMA1EN;
-    
-    /**
-     * PB15 AF -> MOSI
-     * PB14 IF <- MISO
-     * PB13 AF -> SCLK
-     * PB12 GPO -> CS
-     * */
-    //GPIOB->BRR = (1 << 14); 
-    GPIOB->CRH &= (0x0000FFFF);
-    GPIOB->CRH |= (0xB4B30000);
-    
-    SPI2->CR1 = (4 << 3) |       //BR[2:0], 0:PCLK/2, 1:PLK1/4, 2:PLK1/8, .. 7:PLK1/256    
-                //SPI_CR1_SSM |
-                //SPI_CR1_DFF |
-                SPI_CR1_MSTR;
-
-    SPI2->CR2 = SPI_CR2_SSOE;
-
-    SPI2->CR1 |= SPI_CR1_SPE;
-
-
-    spi2handle.spi = SPI2;
-
-    spi2handle.count = 0;
-    spi2handle.dma = DMA1_Channel5;  //Channel3 for SPI1
-
-    spi2handle.dma->CPAR = (uint32_t)&SPI2->DR;
-    spi2handle.dma->CCR = 
-                DMA_CCR_PL_Medium |
-                DMA_CCR_MSIZE_16  |
-                DMA_CCR_PSIZE_16  |
-                DMA_CCR_TCIE      |
-                DMA_CCR_DIR;
-
-    NVIC_EnableIRQ(DMA1_Channel5_IRQn);
-    SPI_SetCS(1);
+uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout){
+    return SPI_Single_Transfer(BOARD_SPIDEV, data);
 }
 
-void SPI_SetCS(uint8_t cs){
-    if(cs)
-        GPIOB->BSRR = (1 << 12);
-    else
-        GPIOB->BRR = (1 << 12);
-}
-
-uint8_t SPI_Transfer(uint8_t *data, uint32_t timeout){
-    SPI2->DR = *data;
-	while((SPI2->SR & SPI_SR_TXE) == 0 );
-	while((SPI2->SR & SPI_SR_BSY) != 0 );
-    *data = SPI2->DR; 
-    return 1;
-}
-
-uint32_t SPI_Read(uint8_t *dst, uint32_t size){
+uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
     if(size == 0 || dst == NULL){
         return 0;
     }
-
-    //if(size < 4){
-        for (uint32_t i = 0; i < size; i++, dst++)
-        {
-            if(!SPI_Transfer(dst, SPI_XFER_TIMEOUT)){
-                return 0;
-            }
-        }
-    //}
-
-    return size;
-}
-
-uint32_t SPI_Write(uint8_t *src, uint32_t size){
-    if(size == 0 || src == NULL){
-        return 0;
-    }
-
-    //if(size < 4){
-        for (uint32_t i = 0; i < size; i++, src++)
-        {
-            if(!SPI_Transfer(src, SPI_XFER_TIMEOUT)){
-                return 0;
-            }
-        }
-    //}
-
-    return size;
-}
-
-/**
- * @brief Sends a block of data through the spi bus using dma
- * block. Due to dma limitation, data is transffered in 64k blocks when len grater
- * than 0x10000.
- * 
- * @param src : pointer to data to be sent
- * @param len : size of data, if bit 32 is set then src[0] will be transffered len times
- * */
-void SPI_WriteDMA(uint16_t *src, uint32_t len){
-
-    // Configure Spi for 16bit DMA
-    SPI2->CR1 &= ~SPI_CR1_SPE;
-    SPI2->CR1 |= SPI_CR1_DFF | SPI_CR1_SPE;
-
-    if(len & 0x80000000){
-        len &= 0x7FFFFFFF;
-        spi2handle.dma->CCR &= ~(DMA_CCR_MINC);
-    }else{
-        spi2handle.dma->CCR |= DMA_CCR_MINC;
-    }
-
-    SPI2->CR2 |= SPI_CR2_TXDMAEN;
-
-    spi2handle.count = len;    
-    spi2handle.dma->CMAR = (uint32_t)src;
-    spi2handle.dma->CNDTR = (spi2handle.count > 0x10000) ? 0xFFFF : spi2handle.count;
     
-    spi2handle.dma->CCR |= DMA_CCR_EN;
-}
-
-/**
- * @brief End of transfer callback
- * */
-__weak void spi_eot(void){
-
-}
-
-/**
- * DMA handler for spi transfers
- * */
-void DMA1_Channel5_IRQHandler(void){
-
-    if(DMA1->ISR & DMA_ISR_TCIF5){
-        spi2handle.dma->CCR &= ~(DMA_CCR_EN);
-        
-        if(spi2handle.count > 0x10000){
-            spi2handle.count -= 0x10000;
-            spi2handle.dma->CNDTR = (spi2handle.count > 0x10000) ? 0xFFFF : spi2handle.count;
-            spi2handle.dma->CCR |= DMA_CCR_EN;
-        }else{
-            // wait for the last byte to be transmitted
-            while(SPI2->SR & SPI_SR_BSY){
-                if(SPI2->SR & SPI_SR_OVR){
-                    //clr OVR flag
-                    spi2handle.count = SPI2->DR;
-                }
-            }
-            /* Restore 8bit Spi */
-	        SPI2->CR1 &= ~(SPI_CR1_SPE | SPI_CR1_DFF);
-	        SPI2->CR1 |= SPI_CR1_SPE;
-            SPI2->CR2 &= ~(SPI_CR2_TXDMAEN);
-            spi2handle.count = 0;
-            spi_eot();
-        }
+    for (uint32_t i = 0; i < size; i++, dst++){
+        *dst = SPI_Single_Transfer(BOARD_SPIDEV, 0xFF);
     }
-    DMA1->IFCR = DMA_IFCR_CGIF5;
+
+    return size;
+}
+
+uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
+    SPI_Write(BOARD_SPIDEV, src, size);
+    return size;
+}
+
+uint32_t RNG_Get(void){
+    return 0;
 }

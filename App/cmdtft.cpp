@@ -1,22 +1,26 @@
 #include "cmdtft.h"
 #include "board.h"
 #include "lcd.h"
+
+#ifdef FEATURE_GIF
 #include "AnimatedGIF.h"
 #include "badgers.h"
 //#include "guy.h"
-#include "tft.h"
 
 #define GIF_DATA        (uint8_t*)ucBadgers
 #define GIF_DATA_SIZE   sizeof(ucBadgers)
+AnimatedGIF gif;
+void GIFDraw(GIFDRAW *pDraw);
+void gifPlayFrame(void);
+#endif
+
 extern StdOut *userio;
 
 uint16_t tile[512];
 uint16_t seed;
-AnimatedGIF gif;
 
 void AmigaBall_Loop(void);
 void AmigaBall_Setup(void);
-void GIFDraw(GIFDRAW *pDraw);
 
 uint16_t generateRandomColor(int32_t mix) {
     uint16_t red = RNG_Get() % 32;
@@ -38,7 +42,7 @@ void randomTiles(){
     for(uint8_t i = 0; i < LCD_GetHeight()/16; i++){
         for(uint8_t j = 0; j < LCD_GetWidth()/16; j++){
             memset(buf, generateRandomColor(seed), 15 * 15 * 2);
-            SPI_WaitEOT(&spi1);
+            SPI_WaitEOT(TFT_SPIDEV);
             LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
             buf = tile + (256 * (j & 1));
         }
@@ -92,13 +96,9 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
     return (r << 11) | (g << 5) | b;
 }
 
-void gifPlayFrame(void){
-    gif.playFrame(true, NULL);
-}
-
 #define TILE_W  8
 void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
-    SPI_WaitEOT(&spi1);
+    SPI_WaitEOT(TFT_SPIDEV);
     y = y * TILE_W;
     x = x * TILE_W;
     for(uint8_t i = 0; i < w; i++){
@@ -134,9 +134,10 @@ char CmdTft::execute(void *ptr){
 
     if(xstrcmp("init", (const char*)argv[0]) == 0){
         if(yatoi(argv[1], (int32_t*)&val1)){
-            LCD_Init(&spi1);
+            BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
+            LCD_Init(TFT_SPIDEV);
 		    LCD_Rotation(val1 & 3);
-		    LCD_Clear(BLACK);
+		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
 		    LCD_Bkl(1);
             return CMD_OK;
         }
@@ -146,7 +147,7 @@ char CmdTft::execute(void *ptr){
         if(hatoi(argv[1], (uint32_t*)&val1)){
             //LCD_Clear(val1);
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
-            SPI_WaitEOT(&spi1);
+            SPI_WaitEOT(TFT_SPIDEV);
             return CMD_OK;
         }
     }
@@ -156,7 +157,7 @@ char CmdTft::execute(void *ptr){
         for(uint8_t i = 0; i < 128/16; i++){
             for(uint8_t j = 0; j < 160/16; j++){
                 memset(buf, i*3, 15 * 15 * 2);
-                SPI_WaitEOT(&spi1);
+                SPI_WaitEOT(TFT_SPIDEV);
                 LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
                 buf = tile + (256 * (j & 1));
             }
@@ -202,7 +203,7 @@ char CmdTft::execute(void *ptr){
             if(f == 0){
                 s++;
                 s = s % 160;
-                SPI_WaitEOT(&spi1);
+                SPI_WaitEOT(TFT_SPIDEV);
                 LCD_Scroll(s);
                 f = 2; // scroll speed
             }
@@ -225,7 +226,7 @@ char CmdTft::execute(void *ptr){
                 for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
                     for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
                         memset16(buf, HsvToRgb(h++, s, v), 64);
-                        SPI_WaitEOT(&spi1);
+                        SPI_WaitEOT(TFT_SPIDEV);
                         LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
                         buf = tile + (256 * (j & 1));
                     }
@@ -258,7 +259,7 @@ char CmdTft::execute(void *ptr){
                 case 2:
                     demo++;
                     break;
-
+#ifdef FEATURE_GIF
                 case 3:
                     gif.begin(BIG_ENDIAN_PIXELS);
                     if (gif.open(GIF_DATA, GIF_DATA_SIZE, GIFDraw))
@@ -279,7 +280,7 @@ char CmdTft::execute(void *ptr){
                     gif.close();
                     demo++;
                     break;
-
+#endif
                 default:
                     frame_count = 0;
                     demo = 0;
@@ -303,7 +304,7 @@ char CmdTft::execute(void *ptr){
 
         return CMD_OK_LF;
     }
-
+#ifdef FEATURE_GIF
     if(xstrcmp("gif", (const char*)argv[0]) == 0){
         long lTime;
         int iFrames = 0;        
@@ -325,7 +326,7 @@ char CmdTft::execute(void *ptr){
         }  
         return CMD_OK_LF;
     }
-   
+#endif
     return CMD_BAD_PARAM;
 }
 
@@ -555,7 +556,7 @@ void AmigaBall_Loop()
     }
 }
 
-
+#ifdef FEATURE_GIF
 // Draw a line of image directly on the LCD
 void GIFDraw(GIFDRAW *pDraw)
 {
@@ -644,3 +645,8 @@ void GIFDraw(GIFDRAW *pDraw)
       //drawTileLine(pDraw->iX, y, iWidth, usTemp);
     }
 }
+
+void gifPlayFrame(void){
+    gif.playFrame(true, NULL);
+}
+#endif
