@@ -13,19 +13,39 @@ extern "C" {
 #include "spi.h"
 #include "rng.h"
 
+/**
+ * General macros
+ * */
+#define DelayMs(_X) HAL_Delay(_X)
+
+static inline uint32_t millis(){ return HAL_GetTick(); }
+static inline void delay(uint32_t ms){ HAL_Delay(ms); }
+
+/**
+ * Serial header
+ * */
 extern StdOut uart;
 extern StdOut uart_aux;
+#define BOARD_UART_HANDLER huart1
+extern UART_HandleTypeDef BOARD_UART_HANDLER;
+#define BOARD_UART_PERIPH USART2
+extern void SERIAL_IRQHandler(USART_TypeDef *usart);
 
-// LED Pin PB3 (Arduino D13)
+/**
+ * LED and GPIO's
+ *  LED Pin PB3 (Arduino D13)
+ * */
 #define LED_ON      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET)
 #define LED_OFF     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET)
 #define LED_TOGGLE  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin)
 
-#define DelayMs(_X) HAL_Delay(_X)
+#define BOARD_GPIO_Init(_P, _IO, _M) // TODO as in bluepill
 
 /**
  * TFT stuff
  */
+#define TFT_SPIDEV      BOARD_SPIDEV
+
 #if 0
 #define TFT_W 80
 #define TFT_H 160  // 162 on GRAM
@@ -60,20 +80,12 @@ extern StdOut uart_aux;
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 
-extern spidev_t spi1;
-
-#define BOARD_SPIDEV    &spi1
-#define TFT_SPIDEV      BOARD_SPIDEV
-
-#define BOARD_GPIO_Init(_P, _IO, _M) // TODO as in bluepill
-
-static inline uint32_t millis(){
-    return HAL_GetTick();
-}
-
-static inline void delay(uint32_t ms){
-    HAL_Delay(ms);
-}
+/**
+ * SPI Header
+ * */
+#define BOARD_SPIDEV_HANDLER spi1
+#define BOARD_SPIDEV    (&BOARD_SPIDEV_HANDLER)
+extern spibus_t BOARD_SPIDEV_HANDLER;
 
 
 #ifdef __cplusplus

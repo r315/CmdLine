@@ -47,7 +47,7 @@
 /* Private variables ---------------------------------------------------------*/
 UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
-spidev_t spi1;
+spibus_t BOARD_SPIDEV_HANDLER;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -65,15 +65,15 @@ int main(void)
 
 	SystemClock_Config();
 
-	spi1.bus = SPI_BUS0;
-	spi1.freq = 40000;
-	spi1.cfg = SPI_SW_CS;
+	BOARD_SPIDEV->bus = SPI_BUS0;
+	BOARD_SPIDEV->freq = 40000;
+	BOARD_SPIDEV->cfg = SPI_SW_CS;
 
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
-	SPI_Init(&spi1);
+	SPI_Init(BOARD_SPIDEV);
 	
 	RNG_Init();
 
@@ -286,7 +286,7 @@ static void MX_GPIO_Init(void)
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
 
-		if(spi1.cfg & SPI_SW_CS){
+		if(BOARD_SPIDEV->cfg & SPI_SW_CS){
 			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
 		}else{
 			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin | LCD_CS_Pin;
@@ -298,7 +298,7 @@ static void MX_GPIO_Init(void)
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 		/*Configure GPIO pins : LCD_BKL_Pin LCD_CS_Pin LCD_CD_Pin */
-		if(spi1.cfg & SPI_SW_CS){
+		if(BOARD_SPIDEV->cfg & SPI_SW_CS){
 			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin | LCD_CS_Pin;
 		}else{
 			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin;

@@ -168,21 +168,17 @@ uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
 uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
 uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
 
-#define BOARD_SPIDEV_CTRL spi2
-#define BOARD_SPIDEV    (&BOARD_SPIDEV_CTRL)
-extern spidev_t BOARD_SPIDEV_CTRL;
+#define BOARD_SPIDEV_HANDLER spi2
+#define BOARD_SPIDEV    (&BOARD_SPIDEV_HANDLER)
+extern spibus_t BOARD_SPIDEV_HANDLER;
 
-extern StdOut *userio;
 #define STDOUT  userio
-
-/**
- * Macros for TFT
- * */
-#define TFT_SPIDEV      BOARD_SPIDEV
+extern StdOut *userio;
 
 /**
  * TFT stuff
  */
+#define TFT_SPIDEV      BOARD_SPIDEV
 #if 0
 #define TFT_W 80
 #define TFT_H 160  // 162 on GRAM

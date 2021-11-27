@@ -48,8 +48,6 @@
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-extern void SPI_DMA_IRQHandler(void);
-extern void SERIAL_IRQHandler(void);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -215,7 +213,7 @@ void USART2_IRQHandler(void)
     /* USER CODE BEGIN USART2_IRQn 0 */
 
     /* USER CODE END USART2_IRQn 0 */
-    SERIAL_IRQHandler();
+    SERIAL_IRQHandler(BOARD_UART_PERIPH);
     /* USER CODE BEGIN USART2_IRQn 1 */
 
     /* USER CODE END USART2_IRQn 1 */
@@ -225,7 +223,7 @@ void DMA2_Channel4_IRQHandler(void)
 {
     if (DMA2->ISR & DMA_ISR_TCIF4)
     {
-        SPI_DMA_IRQHandler();
+        SPI_DMA_IRQHandler(BOARD_SPIDEV);
     }
     DMA2->IFCR = DMA_IFCR_CGIF4;    
 }

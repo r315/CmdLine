@@ -3,6 +3,7 @@
 #include "usbd_cdc_if.h"
 #include <stdout.h>
 
+spibus_t BOARD_SPIDEV_HANDLER;
 
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;

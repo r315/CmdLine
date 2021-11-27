@@ -4,7 +4,7 @@
 
 #define SECTOR_SIZE 512
 
-spidev_t mmc_spi = {0};
+spibus_t mmc_spi = {0};
 FATFS sdcard;
 uint8_t sector_data[SECTOR_SIZE];
 /*  

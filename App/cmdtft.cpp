@@ -114,7 +114,7 @@ void CmdTft::help(void){
     console->xputs("options:");
     console->xputs("  init <orientation>,  orientation 0-3");
     console->xputs("  clear <color>,       Fill display with color");
-    console->xputs("  rc,                  Random colors");
+    console->xputs("  rc [scroll],         Random colors");
     console->xputs("  scroll,              Scroll screen");
     console->xputs("  hsv <s> <v>,         HSV color");
     console->xputchar('\n');
@@ -196,6 +196,20 @@ char CmdTft::execute(void *ptr){
         char c;
 
         seed = RNG_Get() % 256;
+
+        if(xstrcmp("scroll", (const char*)argv[1]) != 0){            
+            for(uint8_t i = 0; i < LCD_GetHeight(); i++){
+                uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
+                for (size_t j = 0; j < LCD_GetWidth(); j++){
+                    buf[j] = RNG_Get();                    
+                }                
+                SPI_WaitEOT(TFT_SPIDEV);
+                LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
+            }
+            return CMD_OK;
+        }
+
+
         do{
 
             fps(randomTiles);

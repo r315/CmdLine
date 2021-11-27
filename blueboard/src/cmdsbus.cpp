@@ -27,7 +27,7 @@
 
 #include "board.h"
 #include "cmdsbus.h"
-#include <fifo.h>
+#include "uart.h"
 
 //static StdOut uart;
 
@@ -36,7 +36,7 @@
 #define PWM_CENTER_PULSE    992  // 1500
 #define PWM_MAX_PULSE       1793 // 2000
 #define SBUS_BAUDRATE       100000
-#define UART_NUMBER         0
+#define UART_NUMBER         UART0
 
 #define SBUS_NUM_CHANNELS       16
 #define SBUS_FRAME_START        0x0F
@@ -68,7 +68,7 @@ typedef struct sbusframe{
 }sbusframe_t;
 
 typedef struct sbus{
-    uart_t uart;
+    serialbus_t uart;
     sbusframe_t frame;
     sbusframe_t next_frame;
     SbusState state = NOT_RUNNING;
@@ -117,7 +117,7 @@ void sendFrame(void *frame){
         memcpy(&sbus.frame, &sbus.next_frame, sizeof(sbusframe_t));
         FLAG_CLR(NEW_DATA_FLAG);
     }
-    UART_Send(&sbus.uart, (uint8_t*)&sbus.frame, sizeof(sbusframe_t));
+    //TODO: UART_Send(&sbus.uart, (uint8_t*)&sbus.frame, sizeof(sbusframe_t));
 /*
     uint8_t *byte = (uint8_t*)&sbus.frame;
     for(uint32_t i = 0; i < sizeof(sbusframe_t); i++, byte++){
@@ -240,9 +240,9 @@ int32_t aux;
 	}
 
 	if (sbus.state == NOT_RUNNING) {
-        fifo_init(&rxdata);
-        sbus.uart.baudrate = SBUS_BAUDRATE;
-        UART_Init(&sbus.uart, UART_NUMBER);
+        sbus.uart.speed = SBUS_BAUDRATE;
+        sbus.uart.bus = UART_NUMBER;
+        UART_Init(&sbus.uart);
         LPC_GPIO2->FIODIR |= (1 << 1);
 		sbus.state = RUNNING;
         sbus.next_frame.header = SBUS_FRAME_START;
@@ -283,8 +283,8 @@ int32_t aux;
                 pulse = aux;
             }
         }else if(isNextWord(&p1, "receive")){
-            sbus.uart.rxcb = receiveCB;
-            UART_ReceiveIT(&sbus.uart, NULL, 0);
+            //TODO: sbus.uart.rxcb = receiveCB;
+            //TODO: UART_ReceiveIT(&sbus.uart, NULL, 0);
             break;
         }else{
             p1 = nextWord(p1);

@@ -24,6 +24,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "board.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -201,6 +202,18 @@ void TIM4_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
-
+void DMA1_Channel5_IRQHandler(void){
+    if(DMA1->ISR & DMA_ISR_TCIF5){
+        SPI_DMA_IRQHandler(BOARD_SPIDEV);
+    }
+    DMA1->IFCR = DMA_IFCR_CGIF5;
+}
+/*
+void DMA1_Channel3_IRQHandler(void){
+    if(DMA1->ISR & DMA_ISR_TCIF3){
+        SPI_DMA_IRQHandler(&spi1);
+    }
+    DMA1->IFCR = DMA_IFCR_CGIF3;
+}*/
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
