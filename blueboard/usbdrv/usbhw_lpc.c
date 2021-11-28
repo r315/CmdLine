@@ -235,7 +235,7 @@ void USBHwRegisterEPIntHandler(U8 bEP, TFnEPIntHandler *pfnHandler)
 	LPC_USB->USBEpIntEn |= (1 << idx);
 	LPC_USB->USBDevIntEn |= EP_SLOW;
 	
-	DBG("Registered EP 0x%X handler\n", bEP);
+	DEBUG_OUT("Registered EP 0x%X handler\n", bEP);
 }
 
 
@@ -251,7 +251,7 @@ void USBHwRegisterDevIntHandler(TFnDevIntHandler *pfnHandler)
 	// enable device interrupt
 	LPC_USB->USBDevIntEn |= DEV_STAT;
 
-	DBG("Registered device status handler\n");
+	DEBUG_OUT("Registered device status handler\n");
 }
 
 
@@ -267,7 +267,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler)
 	// enable device interrupt
 	LPC_USB->USBDevIntEn |= FRAME;
 
-	DBG("Registered frame handler\n");
+	DEBUG_OUT("Registered frame handler\n");
 }
 
 

@@ -6,101 +6,80 @@ TARGET 		 =$(BUILD_DIR)/console_blueboard
 BUILD_DIR 	:=build
 APP_DIR 	:=../App
 PRJ_DIR 	:=.
+BSP_PATH   = $(LIBEMB_PATH)/bsp/blueboard
 
-CSRCS =\
-usbserial.c \
-usbhw_lpc.c \
-usbcontrol.c \
-usbstdreq.c \
-vcom.c \
-ili9328.c \
-lcd.c \
-display.c \
-font.c \
-blueboard.c \
-clock_lpc17xx.c \
-timer.c \
-pwm_lpc17xx.c \
-i2c_lpc17xx.c \
-spi_lpc17xx.c \
-dac_lpc17xx.c \
-dma_lpc17xx.c \
-uart_lpc17xx.c \
-fifo.c \
-strfunc.c \
-button.c \
-stk500.c \
-mmc.c pff.c \
-debug.c \
+C_SOURCES =\
+$(BSP_PATH)/blueboard.c \
+$(BSP_PATH)/clock_lpc17xx.c \
+$(LIBEMB_PATH)/drv/timer/timer.c \
+$(LIBEMB_PATH)/drv/tft/ili9328.c \
+$(LIBEMB_PATH)/display/lcd.c \
+$(LIBEMB_PATH)/display/display.c \
+$(LIBEMB_PATH)/display/font.c \
+$(LIBEMB_PATH)/drv/pwm/pwm_lpc17xx.c \
+$(LIBEMB_PATH)/drv/i2c/i2c_lpc17xx.c \
+$(LIBEMB_PATH)/drv/spi/spi_lpc17xx.c \
+$(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
+$(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
+$(LIBEMB_PATH)/drv/uart/uart_lpc17xx.c \
+$(LIBEMB_PATH)/misc/fifo.c \
+$(LIBEMB_PATH)/misc/strfunc.c \
+$(LIBEMB_PATH)/misc/debug.c \
+$(LIBEMB_PATH)/button/button.c \
+$(LIBEMB_PATH)/drv/mmc/mmc.c \
+$(LIBEMB_PATH)/pff/pff.c \
+$(PRJ_DIR)/usbdrv/usbserial.c \
+$(PRJ_DIR)/usbdrv/usbhw_lpc.c \
+$(PRJ_DIR)/usbdrv/usbcontrol.c \
+$(PRJ_DIR)/usbdrv/usbstdreq.c \
+$(PRJ_DIR)/stk500/stk500.c \
+$(PRJ_DIR)/src/serial.c \
+$(PRJ_DIR)/src/bb_main.c \
+$(PRJ_DIR)/src/bb_it.c \
 
-CPPSRCS = \
-app.cpp \
-bb_main.cpp \
-console.cpp \
-cmdspi.cpp \
-stk500_service.cpp \
-cmdavr.cpp \
-cmdlsd.cpp \
-cmdsbus.cpp \
-cmdpwm.cpp \
-#cmdmem.cpp \
-#cmdgpio.cpp \
-#cmdi2c.cpp \
-#cmdawg.cpp \
 
-#command.cpp \
+CPP_SOURCES = \
+$(LIBEMB_PATH)/console/console.cpp \
+$(APP_DIR)/app.cpp \
+$(APP_DIR)/cmdsbus.cpp \
+$(PRJ_DIR)/src/cmdspi.cpp \
+$(PRJ_DIR)/src/cmdavr.cpp \
+$(PRJ_DIR)/src/cmdlsd.cpp \
+$(PRJ_DIR)/src/cmdpwm.cpp \
+$(PRJ_DIR)/stk500/stk500_service.cpp \
 
+C_SOURCES   +=startup_lpc1768.c
+LDSCRIPT =$(BSP_PATH)/lpc1768.ld
 #########################################################
 #Startup files and libraries
 #########################################################
-BSPPATH   = $(LIBEMB_PATH)/bsp/blueboard
-
 INCSPATH =\
 $(PRJ_DIR)/inc \
 $(PRJ_DIR)/usbdrv \
 $(APP_DIR)/../inc \
 $(LIBEMB_PATH)/include \
 $(LIBEMB_PATH)/pff \
-$(BSPPATH) \
-$(BSPPATH)/CMSISv2p00_LPC17xx/inc \
-
+$(BSP_PATH) \
+$(BSP_PATH)/../CMSISv2p00_LPC17xx/inc \
 
 LIBSPATH +=
 
-GCSYMBOLS =-D__NEWLIB__ -D__BB__ -DENABLE_DEBUG
+GCSYMBOLS =-D__NEWLIB__ -DBOARD_BLUEBOARD -DENABLE_DEBUG
 GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables
 GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
 LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -Wl,--gc-sections -nodefaultlibs #-nostartfiles #-lstdc++ 
 
-CSRCS   +=startup_lpc1768.c
-LDSCRIPT =$(BSPPATH)/lpc1768.ld
-##########################################################
-OBJECTS = \
-$(addprefix $(BUILD_DIR)/,$(CPPSRCS:.cpp=.obj)) \
-$(addprefix $(BUILD_DIR)/,$(CSRCS:.c=.o)) \
-$(addprefix $(BUILD_DIR)/,$(ASRCS:.S=.o)) \
+DEVICE =LPC1768
 
-VPATH = \
-$(APP_DIR) \
-$(PRJ_DIR)/src \
-$(PRJ_DIR)/usbdrv \
-$(PRJ_DIR)/stk500 \
-$(BSPPATH) \
-$(LIBEMB_PATH)/drv/tft \
-$(LIBEMB_PATH)/drv/spi \
-$(LIBEMB_PATH)/drv/timer \
-$(LIBEMB_PATH)/drv/pwm \
-$(LIBEMB_PATH)/drv/i2c \
-$(LIBEMB_PATH)/drv/dac \
-$(LIBEMB_PATH)/drv/dma \
-$(LIBEMB_PATH)/drv/clock \
-$(LIBEMB_PATH)/drv/uart \
-$(LIBEMB_PATH)/drv/mmc \
-$(LIBEMB_PATH)/display \
-$(LIBEMB_PATH)/button \
-$(LIBEMB_PATH)/console \
-$(LIBEMB_PATH)/misc \
-$(LIBEMB_PATH)/pff \
+##########################################################
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.obj)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 ifeq ($(LIBEMB_PATH), )
 erro:

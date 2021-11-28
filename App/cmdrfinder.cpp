@@ -4,11 +4,11 @@
 
 
 void startRanging(void){
-	uart_aux.xputchar(START_RANGING);
+	BOARD_SERIAL1->xputchar(START_RANGING);
 }
 
 uint8_t readFrame(void){
-	return uart_aux.kbhit();
+	return BOARD_SERIAL1->kbhit();
 }
 
 uint8_t checkSum(uint8_t *buf){
@@ -32,9 +32,11 @@ uint8_t m = 0;
 	arr.empty = 1;
 
 	help();
-
-	uart_aux.user_ctx = &arr;
-	uart_aux.init();
+	console->print("!!!!Broken command!!!!\n");
+	
+	return CMD_OK;
+	//BOARD_SERIAL1.user_ctx = &arr;
+	//BOARD_SERIAL1.init();
 
 
 	while(!console->kbhit()){

@@ -1,26 +1,21 @@
 
-#include "spi.h"
+#include "board.h"
 #include "cmdspi.h"
 
-spidev_t spi;
-
-char spistatus = 0;
 
 void spiInit(void){
-    spi.bus = 1;
-    spi.freq = 500000;
-    spi.cfg  = SPI_MODE0;
-    SPI_Init(&spi);
-	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;
-	spistatus |= SPI_INIT;
+    BOARD_SPIDEV->bus = SPI_BUS1;
+    BOARD_SPIDEV->freq = 500000;
+    BOARD_SPIDEV->cfg  = SPI_MODE0;
+    SPI_Init(BOARD_SPIDEV);
 }
 
 void spiSetFrequency(uint32_t freq){
-    if((spistatus & SPI_INIT) == 0){
+    if((BOARD_SPIDEV->cfg & SPI_ENABLED) == 0){
 		spiInit();
 	}    
-    spi.freq = 100000;    
-    SPI_Init(&spi);
+    BOARD_SPIDEV->freq = 100000;    
+    SPI_Init(BOARD_SPIDEV);
 }
 
 #ifdef SPI_BITBANG
@@ -53,10 +48,10 @@ void spiWrite(uint8_t *data, uint32_t len){
 #else
 
 void spiWrite(uint8_t *data, uint32_t len){
-	if((spistatus & SPI_INIT) == 0){
+	if((BOARD_SPIDEV->cfg & SPI_ENABLED) == 0){
 		spiInit();
 	}	
-    SPI_Write(&spi, data, len);
+    SPI_Write(BOARD_SPIDEV, data, len);
 }
 #endif
 

@@ -1,11 +1,3 @@
-/**
- * 
- * 
- *      BLUEBOARD board.h for console 
- * 
- * 
- * */
-
 #ifndef _board_h_
 #define _board_h_
 
@@ -21,6 +13,8 @@ extern "C" {
 #include "debug.h"
 #include "pwm.h"
 #include "serial.h"
+#include "spi.h"
+#include "uart.h"
 
 
 #define BOARD_Init BB_Init
@@ -36,14 +30,19 @@ extern "C" {
         LPC_GPIO2->FIODIR |= (1 << DBG_PIN); \
         LPC_PINCON->PINSEL4 &= ~(3<<22);  /* P2.11 (used as GPIO) */
 
+/**
+ * Serial
+ * */
+#define BOARD_SERIAL_HANDLERS           BOARD_SERIAL0_HANDLER, BOARD_SERIAL1_HANDLER, BOARD_SERIAL3_HANDLER, BOARD_SERIAL4_HANDLER
+#define BOARD_SERIAL_USER               &BOARD_SERIAL4_HANDLER.out
 
-#define BOARD_SERIAL0_HANDLER uart0
-#define BOARD_SERIAL4_HANDLER vcp
-
-#define BOARD_SERIAL4           (&BOARD_SERIAL4_HANDLER.out)
-
-extern serialhandler_t BOARD_SERIAL0_HANDLER, BOARD_SERIAL4_HANDLER;
-
+extern serialhandler_t BOARD_SERIAL_HANDLERS;
+/**
+ * SPI
+ * */
+#define BOARD_SPIDEV_HANDLER spi1
+#define BOARD_SPIDEV    (&BOARD_SPIDEV_HANDLER)
+extern spibus_t BOARD_SPIDEV_HANDLER;
 
 #ifdef __cplusplus
 }

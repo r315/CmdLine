@@ -775,7 +775,7 @@ static void USBSERIAL_FrameHandler(U16 wFrame)
 static void USBSERIAL_HandleUsbReset(U8 bDevStatus)
 {
 	if (bDevStatus & DEV_STATUS_RESET) {
-		DBG("\n!");
+		DEBUG_OUT("\n!");
 	}
 }
 
