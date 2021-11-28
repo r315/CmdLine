@@ -12,6 +12,8 @@ extern "C" {
 #include "lcd.h"
 #include "spi.h"
 #include "rng.h"
+#include "serial.h"
+#include "uart.h"
 
 /**
  * General macros
@@ -24,12 +26,12 @@ static inline void delay(uint32_t ms){ HAL_Delay(ms); }
 /**
  * Serial header
  * */
-extern StdOut uart;
-extern StdOut uart_aux;
-#define BOARD_UART_HANDLER huart1
-extern UART_HandleTypeDef BOARD_UART_HANDLER;
-#define BOARD_UART_PERIPH USART2
-extern void SERIAL_IRQHandler(USART_TypeDef *usart);
+#define BOARD_SERIAL_HANDLERS   BOARD_SERIAL0_HANDLER, BOARD_SERIAL1_HANDLER
+#define BOARD_SERIAL0           (&BOARD_SERIAL0_HANDLER.out)
+#define BOARD_SERIAL1           (&BOARD_SERIAL1_HANDLER.out)
+#define BOARD_SERIAL_USER       BOARD_SERIAL0
+
+extern serialhandler_t BOARD_SERIAL_HANDLERS;
 
 /**
  * LED and GPIO's
@@ -83,9 +85,10 @@ extern void SERIAL_IRQHandler(USART_TypeDef *usart);
 /**
  * SPI Header
  * */
-#define BOARD_SPIDEV_HANDLER spi1
-#define BOARD_SPIDEV    (&BOARD_SPIDEV_HANDLER)
+#define BOARD_SPIDEV_HANDLER    spi1
+#define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
 extern spibus_t BOARD_SPIDEV_HANDLER;
+
 
 
 #ifdef __cplusplus

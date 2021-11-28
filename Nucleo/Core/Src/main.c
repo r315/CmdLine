@@ -25,8 +25,6 @@
 /* USER CODE BEGIN Includes */
 #include "board.h"
 #include "app.h"
-#include "pwm.h"
-#include "spi.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -65,18 +63,19 @@ int main(void)
 
 	SystemClock_Config();
 
-	BOARD_SPIDEV->bus = SPI_BUS0;
-	BOARD_SPIDEV->freq = 40000;
-	BOARD_SPIDEV->cfg = SPI_SW_CS;
-
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
-	MX_USART2_UART_Init();
-	SPI_Init(BOARD_SPIDEV);
-	
+	MX_USART2_UART_Init();	
 	RNG_Init();
 
+	SERIAL_Config(&BOARD_SERIAL0_HANDLER, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+
+	BOARD_SPIDEV->bus = SPI_BUS0;
+	BOARD_SPIDEV->freq = 40000;
+	BOARD_SPIDEV->cfg = SPI_SW_CS;
+	SPI_Init(BOARD_SPIDEV);
+	
 	App();
 
 	while (1)

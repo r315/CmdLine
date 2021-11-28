@@ -81,6 +81,7 @@ $(LIBEMB_PATH)/drv/pwm/pwm_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/tft/st7735.c \
 $(LIBEMB_PATH)/drv/rng/rng_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/spi/spi_stm32l4xx.c \
+$(LIBEMB_PATH)/drv/uart/uart_stm32l4xx.c \
 $(LIBEMB_PATH)/display/lcd.c \
 $(APP_DIR)/agif/agif.c \
 
