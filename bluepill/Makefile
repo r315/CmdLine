@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET =console_bluepill
+TARGET =$(BUILD_DIR)/console_bluepill
 
 
 ######################################
@@ -33,12 +33,13 @@ BUILD_DIR :=build
 APP_DIR :=./../App
 PRJ_DIR :=.
 
-ifeq ($(shell uname -s), Linux)
-REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_F1_V1.8.0/
-else
-REPOSITORY :=$(REPO_F1)
+ifeq ($(STM32REPO), )
+$(error Missing STM32REPO environment variable)
 endif
 
+REPOSITORY :=$(STM32REPO)/STM32Cube_FW_F1_V1.8.2
+
+$(info $(REPOSITORY))
 
 ######################################
 # source
@@ -137,12 +138,21 @@ SZ = $(PREFIX)size
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
+
+ifeq ($(shell uname -s), Linux)
+
+else
+JLINK ="C:\Tools\JLink_V500\jlink"
+endif
+
+
 #######################################
 # CFLAGS
 #######################################
 # cpu
 CPU = -mcpu=cortex-m3
+DEVICE =STM32F103xB
 
 # fpu
 #FPU =
@@ -151,7 +161,7 @@ CPU = -mcpu=cortex-m3
 #FLOAT-ABI =
 
 # mcu
-MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI) -DSTM32F103xB -D_BLUEPILL_
+MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI) -D$(DEVICE) -DBOARD_BLUEPILL
 
 # macros for gcc
 # AS defines
@@ -197,22 +207,31 @@ endif
 # libraries
 LIBS = -lm# -lnosys 
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections -fno-exceptions -fno-rtti
+LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,-Map=$(TARGET).map,--cref -Wl,--gc-sections -fno-exceptions -fno-rtti
 
 # default action: build all
-all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
+all: $(TARGET).elf
 	@echo
-	@$(SZ) -B $(BUILD_DIR)/$(TARGET).elf
+	@$(SZ) -B $(TARGET).elf
 
-$(TARGET).cfg:
+ $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
 	echo "adapter driver jlink" >> $@
 	echo "transport select swd" >> $@
 	echo "source [find target/stm32f1x.cfg]" >> $@
 	echo "adapter speed 4000" >> $@
 
-program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
-	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+ $(TARGET).jlink: $(TARGET).hex
+	@echo "Creating Jlink configuration file"
+	@echo "erase" > $@
+	@echo "loadfile  $(TARGET).hex" >> $@
+	@echo "r" >> $@
+	@echo "q" >> $@	
+
+program: $(TARGET).jlink
+#	openocd -f  $(BUILD_DIR)/$(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
+
 
 #######################################
 # build the application
@@ -239,15 +258,15 @@ $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	@echo "Compiling " $<
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
+$(TARGET).elf: $(OBJECTS) Makefile
 	@echo "Linking " $@
 	@$(CC) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
 
-$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+$(TARGET).hex: $(TARGET).elf | $(BUILD_DIR)
 	@echo "Building hex file:" $@
 	@$(HEX) $< $@
 	
-$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+$(TARGET).bin: $(TARGET).elf | $(BUILD_DIR)
 	@echo "Building bin file:" $@
 	@$(BIN) $< $@	
 	

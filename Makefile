@@ -6,7 +6,7 @@ norule:
 	@echo "Available boards:"
 	@echo "	bb - blueboard"
 	@echo "	bp - bluepill"
-	@echo "	nuc - Nucleo"
+	@echo "	nc - Nucleo"
 
 clean: 
 	@${RM} -rf build
@@ -14,10 +14,10 @@ clean:
 	@"$(MAKE)" -C Nucleo clean
 	@"$(MAKE)" -C bluepill clean
 
-nuc:
+nc:
 	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
 
-bluepill:
+bp:
 	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill
 
 bb:
@@ -29,7 +29,7 @@ program-bb:
 program-bp:
 	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill program
 
-program-nuc:
+program-nc:
 	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo program
 
-.PHONY: bluepill
+.PHONY:

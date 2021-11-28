@@ -143,9 +143,12 @@ inline_asm:
 	$(GCC) -Og -g -mcpu=cortex-m3 -mthumb -Wall -c inline_asm.c -o inline_asm.o
 	$(GCC) -Tinline_asm.ld inline_asm.o -nostdlib -nostartfiles -o inline_asm.elf
 
-$(TARGET).jlink:
+$(TARGET).jlink: $(TARGET).hex
 	@echo "Creating Jlink configuration file"
-	@echo "erase\nloadbin $(TARGET).bin , 0x0000000\nr\nq" > $(TARGET).jlink
+	@echo "erase" > $@
+	@echo "loadfile $<" >> $@
+	@echo "r" >> $@
+	@echo "q" >> $@
 	
 #flash-jlink: $(TARGET).jlink #tdso.bin #$(TARGET).bin
 #	$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
@@ -157,8 +160,9 @@ $(TARGET).cfg:
 	@echo "source [find target/lpc17xx.cfg]" >> $(TARGET).cfg
 	@echo "adapter speed 4000" >> $(TARGET).cfg
 
-program: $(TARGET).bin $(TARGET).cfg
-	openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
+program: $(TARGET).jlink
+#openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
+	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
@@ -190,7 +194,15 @@ OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
 OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
 DBG = $(GCC_EXEC_PREFIX)-insight
 REMOVE = rm -fR
-CHECKSUM =$(LIBEMB_PATH)/tools/checksum	
+CHECKSUM =$(LIBEMB_PATH)/tools/checksum
+
+
+ifeq ($(shell uname -s), Linux)
+
+else
+JLINK ="C:\Tools\JLink_V500\jlink"
+endif
+
 ########################################################
 $(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
 	@echo "Compile" $<
