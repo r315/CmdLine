@@ -77,17 +77,17 @@ void CmdSd::dumpSector(uint32_t sector){
 
     for(uint32_t i = 0; i < SECTOR_SIZE; i++){
         if((i & 0x0F) == 0){
-            console->xputchar('\n');
+            console->putChar('\n');
             console->print("%08X: ", sector + i);
         }
         console->print("%02X ", sector_data[i] );
     }
-    console->xputchar('\n');
+    console->putChar('\n');
 }
 
 void CmdSd::help(void){
-    console->xputs("\nUsage: ");
-    console->xputs(" d <sector>  \n"); 
+    console->putString("\nUsage: ");
+    console->putString(" d <sector>  \n"); 
 
 }
 

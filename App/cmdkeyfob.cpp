@@ -44,7 +44,7 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, int16_
             uint16_t bit_count = 0;
             for(uint32_t i = 0; i < streamlen - 1; i++){
                 if(i%64 == 0){
-                    console->xputchar('\n');
+                    console->putChar('\n');
                 }
 
                 int16_t diff = bitstream[i + 1] - bitstream[i];
@@ -77,15 +77,15 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, int16_
 }
 
 void CmdKeyFob::help(void){
-    console->xputs("usage: keyfob <option> <parameters>\n\n");
-    console->xputs("options:\n");
-    console->xputs("  capture <time>, start capture with a maximum time [ms]\n");
-    console->xputs("  decode <bit time> [format], decode a capture\n");
-    console->xputs("      <bit time>    bit time [us] for decode, 0 find and use smallest pulse width\n");
-    console->xputs("      [format]      not specified use bit time for decode\n");
-    console->xputs("                    raw, capture value from timer\n");
-    console->xputs("                    width, pulse width [us]\n");
-    console->xputchar('\n');
+    console->putString("usage: keyfob <option> <parameters>\n\n");
+    console->putString("options:\n");
+    console->putString("  capture <time>, start capture with a maximum time [ms]\n");
+    console->putString("  decode <bit time> [format], decode a capture\n");
+    console->putString("      <bit time>    bit time [us] for decode, 0 find and use smallest pulse width\n");
+    console->putString("      [format]      not specified use bit time for decode\n");
+    console->putString("                    raw, capture value from timer\n");
+    console->putString("                    width, pulse width [us]\n");
+    console->putChar('\n');
 }
 
 char CmdKeyFob::execute(void *ptr){

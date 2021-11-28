@@ -30,11 +30,11 @@ char *p1;
     }
 
     for( i = 0; i < n; i++){
-        if((i & 0x0F) == 0){console->xputchar('\n');}
+        if((i & 0x0F) == 0){console->putChar('\n');}
         console->print("%02X ", *(pdata++) );
     }
 	
-    console->xputchar('\n');
+    console->putChar('\n');
 
     return CMD_OK;
 }

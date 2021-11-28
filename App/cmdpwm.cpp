@@ -3,14 +3,14 @@
 
 
 void CmdPwm::help(void){
-    console->xputs("Usage: pwm <option> [params] \n");    
-    console->xputs("options:");
-    console->xputs("  start <period>,    Start pwm with period [us]");
-    console->xputs("  period <period>,   Change pwm frequency through period [us]");
-    console->xputs("  set <ch> <duty>,   Set duty(0 -100) for channel (1 - 6)");
-    console->xputs("  enable <ch>,       Enable channel (1 - 6)");
-    console->xputs("  disable <ch>,      Disable channel (1 - 6)");
-    console->xputs("  pol <ch> <pol>,    Polarity (1 - 0)\n");
+    console->putString("Usage: pwm <option> [params] \n");    
+    console->putString("options:");
+    console->putString("  start <period>,    Start pwm with period [us]");
+    console->putString("  period <period>,   Change pwm frequency through period [us]");
+    console->putString("  set <ch> <duty>,   Set duty(0 -100) for channel (1 - 6)");
+    console->putString("  enable <ch>,       Enable channel (1 - 6)");
+    console->putString("  disable <ch>,      Disable channel (1 - 6)");
+    console->putString("  pol <ch> <pol>,    Polarity (1 - 0)\n");
 }
 
 void CmdPwm::start(uint32_t period){

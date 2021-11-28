@@ -4,7 +4,7 @@
 
 
 void startRanging(void){
-	BOARD_SERIAL1->xputchar(START_RANGING);
+	BOARD_STDIO->xputchar(START_RANGING);
 }
 
 uint8_t readFrame(void){
@@ -54,7 +54,7 @@ uint8_t m = 0;
 		DelayMs(100);
 	}
 
-	console->xgetchar();
+	console->getChar();
 
 
 	return CMD_OK;

@@ -104,7 +104,7 @@ void printSbusFrame(sbusframe_t *frame){
     //}
     for (uint8_t i = 0; i < 25; i++)
     {
-          DEBUG_OUT("Byte[%u] = %u\n", i, ((uint8_t*)frame)[i]);
+        //DEBUG_OUT("Byte[%u] = %u\n", i, ((uint8_t*)frame)[i]);
     }
     
 }
@@ -202,7 +202,7 @@ void CmdSbus::Flags(void){
     console->print("CH8: %s\n", (sbus.frame.flags & (1 << 6)) ? "ON" : "OFF" );
     console->print("Frame lost: %s\n", (sbus.frame.flags & (1 << 5)) ? "YES" : "NO" );  
     console->print("Failsafe: %s\n", (sbus.frame.flags & (1 << 4)) ? "ON" : "OFF" );
-    console->xputchar('\n');
+    console->putChar('\n');
 }
 
 
@@ -281,7 +281,7 @@ int32_t aux;
             //UART_Read(sbus.uart, NULL, 0);
             break;
         }else if(isNextWord(&p1, "test")){
-            BOARD_SERIAL1_HANDLER.out.xputchar('0');
+            BOARD_SERIAL1->xputchar('0');
             break;
         }else{
             p1 = nextWord(p1);

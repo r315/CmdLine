@@ -8,7 +8,7 @@ static const char *demo[2] = {
 };
 
 void CmdBuz::help(void) {
-		console->xputs("usage: buz <freq | vol | rtttl | demo > <duration | level | string | 1,0>");
+		console->putString("usage: buz <freq | vol | rtttl | demo > <duration | level | string | 1,0>");
 }
 
 char CmdBuz::execute(void *ptr) {

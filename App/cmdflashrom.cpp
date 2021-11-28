@@ -59,7 +59,7 @@ char CmdFlashRom::execute(void *ptr){
                 if(idx == xfer_count){
                     BOARD_SPI_CS_HIGH;
                     for(idx = 0; idx < xfer_count; idx++){
-                        vcp.xputchar(buf[idx]);  
+                        BOARD_STDIO->xputchar(buf[idx]);  
                     }
                     state = IDLE;   
                 }                

@@ -110,14 +110,14 @@ void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
  * Public API
  * */
 void CmdTft::help(void){
-    console->xputs("Usage: tft <option> [params] \n");    
-    console->xputs("options:");
-    console->xputs("  init <orientation>,  orientation 0-3");
-    console->xputs("  clear <color>,       Fill display with color");
-    console->xputs("  rc [scroll],         Random colors");
-    console->xputs("  scroll,              Scroll screen");
-    console->xputs("  hsv <s> <v>,         HSV color");
-    console->xputchar('\n');
+    console->putString("Usage: tft <option> [params] \n");    
+    console->putString("options:");
+    console->putString("  init <orientation>,  orientation 0-3");
+    console->putString("  clear <color>,       Fill display with color");
+    console->putString("  rc [scroll],         Random colors");
+    console->putString("  scroll,              Scroll screen");
+    console->putString("  hsv <s> <v>,         HSV color");
+    console->putChar('\n');
 }
 
 char CmdTft::execute(void *ptr){
