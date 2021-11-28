@@ -20,9 +20,9 @@
 #include "cmdencoder.h"
 
 
-StdOut *userio;
+StdOut *userio = BOARD_SERIAL_USER;
 
-#if defined (__BB__)
+#if defined (BOARD_BLUEBOARD)
 #include "cmdspi.h"
 #include "cmdavr.h"
 #include "cmdreset.h"
@@ -98,18 +98,16 @@ uint8_t curSelected = selectedOption(opt, nopt);
 
 #ifdef ENABLE_DEBUG
 extern "C" void dbg_putc(char c){
-    vcp.xputchar(c);
+    userio->xputchar(c);
 }
 #endif
 
-void App(void){
+extern "C" void App(void){
     
     uint8_t mode;
     Console console;
 
-	userio = &vcp;
-
-    userio->init();    
+    //userio->init();    
     console.init(userio, "Blueboard>");    
     
 	CmdEcho echo;
@@ -145,7 +143,7 @@ void App(void){
     //console.addCommand(&awg);
 	console.addCommand(&ver);
 
-    stk500_ServiceInit(&vcp);
+    stk500_ServiceInit(userio);
   
 	LCD_Clear(BLACK);
 
@@ -169,7 +167,7 @@ void App(void){
 	}	
 }
 
-#elif defined (__NUCLEO_L412KB__)
+#elif defined (BOARD_NUCLEO_L412KB)
 extern "C"
 void App(void){
 	
@@ -181,9 +179,6 @@ void App(void){
 	CmdKeyFob keyfob;
 	CmdPwm pwm;
 	CmdTft tft;
-	
-	userio = &uart;
-	userio->init();
 
 	con.init(userio,"nucleo>");
 	con.addCommand(&help);
@@ -206,7 +201,7 @@ void App(void){
 		con.process();
 	}
 }
-#elif defined (_BLUEPILL_)
+#elif defined (BOARD_BLUEPILL)
 void App(void){
 
 	Console con;
