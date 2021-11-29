@@ -33,7 +33,7 @@ $(PRJ_DIR)/usbdrv/usbhw_lpc.c \
 $(PRJ_DIR)/usbdrv/usbcontrol.c \
 $(PRJ_DIR)/usbdrv/usbstdreq.c \
 $(PRJ_DIR)/stk500/stk500.c \
-$(PRJ_DIR)/src/serial.c \
+$(PRJ_DIR)/src/bb_serial.c \
 $(PRJ_DIR)/src/bb_main.c \
 $(PRJ_DIR)/src/bb_it.c \
 

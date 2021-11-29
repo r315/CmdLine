@@ -14,20 +14,22 @@ extern "C" {
 #include "spi.h"
 #include "rng.h"
 #include "pinName.h"
+#include "serial.h"
+#include "uart.h"
 
 /**
  * HW symbols
  * */
 
-#define DBG_LED_TOGGLE  HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin)
-#define DBG_LED_ON      HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
-#define DBG_LED_OFF     HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
-#define LED_TOGGLE      DBG_LED_TOGGLE
+#define DBG_LED_TOGGLE          HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin)
+#define DBG_LED_ON              HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
+#define DBG_LED_OFF             HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
+#define LED_TOGGLE              DBG_LED_TOGGLE
 
-#define GetTicks HAL_GetTick
-#define DelayMs(d) HAL_Delay(d)
-#define delay(d)    DelayMs(d)
-#define millis      HAL_GetTick
+#define GetTicks                HAL_GetTick
+#define DelayMs(d)              HAL_Delay(d)
+#define delay(d)                DelayMs(d)
+#define millis                  HAL_GetTick
 
 
 /* 
@@ -46,7 +48,6 @@ static inline uint32_t ElapsedTicks(uint32_t start_ticks){
  * */
 extern I2C_HandleTypeDef hi2c2;
 extern TIM_HandleTypeDef htim4;
-extern StdOut vcom;
 
 /**
  * Function prototypes
@@ -79,13 +80,10 @@ static inline void reenumerate_usb(void){
  * PWM_ILOAD
  * PWM_VLOAD
  */
-
-#define PWM_OUT_VOLTAGE     1       // Channel that controls output voltage
-#define PWM_OUT_CURRENT     2       // Channel that controls output current
-#define PWM_RESOLUTION      10UL
-#define PWM_MAX_VALUE       (1<<PWM_RESOLUTION)
-#define PWM_MIN_VALUE       5
-#define PWM_MAX_CH          4
+#define PWM_RESOLUTION          10UL
+#define PWM_MAX_VALUE           (1<<PWM_RESOLUTION)
+#define PWM_MIN_VALUE           5
+#define PWM_MAX_CH              4
 
 /**
  * ADC
@@ -126,8 +124,8 @@ uint16_t *ADC_LastConvertion(void);
 /* ************************************************************
  * Servo API
  * ************************************************************ */
-#define SERVO_PORT  GPIOB
-#define SERVO_PIN   9
+#define SERVO_PORT              GPIOB
+#define SERVO_PIN               9
 /**
  * @brief start servo pulse, 1000-200us pulse every 20ms on pin PB9
  * */
@@ -138,10 +136,6 @@ void SERVO_Init(void);
  * @param pulse : pulse width, 900 - 2100
  * */
 void SERVO_SetPulse(uint16_t pulse);
-
-extern StdOut uart;
-extern StdOut vcp;
-extern StdOut uart_aux;
  
 /* ************************************************************
  * SPI API
@@ -152,15 +146,15 @@ extern StdOut uart_aux;
  * PB12 GPO -> CS
  * 
  * ************************************************************ */
-#define SPI_XFER_TIMEOUT    1000
-#define BOARD_SPI_PORT      GPIOB
-#define BOARD_SPI_DO_PIN    15
-#define BOARD_SPI_DI_PIN    14
-#define BOARD_SPI_CK_PIN    13
-#define BOARD_SPI_CS_PIN    12
+#define SPI_XFER_TIMEOUT        1000
+#define BOARD_SPI_PORT          GPIOB
+#define BOARD_SPI_DO_PIN        15
+#define BOARD_SPI_DI_PIN        14
+#define BOARD_SPI_CK_PIN        13
+#define BOARD_SPI_CS_PIN        12
 
-#define BOARD_SPI_CS_LOW    PIN_RESET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
-#define BOARD_SPI_CS_HIGH   PIN_SET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
+#define BOARD_SPI_CS_LOW        PIN_RESET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
+#define BOARD_SPI_CS_HIGH       PIN_SET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
 
 void BOARD_SPI_Init(void);
 void BOARD_SPI_SetCS(uint8_t cs);
@@ -168,17 +162,25 @@ uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
 uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
 uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
 
-#define BOARD_SPIDEV_HANDLER spi2
-#define BOARD_SPIDEV    (&BOARD_SPIDEV_HANDLER)
+#define BOARD_SPIDEV_HANDLER    spi2
+#define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
+
 extern spibus_t BOARD_SPIDEV_HANDLER;
 
-#define STDOUT  userio
-extern StdOut *userio;
+/**
+ * UART
+ * */
+#define BOARD_SERIAL_HANDLERS   BOARD_SERIAL0_HANDLER, BOARD_SERIAL4_HANDLER
+#define BOARD_SERIAL0           (&BOARD_SERIAL0_HANDLER.out)
+#define BOARD_SERIAL1           BOARD_SERIAL0
+#define BOARD_SERIAL4           (&BOARD_SERIAL4_HANDLER.out)
+#define BOARD_STDIO             BOARD_SERIAL4
+
+extern serialhandler_t BOARD_SERIAL_HANDLERS;
 
 /**
  * TFT stuff
  */
-#define TFT_SPIDEV      BOARD_SPIDEV
 #if 0
 #define TFT_W 80
 #define TFT_H 160  // 162 on GRAM
@@ -210,6 +212,8 @@ extern StdOut *userio;
 #define LCD_BKL1            //LCD_BKL_GPIO_Port->BSRR = LCD_BKL_Pin
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
+
+#define TFT_SPIDEV      BOARD_SPIDEV
 
 #ifdef __cplusplus
 }

@@ -29,7 +29,7 @@ static inline void delay(uint32_t ms){ HAL_Delay(ms); }
 #define BOARD_SERIAL_HANDLERS   BOARD_SERIAL0_HANDLER, BOARD_SERIAL1_HANDLER
 #define BOARD_SERIAL0           (&BOARD_SERIAL0_HANDLER.out)
 #define BOARD_SERIAL1           (&BOARD_SERIAL1_HANDLER.out)
-#define BOARD_SERIAL_USER       BOARD_SERIAL0
+#define BOARD_STDIO             BOARD_SERIAL0
 
 extern serialhandler_t BOARD_SERIAL_HANDLERS;
 

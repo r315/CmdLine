@@ -47,7 +47,7 @@ $(info $(REPOSITORY))
 # C sources
 C_SOURCES =  \
 $(APP_DIR)/spi_flash.c \
-$(PRJ_DIR)/Src/main.c \
+$(PRJ_DIR)/Src/bp_main.c \
 $(PRJ_DIR)/Src/usbd_desc.c \
 $(PRJ_DIR)/Src/usbd_conf.c \
 $(PRJ_DIR)/Src/usb_device.c \
@@ -57,6 +57,8 @@ $(PRJ_DIR)/Src/system_stm32f1xx.c \
 $(PRJ_DIR)/Src/stm32f1xx_hal_msp.c \
 $(PRJ_DIR)/Src/stm32f1xx_hal_timebase_tim.c \
 $(PRJ_DIR)/Src/board.c \
+$(PRJ_DIR)/Src/bp_serial.c \
+$(PRJ_DIR)/Src/bp_it.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
@@ -81,7 +83,7 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/drv/uart/uart_f10x.c \
+$(LIBEMB_PATH)/drv/uart/uart_stm32f10x.c \
 $(LIBEMB_PATH)/drv/spi/spi_stm32f1xx.c \
 $(LIBEMB_PATH)/drv/tft/st7735.c \
 $(LIBEMB_PATH)/display/lcd.c \
@@ -92,7 +94,7 @@ CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
 $(wildcard $(APP_DIR)/*cpp) \
 
-#CPP_SOURCES := $(filter-out $(APP_DIR)/cmdtft.cpp, $(CPP_SOURCES))
+CPP_SOURCES := $(filter-out $(APP_DIR)/cmdsbus.cpp, $(CPP_SOURCES))
 
 # ASM sources
 ASM_SOURCES =  \

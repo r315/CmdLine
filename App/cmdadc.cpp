@@ -24,7 +24,7 @@ uint8_t quit = 0;
 
     while(quit == 0 ){
         char c;
-        if(vcp.getCharNonBlocking(&c)){
+        if(console->getCharNonBlocking(&c)){
             if(c == 0x1B){
                 quit = 1;
             }

@@ -4,6 +4,7 @@
 #include <stdout.h>
 
 spibus_t BOARD_SPIDEV_HANDLER;
+serialhandler_t BOARD_SERIAL_HANDLERS;
 
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
@@ -17,6 +18,9 @@ void BOARD_Init(void){
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CS_PIN, PIN_OUT_2MHZ);
 
     SERVO_Init();
+
+    SERIAL_Config(&BOARD_SERIAL0_HANDLER, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+    SERIAL_Config(&BOARD_SERIAL4_HANDLER, SERIAL4);
 }
 
 /**
@@ -267,72 +271,6 @@ void TIM3_IRQHandler(void){
         TIM3->SR &= ~(TIM_SR_UIF); 
     }
 }
-
-/**
- * virtual com port stuff
- * */
-#define VCOM_FIFO_SIZE 512
-
-static fifo_t rxfifo;
-
-static void vc_init(void){
-    rxfifo.size = VCOM_FIFO_SIZE;
-	fifo_init(&rxfifo);
-	fifo_flush(&rxfifo);
-}
-
-
-// called from cdc interface
-void vc_put(uint8_t *c){
-    fifo_put(&rxfifo, *c);
-}
-
-static uint8_t vc_getCharNonBlocking(char *c){    
-    return fifo_get(&rxfifo, (uint8_t*)c);
-}
-
-static char vc_getchar(void){
-    char c;
-    while(fifo_avail(&rxfifo) == 0);
-    fifo_get(&rxfifo, (uint8_t*)&c);
-    return c;
-}
-
-uint8_t vc_kbhit(void){
-    return fifo_avail(&rxfifo);
-}
-
-static void putAndRetry(uint8_t *data, uint16_t len){
-uint32_t retries = 1000;
-	while(retries--){
-		if(	CDC_Transmit_FS(data, len) == USBD_OK)
-			break;
-	}
-}
-
-static void vc_putchar(char c){
-	putAndRetry((uint8_t*)&c, 1);
-}
-
-static void vc_puts(const char *s){
-uint16_t len = 0;
-	
-	while( *((const char*)(s + len)) != '\0'){
-		len++;	
-	}
-	putAndRetry((uint8_t*)s, len);
-}
-
-StdOut vcp = {
-    .init = vc_init,
-    .xgetchar = vc_getchar,
-    .xputchar = vc_putchar,
-    .xputs = vc_puts,
-    .getCharNonBlocking = vc_getCharNonBlocking,
-    .kbhit = vc_kbhit
-};
-
-StdOut uart_aux;
 
 /**
  * I2C DMA driver

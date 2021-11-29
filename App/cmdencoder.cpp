@@ -69,7 +69,7 @@ void CmdEncoder::help(void){
 char CmdEncoder::execute(void *ptr){
     int argc;
     char *argv[4];
-    int32_t val1;
+    //int32_t val1;
 
     argc = strToArray((char*)ptr, argv);
 

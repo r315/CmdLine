@@ -20,7 +20,7 @@
 #include "cmdencoder.h"
 
 
-StdOut *userio = BOARD_SERIAL_USER;
+StdOut *userio = BOARD_STDIO;
 
 #if defined (BOARD_BLUEBOARD)
 #include "cmdspi.h"
@@ -216,13 +216,6 @@ void App(void){
 	CmdFlashRom flashrom;
 	CmdTft tft;
 	CmdEncoder enc;
-	
-
-	#ifdef STDOUT_UART
-	userio = &uart;
-	#else
-	userio = &vcp;
-	#endif
 
 	userio->init();
 	con.init(userio,"bluepill>");
@@ -237,8 +230,6 @@ void App(void){
 	con.addCommand(&flashrom);
 	con.addCommand(&tft);
 	con.addCommand(&enc);
-
-	BOARD_Init();
 
 	while(1){
 		 //HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin);

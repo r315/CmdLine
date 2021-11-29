@@ -125,6 +125,9 @@ int main(void)
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
   MX_USB_DEVICE_Init();
+
+  BOARD_Init();
+  
 	App();
   /* Start scheduler */
   
