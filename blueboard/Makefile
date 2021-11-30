@@ -71,7 +71,24 @@ LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -Wl,--gc-sections -nodefaultlib
 
 DEVICE =LPC1768
 
-##########################################################
+#########################################################
+GCC_EXEC_PREFIX = arm-none-eabi
+GCC = $(GCC_EXEC_PREFIX)-gcc
+GPP = $(GCC_EXEC_PREFIX)-g++
+AS = $(GCC_EXEC_PREFIX)-as
+LD = $(GCC_EXEC_PREFIX)-ld
+SIZE = $(GCC_EXEC_PREFIX)-size
+OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
+OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
+DBG = $(GCC_EXEC_PREFIX)-insight
+REMOVE = rm -fR
+
+
+ifeq ($(shell uname -s), Linux)
+JLINK ="/opt/SEGGER/JLink/JLinkExe"
+else
+JLINK ="C:\Tools\JLink_V500\jlink"
+endif
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
 
@@ -86,6 +103,10 @@ erro:
 	@echo "Please export LIBEMB_PATH"
 endif
 
+CHECKSUM =$(LIBEMB_PATH)/tools/checksum
+##########################################################
+# RULES
+##########################################################
 all: $(TARGET).elf stats
 
 
@@ -94,15 +115,16 @@ $(TARGET).elf:  $(OBJECTS)
 	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
 
 $(TARGET).hex: $(TARGET).elf
-	@$(OBJCOPY) -O ihex -j .startup -j .text $(TARGET).elf $(TARGET).hex
+	@$(OBJCOPY) -O ihex -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 
 $(TARGET).bin: $(TARGET).elf $(CHECKSUM)
 	@echo "Generating bin file" $@
-	$(OBJCOPY) -O binary -j .startup -j .text -j data -j .ram_code $(TARGET).elf $@
+	$(OBJCOPY) -O binary $(TARGET).elf $@
 #hd -n 128 $@
 	$(CHECKSUM) $@
 
 bin: $(TARGET).bin
+
 
 stats: $(TARGET).elf
 	@echo "---- Sections Summary ---"
@@ -129,9 +151,6 @@ $(TARGET).jlink: $(TARGET).hex
 	@echo "r" >> $@
 	@echo "q" >> $@
 	
-#flash-jlink: $(TARGET).jlink #tdso.bin #$(TARGET).bin
-#	$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
-
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
 	@echo "adapter driver jlink" > $(TARGET).cfg
@@ -142,6 +161,12 @@ $(TARGET).cfg:
 program: $(TARGET).jlink
 #openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
 	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
+
+$(BUILD_DIR):
+	mkdir -p $@
+
+$(CHECKSUM):
+	$(MAKE) -C $(LIBEMB_PATH)/tools
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
@@ -155,33 +180,8 @@ command:
 	@sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
 	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" inc/cmd$(CMDNAME).h
 	
-$(BUILD_DIR):
-	mkdir -p $@
-
-$(CHECKSUM):
-	$(MAKE) -C $(LIBEMB_PATH)/tools
 #########################################################
 # 
-#########################################################
-GCC_EXEC_PREFIX = arm-none-eabi
-GCC = $(GCC_EXEC_PREFIX)-gcc
-GPP = $(GCC_EXEC_PREFIX)-g++
-AS = $(GCC_EXEC_PREFIX)-as
-LD = $(GCC_EXEC_PREFIX)-ld
-SIZE = $(GCC_EXEC_PREFIX)-size
-OBJCOPY = $(GCC_EXEC_PREFIX)-objcopy
-OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
-DBG = $(GCC_EXEC_PREFIX)-insight
-REMOVE = rm -fR
-CHECKSUM =$(LIBEMB_PATH)/tools/checksum
-
-
-ifeq ($(shell uname -s), Linux)
-
-else
-JLINK ="C:\Tools\JLink_V500\jlink"
-endif
-
 ########################################################
 $(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
 	@echo "Compile" $<
