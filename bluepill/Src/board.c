@@ -4,7 +4,6 @@
 #include <stdout.h>
 
 spibus_t BOARD_SPIDEV_HANDLER;
-serialhandler_t BOARD_SERIAL_HANDLERS;
 
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
