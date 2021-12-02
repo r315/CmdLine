@@ -53,6 +53,20 @@ static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 
+void BOARD_LCD_Init(void){
+	BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
+	LCD_Init(TFT_SPIDEV);
+}
+
+void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data){
+	SPI_WaitEOT(TFT_SPIDEV);
+	LCD_WriteArea(x, y, w, h, data);
+}
+
+void BOARD_LCD_Scroll(uint16_t sc){
+	SPI_WaitEOT(TFT_SPIDEV);
+	LCD_Scroll(sc);
+}
 /**
 	* @brief  The application entry point.
 	* @retval int

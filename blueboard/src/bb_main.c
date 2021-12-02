@@ -5,6 +5,18 @@ void App(void);
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
+void BOARD_LCD_Init(){
+    
+}
+
+void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data){
+	LCD_WriteArea(x, y, w, h, data);
+}
+
+void BOARD_LCD_Scroll(uint16_t sc){
+	LCD_Scroll(sc);
+}
+
 int main()
 {
     CLOCK_Init(100);

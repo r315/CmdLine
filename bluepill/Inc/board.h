@@ -16,6 +16,7 @@ extern "C" {
 #include "pinName.h"
 #include "serial.h"
 #include "uart.h"
+#include "lcd.h"
 
 /**
  * HW symbols
@@ -35,6 +36,9 @@ static inline uint32_t ElapsedTicks(uint32_t start_ticks){
     uint32_t current = GetTick(); 
     return (current > start_ticks) ? current - start_ticks : 0xFFFFFFFF - start_ticks + current;
 }
+
+void BOARD_GPIO_Init(GPIO_TypeDef *port, uint8_t pin, uint8_t mode);
+void BOARD_Init(void);
 
 /** 
  * Global variables
@@ -207,6 +211,10 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 
 #define TFT_SPIDEV      BOARD_SPIDEV
+
+void BOARD_LCD_Init(void);
+void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data);
+void BOARD_LCD_Scroll(uint16_t sc);
 
 #ifdef __cplusplus
 }

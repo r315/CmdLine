@@ -123,6 +123,7 @@ extern "C" void App(void){
 	//CmdMem mem();
 	//CmdI2c i2c();
     //CmdAwg awg();
+	CmdTft tft;
 
     console.addCommand(&help);
     console.addCommand(&echo);
@@ -142,6 +143,7 @@ extern "C" void App(void){
     //console.addCommand(&test);
     //console.addCommand(&awg);
 	console.addCommand(&ver);
+	console.addCommand(&tft);
 
     stk500_ServiceInit(userio);
   

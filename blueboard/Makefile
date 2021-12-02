@@ -28,6 +28,7 @@ $(LIBEMB_PATH)/misc/debug.c \
 $(LIBEMB_PATH)/button/button.c \
 $(LIBEMB_PATH)/drv/mmc/mmc.c \
 $(LIBEMB_PATH)/pff/pff.c \
+$(LIBEMB_PATH)/drv/rng/rng_dummy.c \
 $(PRJ_DIR)/usbdrv/usbserial.c \
 $(PRJ_DIR)/usbdrv/usbhw_lpc.c \
 $(PRJ_DIR)/usbdrv/usbcontrol.c \
@@ -42,6 +43,7 @@ CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdsbus.cpp \
+$(APP_DIR)/cmdtft.cpp \
 $(PRJ_DIR)/src/cmdspi.cpp \
 $(PRJ_DIR)/src/cmdavr.cpp \
 $(PRJ_DIR)/src/cmdlsd.cpp \

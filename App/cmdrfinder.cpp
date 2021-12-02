@@ -23,13 +23,13 @@ uint8_t sum = 0;
 
 
 char CmdRfinder::execute(void *ptr){
-Array arr;
+//Array arr;
 uint16_t distance;
 uint8_t m = 0;
 
-	arr.data = buf;
-	arr.len = FRAME_SIZE;
-	arr.empty = 1;
+	//arr.data = buf;
+	//arr.len = FRAME_SIZE;
+	//arr.empty = 1;
 
 	help();
 	console->print("!!!!Broken command!!!!\n");

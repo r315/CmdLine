@@ -87,6 +87,7 @@ $(LIBEMB_PATH)/drv/uart/uart_stm32f10x.c \
 $(LIBEMB_PATH)/drv/spi/spi_stm32f1xx.c \
 $(LIBEMB_PATH)/drv/tft/st7735.c \
 $(LIBEMB_PATH)/display/lcd.c \
+$(LIBEMB_PATH)/drv/rng/rng_dummy.c \
 #$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
 
 

@@ -80,6 +80,11 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 
+
+void BOARD_LCD_Init(void);
+void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data);
+void BOARD_LCD_Scroll(uint16_t sc);
+
 /**
  * SPI Header
  * */

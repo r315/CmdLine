@@ -2,7 +2,6 @@
 #include <stdout.h>
 #include "board.h"
 #include "usbd_cdc_if.h"
-#include <stdout.h>
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
@@ -521,6 +520,17 @@ uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
     return size;
 }
 
-uint32_t RNG_Get(void){
-    return 0;
+void BOARD_LCD_Init(void){
+	BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
+	LCD_Init(TFT_SPIDEV);
+}
+
+void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data){
+	SPI_WaitEOT(TFT_SPIDEV);
+	LCD_WriteArea(x, y, w, h, data);
+}
+
+void BOARD_LCD_Scroll(uint16_t sc){
+	SPI_WaitEOT(TFT_SPIDEV);
+	LCD_Scroll(sc);
 }

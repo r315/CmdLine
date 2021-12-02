@@ -41,9 +41,8 @@ void randomTiles(){
     uint16_t *buf = tile;
     for(uint8_t i = 0; i < LCD_GetHeight()/16; i++){
         for(uint8_t j = 0; j < LCD_GetWidth()/16; j++){
-            memset(buf, generateRandomColor(seed), 15 * 15 * 2);
-            SPI_WaitEOT(TFT_SPIDEV);
-            LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
+            memset(buf, generateRandomColor(seed), 15 * 15 * 2);            
+            BOARD_LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
             buf = tile + (256 * (j & 1));
         }
     }
@@ -98,7 +97,7 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
 
 #define TILE_W  8
 void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
-    SPI_WaitEOT(TFT_SPIDEV);
+    //SPI_WaitEOT(TFT_SPIDEV);
     y = y * TILE_W;
     x = x * TILE_W;
     for(uint8_t i = 0; i < w; i++){
@@ -122,7 +121,7 @@ void CmdTft::help(void){
 
 char CmdTft::execute(void *ptr){
     int32_t val1;
-    char *argv[4];
+    char *argv[4] = {0};
     int argc;
 
     argc = strToArray((char*)ptr, argv);
@@ -134,8 +133,7 @@ char CmdTft::execute(void *ptr){
 
     if(xstrcmp("init", (const char*)argv[0]) == 0){
         if(yatoi(argv[1], (int32_t*)&val1)){
-            BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
-            LCD_Init(TFT_SPIDEV);
+            BOARD_LCD_Init();
 		    LCD_Rotation(val1 & 3);
 		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
 		    LCD_Bkl(1);
@@ -147,7 +145,7 @@ char CmdTft::execute(void *ptr){
         if(hatoi(argv[1], (uint32_t*)&val1)){
             //LCD_Clear(val1);
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
-            SPI_WaitEOT(TFT_SPIDEV);
+            //SPI_WaitEOT(TFT_SPIDEV);
             return CMD_OK;
         }
     }
@@ -157,8 +155,7 @@ char CmdTft::execute(void *ptr){
         for(uint8_t i = 0; i < 128/16; i++){
             for(uint8_t j = 0; j < 160/16; j++){
                 memset(buf, i*3, 15 * 15 * 2);
-                SPI_WaitEOT(TFT_SPIDEV);
-                LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
+                BOARD_LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
                 buf = tile + (256 * (j & 1));
             }
         }
@@ -166,24 +163,27 @@ char CmdTft::execute(void *ptr){
     }
 
     if(xstrcmp("scroll", (const char*)argv[0]) == 0){
-        uint8_t s = 0;
+        uint16_t s = 0;
         char c;
-        uint8_t h = 0;
+        uint8_t hue = 0;
+        uint16_t w = LCD_GetWidth();
         LCD_Scroll(0);
         //LCD_Clear(BLACK);
         //LCD_Line_H(0, 0, 128, RED);
         //LCD_Line_H(0, 159, 128, GREEN);
         do{           
             LCD_Scroll(s);
-            int y = s + 160 - 16;
-            if(y >= 160) y -= 160;
-            if((s % 16) == 0){
-                uint16_t color = HsvToRgb(h++, 255, 255);
-                LCD_FillRect(0, y, 128, 16, color);
+            int y = s + w - 16;
+            if(y >= w) y -= w;
+
+            if((s & 0xf) == 0){
+                uint16_t color = HsvToRgb(hue++, 255, 255);
+                LCD_FillRect(0, y, w, 16, color);
             }
+            
             console->print("\r%d  ", s);            
             s++;
-            s = s % 160;
+            s = s % LCD_GetHeight();
             DelayMs(16);
             //c = userio->xgetchar();
             userio->getCharNonBlocking(&c);
@@ -197,18 +197,16 @@ char CmdTft::execute(void *ptr){
 
         seed = RNG_Get() % 256;
 
-        if(xstrcmp("scroll", (const char*)argv[1]) != 0){            
+        if((const char*)argv[1] == NULL){                        
             for(uint8_t i = 0; i < LCD_GetHeight(); i++){
                 uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
                 for (size_t j = 0; j < LCD_GetWidth(); j++){
                     buf[j] = RNG_Get();                    
                 }                
-                SPI_WaitEOT(TFT_SPIDEV);
-                LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
+                BOARD_LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
             }
             return CMD_OK;
         }
-
 
         do{
 
@@ -216,9 +214,8 @@ char CmdTft::execute(void *ptr){
 
             if(f == 0){
                 s++;
-                s = s % 160;
-                SPI_WaitEOT(TFT_SPIDEV);
-                LCD_Scroll(s);
+                s = s % 160;                
+                BOARD_LCD_Scroll(s);
                 f = 2; // scroll speed
             }
 
@@ -239,9 +236,8 @@ char CmdTft::execute(void *ptr){
             if(yatoi(argv[2], (int32_t*)&v)){                
                 for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
                     for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
-                        memset16(buf, HsvToRgb(h++, s, v), 64);
-                        SPI_WaitEOT(TFT_SPIDEV);
-                        LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
+                        memset16(buf, HsvToRgb(h++, s, v), 64);                        
+                        BOARD_LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
                         buf = tile + (256 * (j & 1));
                     }
                 }
@@ -308,7 +304,7 @@ char CmdTft::execute(void *ptr){
 
             if(!sync_fps){
                 if(elapsed < 20)
-                    HAL_Delay(20 - elapsed); // 50fps
+                    DelayMs(20 - elapsed); // 50fps
             }
             
             if(userio->getCharNonBlocking(&c)){
@@ -348,18 +344,18 @@ uint32_t CmdTft::fps(void (*func)(void)){
     static uint32_t start, totalms = 0;
     static uint16_t fps = 0;
 
-    start = HAL_GetTick();
+    start = GetTick();
     func();
     fps++;
     
-    if(HAL_GetTick() - totalms >= 1000){
+    if(GetTick() - totalms >= 1000){
         console->print("\rfps %d ", fps);
         fps = 0;
-        totalms = HAL_GetTick();;
+        totalms = GetTick();;
         LED_TOGGLE;
     }
 
-    return HAL_GetTick() - start; // return elapsed time from last call
+    return GetTick() - start; // return elapsed time from last call
 }
 
 // ST7735 library example
@@ -461,7 +457,7 @@ void drawBall(int x, int y)
 #endif
             }
         }
-        LCD_WriteArea(0, yy, SCR_WD, 1, line);
+        BOARD_LCD_WriteArea(0, yy, SCR_WD, 1, line);
     }
 }
 
@@ -624,7 +620,7 @@ void GIFDraw(GIFDRAW *pDraw)
         {
           //pilcdSetPosition(&lcd, pDraw->iX+x, y, iCount, 1, DRAW_TO_LCD);
           //spilcdWriteDataBlock(&lcd, (uint8_t *)usTemp, iCount*2, DRAW_TO_LCD);
-          LCD_WriteArea(pDraw->iX+x, y, iCount, 1, usTemp);
+          BOARD_LCD_WriteArea(pDraw->iX+x, y, iCount, 1, usTemp);
           x += iCount;
           iCount = 0;
         }
@@ -655,7 +651,7 @@ void GIFDraw(GIFDRAW *pDraw)
       }
       //spilcdSetPosition(&lcd, pDraw->iX, y, iWidth, 1, DRAW_TO_LCD);
       //spilcdWriteDataBlock(&lcd, (uint8_t *)usTemp, iWidth*2, DRAW_TO_LCD);
-      LCD_WriteArea(pDraw->iX, y, iWidth, 1, usTemp);
+      BOARD_LCD_WriteArea(pDraw->iX, y, iWidth, 1, usTemp);
       //drawTileLine(pDraw->iX, y, iWidth, usTemp);
     }
 }
