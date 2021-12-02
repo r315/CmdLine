@@ -18,10 +18,8 @@ extern "C" {
 /**
  * General macros
  * */
-#define DelayMs(_X) HAL_Delay(_X)
-
-static inline uint32_t millis(){ return HAL_GetTick(); }
-static inline void delay(uint32_t ms){ HAL_Delay(ms); }
+static inline void DelayMs(uint32_t ms) { HAL_Delay(ms); }
+static inline uint32_t GetTick(){ return HAL_GetTick(); }
 
 /**
  * Serial header

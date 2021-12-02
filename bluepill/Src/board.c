@@ -1,4 +1,5 @@
 
+#include <stdout.h>
 #include "board.h"
 #include "usbd_cdc_if.h"
 #include <stdout.h>

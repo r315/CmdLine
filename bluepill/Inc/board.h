@@ -26,20 +26,13 @@ extern "C" {
 #define DBG_LED_OFF             HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
 #define LED_TOGGLE              DBG_LED_TOGGLE
 
-#define GetTicks                HAL_GetTick
-#define DelayMs(d)              HAL_Delay(d)
-#define delay(d)                DelayMs(d)
-#define millis                  HAL_GetTick
-
-
 /* 
  *
  * */
-void BOARD_GPIO_Init(GPIO_TypeDef *port, uint8_t pin, uint8_t mode);
-void BOARD_Init(void);
-
+static inline void DelayMs(uint32_t ms) { HAL_Delay(ms); }
+static inline uint32_t GetTick(){ return HAL_GetTick(); }
 static inline uint32_t ElapsedTicks(uint32_t start_ticks){ 
-    uint32_t current = GetTicks(); 
+    uint32_t current = GetTick(); 
     return (current > start_ticks) ? current - start_ticks : 0xFFFFFFFF - start_ticks + current;
 }
 

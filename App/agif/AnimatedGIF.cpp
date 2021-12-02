@@ -173,7 +173,7 @@ int AnimatedGIF::playFrame(bool bSync, int *delayMilliseconds, void *pUser)
 {
 int rc;
 #if !defined( __MACH__ ) && !defined( __LINUX__ )
-long lTime = millis();
+long lTime = GetTick();
 #endif
 
     if (_gif.GIFFile.iPos >= _gif.GIFFile.iSize-1) // no more data exists
@@ -207,9 +207,9 @@ long lTime = millis();
     if (bSync)
     {
 #if !defined( __MACH__ ) && !defined( __LINUX__ ) 
-        lTime = millis() - lTime;
+        lTime = GetTick() - lTime;
         if (lTime < _gif.iFrameDelay) // need to pause a bit
-           delay(_gif.iFrameDelay - lTime);
+           DelayMs(_gif.iFrameDelay - lTime);
 #endif // __LINUX__
     }
     if (delayMilliseconds) // if not NULL, return the frame delay time

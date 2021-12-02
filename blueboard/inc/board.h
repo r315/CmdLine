@@ -17,11 +17,7 @@ extern "C" {
 #include "uart.h"
 
 
-#define BOARD_Init BB_Init
-#define SW_Reset BB_SW_Reset
-#define DelayMs CLOCK_DelayMs
-#define GetTicks CLOCK_GetTicks
-#define ElapsedTicks CLOCK_ElapsedTicks
+#define SW_Reset                BB_SW_Reset
 
 #define DBG_PIN         11
 #define DBG_PIN_HIGH    LPC_GPIO2->FIOSET = (1 << DBG_PIN)
