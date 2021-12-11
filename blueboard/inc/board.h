@@ -16,6 +16,7 @@ extern "C" {
 #include "spi.h"
 #include "uart.h"
 #include "rng.h"
+#include "i2s.h"
 
 
 #define BOARD_Init              BB_Init

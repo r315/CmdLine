@@ -17,3 +17,11 @@ void UART2_IRQHandler(void){
 void UART3_IRQHandler(void){
 	UART_IRQHandler(&BOARD_SERIAL3_HANDLER.port);
 }
+
+void I2S_IRQHandler(void){
+	I2S_DMA_IRQHandler(NULL);	
+}
+
+void DMA_IRQHandler(void){
+	I2S_DMA_IRQHandler(NULL);
+}

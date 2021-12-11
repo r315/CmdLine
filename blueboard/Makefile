@@ -8,9 +8,10 @@ APP_DIR 	:=../App
 PRJ_DIR 	:=.
 BSP_PATH   = $(LIBEMB_PATH)/bsp/blueboard
 
+
 C_SOURCES =\
 $(BSP_PATH)/blueboard.c \
-$(BSP_PATH)/clock_lpc17xx.c \
+$(LIBEMB_PATH)/drv/clock/clock_lpc17xx.c \
 $(LIBEMB_PATH)/drv/timer/timer.c \
 $(LIBEMB_PATH)/drv/tft/ili9328.c \
 $(LIBEMB_PATH)/display/lcd.c \
@@ -18,9 +19,11 @@ $(LIBEMB_PATH)/display/display.c \
 $(LIBEMB_PATH)/display/font.c \
 $(LIBEMB_PATH)/drv/pwm/pwm_lpc17xx.c \
 $(LIBEMB_PATH)/drv/i2c/i2c_lpc17xx.c \
+$(LIBEMB_PATH)/drv/i2s/i2s_lpc17xx.c \
 $(LIBEMB_PATH)/drv/spi/spi_lpc17xx.c \
 $(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
 $(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
+$(LIBEMB_PATH)/drv/gpio/gpio_lpc17xx.c \
 $(LIBEMB_PATH)/drv/uart/uart_lpc17xx.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
@@ -44,6 +47,7 @@ $(LIBEMB_PATH)/console/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdsbus.cpp \
 $(APP_DIR)/cmdtft.cpp \
+$(APP_DIR)/cmdi2s.cpp \
 $(PRJ_DIR)/src/cmdspi.cpp \
 $(PRJ_DIR)/src/cmdavr.cpp \
 $(PRJ_DIR)/src/cmdlsd.cpp \

@@ -28,6 +28,7 @@ StdOut *userio = BOARD_STDIO;
 #include "cmdreset.h"
 #include "cmdsd.h"
 #include "cmdsbus.h"
+#include "cmdi2s.h"
 
 enum {
     MODE_LPCBUS = 0,
@@ -124,6 +125,7 @@ extern "C" void App(void){
 	//CmdI2c i2c();
     //CmdAwg awg();
 	CmdTft tft;
+	CmdI2s i2s;
 
     console.addCommand(&help);
     console.addCommand(&echo);
@@ -144,6 +146,7 @@ extern "C" void App(void){
     //console.addCommand(&awg);
 	console.addCommand(&ver);
 	console.addCommand(&tft);
+	console.addCommand(&i2s);
 
     stk500_ServiceInit(userio);
   

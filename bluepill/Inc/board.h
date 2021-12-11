@@ -13,7 +13,7 @@ extern "C" {
 #include "pwm.h"
 #include "spi.h"
 #include "rng.h"
-#include "pinName.h"
+#include "gpio_stm32f1xx.h"
 #include "serial.h"
 #include "uart.h"
 #include "lcd.h"
