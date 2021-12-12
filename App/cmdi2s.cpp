@@ -1,17 +1,18 @@
 #include "board.h"
 #include "cmdi2s.h"
 
-static i2sbus_t i2s;
-
-extern volatile uint8_t *I2STXBuffer, *I2SRXBuffer;
-extern volatile uint32_t I2SReadLength;
-extern volatile uint32_t I2SWriteLength;
-extern volatile uint32_t I2SRXDone, I2STXDone;
-extern volatile uint32_t I2SDMA0Done, I2SDMA1Done;
+i2sbus_t i2s;
 
 
 void CmdI2s::help(void){
-
+    console->putString("Usage: i2s <option> [params] \n");    
+    console->putString("options:");
+    console->putString("  init <sample rate> <bits sample>,\n"
+                       "                    sample rate: 16000 to 96000\n"
+                       "                    bits sample: 8, 16 1n 32");
+    console->putString("  start,     Start FS and data output");
+    console->putString("  stop,      Stop FS and data output");
+    console->putChar('\n');
 }
 
 char CmdI2s::execute(void *ptr){
@@ -32,44 +33,52 @@ char CmdI2s::execute(void *ptr){
                 i2s.sample_rate = val1;
                 i2s.data_size = val2;
                 i2s.bus = I2S_BUS0;
+                i2s.channels = 2;
+                i2s.mode = I2S_TX_MASTER | I2S_RX_MASTER;
                 I2S_Init(&i2s);
                 return CMD_OK;
             }
         }
     }
 
-    if(xstrcmp("loopback", (const char*)argv[0]) == 0){
-        /* Configure temp register before reading */
-        for (int i = 0; i < 512; i++ )	/* clear buffer */
-        {
-	        I2STXBuffer[i] = i;
-	        I2SRXBuffer[i] = 0;
-        }
-        
-        I2SWriteLength = I2SReadLength = I2SRXDone = I2STXDone = 0;
-
+    if(xstrcmp("start", (const char*)argv[0]) == 0){
         I2S_Start();
+        LPC_I2S->I2STXFIFO = 0x12345678;
+        return CMD_OK;
+    }
+
+    if(xstrcmp("stop", (const char*)argv[0]) == 0){
+        I2S_Stop();
+        return CMD_OK;
+    }
+
+    if(xstrcmp("loopback", (const char*)argv[0]) == 0){
+        
+        for (int i = 0; i < 512; i++ ){
+	        i2s.txbuffer[i] = i;
+	        i2s.rxbuffer[i] = 0;
+        }
 
         LPC_I2S->I2SIRQ = (8 << 16) | (1 << 8) | I2S_IRQ_RX_EN;
 
-        while ( I2SWriteLength < 512 ){
+        I2S_Start();
+
+        for (int i = 0; i < 512; i++ ){
 	        while (((LPC_I2S->I2SSTATE >> 16) & 0xFF) == 8);
-	        LPC_I2S->I2STXFIFO = I2STXBuffer[I2SWriteLength++];
-        }
-
-        I2STXDone = 1;
-        /* Wait for RX and TX complete before comparison */
-        while ( !I2SRXDone || !I2STXDone );
-
-        /* Validate TX and RX buffer */
-        for (int i=1; i< 512; i++ ){
-	        if ( I2SRXBuffer[i] != I2STXBuffer[i-1] ){
-	            console->print("Audio loopback fail");
-                break;
-	        }
+	        LPC_I2S->I2STXFIFO = i2s.txbuffer[i++];
         }
         
+        /* Wait for RX and TX complete before comparison */
+        while ( i2s.wridx < (512 - 8) );
+
         I2S_Stop();
+        /* Validate TX and RX buffer */
+        for (int i=1; i< 512; i++ ){
+	        if ( i2s.rxbuffer[i] != i2s.txbuffer[i-1] ){
+	            console->print("Audio loopback fail at index %d\n", i);
+                break;
+	        }
+        }        
         
         return CMD_OK;
     }

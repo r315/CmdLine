@@ -47,6 +47,8 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define BOARD_SPIDEV                    (&BOARD_SPIDEV_HANDLER)
 extern spibus_t BOARD_SPIDEV_HANDLER;
 
+extern i2sbus_t i2s;
+
 void BOARD_LCD_Init(void);
 void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data);
 void BOARD_LCD_Scroll(uint16_t sc);
