@@ -31,7 +31,7 @@ $(LIBEMB_PATH)/misc/debug.c \
 $(LIBEMB_PATH)/button/button.c \
 $(LIBEMB_PATH)/drv/mmc/mmc.c \
 $(LIBEMB_PATH)/pff/pff.c \
-$(LIBEMB_PATH)/drv/rng/rng_dummy.c \
+$(LIBEMB_PATH)/drv/rng/rng_software.c \
 $(PRJ_DIR)/usbdrv/usbserial.c \
 $(PRJ_DIR)/usbdrv/usbhw_lpc.c \
 $(PRJ_DIR)/usbdrv/usbcontrol.c \
@@ -152,10 +152,10 @@ inline_asm:
 
 $(TARGET).jlink: $(TARGET).hex
 	@echo "Creating Jlink configuration file"
-	@echo "erase" > $@
 	@echo "loadfile $<" >> $@
 	@echo "r" >> $@
 	@echo "q" >> $@
+	#@echo "erase" > $@
 	
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file"
