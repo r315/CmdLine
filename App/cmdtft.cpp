@@ -198,7 +198,7 @@ char CmdTft::execute(void *ptr){
         seed = RNG_Get() % 256;
 
         if((const char*)argv[1] == NULL){                        
-            for(uint8_t i = 0; i < LCD_GetHeight(); i++){
+            for(size_t i = 0; i < LCD_GetHeight(); i++){
                 uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
                 for (size_t j = 0; j < LCD_GetWidth(); j++){
                     buf[j] = RNG_Get();                    
