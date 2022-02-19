@@ -6,12 +6,12 @@
 void spiInit(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
     BOARD_SPIDEV->freq = 500000;
-    BOARD_SPIDEV->cfg  = SPI_MODE0;
+    BOARD_SPIDEV->flags  = SPI_MODE0;
     SPI_Init(BOARD_SPIDEV);
 }
 
 void spiSetFrequency(uint32_t freq){
-    if((BOARD_SPIDEV->cfg & SPI_ENABLED) == 0){
+    if((BOARD_SPIDEV->flags & SPI_ENABLED) == 0){
 		spiInit();
 	}    
     BOARD_SPIDEV->freq = 100000;    
@@ -48,7 +48,7 @@ void spiWrite(uint8_t *data, uint32_t len){
 #else
 
 void spiWrite(uint8_t *data, uint32_t len){
-	if((BOARD_SPIDEV->cfg & SPI_ENABLED) == 0){
+	if((BOARD_SPIDEV->flags & SPI_ENABLED) == 0){
 		spiInit();
 	}	
     SPI_Write(BOARD_SPIDEV, data, len);

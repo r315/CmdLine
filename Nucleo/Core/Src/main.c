@@ -53,20 +53,6 @@ static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 
-void BOARD_LCD_Init(void){
-	BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
-	LCD_Init(TFT_SPIDEV);
-}
-
-void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data){
-	SPI_WaitEOT(TFT_SPIDEV);
-	LCD_WriteArea(x, y, w, h, data);
-}
-
-void BOARD_LCD_Scroll(uint16_t sc){
-	SPI_WaitEOT(TFT_SPIDEV);
-	LCD_Scroll(sc);
-}
 /**
 	* @brief  The application entry point.
 	* @retval int
@@ -77,6 +63,8 @@ int main(void)
 
 	SystemClock_Config();
 
+	BOARD_SPIDEV->flags = SPI_SW_CS; // GPIO_Init depends of this
+
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
@@ -86,8 +74,8 @@ int main(void)
 	SERIAL_Config(&BOARD_SERIAL0_HANDLER, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
 
 	BOARD_SPIDEV->bus = SPI_BUS0;
-	BOARD_SPIDEV->freq = 40000;
-	BOARD_SPIDEV->cfg = SPI_SW_CS;
+	BOARD_SPIDEV->freq = 4000;
+	DMA_Request(&BOARD_SPIDEV->dma, DMA2_SPI1_TX);
 	SPI_Init(BOARD_SPIDEV);
 	
 	App();
@@ -299,7 +287,7 @@ static void MX_GPIO_Init(void)
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
 
-		if(BOARD_SPIDEV->cfg & SPI_SW_CS){
+		if(BOARD_SPIDEV->flags & SPI_SW_CS){
 			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
 		}else{
 			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin | LCD_CS_Pin;
@@ -311,7 +299,7 @@ static void MX_GPIO_Init(void)
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 		/*Configure GPIO pins : LCD_BKL_Pin LCD_CS_Pin LCD_CD_Pin */
-		if(BOARD_SPIDEV->cfg & SPI_SW_CS){
+		if(BOARD_SPIDEV->flags & SPI_SW_CS){
 			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin | LCD_CS_Pin;
 		}else{
 			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin;

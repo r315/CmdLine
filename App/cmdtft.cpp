@@ -42,7 +42,7 @@ void randomTiles(){
     for(uint8_t i = 0; i < LCD_GetHeight()/16; i++){
         for(uint8_t j = 0; j < LCD_GetWidth()/16; j++){
             memset(buf, generateRandomColor(seed), 15 * 15 * 2);            
-            BOARD_LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
+            LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
             buf = tile + (256 * (j & 1));
         }
     }
@@ -97,7 +97,6 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
 
 #define TILE_W  8
 void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
-    //SPI_WaitEOT(TFT_SPIDEV);
     y = y * TILE_W;
     x = x * TILE_W;
     for(uint8_t i = 0; i < w; i++){
@@ -133,7 +132,7 @@ char CmdTft::execute(void *ptr){
 
     if(xstrcmp("init", (const char*)argv[0]) == 0){
         if(yatoi(argv[1], (int32_t*)&val1)){
-            BOARD_LCD_Init();
+            LCD_Init(BOARD_SPIDEV);
 		    LCD_Rotation(val1 & 3);
 		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
 		    LCD_Bkl(1);
@@ -143,9 +142,10 @@ char CmdTft::execute(void *ptr){
 
     if(xstrcmp("clear", (const char*)argv[0]) == 0){
         if(hatoi(argv[1], (uint32_t*)&val1)){
-            //LCD_Clear(val1);
+            uint32_t ms = GetTick();
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
-            //SPI_WaitEOT(TFT_SPIDEV);
+            ms = GetTick() - ms;
+            console->print("Time: %dms\n", ms);
             return CMD_OK;
         }
     }
@@ -155,10 +155,11 @@ char CmdTft::execute(void *ptr){
         for(uint8_t i = 0; i < 128/16; i++){
             for(uint8_t j = 0; j < 160/16; j++){
                 memset(buf, i*3, 15 * 15 * 2);
-                BOARD_LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
+                LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
                 buf = tile + (256 * (j & 1));
             }
         }
+        //LCD_Copy(NULL, 20,20,8,8, 50,50, 8, 8);
         return CMD_OK;
     }
 
@@ -195,18 +196,19 @@ char CmdTft::execute(void *ptr){
         uint16_t s = 0, f = 0;
         char c;
 
-        seed = RNG_Get() % 256;
 
-        if((const char*)argv[1] == NULL){                        
+        if((const char*)argv[1] == NULL){            
             for(size_t i = 0; i < LCD_GetHeight(); i++){
                 uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
                 for (size_t j = 0; j < LCD_GetWidth(); j++){
                     buf[j] = RNG_Get();                    
                 }                
-                BOARD_LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
+                LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
             }
             return CMD_OK;
         }
+
+        seed = RNG_Get() % 256;
 
         do{
 
@@ -215,7 +217,7 @@ char CmdTft::execute(void *ptr){
             if(f == 0){
                 s++;
                 s = s % 160;                
-                BOARD_LCD_Scroll(s);
+                LCD_Scroll(s);
                 f = 2; // scroll speed
             }
 
@@ -237,7 +239,7 @@ char CmdTft::execute(void *ptr){
                 for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
                     for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
                         memset16(buf, HsvToRgb(h++, s, v), 64);                        
-                        BOARD_LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
+                        LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
                         buf = tile + (256 * (j & 1));
                     }
                 }
@@ -457,7 +459,7 @@ void drawBall(int x, int y)
 #endif
             }
         }
-        BOARD_LCD_WriteArea(0, yy, SCR_WD, 1, line);
+        LCD_WriteArea(0, yy, SCR_WD, 1, line);
     }
 }
 

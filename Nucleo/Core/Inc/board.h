@@ -14,6 +14,7 @@ extern "C" {
 #include "rng.h"
 #include "serial.h"
 #include "uart.h"
+#include "dma.h"
 
 /**
  * General macros
@@ -81,10 +82,6 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 
 
-void BOARD_LCD_Init(void);
-void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data);
-void BOARD_LCD_Scroll(uint16_t sc);
-
 /**
  * SPI Header
  * */
@@ -92,6 +89,10 @@ void BOARD_LCD_Scroll(uint16_t sc);
 #define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
 extern spibus_t BOARD_SPIDEV_HANDLER;
 
+/**
+ * DMA Requests
+ * */
+#define DMA2_SPI1_TX                 ((1 << 8) | ( 3 << 4) | (4 << 0)) // DMA, CH, Request
 
 
 #ifdef __cplusplus

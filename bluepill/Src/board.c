@@ -8,13 +8,14 @@ spibus_t BOARD_SPIDEV_HANDLER;
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
     BOARD_SPIDEV->freq = 1000000;
-    BOARD_SPIDEV->cfg = SPI_SW_CS;
+    BOARD_SPIDEV->flags = SPI_SW_CS;
 
     SPI_Init(BOARD_SPIDEV);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DO_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CK_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CS_PIN, PIN_OUT_2MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);  // LCD_CD
 
     SERVO_Init();
 
@@ -518,19 +519,4 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
 uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
     SPI_Write(BOARD_SPIDEV, src, size);
     return size;
-}
-
-void BOARD_LCD_Init(void){
-	BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
-	LCD_Init(TFT_SPIDEV);
-}
-
-void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data){
-	SPI_WaitEOT(TFT_SPIDEV);
-	LCD_WriteArea(x, y, w, h, data);
-}
-
-void BOARD_LCD_Scroll(uint16_t sc){
-	SPI_WaitEOT(TFT_SPIDEV);
-	LCD_Scroll(sc);
 }

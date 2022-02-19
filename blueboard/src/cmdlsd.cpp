@@ -58,7 +58,7 @@ void CmdSd::d_error(DRESULT res)
 void mmcSpiInit(void){
     mmc_spi.bus = 0;
     mmc_spi.freq = 500000;
-    mmc_spi.cfg  = SPI_MODE0;
+    mmc_spi.flags  = SPI_MODE0;
     SPI_Init(&mmc_spi);
 	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;	
 }

@@ -12,20 +12,21 @@ uint16_t square [] = {
 };
 
 void CmdAwg::help(void){
- 	vcom->printf("Usage: awg [option] \n\n");    
+ 	//vcom->printf("Usage: awg [option] \n\n");    
+     console->printf("to be implemented");    
 }
 
 char CmdAwg::execute(void *ptr){
 //uint16_t buf [256];
 
-    DAC_Init();
+    //DAC_Init();
 
    /* for(int i = 0; i < 256; i++){
         buf[i] = (i & 16) ? 0x3FF << 6 : 0;
     }
 */
-    DAC_WriteBufer(sine, 200, 90);
+    //DAC_WriteBufer(sine, 200, 90);
     //DAC_WriteBufer(square, 100, 180);  // 10us per point
-
+    help();
     return CMD_OK;
 }

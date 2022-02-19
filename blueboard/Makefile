@@ -21,8 +21,6 @@ $(LIBEMB_PATH)/drv/pwm/pwm_lpc17xx.c \
 $(LIBEMB_PATH)/drv/i2c/i2c_lpc17xx.c \
 $(LIBEMB_PATH)/drv/i2s/i2s_lpc17xx.c \
 $(LIBEMB_PATH)/drv/spi/spi_lpc17xx.c \
-$(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
-$(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
 $(LIBEMB_PATH)/drv/gpio/gpio_lpc17xx.c \
 $(LIBEMB_PATH)/drv/uart/uart_lpc17xx.c \
 $(LIBEMB_PATH)/misc/fifo.c \
@@ -41,6 +39,8 @@ $(PRJ_DIR)/src/bb_serial.c \
 $(PRJ_DIR)/src/bb_main.c \
 $(PRJ_DIR)/src/bb_it.c \
 
+#$(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
+$(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
