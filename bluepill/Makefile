@@ -87,13 +87,27 @@ $(LIBEMB_PATH)/drv/uart/uart_stm32f10x.c \
 $(LIBEMB_PATH)/drv/spi/spi_stm32f1xx.c \
 $(LIBEMB_PATH)/drv/tft/st7735.c \
 $(LIBEMB_PATH)/display/lcd.c \
-$(LIBEMB_PATH)/drv/rng/rng_dummy.c \
+$(LIBEMB_PATH)/drv/rng/rng_software.c \
 #$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
 
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
-$(wildcard $(APP_DIR)/*cpp) \
+$(APP_DIR)/app.cpp \
+$(APP_DIR)/cmdsbus.cpp \
+$(APP_DIR)/cmdtft.cpp \
+$(APP_DIR)/cmdadc.cpp \
+$(APP_DIR)/cmdmem.cpp \
+$(APP_DIR)/cmdrst.cpp \
+$(APP_DIR)/cmdrfinder.cpp \
+$(APP_DIR)/cmdservo.cpp \
+$(APP_DIR)/cmdspiflash.cpp \
+$(APP_DIR)/cmdflashrom.cpp \
+$(APP_DIR)/cmdencoder.cpp \
+
+
+
+#$(wildcard $(APP_DIR)/*cpp) \
 
 CPP_SOURCES := $(filter-out $(APP_DIR)/cmdsbus.cpp, $(CPP_SOURCES))
 
