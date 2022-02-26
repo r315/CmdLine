@@ -74,7 +74,7 @@ int main(void)
 	SERIAL_Config(&BOARD_SERIAL0_HANDLER, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
 
 	BOARD_SPIDEV->bus = SPI_BUS0;
-	BOARD_SPIDEV->freq = 4000;
+	BOARD_SPIDEV->freq = 40000;
 	DMA_Request(&BOARD_SPIDEV->dma, DMA2_SPI1_TX);
 	SPI_Init(BOARD_SPIDEV);
 	
@@ -299,15 +299,20 @@ static void MX_GPIO_Init(void)
 		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 		/*Configure GPIO pins : LCD_BKL_Pin LCD_CS_Pin LCD_CD_Pin */
-		if(BOARD_SPIDEV->flags & SPI_SW_CS){
-			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin | LCD_CS_Pin;
-		}else{
-			GPIO_InitStruct.Pin = LCD_CD_Pin | LCD_BKL_Pin;
-		}
 		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+		if(BOARD_SPIDEV->flags & SPI_SW_CS){
+			GPIO_InitStruct.Pin = LCD_CS_Pin;
+			HAL_GPIO_Init(LCD_CS_GPIO_Port, &GPIO_InitStruct);
+		}
+
+		GPIO_InitStruct.Pin = LCD_CD_Pin;
+		HAL_GPIO_Init(LCD_CD_GPIO_Port, &GPIO_InitStruct);
+
+		GPIO_InitStruct.Pin = LCD_BKL_Pin;
+		HAL_GPIO_Init(LCD_BKL_GPIO_Port, &GPIO_InitStruct);
 }
 
 /**

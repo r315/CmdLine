@@ -16,6 +16,8 @@ extern "C" {
 #include "uart.h"
 #include "dma.h"
 
+#include "dma_stm32l4xx.h"
+
 /**
  * General macros
  * */
@@ -69,8 +71,8 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define LCD_DI_GPIO_Port    GPIOA
 #define LCD_RST_Pin
 #define LCD_RST_GPIO_Port
-#define LCD_BKL_Pin         GPIO_PIN_0
-#define LCD_BKL_GPIO_Port   GPIOA
+#define LCD_BKL_Pin         GPIO_PIN_4
+#define LCD_BKL_GPIO_Port   GPIOB
 
 #define LCD_CS1             LCD_CS_GPIO_Port->BSRR = LCD_CS_Pin
 #define LCD_CS0             LCD_CS_GPIO_Port->BRR = LCD_CS_Pin
@@ -88,11 +90,6 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define BOARD_SPIDEV_HANDLER    spi1
 #define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
 extern spibus_t BOARD_SPIDEV_HANDLER;
-
-/**
- * DMA Requests
- * */
-#define DMA2_SPI1_TX                 ((1 << 8) | ( 3 << 4) | (4 << 0)) // DMA, CH, Request
 
 
 #ifdef __cplusplus

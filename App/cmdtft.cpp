@@ -14,13 +14,35 @@ void GIFDraw(GIFDRAW *pDraw);
 void gifPlayFrame(void);
 #endif
 
+typedef void (*func_t) (void);
+
 extern StdOut *userio;
 
-uint16_t tile[512];
-uint16_t seed;
+static uint16_t tile[512];
+static uint16_t seed, scroll;
+static int16_t x, y, px,py;
+static uint16_t state, step, stepSize, numSteps, tcount, color;
+uint8_t hue = 0;
 
-void AmigaBall_Loop(void);
-void AmigaBall_Setup(void);
+static void AmigaBall_Loop(void);
+static void AmigaBall_Setup(void);
+static void Spiral_Setup(void);
+static void Spiral_Loop(void);
+static void Scroll_Setup(void);
+static void Scroll_Loop(void);
+static void RandomColors_Setup(void);
+static void RandomColors_Loop(void);
+
+const func_t demos[] = {
+    AmigaBall_Setup,
+    AmigaBall_Loop,
+    Spiral_Setup, // Ulam
+    Spiral_Loop,
+    RandomColors_Setup,
+    RandomColors_Loop,
+    Scroll_Setup,
+    Scroll_Loop
+};
 
 uint16_t generateRandomColor(int32_t mix) {
     uint16_t red = RNG_Get() % 32;
@@ -95,14 +117,6 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
     return (r << 11) | (g << 5) | b;
 }
 
-#define TILE_W  8
-void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
-    y = y * TILE_W;
-    x = x * TILE_W;
-    for(uint8_t i = 0; i < w; i++){
-        LCD_FillRect(x + (i * TILE_W), y, TILE_W - 0, TILE_W - 0, line[i]);
-    }
-}
 
 /**
  * Public API
@@ -122,6 +136,7 @@ char CmdTft::execute(void *ptr){
     int32_t val1;
     char *argv[4] = {0};
     int argc;
+    char c;
 
     argc = strToArray((char*)ptr, argv);
 
@@ -154,57 +169,30 @@ char CmdTft::execute(void *ptr){
         uint16_t *buf = tile;
         for(uint8_t i = 0; i < 128/16; i++){
             for(uint8_t j = 0; j < 160/16; j++){
-                memset(buf, i*3, 15 * 15 * 2);
+                memset(buf, RNG_Get(), 15 * 15 * 2);
                 LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
                 buf = tile + (256 * (j & 1));
             }
         }
-        //LCD_Copy(NULL, 20,20,8,8, 50,50, 8, 8);
         return CMD_OK;
     }
 
-    if(xstrcmp("scroll", (const char*)argv[0]) == 0){
-        uint16_t s = 0;
-        char c;
-        uint8_t hue = 0;
-        uint16_t w = LCD_GetWidth();
-        LCD_Scroll(0);
-        //LCD_Clear(BLACK);
-        //LCD_Line_H(0, 0, 128, RED);
-        //LCD_Line_H(0, 159, 128, GREEN);
+    if(xstrcmp("scroll", (const char*)argv[0]) == 0){    
+        Scroll_Setup();
         do{           
-            LCD_Scroll(s);
-            int y = s + w - 16;
-            if(y >= w) y -= w;
-
-            if((s & 0xf) == 0){
-                uint16_t color = HsvToRgb(hue++, 255, 255);
-                LCD_FillRect(0, y, w, 16, color);
-            }
-            
-            console->print("\r%d  ", s);            
-            s++;
-            s = s % LCD_GetHeight();
-            DelayMs(16);
-            //c = userio->xgetchar();
+            console->print("\r%d  ", scroll);
+            Scroll_Loop();
             userio->getCharNonBlocking(&c);
+            DelayMs(16);
         }while(c != '\n');
         return CMD_OK_LF;
     }
 
     if(xstrcmp("rc", (const char*)argv[0]) == 0){
-        uint16_t s = 0, f = 0;
-        char c;
-
+        uint16_t f = 0;
 
         if((const char*)argv[1] == NULL){            
-            for(size_t i = 0; i < LCD_GetHeight(); i++){
-                uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
-                for (size_t j = 0; j < LCD_GetWidth(); j++){
-                    buf[j] = RNG_Get();                    
-                }                
-                LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
-            }
+            RandomColors_Loop();
             return CMD_OK;
         }
 
@@ -215,9 +203,8 @@ char CmdTft::execute(void *ptr){
             fps(randomTiles);
 
             if(f == 0){
-                s++;
-                s = s % 160;                
-                LCD_Scroll(s);
+                scroll = (scroll + 1) % 160;                
+                LCD_Scroll(scroll);
                 f = 2; // scroll speed
             }
 
@@ -251,25 +238,26 @@ char CmdTft::execute(void *ptr){
     if(xstrcmp("demo", (const char*)argv[0]) == 0){        
         char c, sync_fps = 0;
         uint32_t elapsed = 0;
-        uint8_t demo = 0;
+        uint8_t state = 0, demo = 0;
         uint32_t frame_count = 0;        
 
         LCD_Scroll(0);
 
         do{
-            switch(demo){
+            switch(state){
                 case 0:
-                    AmigaBall_Setup();
-                    demo++;
+                    frame_count = 0;
+                    state = 1;
+                    demos[demo++]();
                     break;
 
                 case 1:
-                    elapsed = fps(AmigaBall_Loop);
+                    elapsed = fps(demos[demo]);
                     frame_count++;
                     break;
 
                 case 2:
-                    demo++;
+                    state = 0;
                     break;
 #ifdef FEATURE_GIF
                 case 3:
@@ -293,15 +281,14 @@ char CmdTft::execute(void *ptr){
                     demo++;
                     break;
 #endif
-                default:
-                    frame_count = 0;
-                    demo = 0;
+                default:                   
                     break;
             }
 
             if(frame_count > 300){
                 frame_count = 0;
-                demo++;
+                state = 0;
+                demo = (demo + 1) % (sizeof(demos) / sizeof(func_t));
             }
 
             if(!sync_fps){
@@ -463,7 +450,7 @@ void drawBall(int x, int y)
     }
 }
 
-void AmigaBall_Setup()
+static void AmigaBall_Setup(void)
 {
     uint16_t *pal = (uint16_t *)ball + 3;
 
@@ -484,6 +471,8 @@ void AmigaBall_Setup()
         nhlines = 10;
     }
 
+    scroll = 0;
+    LCD_Scroll(scroll);
     LCD_Clear(bgCol);
 
     for (uint8_t i = 0; i < 16; i++)
@@ -518,7 +507,7 @@ void AmigaBall_Setup()
 }
 
 
-void AmigaBall_Loop()
+static void AmigaBall_Loop(void)
 {
     static int16_t anim=0, animd=1;
     static int16_t x=0, y=0;
@@ -569,6 +558,15 @@ void AmigaBall_Loop()
 }
 
 #ifdef FEATURE_GIF
+#define TILE_W  8
+void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
+    y = y * TILE_W;
+    x = x * TILE_W;
+    for(uint8_t i = 0; i < w; i++){
+        LCD_FillRect(x + (i * TILE_W), y, TILE_W - 0, TILE_W - 0, line[i]);
+    }
+}
+
 // Draw a line of image directly on the LCD
 void GIFDraw(GIFDRAW *pDraw)
 {
@@ -662,3 +660,94 @@ void gifPlayFrame(void){
     gif.playFrame(true, NULL);
 }
 #endif
+
+static uint8_t isPrime(uint16_t n){
+    if (n == 1) return false;
+    for (uint16_t i = 2; i < n >> 1; i++){
+        if(n % i == 0){
+            return false;
+        }
+    }
+    return true;
+}
+
+static void Spiral_Setup(void){
+    LCD_Clear(BLACK);
+    x = LCD_GetWidth() / 2;
+    y = LCD_GetHeight() / 2;
+
+    px = x;
+    py = y;
+
+    state = 0;
+    step = 1;
+    stepSize = 8;
+    numSteps = 1;
+    tcount = 0;
+
+    color = RNG_Get();
+}
+
+static void Spiral_Loop(void){
+
+    if(isPrime(step)){
+        LCD_FillRect(x - (stepSize >> 1), y - (stepSize >> 1), stepSize - 1, stepSize - 1,color);
+    }
+
+    LCD_DrawLine(px, py, x, y, color);
+    px = x;
+    py = y;
+
+    switch (state){
+        case 0:
+            x += stepSize;
+            break;
+        case 1:
+            y -= stepSize;
+            break;
+        case 2:
+            x -= stepSize;
+            break;
+        case 3:
+            y += stepSize;
+            break;
+    }
+
+    if(step % numSteps == 0){
+        state = (state + 1 ) % 4;
+        tcount ++;
+        if(tcount % 2 == 0){
+            numSteps++;
+        }
+    }
+
+    step++;
+}
+
+static void Scroll_Setup(void){
+    scroll = 0;
+    hue = RNG_Get();
+}
+
+static void Scroll_Loop(void){
+    y = (LCD_GetHeight() - 1) - scroll;
+    scroll = (scroll + 1) % LCD_GetHeight();
+
+    LCD_FillRect(0, y, LCD_GetWidth(), 1,  HsvToRgb(hue++, 255, 255));      
+    
+    LCD_Scroll(scroll);
+}
+
+static void RandomColors_Setup(void){
+
+}
+
+static void RandomColors_Loop(void){
+    for(size_t i = 0; i < LCD_GetHeight(); i++){
+        uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
+        for (size_t j = 0; j < LCD_GetWidth(); j++){
+            buf[j] = RNG_Get();                    
+        }                
+        LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
+    }
+}
