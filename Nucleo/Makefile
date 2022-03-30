@@ -54,6 +54,7 @@ $(PRJ_DIR)/Core/Src/stm32l4xx_hal_msp.c \
 $(PRJ_DIR)/Core/Src/system_stm32l4xx.c \
 $(PRJ_DIR)/Core/Src/syscalls.c \
 $(PRJ_DIR)/Core/Src/serial.c \
+$(PRJ_DIR)/Core/Src/dscr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
@@ -76,10 +77,9 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/sound/stm32_buzzer.c \
-$(LIBEMB_PATH)/drv/timer/stm32_scapture.c \
 $(LIBEMB_PATH)/drv/pwm/pwm_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/tft/st7735.c \
-$(LIBEMB_PATH)/drv/rng/rng_stm32l4xx.c \
+$(LIBEMB_PATH)/drv/rng/rng_software.c \
 $(LIBEMB_PATH)/drv/spi/spi_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/uart/uart_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/dma/dma_stm32l4xx.c \

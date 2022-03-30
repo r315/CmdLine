@@ -22,6 +22,7 @@
 #include "main.h"
 #include "stm32l4xx_it.h"
 #include "board.h"
+#include "dscr.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 /* USER CODE END Includes */
@@ -80,7 +81,18 @@ void NMI_Handler(void)
 /**
   * @brief This function handles Hard fault interrupt.
   */
-void stackTrace(uint32_t *stack)
+ typedef struct __attribute__((packed)) ContextStateFrame {
+  uint32_t r0;
+  uint32_t r1;
+  uint32_t r2;
+  uint32_t r3;
+  uint32_t r12;
+  uint32_t lr;
+  uint32_t return_address;
+  uint32_t xpsr;
+} sContextStateFrame;
+
+void stackTrace(sContextStateFrame *frame)
 {
     /* USER CODE END HardFault_IRQn 0 */
     while (1)
@@ -228,6 +240,30 @@ void DMA2_Channel4_IRQHandler(void)
     DMA2->IFCR = DMA_IFCR_CGIF4;    
 }
 /* USER CODE BEGIN 1 */
+
+void TIM1_BRK_TIM15_IRQHandler(void)
+{
+    DSCR_TimeoutHandler();
+}
+
+void DMA1_Channel2_IRQHandler(void)
+{
+  if(DMA1->ISR & DMA_ISR_GIF2){
+      DSCR_CaptureHandler();
+      DMA1->IFCR = (DMA_IFCR_CGIF2 | DMA_IFCR_CTCIF2 | DMA_IFCR_CTEIF2);
+  }
+}
+
+void DMA1_Channel4_IRQHandler(void){
+  if(DMA1->ISR & DMA_ISR_GIF4){
+      DSCR_ReplayHandler();
+      DMA1->IFCR = (DMA_IFCR_CGIF4 | DMA_IFCR_CTCIF4 | DMA_IFCR_CTEIF4);
+  }
+}
+
+void TIM1_CC_IRQHandler(void)
+{
+}
 
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
