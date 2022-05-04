@@ -158,7 +158,7 @@ BIN = $(CP) -O binary -S
 
 
 ifeq ($(shell uname -s), Linux)
-
+JLINK =JLinkExe
 else
 JLINK ="C:\Tools\JLink_V500\jlink"
 endif
@@ -239,13 +239,14 @@ all: $(TARGET).elf
 	echo "adapter speed 4000" >> $@
 
  $(TARGET).jlink: $(TARGET).hex
-	@echo "Creating Jlink configuration file"
+	@echo "Creating Jlink configuration file..."
 	@echo "erase" > $@
 	@echo "loadfile  $(TARGET).hex" >> $@
 	@echo "r" >> $@
-	@echo "q" >> $@	
+	@echo "q" >> $@
 
 program: $(TARGET).jlink
+	@echo "Programing device"
 #	openocd -f  $(BUILD_DIR)/$(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
 
