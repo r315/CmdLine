@@ -26,6 +26,11 @@ char CmdFlashRom::execute(void *ptr){
     uint8_t buf[16];
     uint16_t idx = 0;
 
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DO_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CK_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
+    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CS_PIN, PIN_OUT_2MHZ);
+
     console->print("FLASHROM OK");
 
     while(done == FALSE){
