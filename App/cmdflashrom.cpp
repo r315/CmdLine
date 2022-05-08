@@ -54,20 +54,26 @@ char CmdFlashRom::execute(void *ptr){
                 xfer_count = c;
                 idx = 0;
                 state = XFER;
-                BOARD_SPI_CS_LOW;
                 break;
 
-            case XFER:                
-                c = (char)BOARD_SPI_Transfer(c, SPI_XFER_TIMEOUT);
+            case XFER:
                 buf[idx++] = (uint8_t)c;
+
+                if(idx < xfer_count){
+                    break;
+                }
+
+                BOARD_SPI_CS_LOW;
+                for(idx = 0; idx < xfer_count; idx++){
+                    buf[idx] = BOARD_SPI_Transfer(buf[idx], SPI_XFER_TIMEOUT);
+                }
+                BOARD_SPI_CS_HIGH;
+
+                for(idx = 0; idx < xfer_count; idx++){
+                    BOARD_STDIO->xputchar(buf[idx]);  
+                }
                 
-                if(idx == xfer_count){
-                    BOARD_SPI_CS_HIGH;
-                    for(idx = 0; idx < xfer_count; idx++){
-                        BOARD_STDIO->xputchar(buf[idx]);  
-                    }
-                    state = IDLE;   
-                }                
+                state = IDLE;
                 break;
 
             default:
