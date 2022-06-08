@@ -65,6 +65,7 @@ $(PRJ_DIR)/usbdrv \
 $(APP_DIR)/../inc \
 $(LIBEMB_PATH)/include \
 $(LIBEMB_PATH)/pff \
+$(LIBEMB_PATH)/drv/inc \
 $(BSP_PATH) \
 $(BSP_PATH)/../CMSISv2p00_LPC17xx/inc \
 

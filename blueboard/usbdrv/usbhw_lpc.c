@@ -105,9 +105,9 @@ static TFnFrameHandler	*_pfnFrameHandler = NULL;
 static void Wait4DevInt(U32 dwIntr)
 {
 	// wait for specific interrupt
-	while ((LPC_USB->USBDevIntSt & dwIntr) != dwIntr);
+	while ((LPC_USB->DevIntSt & dwIntr) != dwIntr);
 	// clear the interrupt bits
-	LPC_USB->USBDevIntClr = dwIntr;
+	LPC_USB->DevIntClr = dwIntr;
 }
 
 
@@ -119,9 +119,9 @@ static void Wait4DevInt(U32 dwIntr)
 static void USBHwCmd(U8 bCmd)
 {
 	// clear CDFULL/CCEMTY
-	LPC_USB->USBDevIntClr = CDFULL | CCEMTY;
+	LPC_USB->DevIntClr = CDFULL | CCEMTY;
 	// write command code
-	LPC_USB->USBCmdCode = 0x00000500 | (bCmd << 16);
+	LPC_USB->CmdCode = 0x00000500 | (bCmd << 16);
 	Wait4DevInt(CCEMTY);
 }
 
@@ -138,7 +138,7 @@ static void USBHwCmdWrite(U8 bCmd, U16 bData)
 	USBHwCmd(bCmd);
 
 	// write command data
-	LPC_USB->USBCmdCode = 0x00000100 | (bData << 16);
+	LPC_USB->CmdCode = 0x00000100 | (bData << 16);
 	Wait4DevInt(CCEMTY);
 }
 
@@ -156,9 +156,9 @@ static U8 USBHwCmdRead(U8 bCmd)
 	USBHwCmd(bCmd);
 	
 	// get data
-	LPC_USB->USBCmdCode = 0x00000200 | (bCmd << 16);
+	LPC_USB->CmdCode = 0x00000200 | (bCmd << 16);
 	Wait4DevInt(CDFULL);
-	return LPC_USB->USBCmdData;
+	return LPC_USB->CmdData;
 }
 
 
@@ -175,9 +175,9 @@ static U8 USBHwCmdRead(U8 bCmd)
  */
 static void USBHwEPRealize(int idx, U16 wMaxPSize)
 {
-	LPC_USB->USBReEP |= (1 << idx);
-	LPC_USB->USBEpInd = idx;
-	LPC_USB->USBMaxPSize = wMaxPSize;
+	LPC_USB->ReEp |= (1 << idx);
+	LPC_USB->EpInd = idx;
+	LPC_USB->MaxPSize = wMaxPSize;
 	Wait4DevInt(EP_RLZED);
 }
 
@@ -232,8 +232,8 @@ void USBHwRegisterEPIntHandler(U8 bEP, TFnEPIntHandler *pfnHandler)
 	_apfnEPIntHandlers[idx / 2] = pfnHandler;
 	
 	/* enable EP interrupt */
-	LPC_USB->USBEpIntEn |= (1 << idx);
-	LPC_USB->USBDevIntEn |= EP_SLOW;
+	LPC_USB->EpIntEn |= (1 << idx);
+	LPC_USB->DevIntEn |= EP_SLOW;
 	
 	DEBUG_OUT("Registered EP 0x%X handler\n", bEP);
 }
@@ -249,7 +249,7 @@ void USBHwRegisterDevIntHandler(TFnDevIntHandler *pfnHandler)
 	_pfnDevIntHandler = pfnHandler;
 	
 	// enable device interrupt
-	LPC_USB->USBDevIntEn |= DEV_STAT;
+	LPC_USB->DevIntEn |= DEV_STAT;
 
 	DEBUG_OUT("Registered device status handler\n");
 }
@@ -265,7 +265,7 @@ void USBHwRegisterFrameHandler(TFnFrameHandler *pfnHandler)
 	_pfnFrameHandler = pfnHandler;
 	
 	// enable device interrupt
-	LPC_USB->USBDevIntEn |= FRAME;
+	LPC_USB->DevIntEn |= FRAME;
 
 	DEBUG_OUT("Registered frame handler\n");
 }
@@ -356,14 +356,14 @@ int USBHwEPWrite(U8 bEP, U8 *pbBuf, int iLen)
 	idx = EP2IDX(bEP);
 	
 	// set write enable for specific endpoint
-	LPC_USB->USBCtrl = WR_EN | ((bEP & 0xF) << 2);
+	LPC_USB->Ctrl = WR_EN | ((bEP & 0xF) << 2);
 	
 	// set packet length
-	LPC_USB->USBTxPLen = iLen;
+	LPC_USB->TxPLen = iLen;
 	
 	// write data
-	while (LPC_USB->USBCtrl & WR_EN) {
-		LPC_USB->USBTxData = (pbBuf[3] << 24) | (pbBuf[2] << 16) | (pbBuf[1] << 8) | pbBuf[0];
+	while (LPC_USB->Ctrl & WR_EN) {
+		LPC_USB->TxData = (pbBuf[3] << 24) | (pbBuf[2] << 16) | (pbBuf[1] << 8) | pbBuf[0];
 		pbBuf += 4;
 	}
 
@@ -393,11 +393,11 @@ int USBHwEPRead(U8 bEP, U8 *pbBuf, int iMaxLen)
 	idx = EP2IDX(bEP);
 	
 	// set read enable bit for specific endpoint
-	LPC_USB->USBCtrl = RD_EN | ((bEP & 0xF) << 2);
+	LPC_USB->Ctrl = RD_EN | ((bEP & 0xF) << 2);
 	
 	// wait for PKT_RDY
 	do {
-		dwLen = LPC_USB->USBRxPLen;
+		dwLen = LPC_USB->RxPLen;
 	} while ((dwLen & PKT_RDY) == 0);
 	
 	// packet valid?
@@ -412,7 +412,7 @@ int USBHwEPRead(U8 bEP, U8 *pbBuf, int iMaxLen)
 	dwData = 0;
 	for (i = 0; i < (int)dwLen; i++) {
 		if ((i % 4) == 0) {
-			dwData = LPC_USB->USBRxData;
+			dwData = LPC_USB->RxData;
 		}
 		if ((pbBuf != NULL) && (i < iMaxLen)) {
 			pbBuf[i] = dwData & 0xFF;
@@ -421,7 +421,7 @@ int USBHwEPRead(U8 bEP, U8 *pbBuf, int iMaxLen)
 	}
 
 	// make sure RD_EN is clear
-	LPC_USB->USBCtrl = 0;
+	LPC_USB->Ctrl = 0;
 
 	// select endpoint and clear buffer
 	USBHwCmd(CMD_EP_SELECT | idx);
@@ -465,12 +465,12 @@ void USBHwISR(void)
 	DEBUG_LED_ON(6);
 
 	// handle device interrupts
-	dwStatus = LPC_USB->USBDevIntSt;
+	dwStatus = LPC_USB->DevIntSt;
 	
 	// frame interrupt
 	if (dwStatus & FRAME) {
 		// clear int
-		LPC_USB->USBDevIntClr = FRAME;
+		LPC_USB->DevIntClr = FRAME;
 		// call handler
 		if (_pfnFrameHandler != NULL) {
 			wFrame = USBHwCmdRead(CMD_DEV_READ_CUR_FRAME_NR);
@@ -484,7 +484,7 @@ void USBHwISR(void)
 			This prevents corrupted device status reads, see
 			LPC2148 User manual revision 2, 25 july 2006.
 		*/
-		LPC_USB->USBDevIntClr = DEV_STAT;
+		LPC_USB->DevIntClr = DEV_STAT;
 		bDevStat = USBHwCmdRead(CMD_DEV_STATUS);
 		if (bDevStat & (CON_CH | SUS_CH | RST)) {
 			// convert device status into something HW independent
@@ -503,15 +503,15 @@ void USBHwISR(void)
 	// endpoint interrupt
 	if (dwStatus & EP_SLOW) {
 		// clear EP_SLOW
-		LPC_USB->USBDevIntClr = EP_SLOW;
+		LPC_USB->DevIntClr = EP_SLOW;
 		// check all endpoints
 		for (i = 0; i < 32; i++) {
 			dwIntBit = (1 << i);
-			if (LPC_USB->USBEpIntSt & dwIntBit) {
+			if (LPC_USB->EpIntSt & dwIntBit) {
 				// clear int (and retrieve status)
-				LPC_USB->USBEpIntClr = dwIntBit;
+				LPC_USB->EpIntClr = dwIntBit;
 				Wait4DevInt(CDFULL);
-				bEPStat = LPC_USB->USBCmdData;
+				bEPStat = LPC_USB->CmdData;
 				// convert EP pipe stat into something HW independent
 				bStat = ((bEPStat & EPSTAT_FE) ? EP_STATUS_DATA : 0) |
 						((bEPStat & EPSTAT_ST) ? EP_STATUS_STALLED : 0) |
@@ -586,13 +586,13 @@ BOOL USBHwInit(void)
 
 	  
 	// disable/clear all interrupts for now
-	LPC_USB->USBDevIntEn = 0;
-	LPC_USB->USBDevIntClr = 0xFFFFFFFF;
-	LPC_USB->USBDevIntPri = 0;
+	LPC_USB->DevIntEn = 0;
+	LPC_USB->DevIntClr = 0xFFFFFFFF;
+	LPC_USB->DevIntPri = 0;
 
-	LPC_USB->USBEpIntEn = 0;
-	LPC_USB->USBEpIntClr = 0xFFFFFFFF;
-	LPC_USB->USBEpIntPri = 0;
+	LPC_USB->EpIntEn = 0;
+	LPC_USB->EpIntClr = 0xFFFFFFFF;
+	LPC_USB->EpIntPri = 0;
 
 	// by default, only ACKs generate interrupts
 	USBHwNakIntEnable(0);

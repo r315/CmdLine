@@ -19,9 +19,9 @@ void UART3_IRQHandler(void){
 }
 
 void I2S_IRQHandler(void){
-	I2S_DMA_IRQHandler(&i2s);	
+	I2S_Handler(&i2s);	
 }
 
 void DMA_IRQHandler(void){
-	I2S_DMA_IRQHandler(NULL);
+	I2S_Handler(NULL);
 }
