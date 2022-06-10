@@ -6,14 +6,26 @@
 extern "C" {
 #endif
 
-#include "command.h"
+#include "console.h"
+#include "dac.h"
 
-class CmdAwg : public Command{
+class CmdAwg : public ConsoleCommand{
+    Console *console;
+    dactype_t dac;
 
 public:
-    CmdAwg () : Command("awg") { }
+    void init(void *params) { console = static_cast<Console*>(params); }
+
     char execute(void *ptr);
     void help(void);
+    
+    CmdAwg () : ConsoleCommand("awg") { flags = 0; }
+
+private:
+    uint8_t flags;
+
+    void dacEnable(uint8_t en);
+
 };
 
 

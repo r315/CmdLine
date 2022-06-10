@@ -59,7 +59,7 @@ char CmdI2s::execute(void *ptr){
 	        i2s.rxbuffer[i] = 0;
         }
 
-        LPC_I2S->IRQ = (8 << 16) | (1 << 8) | I2S_IRQ_RX_EN;
+        LPC_I2S->IRQ = (8 << 16) | (1 << 8) | IRQ_RX_IRQ_EN;
 
         I2S_Start(&i2s);
 

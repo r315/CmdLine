@@ -19,7 +19,6 @@
 #include "cmdtft.h"
 #include "cmdencoder.h"
 
-
 StdOut *userio = BOARD_STDIO;
 
 #if defined (BOARD_BLUEBOARD)
@@ -29,6 +28,7 @@ StdOut *userio = BOARD_STDIO;
 #include "cmdsd.h"
 #include "cmdsbus.h"
 #include "cmdi2s.h"
+#include "cmdawg.h"
 
 enum {
     MODE_LPCBUS = 0,
@@ -123,7 +123,7 @@ extern "C" void App(void){
 	//CmdGpio gpio();
 	//CmdMem mem();
 	//CmdI2c i2c();
-    //CmdAwg awg();
+    CmdAwg awg;
 	CmdTft tft;
 	CmdI2s i2s;
 
@@ -143,7 +143,7 @@ extern "C" void App(void){
     //console.addCommand(&spi);
     //console.addCommand(&avr);
     //console.addCommand(&test);
-    //console.addCommand(&awg);
+    console.addCommand(&awg);
 	console.addCommand(&ver);
 	console.addCommand(&tft);
 	console.addCommand(&i2s);

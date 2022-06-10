@@ -6,7 +6,6 @@
 extern "C" {
 #endif
 
-#include <LPC17xx.h>
 #include "command.h"
 
 #define GPIO_PORT_TYPE LPC_GPIO_TypeDef
