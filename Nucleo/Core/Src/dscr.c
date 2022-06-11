@@ -30,7 +30,7 @@
 
 typedef struct {
     TIM_TypeDef *tim;
-    dmactrl_t dma;
+    dmatype_t dma;
     void (*cb)(uint32_t ncap);
 }dscr_t;
 
@@ -70,27 +70,18 @@ void DSCR_Init(void){
     GPIO_InitStruct.Alternate = GPIO_AF1_TIM1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
-    DMA_Request(&dsc.dma, DMA1_TIM1_CH1);
-    DMA_Channel_TypeDef *dma_channel = (DMA_Channel_TypeDef*)dsc.dma.channel;
-
-    dma_channel->CCR =
-            DMA_CCR_MSIZE_0 |                           // 16bit Dst size
-			DMA_CCR_PSIZE_0 |                           // 16bit src size
-			DMA_CCR_TCIE;                               // Enable Transfer Complete interrupt
-    dma_channel->CPAR = (uint32_t)&CAP_TIM->CCR1;       // Peripheral source
-    dma_channel->CCR |= DMA_CCR_MINC;                   // Enable memory increment
-
-    DMA_Request(&dsr.dma, DMA1_TIM1_CH4);
-    dma_channel = (DMA_Channel_TypeDef*)dsr.dma.channel;
-
-    dma_channel->CCR =
-            DMA_CCR_MSIZE_0 |                           // 16bit Dst size
-			DMA_CCR_PSIZE_0 |                           // 16bit src size
-            DMA_CCR_DIR |                               // Transfer memory to peripheral
-			DMA_CCR_TCIE;                               // Enable Transfer Complete interrupt
-    dma_channel->CPAR = (uint32_t)&CAP_TIM->CCR4;       // Peripheral source
-    dma_channel->CCR |= DMA_CCR_MINC;                   // Enable memory increment
+    dsc.dma.src = (void*)&CAP_TIM->CCR1;
+    dsc.dma.ssize = DMA_CCR_PSIZE_16;
+    dsc.dma.dsize = DMA_CCR_MSIZE_16;
+    dsc.dma.dir = DMA_DIR_P2M;
+    DMA_Config(&dsc.dma, DMA1_REQ_TIM1_CH1);
     
+    dsr.dma.dst = (void*)&CAP_TIM->CCR4;
+    dsr.dma.dsize = DMA_CCR_PSIZE_16;
+    dsr.dma.ssize = DMA_CCR_MSIZE_16;
+    dsr.dma.dir = DMA_DIR_M2P;
+    DMA_Config(&dsr.dma, DMA1_REQ_TIM1_CH4);
+        
     HAL_NVIC_EnableIRQ(CAP_DMA_IRQn);
     HAL_NVIC_EnableIRQ(REP_DMA_IRQn);
     HAL_NVIC_EnableIRQ(TIMEOUT_TIM_IRQn);
@@ -105,7 +96,7 @@ void DSCR_Init(void){
  * \param duration  : Timeout of capture in ms, capture will end after this time from 1st capture
  *  */
 void DSCR_StartCapture(uint16_t *dst, uint32_t size, uint32_t duration, void(*cb)(uint32_t)){
-    DMA_Channel_TypeDef *dma_channel = (DMA_Channel_TypeDef*)dsc.dma.channel;
+    DMA_Channel_TypeDef *dma_channel = (DMA_Channel_TypeDef*)dsc.dma.stream;
 
     DSCR_StopCapture();
 
@@ -133,7 +124,7 @@ void DSCR_StartCapture(uint16_t *dst, uint32_t size, uint32_t duration, void(*cb
  *  */
 uint32_t DSCR_WaitCapture(void){
     while(dsc.tim->CR1 & TIM_CR1_CEN);
-    return ((DMA_Channel_TypeDef*)dsc.dma.channel)->CNDTR;
+    return ((DMA_Channel_TypeDef*)dsc.dma.stream)->CNDTR;
 }
 
 /**
@@ -144,7 +135,7 @@ void DSCR_StopCapture(void){
     dsc.tim->CCER &= ~TIM_CCER_CC1E;        // Disable channel 1
     dsc.tim->CR1 &= ~TIM_CR1_CEN;           // Stop capture timer
     ((DMA_Channel_TypeDef*)
-    dsc.dma.channel)->CCR &= ~DMA_CCR_EN;   // Disable DMA
+    dsc.dma.stream)->CCR &= ~DMA_CCR_EN;   // Disable DMA
 }
 
 /**
@@ -154,7 +145,7 @@ void DSCR_StopCapture(void){
  * \param size : size of buffer
  * */
 void DSCR_Replay(uint16_t *src, uint32_t size){
-    DMA_Channel_TypeDef *dma_channel = (DMA_Channel_TypeDef*)dsr.dma.channel;
+    DMA_Channel_TypeDef *dma_channel = (DMA_Channel_TypeDef*)dsr.dma.stream;
     
     if(size == 0){
         return;
@@ -182,7 +173,7 @@ void DSCR_Replay(uint16_t *src, uint32_t size){
 static void DSCR_CallBack(void){
     if(dsc.cb != NULL){
         // Call callback with remaining captures
-        dsc.cb(((DMA_Channel_TypeDef*)dsc.dma.channel)->CNDTR);
+        dsc.cb(((DMA_Channel_TypeDef*)dsc.dma.stream)->CNDTR);
     }
 }
 /** 
@@ -219,7 +210,7 @@ void DSCR_ReplayHandler(void){
     CLEAR_BIT(dsr.tim->CR1, TIM_CR1_CEN);      // Stop timer
     CLEAR_BIT(dsc.tim->CCER,TIM_CCER_CC4E);    // Disable channel 4
     ((DMA_Channel_TypeDef*)
-    dsr.dma.channel)->CCR &= ~DMA_CCR_EN;      // Disable DMA
+    dsr.dma.stream)->CCR &= ~DMA_CCR_EN;      // Disable DMA
     LED_OFF;
 }
 

@@ -231,14 +231,6 @@ void USART2_IRQHandler(void)
     /* USER CODE END USART2_IRQn 1 */
 }
 
-void DMA2_Channel4_IRQHandler(void)
-{
-    if (DMA2->ISR & DMA_ISR_TCIF4)
-    {
-        SPI_DMA_IRQHandler(BOARD_SPIDEV);
-    }
-    DMA2->IFCR = DMA_IFCR_CGIF4;    
-}
 /* USER CODE BEGIN 1 */
 
 void TIM1_BRK_TIM15_IRQHandler(void)
@@ -246,20 +238,6 @@ void TIM1_BRK_TIM15_IRQHandler(void)
     DSCR_TimeoutHandler();
 }
 
-void DMA1_Channel2_IRQHandler(void)
-{
-  if(DMA1->ISR & DMA_ISR_GIF2){
-      DSCR_CaptureHandler();
-      DMA1->IFCR = (DMA_IFCR_CGIF2 | DMA_IFCR_CTCIF2 | DMA_IFCR_CTEIF2);
-  }
-}
-
-void DMA1_Channel4_IRQHandler(void){
-  if(DMA1->ISR & DMA_ISR_GIF4){
-      DSCR_ReplayHandler();
-      DMA1->IFCR = (DMA_IFCR_CGIF4 | DMA_IFCR_CTCIF4 | DMA_IFCR_CTEIF4);
-  }
-}
 
 void TIM1_CC_IRQHandler(void)
 {

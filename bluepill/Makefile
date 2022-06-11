@@ -131,6 +131,7 @@ C_INCLUDES =  \
 -I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
 -I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 -I$(LIBEMB_PATH)/include \
+-I$(LIBEMB_PATH)/drv/inc \
 -I$(APP_DIR)/../inc \
 -I$(APP_DIR)/agif
 

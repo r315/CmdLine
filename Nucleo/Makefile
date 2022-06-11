@@ -120,6 +120,7 @@ C_INCLUDES =  \
 -I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(REPOSITORY)/Drivers/CMSIS/Include \
 -I$(LIBEMB_PATH)/include \
+-I$(LIBEMB_PATH)/drv/inc \
 -I$(APP_DIR)/../inc \
 -I$(APP_DIR)/agif \
 

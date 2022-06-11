@@ -75,7 +75,7 @@ int main(void)
 
 	BOARD_SPIDEV->bus = SPI_BUS0;
 	BOARD_SPIDEV->freq = 40000;
-	DMA_Request(&BOARD_SPIDEV->dma, DMA2_SPI1_TX);
+
 	SPI_Init(BOARD_SPIDEV);
 	
 	App();
