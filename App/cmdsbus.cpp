@@ -28,15 +28,16 @@
 #include "board.h"
 #include "cmdsbus.h"
 #include "uart.h"
+#include "timer.h"
 
 //static StdOut uart;
 
-#define FRAME_RATE              14000
+#define FRAME_RATE              14000 // Send frame each 14ms
 #define PWM_MIN_PULSE           128  // 960
 #define PWM_CENTER_PULSE        992  // 1500
 #define PWM_MAX_PULSE           1793 // 2000
 #define SBUS_BAUDRATE           100000
-#define SBUS_SERIAL_PORT        &BOARD_SERIAL1_HANDLER.port
+#define SBUS_SERIAL_PORT        &BOARD_SERIAL0_HANDLER.port
 
 #define SBUS_NUM_CHANNELS       16
 #define SBUS_FRAME_START        0x0F
@@ -109,7 +110,7 @@ void printSbusFrame(sbusframe_t *frame){
     
 }
 
-void sendFrame(void *frame){
+void sendFrame(void){
 
     // check if frame was updated
     if(FLAG_SET(NEW_DATA_FLAG)){
@@ -243,7 +244,7 @@ int32_t aux;
 
         //updateChannel(&sbus.next_frame, THROTLE_CHANNEL, PWM_MIN_PULSE);
         SET_FLAG(NEW_DATA_FLAG);
-		TIMER_Periodic(LPC_TIM3, 0, FRAME_RATE, sendFrame, &sbus.frame);
+		TIMER_SetInterval(sendFrame, FRAME_RATE);
 	}	
 
 	while (*p1 != '\0') {

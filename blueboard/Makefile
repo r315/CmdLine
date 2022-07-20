@@ -12,7 +12,7 @@ BSP_PATH   = $(LIBEMB_PATH)/bsp/blueboard
 C_SOURCES =\
 $(BSP_PATH)/blueboard.c \
 $(LIBEMB_PATH)/drv/clock/clock_lpc17xx.c \
-$(LIBEMB_PATH)/drv/timer/timer.c \
+$(LIBEMB_PATH)/drv/timer/tim_lpc17xx.c \
 $(LIBEMB_PATH)/drv/tft/ili9328.c \
 $(LIBEMB_PATH)/display/lcd.c \
 $(LIBEMB_PATH)/display/display.c \
@@ -25,13 +25,13 @@ $(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
 $(LIBEMB_PATH)/drv/gpio/gpio_lpc17xx.c \
 $(LIBEMB_PATH)/drv/uart/uart_lpc17xx.c \
 $(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
+$(LIBEMB_PATH)/drv/rng/rng_software.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/debug.c \
 $(LIBEMB_PATH)/button/button.c \
 $(LIBEMB_PATH)/drv/mmc/mmc.c \
 $(LIBEMB_PATH)/pff/pff.c \
-$(LIBEMB_PATH)/drv/rng/rng_software.c \
 $(PRJ_DIR)/usbdrv/usbserial.c \
 $(PRJ_DIR)/usbdrv/usbhw_lpc.c \
 $(PRJ_DIR)/usbdrv/usbcontrol.c \
@@ -129,12 +129,12 @@ $(TARGET).hex: $(TARGET).elf
 
 $(TARGET).bin: $(TARGET).elf $(CHECKSUM)
 	@echo "Generating bin file" $@
-	$(OBJCOPY) -O binary $(TARGET).elf $@
+	$(OBJCOPY) -O binary -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 #hd -n 128 $@
 	$(CHECKSUM) $@
 
 bin: $(TARGET).bin
-
+hex: $(TARGET).hex
 
 stats: $(TARGET).elf
 	@echo "---- Sections Summary ---"

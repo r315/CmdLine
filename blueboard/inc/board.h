@@ -8,7 +8,6 @@ extern "C" {
 #include <stdint.h>
 #include "blueboard.h"
 #include "lcd.h"
-#include "timer.h"
 #include "stdout.h"
 #include "debug.h"
 #include "pwm.h"

@@ -2,6 +2,7 @@
 #include "cmdavr.h"
 #include "cmdspi.h"
 #include "debug.h"
+#include "timer.h"
 
 #define READ_PROGRAM_PAGE_L "\x20\x00\x00\x00"
 #define READ_PROGRAM_PAGE_H "\x28\x00\x00\x00"
@@ -75,34 +76,38 @@ uint32_t timeout = 0x100000;
  * 
  * If the DWEN bit is programmed the protocol is enabled and 
  * starts upon a reset by sending a sync byte 0x55. This byte is used
- * to determin the baudrate by measuring each pulse length. 
- * The autobaud configures timer3 to capture the duration of the 
- * first low pulse and then try to communicate using that time.
+ * to determine the baudrate by measuring each pulse length. 
+ * Current implementation only measures the duration of the first low pule 
+ * after the 150us initial pulse. The measured duration is set as bit time reference 
+ * and used for communication.
  * 
  * */
 
-// Called when a falling edge is detected on P0.23 
-void autoBaudCb(void *capValue){
+// Called when a falling edge is detected on reset pin (P0.23 for blue board)
+void autoBaudCb(uint32_t capValue){
     static uint32_t count = 0;
 	if(count == 0){
-		count = *((uint32_t*)capValue);
+		count = capValue;
 	}else{
-		count = *((uint32_t*)capValue) - count - 1;
+		count = capValue - count - 1;
 		
-		TIM_Stop(LPC_TIM3);
+		TIM_Reset(LPC_TIM3);
         tbit = count - 2;
 		count = 0;
 	}
 }
 
-// Called avery bit time
-void bitTime(void *ptr){
+// Called at every bit time
+void bitTime(void){
     tbit = 1;
 }
 
+// TODO: This can be optimized to use timer callback to send bits
+// and avoid blocking calls
+// This has to be tested due tos changes on timer API
 void avrSend_dW(uint8_t data){
 
-    TIMER_Periodic(LPC_TIM3, 0, (tbit >> 1) , bitTime, NULL);
+    TIMER_SetInterval(bitTime, (tbit >> 1));
     AVR_RST0;
 
 	for(uint8_t i = 0; i < 8; i++){
@@ -126,15 +131,16 @@ void avrSend_dW(uint8_t data){
     AVR_RST1;
 }
 
-// TODO: this needs to be optimized and tested
+// TODO: Optimize to use generic timer API and perform testing
 char avrDisable_dW(void){
-uint32_t autobaud;
+    uint32_t autobaud;
 
     AVR_RST1; DelayMs(5);
     AVR_RST0; DelayMs(5);
-    TIMER_CAP_Init(LPC_TIM3, 0, CAP_FE, autoBaudCb);
+    TIM_InitCapture(LPC_TIM3);
+    TIM_Capture(LPC_TIM3, 0, 1, autoBaudCb);  // 1: Capture on falling edge
     tbit = 0;
-    AVR_RSTZ; DelayMs(50);
+    AVR_RSTZ; DelayMs(50); // Skip 150us initial pulse
     AVR_RST1;
     AVR_RSTY;    
     while(!tbit);
@@ -159,15 +165,16 @@ uint32_t autobaud;
     }
 #endif
     autobaud = tbit;
+    TIM_InitMatch(LPC_TIM3);
     //VCOM_printf("Tbit = %dus\n",tbit/2);
-    TIMER_Periodic(LPC_TIM3, 0, tbit * 7, bitTime, NULL);
+    TIMER_SetInterval(bitTime, tbit * 7);
     TIM_Restart(LPC_TIM3);
     tbit = 0;
     while(!tbit);
     tbit = autobaud;
     AVR_RSTY;
     avrSend_dW(0x06);
-    TIM_Stop(LPC_TIM3);
+    TIM_Reset(LPC_TIM3);
     return 0;
 }
 
