@@ -115,7 +115,7 @@ uint8_t spi_read_lock_bits(void){
 }
 
 uint8_t spi_write_read(uint8_t *buf){
-   spiWrite(buf, AVR_INSTRUCTION_SIZE);
+   BOARD_SPI_Write(buf, AVR_INSTRUCTION_SIZE);
 return buf[3];
 }
 

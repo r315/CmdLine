@@ -147,7 +147,7 @@ char CmdTft::execute(void *ptr){
 
     if(xstrcmp("init", (const char*)argv[0]) == 0){
         if(yatoi(argv[1], (int32_t*)&val1)){
-            LCD_Init(BOARD_SPIDEV);
+            //BOARD_LCD_Init(BOARD_SPIDEV); FIX: for NUCLEO and BP, implement on board or main
 		    LCD_Rotation(val1 & 3);
 		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
 		    LCD_Bkl(1);
@@ -341,7 +341,7 @@ uint32_t CmdTft::fps(void (*func)(void)){
         console->print("\rfps %d ", fps);
         fps = 0;
         totalms = GetTick();;
-        LED_TOGGLE;
+        LED1_TOGGLE;
     }
 
     return GetTick() - start; // return elapsed time from last call

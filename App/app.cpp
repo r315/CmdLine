@@ -19,7 +19,7 @@
 #include "cmdtft.h"
 #include "cmdencoder.h"
 
-StdOut *userio = BOARD_STDIO;
+StdOut *userio;
 
 #if defined (BOARD_BLUEBOARD)
 #include "cmdspi.h"
@@ -107,8 +107,8 @@ extern "C" void App(void){
     
     uint8_t mode;
     Console console;
-
-    //userio->init();    
+	
+    userio = &BOARD_GetSerial()->out;    
     console.init(userio, "Blueboard>");    
     
 	CmdEcho echo;

@@ -57,7 +57,7 @@ uint32_t timeout = 0x100000;
     while(timeout--){
         
         memcpy(Device.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
-        spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+        BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
         if( !(Device.data[3] & 0x01)){
             return;
         }                
@@ -193,7 +193,7 @@ char avrProgrammingEnable(uint8_t trydW){
 
     memcpy(Device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
 
-    spiSetFrequency(DEFAULT_AVR_SPI_FREQ);
+    BOARD_SPI_SetFrequency(DEFAULT_AVR_SPI_FREQ);
     
     AVR_RSTY;
 
@@ -202,7 +202,7 @@ char avrProgrammingEnable(uint8_t trydW){
         DelayMs(2);
         AVR_RST0;
         DelayMs(20);
-        spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+        BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
         if(Device.data[2] == 0x53){
             Device.status |= AVR_PROGRAMMING_ACTIVE;
             return AVR_RESPONSE_OK;
@@ -240,15 +240,15 @@ void avrDeviceCode(uint8_t *buf){
     }
 
     memcpy(Device.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     buf[2] = Device.data[3];
 
     memcpy(Device.data, DEVICE_CODE1_CMD, AVR_INSTRUCTION_SIZE);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     buf[1] = Device.data[3];
 
     memcpy(Device.data, DEVICE_CODE2_CMD, AVR_INSTRUCTION_SIZE);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     buf[0] = Device.data[3];
 
     buf[3] = 0;
@@ -270,7 +270,7 @@ void avrWriteFuses(uint8_t lh, uint8_t fuses){
     Device.data[3] = fuses;
     
 
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -283,11 +283,11 @@ uint32_t fuses;
     }
 
     memcpy(Device.data, READ_FUSE_L, AVR_INSTRUCTION_SIZE);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     fuses = Device.data[3];
 
     memcpy(Device.data, READ_FUSE_H, AVR_INSTRUCTION_SIZE);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     fuses |= Device.data[3] << 8;    
 
     return fuses;
@@ -301,7 +301,7 @@ void avrChipErase(void){
 
     memcpy(Device.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
 
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -317,7 +317,7 @@ uint16_t value = 0;
     memcpy(Device.data, READ_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
     Device.data[1] = HIGH_BYTE(addr);
     Device.data[2] = LOW_BYTE(addr);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     value = Device.data[3];
 
     value <<= 8;
@@ -326,7 +326,7 @@ uint16_t value = 0;
     memcpy(Device.data, READ_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
     Device.data[1] = HIGH_BYTE(addr);
     Device.data[2] = LOW_BYTE(addr);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     value |= Device.data[3];    
 
     return value;
@@ -342,13 +342,13 @@ void avrLoadProgramPage(uint8_t addr, uint16_t value){
     memcpy(Device.data, LOAD_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
     Device.data[2] = addr;
     Device.data[3] = LOW_BYTE(value);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
     
     /* load high byte */
     memcpy(Device.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
     Device.data[2] = addr;
     Device.data[3] = HIGH_BYTE(value);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
 }
 
 void avrWriteProgramPage(uint16_t addr){ 
@@ -360,7 +360,7 @@ void avrWriteProgramPage(uint16_t addr){
     memcpy(Device.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
     Device.data[1] = HIGH_BYTE(addr);
     Device.data[2] = LOW_BYTE(addr);
-    spiWrite(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }

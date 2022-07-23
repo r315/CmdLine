@@ -25,6 +25,7 @@ $(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
 $(LIBEMB_PATH)/drv/gpio/gpio_lpc17xx.c \
 $(LIBEMB_PATH)/drv/uart/uart_lpc17xx.c \
 $(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
+$(LIBEMB_PATH)/drv/adc/adc_lpc17xx.c \
 $(LIBEMB_PATH)/drv/rng/rng_software.c \
 $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
@@ -39,7 +40,6 @@ $(PRJ_DIR)/usbdrv/usbstdreq.c \
 $(PRJ_DIR)/stk500/stk500.c \
 $(PRJ_DIR)/src/bb_serial.c \
 $(PRJ_DIR)/src/bb_main.c \
-$(PRJ_DIR)/src/bb_it.c \
 
 #$(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
 $(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
@@ -55,6 +55,7 @@ $(PRJ_DIR)/src/cmdavr.cpp \
 $(PRJ_DIR)/src/cmdlsd.cpp \
 $(PRJ_DIR)/src/cmdpwm.cpp \
 $(PRJ_DIR)/src/cmdawg.cpp \
+$(PRJ_DIR)/src/cmdadc.cpp \
 $(PRJ_DIR)/stk500/stk500_service.cpp \
 
 C_SOURCES   +=startup_lpc1768.c

@@ -21,10 +21,6 @@ public:
     void help(void);
 };
 
-void spiWriteBuffer(SpiBuffer *buf);
-void spiWrite(uint8_t *data, uint32_t len);
-void spiSetFrequency(uint32_t freq);
-
 #ifdef __cplusplus
 }
 #endif

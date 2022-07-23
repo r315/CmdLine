@@ -3,23 +3,8 @@
 #include "cmdspi.h"
 
 
-void spiInit(void){
-    BOARD_SPIDEV->bus = SPI_BUS1;
-    BOARD_SPIDEV->freq = 500000;
-    BOARD_SPIDEV->flags  = SPI_MODE0;
-    SPI_Init(BOARD_SPIDEV);
-}
-
-void spiSetFrequency(uint32_t freq){
-    if((BOARD_SPIDEV->flags & SPI_ENABLED) == 0){
-		spiInit();
-	}    
-    BOARD_SPIDEV->freq = 100000;    
-    SPI_Init(BOARD_SPIDEV);
-}
-
 #ifdef SPI_BITBANG
-uint8_t out_(uint8_t data){
+static uint8_t out_(uint8_t data){
 uint8_t datain = 0;
 	for(int i = 0; i < 8; i++){
 		if(data & (0x80>>i)){
@@ -37,21 +22,15 @@ uint8_t datain = 0;
 	return datain
 }
 
-void spiWrite(uint8_t *data, uint32_t len){
-	if((spistatus & SPI_INIT) == 0){
-		spiInit();
-	}	
+static void spiWrite(uint8_t *data, uint32_t len){
 	for(int i = 0; i < len; i++){
 		out_(*(data + i));
 	}
 }
 #else
 
-void spiWrite(uint8_t *data, uint32_t len){
-	if((BOARD_SPIDEV->flags & SPI_ENABLED) == 0){
-		spiInit();
-	}	
-    SPI_Write(BOARD_SPIDEV, data, len);
+static void spiWrite(uint8_t *data, uint32_t len){	
+    BOARD_SPI_Write(data, len);
 }
 #endif
 
@@ -72,17 +51,16 @@ void CmdSpi::help(void){
 }
 
 char CmdSpi::execute(void *ptr){
-uint8_t i, data[8];
-char *p1;
-SpiBuffer spibuf;
-uint32_t aux;
+	char *argv[4] = {0};
+    int argc;
+	uint8_t i, data[8];
+	SpiBuffer spibuf;
 
-	p1 = (char*)ptr;
+	uint32_t aux;
 
-    //_vcom = this->vcom;
+	argc = strToArray((char*)ptr, argv);
 
-	 // check parameters
-    if( p1 == NULL || *p1 == '\0'){
+    if(argc < 1){
         help();
         return CMD_OK;
     }
@@ -90,20 +68,15 @@ uint32_t aux;
     i = 0;
     spibuf.data = data;
 
-	// parse options
-	while(*p1 != '\0'){
-		if( !xstrcmp(p1,"-w")){
-			    p1 = nextWord(p1);
-            while(*p1 != '\0'){
-                nextHex(&p1, &aux);
+	if( !xstrcmp(argv[0],"-w")){	
+		while(argv[i] != NULL){
+            if(hatoi(argv[i], &aux)){        
                 spibuf.data[i] = aux;
-                i++;
             }
-            spibuf.len = i;
-            spiWriteBuffer(&spibuf);
-        }else{
-			p1 = nextWord(p1);
-		}
+            i++;
+        }
+        spibuf.len = i;
+        spiWriteBuffer(&spibuf);
 	}
 
     return CMD_OK;

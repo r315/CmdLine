@@ -37,7 +37,6 @@
 #define PWM_CENTER_PULSE        992  // 1500
 #define PWM_MAX_PULSE           1793 // 2000
 #define SBUS_BAUDRATE           100000
-#define SBUS_SERIAL_PORT        &BOARD_SERIAL0_HANDLER.port
 
 #define SBUS_NUM_CHANNELS       16
 #define SBUS_FRAME_START        0x0F
@@ -230,7 +229,7 @@ int32_t aux;
 	}
 
 	if (sbus.state == NOT_RUNNING) {
-        sbus.uart = SBUS_SERIAL_PORT;
+        sbus.uart = &BOARD_GetSerialAux()->port;
         sbus.uart->speed = SBUS_BAUDRATE;
         UART_Init(sbus.uart);
 		sbus.state = RUNNING;
@@ -280,9 +279,6 @@ int32_t aux;
         }else if(isNextWord(&p1, "receive")){
             //UART_Attach(sbus.uart, receiveCB);
             //UART_Read(sbus.uart, NULL, 0);
-            break;
-        }else if(isNextWord(&p1, "test")){
-            BOARD_SERIAL1->xputchar('0');
             break;
         }else{
             p1 = nextWord(p1);
