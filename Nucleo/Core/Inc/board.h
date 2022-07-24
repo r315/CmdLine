@@ -40,7 +40,7 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
  * */
 #define LED_ON      HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET)
 #define LED_OFF     HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET)
-#define LED_TOGGLE  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin)
+#define LED1_TOGGLE  HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin)
 
 #define BOARD_GPIO_Init(_P, _IO, _M) // TODO as in bluepill
 

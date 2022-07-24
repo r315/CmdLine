@@ -63,7 +63,7 @@ int main(void)
 
 	SystemClock_Config();
 
-	BOARD_SPIDEV->flags = SPI_SW_CS; // GPIO_Init depends of this
+	BOARD_SPIDEV->flags = SPI_HW_CS; // GPIO_Init depends of this
 
 	MX_GPIO_Init();
 	MX_DMA_Init();
@@ -287,10 +287,10 @@ static void MX_GPIO_Init(void)
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
 
-		if(BOARD_SPIDEV->flags & SPI_SW_CS){
-			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
-		}else{
+		if(BOARD_SPIDEV->flags & SPI_HW_CS){
 			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin | LCD_CS_Pin;
+		}else{
+			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
 		}
 		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
@@ -303,7 +303,7 @@ static void MX_GPIO_Init(void)
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
-		if(BOARD_SPIDEV->flags & SPI_SW_CS){
+		if(!(BOARD_SPIDEV->flags & SPI_HW_CS)){
 			GPIO_InitStruct.Pin = LCD_CS_Pin;
 			HAL_GPIO_Init(LCD_CS_GPIO_Port, &GPIO_InitStruct);
 		}
