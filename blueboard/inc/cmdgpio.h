@@ -6,14 +6,15 @@
 extern "C" {
 #endif
 
-#include "command.h"
+#include "console.h"
 
 #define GPIO_PORT_TYPE LPC_GPIO_TypeDef
 
-class CmdGpio : public Command{
-    
+class CmdGpio : public ConsoleCommand{
+    Console *console;
 public:
-    CmdGpio (Vcom *vc) : Command("gpio", vc) { }
+    CmdGpio () : ConsoleCommand("gpio") { }
+    void init(void *params) { console = static_cast<Console*>(params); }
     char execute(void *ptr);
     void help(void);
     char setPortState(GPIO_PORT_TYPE *port, uint32_t value);

@@ -39,6 +39,7 @@ void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_
 void BOARD_LCD_Scroll(uint16_t sc);
 void BOARD_SPI_InitAux(void);
 spibus_t *BOARD_GetSpiAux(void);
+
 #ifdef __cplusplus
 }
 #endif
