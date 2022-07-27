@@ -50,6 +50,7 @@ $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdsbus.cpp \
 $(APP_DIR)/cmdtft.cpp \
 $(APP_DIR)/cmdi2s.cpp \
+$(APP_DIR)/cmdgpio.cpp \
 $(PRJ_DIR)/src/cmdspi.cpp \
 $(PRJ_DIR)/src/cmdavr.cpp \
 $(PRJ_DIR)/src/cmdlsd.cpp \

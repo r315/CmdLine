@@ -148,19 +148,3 @@ serialhandler_t *BOARD_GetSerial(void){
 serialhandler_t *BOARD_GetSerialAux(void){
     return &hs3;
 }
-
-void UART0_IRQHandler(void){
-	UART_IRQHandler(&hs0.port);
-}
-
-void UART1_IRQHandler(void){
-	UART_IRQHandler(&hs1.port);
-}
-
-void UART2_IRQHandler(void){
-	//UARTx_IRQHandler(&BOARD_SERIAL2_HANDLER);
-}
-
-void UART3_IRQHandler(void){
-	UART_IRQHandler(&hs3.port);
-}

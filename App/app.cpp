@@ -29,6 +29,7 @@ StdOut *userio;
 #include "cmdsbus.h"
 #include "cmdi2s.h"
 #include "cmdawg.h"
+#include "cmdgpio.h"
 
 enum {
     MODE_LPCBUS = 0,
@@ -120,7 +121,7 @@ extern "C" void App(void){
     CmdSd sd;
 	CmdPwm pwm;
 	CmdVersion ver;
-	//CmdGpio gpio();
+	CmdGpio gpio;
 	//CmdMem mem();
 	//CmdI2c i2c();
     CmdAwg awg;
@@ -136,7 +137,7 @@ extern "C" void App(void){
     console.addCommand(&sd);	
 	//console.addCommand(&echo);
 	console.addCommand(&pwm);
-	//console.addCommand(&gpio);
+	console.addCommand(&gpio);
 	//console.addCommand(&led);
 	//console.addCommand(&mem);
 	//console.addCommand(&i2c);
