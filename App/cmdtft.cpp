@@ -132,21 +132,17 @@ void CmdTft::help(void){
     console->putChar('\n');
 }
 
-char CmdTft::execute(void *ptr){
+char CmdTft::execute(int argc, char **argv){
     int32_t val1;
-    char *argv[4] = {0};
-    int argc;
     char c;
-
-    argc = strToArray((char*)ptr, argv);
 
     if(argc < 1){
         help();
         return CMD_OK;
     }
 
-    if(xstrcmp("init", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], (int32_t*)&val1)){
+    if(xstrcmp("init", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], (int32_t*)&val1)){
             //BOARD_LCD_Init(BOARD_SPIDEV); FIX: for NUCLEO and BP, implement on board or main
 		    LCD_Rotation(val1 & 3);
 		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
@@ -155,8 +151,8 @@ char CmdTft::execute(void *ptr){
         }
     }
 
-    if(xstrcmp("clear", (const char*)argv[0]) == 0){
-        if(hatoi(argv[1], (uint32_t*)&val1)){
+    if(xstrcmp("clear", (const char*)argv[1]) == 0){
+        if(hatoi(argv[2], (uint32_t*)&val1)){
             uint32_t ms = GetTick();
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
             ms = GetTick() - ms;
@@ -165,7 +161,7 @@ char CmdTft::execute(void *ptr){
         }
     }
 
-    if(xstrcmp("block", (const char*)argv[0]) == 0){
+    if(xstrcmp("block", (const char*)argv[1]) == 0){
         uint16_t *buf = tile;
         for(uint8_t i = 0; i < 128/16; i++){
             for(uint8_t j = 0; j < 160/16; j++){
@@ -177,7 +173,7 @@ char CmdTft::execute(void *ptr){
         return CMD_OK;
     }
 
-    if(xstrcmp("scroll", (const char*)argv[0]) == 0){    
+    if(xstrcmp("scroll", (const char*)argv[1]) == 0){    
         Scroll_Setup();
         do{           
             console->print("\r%d  ", scroll);
@@ -188,10 +184,10 @@ char CmdTft::execute(void *ptr){
         return CMD_OK_LF;
     }
 
-    if(xstrcmp("rc", (const char*)argv[0]) == 0){
+    if(xstrcmp("rc", (const char*)argv[1]) == 0){
         uint16_t f = 0;
 
-        if((const char*)argv[1] == NULL){            
+        if((const char*)argv[2] == NULL){            
             RandomColors_Loop();
             return CMD_OK;
         }
@@ -218,11 +214,11 @@ char CmdTft::execute(void *ptr){
         return CMD_OK_LF;
     }
 
-    if(xstrcmp("hsv", (const char*)argv[0]) == 0){
+    if(xstrcmp("hsv", (const char*)argv[1]) == 0){
         uint8_t h = 0, s, v;
         uint16_t *buf = tile;
-        if(yatoi(argv[1], (int32_t*)&s)){
-            if(yatoi(argv[2], (int32_t*)&v)){                
+        if(yatoi(argv[2], (int32_t*)&s)){
+            if(yatoi(argv[3], (int32_t*)&v)){                
                 for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
                     for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
                         memset16(buf, HsvToRgb(h++, s, v), 64);                        
@@ -235,7 +231,7 @@ char CmdTft::execute(void *ptr){
         }
     }
 
-    if(xstrcmp("demo", (const char*)argv[0]) == 0){        
+    if(xstrcmp("demo", (const char*)argv[1]) == 0){        
         char c, sync_fps = 0;
         uint32_t elapsed = 0;
         uint8_t state = 0, demo = 0;
@@ -304,7 +300,7 @@ char CmdTft::execute(void *ptr){
         return CMD_OK_LF;
     }
 #ifdef FEATURE_GIF
-    if(xstrcmp("gif", (const char*)argv[0]) == 0){
+    if(xstrcmp("gif", (const char*)argv[1]) == 0){
         long lTime;
         int iFrames = 0;        
         

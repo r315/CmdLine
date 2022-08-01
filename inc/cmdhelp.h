@@ -23,7 +23,7 @@ public:
 		console->putChar('\n');
 	}
 
-	char execute(void *ptr) {
+	char execute(int argc, char **argv) {
 		help();
 		return CMD_OK;
 	}	

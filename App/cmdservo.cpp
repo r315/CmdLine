@@ -6,10 +6,10 @@ void CmdServo::help(void){
     console->print("Generate RC Servo signal on pin PB9\n"); 
 }
 
-char CmdServo::execute(void *ptr){
+char CmdServo::execute(int argc, char **argv){
 int32_t curValue;
 
-    if(!nextInt((char**)&ptr, &curValue)){
+    if(!yatoi(argv[1], &curValue)){
         help(); 
         return CMD_BAD_PARAM;
     }

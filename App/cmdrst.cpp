@@ -4,7 +4,7 @@
 void CmdRst::help(void){
 }
 
-char CmdRst::execute(void *ptr){
+char CmdRst::execute(int argc, char **argv){
     NVIC_SystemReset();
     return CMD_OK;
 }

@@ -26,6 +26,7 @@ extern "C" {
 #define DBG_LED_ON              HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
 #define DBG_LED_OFF             HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
 #define LED_TOGGLE              DBG_LED_TOGGLE
+#define LED1_TOGGLE             LED_TOGGLE
 
 /* 
  *
@@ -91,16 +92,6 @@ static inline void reenumerate_usb(void){
  * VLOAD PA2
  * ILOAD PA3
  * */
-
-/* ***********************************************************
- * ADC is triggered by TIM3 TRGO and performs dual 
- * simultaneous convertion. it converts 4 channels and transfers 
- * the result to memory using DMA 
- * 
- * \param ms    Time between convertions
- ************************************************************ */
-void ADC_Init(uint16_t);
-void ADC_Stop(void);
 
 /* ***********************************************************
  * Configure callback for end of transfer of ADC convertions

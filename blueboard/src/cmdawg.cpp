@@ -61,9 +61,7 @@ void CmdAwg::help(void){
     
 }
 
-char CmdAwg::execute(void *ptr){
-    char *argv[4] = {0};
-    int argc;
+char CmdAwg::execute(int argc, char **argv){
 
     if(!(flags & AWG_DAC_ON)){
         dacEnable(true);
@@ -71,22 +69,20 @@ char CmdAwg::execute(void *ptr){
         setupDac(&dac, (int16_t*)TEST_SIGNAL, sizeof(TEST_SIGNAL) / sizeof(uint16_t));
     }    
 
-    argc = strToArray((char*)ptr, argv);
-
     if(argc == 0){
         help();
     }
 
-    if(xstrcmp("single", (const char*)argv[0]) == 0){
+    if(xstrcmp("single", (const char*)argv[1]) == 0){
         dac.loop = 0;
         DAC_Config(&dac);
         DAC_Start(&dac);
     }
 
-    if(xstrcmp("start", (const char*)argv[0]) == 0){
-        if(xstrcmp("sine", (const char*)argv[1]) == 0){
+    if(xstrcmp("start", (const char*)argv[1]) == 0){
+        if(xstrcmp("sine", (const char*)argv[2]) == 0){
             setupDac(&dac, (int16_t*)sine100, sizeof(sine100) / sizeof(uint16_t));
-        }else if(xstrcmp("square", (const char*)argv[1]) == 0){
+        }else if(xstrcmp("square", (const char*)argv[2]) == 0){
             setupDac(&dac, (int16_t*)square, sizeof(square) / sizeof(uint16_t));
         }else{
             return CMD_BAD_PARAM;
@@ -97,22 +93,22 @@ char CmdAwg::execute(void *ptr){
         DAC_Start(&dac);
     }
 
-    if(xstrcmp("stop", (const char*)argv[0]) == 0){
+    if(xstrcmp("stop", (const char*)argv[1]) == 0){
         DAC_Stop(&dac);
     }
 
-    if(xstrcmp("write", (const char*)argv[0]) == 0){
-        if(hatoi(argv[1], (uint32_t*)&argc)){ 
+    if(xstrcmp("write", (const char*)argv[1]) == 0){
+        if(hatoi(argv[2], (uint32_t*)&argc)){ 
             DAC_Write(&dac, argc);
         }
     }
     
-    if(xstrcmp("pclk", (const char*)argv[0]) == 0){
+    if(xstrcmp("pclk", (const char*)argv[1]) == 0){
         console->print("PCLK: %d\n", CLOCK_GetPCLK(PCLK_DAC));
     }
 
-    if(xstrcmp("rate", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], (int32_t*)&argc)){ 
+    if(xstrcmp("rate", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], (int32_t*)&argc)){ 
             DAC_UpdateRate(&dac, argc);
         }
     }

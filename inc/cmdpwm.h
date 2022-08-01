@@ -16,7 +16,7 @@ public:
     void enable(uint8_t ch);
     void disable(uint8_t ch);
     void start(uint32_t period);
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
 };
 

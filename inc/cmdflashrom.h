@@ -13,7 +13,7 @@ class CmdFlashRom : public ConsoleCommand{
 public:
     CmdFlashRom () : ConsoleCommand("flashrom") { }
     void init(void *params) { console = static_cast<Console*>(params); }
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
 private:
     Console *console;

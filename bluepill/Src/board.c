@@ -2,13 +2,14 @@
 #include <stdout.h>
 #include "board.h"
 #include "usbd_cdc_if.h"
+#include "adc.h"
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
     BOARD_SPIDEV->freq = 1000000;
-    BOARD_SPIDEV->flags = SPI_SW_CS;
+    BOARD_SPIDEV->flags = SPI_HW_CS;
 
     SPI_Init(BOARD_SPIDEV);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DO_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
@@ -363,10 +364,11 @@ static uint16_t adcres[ADC_SAMPLES];
  * may be invoked
  * 
  * \param ms    Time between convertions
+ * TODO: FIX
  ************************************************************ */
 
-void ADC_Init(uint16_t ms){
-
+void ADC_Init(adctype_t *adc){
+uint32_t ms = 1000;
     /* Configure DMA Channel1*/
     RCC->AHBENR |= RCC_AHBENR_DMA1EN;           // Enable DMA1
 
@@ -457,7 +459,7 @@ uint16_t *ADC_LastConvertion(void){
     return adcres;
 }
 
-void ADC_Stop(void){
+void ADC_Stop(adctype_t *adc){
   TIM2->CR1 &= ~TIM_CR1_CEN;  
 }
 

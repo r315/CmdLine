@@ -16,8 +16,12 @@ public:
 		console = static_cast<Console*>(params);
 	}
 
-    char execute(void *ptr){
-        console->print("%s\n", (char*)ptr);
+    char execute(int argc, char **argv){
+        for (int i = 1; i < argc; i++) {
+            console->print("%s ", argv[i]);
+        }
+        
+        console->putChar('\n');
         return CMD_OK;
     }
     void help(void){}

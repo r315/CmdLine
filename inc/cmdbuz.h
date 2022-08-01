@@ -15,7 +15,7 @@ class CmdBuz : public ConsoleCommand{
 public:
     void init(void *params) { console = static_cast<Console*>(params);}
 
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
 
     CmdBuz () : ConsoleCommand("buz") { }    

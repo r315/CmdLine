@@ -19,7 +19,7 @@ void CmdFlashRom::help(void){
     console->print("Usage: flashrom -p bluepill_spi:dev=/dev/ttyACM0 --flash-size");
 }
 
-char CmdFlashRom::execute(void *ptr){
+char CmdFlashRom::execute(int argc, char **argv){
     uint8_t done = FALSE;
     uint8_t xfer_count = 0;
     spistate_e state = IDLE;

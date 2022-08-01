@@ -32,48 +32,44 @@ void CmdPwm::disable(uint8_t ch){
     ch_en &= ~(1 << ch);
 }
 
-char CmdPwm::execute(void *ptr){
+char CmdPwm::execute(int argc, char **argv){
     int32_t val1, val2;
-    char *argv[4];
-    int argc;
-
-    argc = strToArray((char*)ptr, argv);
 
     if(argc < 1){
         help();
         return CMD_OK;
     }
 
-    if(xstrcmp("start", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
+    if(xstrcmp("start", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
             start(val1);
             return CMD_OK;
         }
     }
 
-    if(xstrcmp("period", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
+    if(xstrcmp("period", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
             PWM_Freq(val1);
             return CMD_OK;
         }
     }
 
-    if(xstrcmp("enable", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
+    if(xstrcmp("enable", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
             enable(val1);
             return CMD_OK;
         }
     }
 
-    if(xstrcmp("disable", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
+    if(xstrcmp("disable", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
             disable(val1);
             return CMD_OK;
         }
     }
 
-    if(xstrcmp("set", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
+    if(xstrcmp("set", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
             if(yatoi(argv[2], &val2)){
                 PWM_Set(val1, val2);
                 return CMD_OK;
@@ -81,17 +77,17 @@ char CmdPwm::execute(void *ptr){
         }
     }
 
-    if(xstrcmp("get", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){            
+    if(xstrcmp("get", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){            
             val2 = PWM_Get(val1);
             console->print("PWM%d = %d\n", val1, val2);
             return CMD_OK;            
         }
     }
 
-    if(xstrcmp("pol", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
-            if(yatoi(argv[2], &val2)){
+    if(xstrcmp("pol", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
+            if(yatoi(argv[3], &val2)){
                 PWM_Polarity(val1, val2);
                 return CMD_OK;
             }

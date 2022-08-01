@@ -45,14 +45,9 @@ void CmdSpi::help(void){
 
 }
 
-char CmdSpi::execute(void *ptr){
-	char *argv[4] = {0};
-    int argc;
+char CmdSpi::execute(int argc, char **argv){
 	uint8_t i, data[8];
-
 	uint32_t aux;
-
-	argc = strToArray((char*)ptr, argv);
 
     if(argc < 1){
         help();
@@ -61,7 +56,7 @@ char CmdSpi::execute(void *ptr){
 
     i = 0;
 
-	if( !xstrcmp(argv[0],"send")){	
+	if( !xstrcmp(argv[1],"send")){	
 		while(argv[i + 1] != NULL){
             if(hatoi(argv[i + 1], &aux)){        
                 data[i] = aux;
@@ -72,7 +67,7 @@ char CmdSpi::execute(void *ptr){
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[0],"init")){
+	if( !xstrcmp(argv[1],"init")){
 		m_spi = BOARD_GetSpiAux();
 		m_spi->freq = 100000;
     	m_spi->flags  = SPI_MODE0 | SPI_HW_CS;

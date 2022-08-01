@@ -18,7 +18,7 @@ public:
     CmdRfinder () : ConsoleCommand("rfinder") {}
     void init(void *params) { console = static_cast<Console*>(params); }
 
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void){
         //console->print("Usage: rfinder <> [option] \n\n");
         console->print("** Range finder **  \n\n");

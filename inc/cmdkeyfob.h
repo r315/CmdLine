@@ -29,7 +29,7 @@ public:
         m_capturing = false;
     }
 
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
     void printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32_t len, int16_t bittime, uint8_t idle_state);
 

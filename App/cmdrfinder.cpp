@@ -22,7 +22,7 @@ uint8_t sum = 0;
 }
 
 
-char CmdRfinder::execute(void *ptr){
+char CmdRfinder::execute(int argc, char **argv){
 //Array arr;
 uint16_t distance;
 uint8_t m = 0;

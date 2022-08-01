@@ -2,39 +2,11 @@
 
 
 void CmdMem::help(void){
-    console->print("Usage: mem <address> [number of bytes] \n\n");
+    console->print("Usage: mem NOT implemented \n\n");
 }
 
-char CmdMem::execute(void *ptr){
-uint8_t *pdata;
-int32_t i, n = 1;
-char *p1;
+char CmdMem::execute(int argc, char **argv){
 
-
-	p1 = (char*)ptr;
-
-	 // check parameters
-    if( p1 == NULL || *p1 == '\0'){
-        help();
-        return CMD_OK;
-    }
-
-    if(*p1 != '\0'){
-        if(!nextHex(&p1, (uint32_t*)&pdata)){
-        	return CMD_BAD_PARAM;
-        }
-    }
-    
-    if(*p1 != '\0'){
-        nextInt(&p1, &n);
-    }
-
-    for( i = 0; i < n; i++){
-        if((i & 0x0F) == 0){console->putChar('\n');}
-        console->print("%02X ", *(pdata++) );
-    }
-	
-    console->putChar('\n');
 
     return CMD_OK;
 }

@@ -18,37 +18,34 @@ void CmdAdc::help(void){
 
 }
 
-char CmdAdc::execute(void *ptr) {
-    char *argv[4];
-    int argc;
-    uint8_t quit = 0;
+//TODO: FIX for all cpus
+char CmdAdc::execute(int argc, char **argv){
+    //uint8_t quit = 0;
 
     if(!(adc_flags & ADC_INIT)){
         s_adc.buf = adcvalues;
         s_adc.len = 4;
-        s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
+        //s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
         ADC_Init(&s_adc);
         adc_flags = ADC_INIT;
     }
-    
-    argc = strToArray((char*)ptr, argv);
 
-    if(xstrcmp("start", (const char*)argv[0]) == 0) {
+    if(xstrcmp("start", (const char*)argv[1]) == 0) {
         s_adc.eoc = adcEoc;
-        s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
-        ADC_Start(&s_adc);
+        //s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
+        //ADC_Start(&s_adc);
         DelayMs(10);
-        ADC_Stop(&s_adc);
+        //ADC_Stop(&s_adc);
         console->print("AN0: %u\n", adcvalues[0]);
         console->print("AN1: %u\n", adcvalues[1]);
         console->print("AN2: %u\n", adcvalues[2]);
         console->print("AN3: %u\n\n", adcvalues[3]);
     }
 
-    if(xstrcmp("single", (const char*)argv[0]) == 0) {
+    if(xstrcmp("single", (const char*)argv[1]) == 0) {
         s_adc.eoc = NULL;
-        s_adc.ch = ADC_CH0;
-        console->print("AN0: %u\n", ADC_ConvertSingle(&s_adc));
+        //s_adc.ch = ADC_CH0;
+        //console->print("AN0: %u\n", ADC_ConvertSingle(&s_adc));
     }
 
 #if 0

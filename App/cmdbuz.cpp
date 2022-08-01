@@ -11,26 +11,22 @@ void CmdBuz::help(void) {
 		console->putString("usage: buz <freq | vol | rtttl | demo > <duration | level | string | 1,0>");
 }
 
-char CmdBuz::execute(void *ptr) {
+char CmdBuz::execute(int argc, char **argv) {
     int32_t freq, duration, level;
-    char *argv[4];
-    int argc;
-
-    argc = strToArray((char*)ptr, argv);
 
     if(argc < 2){
         help();
         return CMD_BAD_PARAM;
     }
 
-    if(strcmp((const char*)argv[0], "rtttl") == 0){
-        buzPlayRtttl((const char*)argv[1]);
+    if(strcmp((const char*)argv[1], "rtttl") == 0){
+        buzPlayRtttl((const char*)argv[2]);
         buzWaitEnd();
         return CMD_OK;
     }
 
-    if(strcmp((const char*)argv[0], "vol") == 0){
-        if(!yatoi(argv[1], &level)){
+    if(strcmp((const char*)argv[1], "vol") == 0){
+        if(!yatoi(argv[2], &level)){
             console->print("vol: %d\n", buzSetLevel(200));
         }else{
             console->print("vol: %d\n", buzSetLevel(level));
@@ -38,8 +34,8 @@ char CmdBuz::execute(void *ptr) {
         return CMD_OK;
     }
 
-    if(strcmp((const char*)argv[0], "demo") == 0){
-        if(!yatoi(argv[1], &level)){
+    if(strcmp((const char*)argv[1], "demo") == 0){
+        if(!yatoi(argv[2], &level)){
 
             return CMD_OK;
         }
@@ -49,7 +45,7 @@ char CmdBuz::execute(void *ptr) {
         return CMD_OK;
     }
 
-    if(!yatoi(argv[0], &freq) || !yatoi(argv[1], &duration)){
+    if(!yatoi(argv[1], &freq) || !yatoi(argv[2], &duration)){
         help();
         return CMD_BAD_PARAM;
     }

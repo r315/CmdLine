@@ -10,14 +10,12 @@ static uint16_t med_btn[] = {
     400,200,750,250,800,150,700,600,400,550,350,600,400,250,650,300,700,600,300,650,350,600,350,600,350,10000
 };
 
-static uint16_t small_btn[] = {
-    
-};
+//static uint16_t small_btn[] = { };
 
 static void capCallBack(uint32_t ncaps){
     kfob->m_cap_count = CAP_BUF_SIZE - ncaps;
 }
-
+/*
 static void memcpy16(void *dst, void *src, uint32_t cnt){
     uint16_t *p1 = (uint16_t*)dst;
     uint16_t *p2 = (uint16_t*)src;
@@ -25,6 +23,7 @@ static void memcpy16(void *dst, void *src, uint32_t cnt){
         *p1++ = *p2++;
     }
 }
+*/
 void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32_t len, int16_t bittime, uint8_t idle_state){
 
     if(len == 0){
@@ -129,9 +128,7 @@ void CmdKeyFob::help(void){
     console->putChar('\n');
 }
 
-char CmdKeyFob::execute(void *ptr){
-    char *argv[4];
-    int argc;
+char CmdKeyFob::execute(int argc, char **argv){
     int32_t val1;
 
     if(kfob == NULL){
@@ -144,14 +141,12 @@ char CmdKeyFob::execute(void *ptr){
         m_init = true;
     }
 
-    argc = strToArray((char*)ptr, argv);    
-
-    if(argc < 1){
+    if(argc < 2){
         help();
         return CMD_BAD_PARAM;
     }
 
-    if(strcmp((const char*)argv[0], "capture") == 0){
+    if(strcmp((const char*)argv[1], "capture") == 0){
         if(m_capturing == true){
             DSCR_StopCapture();
             m_capturing = false;
@@ -159,7 +154,7 @@ char CmdKeyFob::execute(void *ptr){
 
         bool single_cap = false;
 
-        if(strcmp((const char*)argv[2], "single") == 0){
+        if(strcmp((const char*)argv[3], "single") == 0){
             single_cap = true;
         }
 
@@ -185,12 +180,12 @@ char CmdKeyFob::execute(void *ptr){
         }   
     }
 
-    if(strcmp((const char*)argv[0], "decode") == 0){        
-        if(yatoi(argv[1], &val1)){  // get bit time
+    if(strcmp((const char*)argv[1], "decode") == 0){        
+        if(yatoi(argv[2], &val1)){  // get bit time
             bitstreamview_e format;
-            if(strcmp((const char*)argv[2], "raw") == 0){
+            if(strcmp((const char*)argv[3], "raw") == 0){
                 format = BITSTREAM_RAW;
-            }else if(strcmp((const char*)argv[2], "width") == 0){
+            }else if(strcmp((const char*)argv[3], "width") == 0){
                 format = BITSTREAM_WIDTH;
             }else{
                 format = BITSTREAM_DECODE;
@@ -200,19 +195,19 @@ char CmdKeyFob::execute(void *ptr){
         }
     }
 
-    if(strcmp((const char*)argv[0], "stop") == 0){         
+    if(strcmp((const char*)argv[1], "stop") == 0){         
         DSCR_StopCapture();
         m_capturing = false;    
         return CMD_OK;
     }
 
-    if(strcmp((const char*)argv[0], "replay") == 0){
+    if(strcmp((const char*)argv[1], "replay") == 0){
         DSCR_Replay(m_buf, m_cap_count);
         return CMD_OK;
     }
 
-    if(strcmp((const char*)argv[0], "push") == 0){
-        if(yatoi(argv[1], &val1)){  // get bit time
+    if(strcmp((const char*)argv[1], "push") == 0){
+        if(yatoi(argv[2], &val1)){  // get bit time
             switch(val1){
                 case 1:
                 case 3:
@@ -222,7 +217,7 @@ char CmdKeyFob::execute(void *ptr){
                 case 2:
                     uint16_t pulse = 0;
                     uint16_t repeat = 10;
-                    uint16_t *ptr = m_buf + m_cap_count;
+                   //uint16_t *ptr = m_buf + m_cap_count;
 
                     for(m_cap_count = 0; m_cap_count < (sizeof(med_btn)/2) * repeat; m_cap_count++){
                         pulse += med_btn[m_cap_count % (sizeof(med_btn)/2)];

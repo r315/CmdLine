@@ -15,7 +15,7 @@ class CmdGpio : public ConsoleCommand{
 public:
     CmdGpio () : ConsoleCommand("gpio") { }
     void init(void *params) { console = static_cast<Console*>(params); }
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
     char setPortState(GPIO_PORT_TYPE *port, uint32_t value);
     char getPortState(GPIO_PORT_TYPE *port);

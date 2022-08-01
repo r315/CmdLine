@@ -58,16 +58,12 @@ void CmdGpio::help(void){
     console->print("\t -b <bit>, set bit value\n");
 }
 
-char CmdGpio::execute(void *ptr){
-	char *argv[4] = {0};
-    int argc;
+char CmdGpio::execute(int argc, char **argv){
 	uint32_t aux, pin;
 
-	argc = strToArray((char*)ptr, argv);
-
-	if( !xstrcmp(argv[0],"init")){		
-		if(hatoi(argv[1], &pin)){
-        	if(hatoi(argv[2], &aux)){
+	if( !xstrcmp(argv[1],"init")){		
+		if(hatoi(argv[2], &pin)){
+        	if(hatoi(argv[3], &aux)){
 				GPIO_Init((pinName_e)pin, aux);
 			}
 		}
@@ -75,9 +71,9 @@ char CmdGpio::execute(void *ptr){
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[0],"mode")){		
-		if(hatoi(argv[1], &pin)){
-        	if(hatoi(argv[2], &aux)){
+	if( !xstrcmp(argv[1],"mode")){		
+		if(hatoi(argv[2], &pin)){
+        	if(hatoi(argv[3], &aux)){
 				GPIO_Mode((pinName_e)pin, aux);
 			}
 		}
@@ -85,9 +81,9 @@ char CmdGpio::execute(void *ptr){
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[0],"func")){		
-		if(hatoi(argv[1], &pin)){
-        	if(hatoi(argv[2], &aux)){
+	if( !xstrcmp(argv[1],"func")){		
+		if(hatoi(argv[2], &pin)){
+        	if(hatoi(argv[3], &aux)){
 				GPIO_Function((pinName_e)pin, aux);
 			}
 		}
@@ -95,9 +91,9 @@ char CmdGpio::execute(void *ptr){
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[0],"dir")){		
-		if(hatoi(argv[1], &pin)){
-        	if(hatoi(argv[2], &aux)){
+	if( !xstrcmp(argv[1],"dir")){		
+		if(hatoi(argv[2], &pin)){
+        	if(hatoi(argv[3], &aux)){
 				GPIO_Direction((pinName_e)pin, aux);
 			}
 		}

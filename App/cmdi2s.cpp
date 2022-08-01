@@ -15,21 +15,17 @@ void CmdI2s::help(void){
     console->putChar('\n');
 }
 
-char CmdI2s::execute(void *ptr){
+char CmdI2s::execute(int argc, char **argv){
     int32_t val1, val2;
-    char *argv[4] = {0};
-    int argc;
-
-    argc = strToArray((char*)ptr, argv);
 
     if(argc < 1){
         help();
         return CMD_OK;
     }
 
-    if(xstrcmp("init", (const char*)argv[0]) == 0){
-        if(yatoi(argv[1], &val1)){
-            if(yatoi(argv[2], &val2)){
+    if(xstrcmp("init", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &val1)){
+            if(yatoi(argv[3], &val2)){
                 i2s.sample_rate = val1;
                 i2s.data_size = val2;
                 i2s.bus = I2S_BUS0;
@@ -41,18 +37,18 @@ char CmdI2s::execute(void *ptr){
         }
     }
 
-    if(xstrcmp("start", (const char*)argv[0]) == 0){
+    if(xstrcmp("start", (const char*)argv[1]) == 0){
         I2S_Start(&i2s);
         LPC_I2S->TXFIFO = 0x12345678;
         return CMD_OK;
     }
 
-    if(xstrcmp("stop", (const char*)argv[0]) == 0){
+    if(xstrcmp("stop", (const char*)argv[1]) == 0){
         I2S_Stop(&i2s);
         return CMD_OK;
     }
 
-    if(xstrcmp("loopback", (const char*)argv[0]) == 0){
+    if(xstrcmp("loopback", (const char*)argv[1]) == 0){
         
         for (int i = 0; i < 512; i++ ){
 	        i2s.txbuffer[i] = i;

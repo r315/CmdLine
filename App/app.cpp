@@ -188,6 +188,8 @@ void App(void){
 	CmdPwm pwm;
 	CmdTft tft;
 
+	userio = BOARD_STDIO;
+
 	con.init(userio,"nucleo>");
 	con.addCommand(&help);
 	con.addCommand(&ver);
@@ -224,6 +226,8 @@ void App(void){
 	CmdFlashRom flashrom;
 	CmdTft tft;
 	CmdEncoder enc;
+
+	userio = BOARD_STDIO;
 
 	userio->init();
 	con.init(userio,"bluepill>");

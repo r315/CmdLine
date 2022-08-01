@@ -66,19 +66,14 @@ void CmdEncoder::help(void){
     console->print("Reads encoder connected to pins PB3/PA15\n"); 
 }
 
-char CmdEncoder::execute(void *ptr){
-    int argc;
-    char *argv[4];
-    //int32_t val1;
-
-    argc = strToArray((char*)ptr, argv);
+char CmdEncoder::execute(int argc, char **argv){    
 
     if(argc < 1){
         help();
         return CMD_OK;
     }
 
-    if(xstrcmp("on", (const char*)argv[0]) == 0){
+    if(xstrcmp("on", (const char*)argv[1]) == 0){
         /* Configure Timer 2 */
         RCC->APB1ENR  |= RCC_APB1ENR_TIM2EN;    // Enable Timer 2
         RCC->APB1RSTR |= RCC_APB1ENR_TIM2EN;    // Reset timer registers

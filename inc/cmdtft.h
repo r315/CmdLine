@@ -15,7 +15,7 @@ public:
     void init(void *params) { console = static_cast<Console*>(params);}
     CmdTft () : ConsoleCommand("tft") { }    
 
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
     uint32_t fps(void (*func)(void));
 };

@@ -40,14 +40,11 @@ void CmdSpiFlash::help(void){
     console->print("\tws,\t write status register\n");
 }
 
-char CmdSpiFlash::execute(void *ptr){
-    char *argv[4];
-    uint32_t argc, value;
+char CmdSpiFlash::execute(int argc, char **argv){
+    uint32_t value;
     int32_t idx;
 
-    argc = strToArray((char*)ptr, argv);
-
-    if(argc == 0){
+    if(argc < 2){
         help();
         return CMD_OK;
     }

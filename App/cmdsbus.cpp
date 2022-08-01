@@ -207,23 +207,20 @@ void CmdSbus::Flags(void){
 
 
 void CmdSbus::help(void){
-    console->print("Usage: sbus <ch> [value] [-f <flags>]\n\n");  
-    console->print("\t<ch>, Channel number 1-16\n");
-    console->print("\tarm,  1: arm, other disarm\n");
-    console->print("\t[value], 1000-2000\n");
-    console->print("\t-f, <flags> 0-255\n");
+    console->print("Usage: sbus <option> [params]\n\n");  
+    console->print("\tset <ch> <value>, Channel number 1-16, value 1000-2000\n");
+    console->print("\tarm <st>,  State 1: arm, other disarm\n");
+    console->print("\tflags <value>, Value 0-255\n");
     console->print("\treceive, receive mode\n");
 }
 
 
-char CmdSbus::execute(void *ptr){
-char *p1, channel = 255;
-uint16_t pulse = 0;
-int32_t aux;
+char CmdSbus::execute(int argc, char **argv){
+    char channel = 255;
+    uint16_t pulse = 0;
+    int32_t aux;
 
-	p1 = (char*)ptr;
-
-	if (p1 == NULL || *p1 == '\0') {
+    if (argc < 2) {
 		help();
 		return CMD_OK;
 	}
@@ -246,53 +243,39 @@ int32_t aux;
 		TIMER_SetInterval(sendFrame, FRAME_RATE);
 	}	
 
-	while (*p1 != '\0') {
-		if (isNextWord(&p1, "-f")) {			
-            if (nextInt(&p1, &aux)) {
-                sbus.next_frame.flags = aux;	
-		    }else
-            {
-                Flags();
+	if(xstrcmp("flags", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &aux)){
+            sbus.next_frame.flags = aux;	
+        }else {
+            Flags();
+            return CMD_OK;
+        }
+	}else if(xstrcmp("arm", (const char*)argv[1]) == 0){
+        aux = 0;
+        yatoi(argv[2], &aux);
+        if (aux == 1) {
+            updateChannel(&sbus.next_frame, ARM_CHANNEL, (aux == 1) ? ARM_VALUE : DISARM_VALUE);
+            updateChannel(&sbus.next_frame, THROTLE_CHANNEL, PWM_MIN_PULSE);
+            console->print("armed\n");
+        }else{
+            updateChannel(&sbus.next_frame, ARM_CHANNEL, DISARM_VALUE);
+            console->print("disarmed\n");
+        }
+        return CMD_OK;        
+    }else if(xstrcmp("set", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], &aux)){
+            channel = aux;
+            if(yatoi(argv[3], &aux)){
+                pulse = aux;
+                updateChannel(&sbus.next_frame, channel, pulse);
+                SET_FLAG(NEW_DATA_FLAG);
                 return CMD_OK;
             }
-		}else if(isNextWord(&p1, "arm")){
-            aux = 0;
-            nextInt(&p1, &aux);
-
-            if (aux == 1) {
-                updateChannel(&sbus.next_frame, ARM_CHANNEL, (aux == 1) ? ARM_VALUE : DISARM_VALUE);
-                updateChannel(&sbus.next_frame, THROTLE_CHANNEL, PWM_MIN_PULSE);
-                console->print("armed\n");
-                break;
-            }else{
-                updateChannel(&sbus.next_frame, ARM_CHANNEL, DISARM_VALUE);
-                console->print("disarmed\n");
-                break;
-            }
-
-        }else if (nextInt(&p1, &aux)){
-            if(channel == 255){
-                channel = aux;
-            }else if(pulse == 0) {
-                pulse = aux;
-            }
-        }else if(isNextWord(&p1, "receive")){
+        }
+    }else if(xstrcmp("receive", (const char*)argv[1]) == 0){
             //UART_Attach(sbus.uart, receiveCB);
             //UART_Read(sbus.uart, NULL, 0);
-            break;
-        }else{
-            p1 = nextWord(p1);
-        }   
     }
 
-	if (channel == -1){ // || pulse < PWM_MIN_PULSE || pulse > PWM_MAX_PULSE) {
-		return CMD_BAD_PARAM;
-	}
-
-    if(channel != 255){
-        updateChannel(&sbus.next_frame, channel, pulse);
-        SET_FLAG(NEW_DATA_FLAG);
-    }
-
-	return CMD_OK;
+    return CMD_BAD_PARAM;
 }
