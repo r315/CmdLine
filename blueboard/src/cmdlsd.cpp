@@ -4,19 +4,18 @@
 
 #define SECTOR_SIZE 512
 
-spibus_t mmc_spi = {0};
 FATFS sdcard;
 uint8_t sector_data[SECTOR_SIZE];
 /*  
   b15-b8     b7 b3   b2-b1    b0
 |   size  | -      | OP    | start | */
-#define SD_OP_DUMP_SECTOR   1
-#define SD_OP_INIT_DISK     2
-#define SD_OP_ERASE_SECTOR  3
-#define SD_OP_START  (1 << 0)
-#define SD_OP_SET_FLAG(_o, _f) _o |= _f
-#define SD_OP_SET_OPER(o, n) o = ((o & ~(3 << SD_OP_START)) | (n << SD_OP_START))
-#define SD_OPER(x) ((x>>SD_OP_START) & 3)
+#define SD_OP_DUMP_SECTOR       1
+#define SD_OP_INIT_DISK         2
+#define SD_OP_ERASE_SECTOR      3
+#define SD_OP_START             (1 << 0)
+#define SD_OP_SET_FLAG(_o, _f)  _o |= _f
+#define SD_OP_SET_OPER(o, n)    o = ((o & ~(3 << SD_OP_START)) | (n << SD_OP_START))
+#define SD_OPER(x)              ((x>>SD_OP_START) & 3)
 
 void CmdSd::f_error(FRESULT res)
 {
@@ -54,40 +53,37 @@ void CmdSd::d_error(DRESULT res)
 	}	
 }
 
-
-void mmcSpiInit(void){
-    mmc_spi.bus = 0;
-    mmc_spi.freq = 500000;
-    mmc_spi.flags  = SPI_MODE0;
-    SPI_Init(&mmc_spi);
-	//LPC_PINCON->PINSEL0 |= SSP1_SSEL;	
-}
-
-extern "C" uint8_t SPI(uint8_t outb) 
-{
-    SPI_Write(&mmc_spi, &outb, 1);
-    return 1;
-}
-
 //--------------------------------------
 //
 //--------------------------------------
 void CmdSd::dumpSector(uint32_t sector){
     disk_readp(sector_data, sector, 0, SECTOR_SIZE);
 
+    console->print("\n Sector : %d", sector);
+
     for(uint32_t i = 0; i < SECTOR_SIZE; i++){
         if((i & 0x0F) == 0){
-            console->putChar('\n');
-            console->print("%08X: ", sector + i);
+            if(i > 0){
+                for(uint32_t j = i - 16; j < i; j++){
+                    char c = sector_data[j];
+                    if(c < ' ' || c > '~'){
+                        c = ' ';
+                    }
+                    console->putChar(c);
+                }
+            }           
+            console->print("\n%08X: ", i);
         }
-        console->print("%02X ", sector_data[i] );
+        console->print("%02X ", sector_data[i]);
     }
     console->putChar('\n');
 }
 
 void CmdSd::help(void){
     console->putString("\nUsage: ");
-    console->putString(" d <sector>  \n"); 
+    console->putString(" d <sector>, dump sector"); 
+    console->putString(" x <sector>, Erase sector");
+    console->putString(" i         , Initialise SD");
 
 }
 
@@ -131,10 +127,9 @@ uint32_t operation = 0, sector;
         }
     }
 
-    if(mmc_spi.freq == 0){
-		mmcSpiInit();
-        f_error(pf_mount(&sdcard));	
-	}    
+    
+    f_error(pf_mount(&sdcard));	
+	    
 
 	switch(SD_OPER(operation)){
         case SD_OP_DUMP_SECTOR:

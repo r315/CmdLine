@@ -7,12 +7,14 @@ extern "C" {
 #endif
  
 #include "console.h"
-#include <pff.h>
-#include <diskio.h>
+#include "pff.h"
+#include "diskio.h"
+#include "spi.h"
 
 
 class CmdSd : public ConsoleCommand{
     Console *console;
+    spibus_t *m_spi;
 public:
     CmdSd () : ConsoleCommand("sd") { }
     void init(void *params) { console = static_cast<Console*>(params); }
