@@ -106,7 +106,7 @@ static U8 abClassReqData[8];
 /** data storage area for standard requests */
 static U8	abStdReqData[8];
 
-static fifo_t *txfifo, *rxfifo;
+static fifo_t *usb_txfifo, *usb_rxfifo;
 
 static const U8 abDescriptors[] = {
 #if 1
@@ -644,7 +644,7 @@ static void USBSERIAL_BulkOut(U8 bEP, U8 bEPStatus)
 {
 	int i, iLen;
 	bEPStatus = bEPStatus;
-	if (fifo_free(rxfifo) < MAX_PACKET_SIZE) {
+	if (fifo_free(usb_rxfifo) < MAX_PACKET_SIZE) {
 		// may not fit into fifo
 		return;
 	}
@@ -653,7 +653,7 @@ static void USBSERIAL_BulkOut(U8 bEP, U8 bEPStatus)
 	iLen = USBHwEPRead(bEP, abBulkBuf, sizeof(abBulkBuf));
 	for (i = 0; i < iLen; i++) {
 		// put into FIFO
-		if (!fifo_put(rxfifo, abBulkBuf[i])) {
+		if (!fifo_put(usb_rxfifo, abBulkBuf[i])) {
 			// overflow... :(
 			ASSERT(FALSE);
 			break;
@@ -672,7 +672,7 @@ static void USBSERIAL_BulkIn(U8 bEP, U8 bEPStatus)
 {
 	int i, iLen;
 	bEPStatus = bEPStatus;
-	if (fifo_avail(txfifo) == 0) {
+	if (fifo_avail(usb_txfifo) == 0) {
 		// no more data, disable further NAK interrupts until next USB frame
 		USBHwNakIntEnable(0);
 		return;
@@ -680,7 +680,7 @@ static void USBSERIAL_BulkIn(U8 bEP, U8 bEPStatus)
 
 	// get bytes from transmit FIFO into intermediate buffer
 	for (i = 0; i < MAX_PACKET_SIZE; i++) {
-		if (!fifo_get(txfifo, &abBulkBuf[i])) {
+		if (!fifo_get(usb_txfifo, &abBulkBuf[i])) {
 			break;
 		}
 	}
@@ -761,7 +761,7 @@ static BOOL USBSERIAL_HandleClassRequest(TSetupPacket *pSetup, int *piLen, U8 **
 static void USBSERIAL_FrameHandler(U16 wFrame)
 {
 	wFrame = wFrame;
-	if (fifo_avail(txfifo) > 0) {
+	if (fifo_avail(usb_txfifo) > 0) {
 		// data available, enable NAK interrupt on bulk in
 		USBHwNakIntEnable(INACK_BI);
 	}
@@ -785,8 +785,8 @@ static void USBSERIAL_HandleUsbReset(U8 bDevStatus)
 void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
 {
 	// initialise stack
-	rxfifo = rx;
-	txfifo = tx;
+	usb_rxfifo = rx;
+	usb_txfifo = tx;
 	
 	// init hardware
 	USBHwInit();
