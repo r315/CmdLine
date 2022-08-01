@@ -108,7 +108,7 @@ extern "C" void App(void){
     
     uint8_t mode;
     Console console;
-	
+
     userio = &BOARD_GetSerial()->out;    
     console.init(userio, "Blueboard>");    
     
@@ -127,6 +127,7 @@ extern "C" void App(void){
     CmdAwg awg;
 	CmdTft tft;
 	CmdI2s i2s;
+	CmdAdc adc;
 
     console.addCommand(&help);
     console.addCommand(&echo);
@@ -148,6 +149,7 @@ extern "C" void App(void){
 	console.addCommand(&ver);
 	console.addCommand(&tft);
 	console.addCommand(&i2s);
+	console.addCommand(&adc);
 
     stk500_ServiceInit(userio);
   

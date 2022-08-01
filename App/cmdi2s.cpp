@@ -1,7 +1,7 @@
 #include "board.h"
 #include "cmdi2s.h"
 
-i2sbus_t i2s;
+static i2sbus_t i2s;
 
 
 void CmdI2s::help(void){
