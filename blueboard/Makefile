@@ -57,6 +57,7 @@ $(PRJ_DIR)/src/cmdlsd.cpp \
 $(PRJ_DIR)/src/cmdpwm.cpp \
 $(PRJ_DIR)/src/cmdawg.cpp \
 $(PRJ_DIR)/src/cmdadc.cpp \
+$(PRJ_DIR)/src/cmdi2c.cpp \
 $(PRJ_DIR)/stk500/stk500_service.cpp \
 
 C_SOURCES   +=startup_lpc1768.c

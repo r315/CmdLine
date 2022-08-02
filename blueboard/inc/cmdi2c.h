@@ -6,22 +6,19 @@
 extern "C" {
 #endif
 
-#include "command.h"
+#include "console.h"
 
-class CmdI2c : public Command{
+class CmdI2c : public ConsoleCommand{
+    Console *console;
 
 public:
-    CmdI2c (Vcom *vc) : Command("i2c", vc) { 
-       
-    }
-    char execute(void *ptr);
+    void init(void *params) { console = static_cast<Console*>(params); }
+
+    char execute(int argc, char **argv);
     void help(void);
+    
+    CmdI2c () : ConsoleCommand("i2c") { }
 };
-
-
-#define I2C_WRITE   0
-#define I2C_READ    1
-#define I2C_SCAN    2
 
 #ifdef __cplusplus
 }

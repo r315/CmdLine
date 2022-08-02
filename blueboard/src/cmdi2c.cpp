@@ -1,115 +1,123 @@
 #include "board.h"
 #include "cmdi2c.h"
+#include "debug.h"
 
+enum {
+    I2C_OP_INIT = 0,
+    I2C_OP_WRITE,
+    I2C_OP_READ,
+    I2C_OP_SCAN
+};
 
-I2C_Controller *bus[I2C_MAX_ITF];
-
-Vcom *_this;
-uint8_t data[256];
-
-extern "C" void cb(void *data){
-     (dynamic_cast<Vcom*>(_this))->bufferHex((uint8_t*)data,16);
-     (dynamic_cast<Vcom*>(_this))->putc(' ');
-     (dynamic_cast<Vcom*>(_this))->bufferAscii((uint8_t*)data,16);
-     (dynamic_cast<Vcom*>(_this))->putc('\n');
-}
+static i2cbus_t i2c = {
+    NULL,
+    255,
+    255,
+    NULL
+};
 
 void CmdI2c::help(void){
-    vcom->printf("Usage: i2c -b <bus> <-r|-w> [option] \n\n");  
-    vcom->printf("\t -d, 8-Bit device address\n");
-    vcom->printf("\t -b, bus 0-2\n");
-    vcom->printf("\t -r, read access\n");
-    vcom->printf("\t -w, write access\n");
-    vcom->printf("\t -s, Scan devices on bus\n");
+    console->print("Usage: i2c <read|write|init|scan> <bus> [option] \n\n");  
+    console->print("\tinit <bus>, \n");
+    console->print("\tread <bus> <device> <count>, read data\n");
+    console->print("\twrite <bus> <device> <data0 .. datan>, write data\n");
+    console->print("\tscan <bus>, Scan devices on bus\n");
 }
 
-char CmdI2c::execute(void *ptr){
-uint8_t slave, op, busnum;
-char *p1;
+char CmdI2c::execute(int argc, char **argv){
+    uint8_t op;
+    int32_t val;
+    uint8_t i2c_buf[256];
 
-	p1 = (char*)ptr;
-
-    _this = this->vcom;
-
-	 // check parameters
-    if( p1 == NULL || *p1 == '\0'){
+    if(argc < 2){
         help();
         return CMD_OK;
     }
 
-    busnum = 255;
-    op = 255;
-    slave = 255;
-
-	// parse options
-	while(*p1 != '\0'){
-		if( !xstrcmp(p1,"-b")){
-			p1 = nextWord(p1);
-		    busnum = nextInt(&p1);
-		}else if( !xstrcmp(p1,"-d")){
-			p1 = nextWord(p1);
-            slave = nextHex(&p1);
-		}else if( !xstrcmp(p1,"-r")){
-			p1 = nextWord(p1);
-            op = I2C_READ;
-		}else if( !xstrcmp(p1,"-w")){
-			p1 = nextWord(p1);
-            data[0] = nextHex(&p1);
-            op = I2C_WRITE;
-        }else if( !xstrcmp(p1,"-s")){
-			p1 = nextWord(p1);
-            op = I2C_SCAN;
-        }else{
-			p1 = nextWord(p1);
-		}
-	}
-
-    // Validate parameters
-	if(busnum > I2C_MAX_ITF || op == 255){
-		return CMD_BAD_PARAM;
-	}    
-
-    if(bus[busnum] == NULL){
-        if(slave == 255 ){
-            if(op == I2C_SCAN){
-                slave = 0;
-            }else{
-                vcom->printf("Missing device address\n");
-                return CMD_BAD_PARAM;
-            }
-        }
-        bus[busnum] = I2C_Init(busnum, slave);
+    if( !xstrcmp("init", argv[1])){
+	    op = I2C_OP_INIT;
+    }else if( !xstrcmp("read", argv[1])){
+        op = I2C_OP_READ;
+    }else if( !xstrcmp("write", argv[1])){
+        op = I2C_OP_WRITE;
+    }else if( !xstrcmp("scan", argv[1])){
+        op = I2C_OP_SCAN;            
+    }else{
+		return CMD_NOT_FOUND;
     }
 
-    if(slave != 255){
-        bus[busnum]->device = slave;
+    if(yatoi(argv[2], &val) == 0){
+        return CMD_BAD_PARAM;
+    }
+
+    i2c.bus_num = val;
+
+	if(i2c.bus_num > I2C_MAX_ITF){
+        console->print("Invalid bus %d\n", i2c.bus_num);
+		return CMD_BAD_PARAM;
 	}
 
+    if(i2c.ctrl == NULL){
+        I2C_Init(&i2c);
+    }
+
+    if(hatoi(argv[3], (uint32_t*)&val)){
+        i2c.addr = val;    
+    }   
+
     switch(op){
-        case I2C_WRITE:
-            I2C_Write(busnum, data, 1);
+        case I2C_OP_INIT:
+            I2C_Init(&i2c);
             break;
 
-        case I2C_READ:
-            I2C_ReadAsync(busnum, data, 16, cb);
+        case I2C_OP_WRITE:
+            op = 0;
+            while(hatoi(argv[op + 4], (uint32_t*)&val)){
+                i2c_buf[op++] = (uint8_t)val;
+            }   
+                
+            if(I2C_Write(&i2c, i2c_buf, op) == 0){
+                console->putString("Failed to write");            
+            }
             break;
 
-        case I2C_SCAN:
+        case I2C_OP_READ:
+            if(yatoi(argv[4], &val)){ // count
+                if(I2C_Read(&i2c, i2c_buf, val)){
+                    for(int i = 0; i < val; i ++){
+                        if( (i & 15) == 0) console->print("\n%02X: ", i & 0xF0);                
+                        console->print("%02X ", i2c_buf[i]);
+                    }        
+                }
+            console->putChar('\n');
+            }else{
+                console->putString("Invalid read count");
+            }
+
+            break;
+
+        case I2C_OP_SCAN:
+            console->print("\n   ");
+        
             for(int i = 0; i < 16; i++){
-                vcom->printf("%02X ", i);
+                console->print("%02X ", i);
             }           
 
             for(int i = 0; i < 128; i++){
-                if( (i&15) == 0) vcom->putc('\n');
-                bus[busnum]->device = (i << 1);
-                if( (I2C_Read(busnum,&op,1) >> 8) == ERROR_SLA_NACK){
-                    vcom->printf("-- ");
+                if( (i & 15) == 0) 
+                    console->print("\n%02X ", i & 0xF0);
+                
+                i2c.addr = (i << 1);
+                
+                if(I2C_Read(&i2c, &op, 1) == 0){
+                    console->print("-- ");
                 }else{
-                    vcom->printf("%02X ", i<<1);
+                    console->print("%02X ", i << 1);
                 }
+                
                 DelayMs(1);
             }
-            vcom->putc('\n');
+            console->putChar('\n');
             break;
 
     } 

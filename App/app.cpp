@@ -28,6 +28,7 @@ StdOut *userio;
 #include "cmdsd.h"
 #include "cmdsbus.h"
 #include "cmdi2s.h"
+#include "cmdi2c.h"
 #include "cmdawg.h"
 #include "cmdgpio.h"
 
@@ -122,8 +123,8 @@ extern "C" void App(void){
 	CmdPwm pwm;
 	CmdVersion ver;
 	CmdGpio gpio;
-	//CmdMem mem();
-	//CmdI2c i2c();
+	//CmdMem mem;
+	CmdI2c i2c;
     CmdAwg awg;
 	CmdTft tft;
 	CmdI2s i2s;
@@ -136,12 +137,11 @@ extern "C" void App(void){
     console.addCommand(&sbus);
     console.addCommand(&rst);
     console.addCommand(&sd);	
-	//console.addCommand(&echo);
 	console.addCommand(&pwm);
 	console.addCommand(&gpio);
 	//console.addCommand(&led);
 	//console.addCommand(&mem);
-	//console.addCommand(&i2c);
+	console.addCommand(&i2c);
     //console.addCommand(&spi);
     //console.addCommand(&avr);
     //console.addCommand(&test);
