@@ -31,6 +31,10 @@ extern "C" {
 #define DBG_PIN_INIT            LPC_GPIO2->FIODIR |= (1 << DBG_PIN); \
                                 LPC_PINCON->PINSEL4 &= ~(3<<22);  /* P2.11 (used as GPIO) */
 
+#define BOARD_CARD_ACTIVE       LED1_ON
+#define BOARD_CARD_NOT_ACTIVE   LED1_OFF
+
+
 void BOARD_SERIAL_Init();
 serialhandler_t *BOARD_GetSerial(void);
 serialhandler_t *BOARD_GetSerialAux(void);
@@ -39,6 +43,7 @@ void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_
 void BOARD_LCD_Scroll(uint16_t sc);
 void BOARD_SPI_InitAux(void);
 spibus_t *BOARD_GetSpiAux(void);
+spibus_t *BOARD_GetSpiMain(void);
 
 #ifdef __cplusplus
 }

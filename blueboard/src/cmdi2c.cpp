@@ -12,8 +12,7 @@ enum {
 static i2cbus_t i2c = {
     NULL,
     255,
-    255,
-    NULL
+    255
 };
 
 void CmdI2c::help(void){

@@ -31,7 +31,7 @@ $(LIBEMB_PATH)/misc/fifo.c \
 $(LIBEMB_PATH)/misc/strfunc.c \
 $(LIBEMB_PATH)/misc/debug.c \
 $(LIBEMB_PATH)/button/button.c \
-$(LIBEMB_PATH)/drv/mmc/mmc.c \
+$(LIBEMB_PATH)/drv/storage/memcard.c \
 $(LIBEMB_PATH)/pff/pff.c \
 $(PRJ_DIR)/usbdrv/usbserial.c \
 $(PRJ_DIR)/usbdrv/usbhw_lpc.c \

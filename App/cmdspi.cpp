@@ -30,13 +30,19 @@ static void spiWrite(uint8_t *data, uint32_t len){
 }
 #endif
 
+static void spi_initAux(spibus_t *spi){
+	spi->freq = 100000;
+	spi->flags  = SPI_MODE0 | SPI_HW_CS;
+	SPI_Init(spi);
+}
 //--------------------------------------
 //
 //--------------------------------------
 void CmdSpi::help(void){
-    console->putString("\nUsage: spi <option> [param]");
+    console->putString("\nUsage: spi <bus> <option>  [param]");
 	console->putString("\tsend <data0> [dataN] : Send data");
 	console->putString("\tinit : Initialise auxiliary SPI peripheral");
+	console->putString("\tspeed [speed] : set speed of spi[bus], blank for current speed");
     /*console->putString("  Spi Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
@@ -46,32 +52,44 @@ void CmdSpi::help(void){
 }
 
 char CmdSpi::execute(int argc, char **argv){
-	uint8_t i, data[8];
+	uint8_t data[8];
 	uint32_t aux;
 
-    if(argc < 1){
+    if(argc < 2){
         help();
         return CMD_OK;
     }
 
-    i = 0;
-
-	if( !xstrcmp(argv[1],"send")){	
-		while(argv[i + 1] != NULL){
-            if(hatoi(argv[i + 1], &aux)){        
-                data[i] = aux;
-            }
-            i++;
-        }
-		SPI_Write(m_spi, data, i);
-		return CMD_OK;
+    if(yatoi(argv[1], (int32_t*)&aux) == 0){
+ 		return CMD_BAD_PARAM;
 	}
 
-	if( !xstrcmp(argv[1],"init")){
-		m_spi = BOARD_GetSpiAux();
-		m_spi->freq = 100000;
-    	m_spi->flags  = SPI_MODE0 | SPI_HW_CS;
-    	SPI_Init(m_spi);
+	spibus_t *spi = (aux > 0) ? BOARD_GetSpiAux() : BOARD_GetSpiMain();
+
+	if(xstrcmp("send", argv[2]) == 0){
+		if(spi == NULL){
+			spi_initAux(spi);
+		}
+
+		uint8_t n = 0;
+		while(argv[n + 3] != NULL){
+            if(hatoi(argv[n + 3], &aux)){        
+                data[n] = aux;
+            }
+            n++;
+        }
+		SPI_Write(spi, data, n);
+		return CMD_OK;
+	}else if(xstrcmp("init", argv[2]) == 0){
+		spi_initAux(spi);
+		return CMD_OK;
+	}else if(xstrcmp("speed", argv[2]) == 0){
+		if(yatoi(argv[3], (int32_t*)&aux)){			
+				spi->freq = aux;
+				SPI_Init(spi);
+		}else{
+			console->print("Frequency: %d\n", spi->freq);
+		}
 		return CMD_OK;
 	}
 

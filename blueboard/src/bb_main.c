@@ -9,6 +9,10 @@ static spibus_t spi_aux = {
     .flags  = SPI_MODE0
 };
 
+spibus_t *BOARD_GetSpiMain(void){
+    return BB_SPI_GetMain();
+}
+
 spibus_t *BOARD_GetSpiAux(void){
     return &spi_aux;
 }
