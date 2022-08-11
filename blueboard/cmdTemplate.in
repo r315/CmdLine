@@ -13,7 +13,7 @@ class Cmd%CLASSNAME% : public ConsoleCommand{
 public:
     Cmd%CLASSNAME% () : ConsoleCommand("%NAME%") { }
     void init(void *params) { console = static_cast<Console*>(params); }
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
 };
 

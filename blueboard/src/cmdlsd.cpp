@@ -1,5 +1,4 @@
 
-#include <spi.h>
 #include "cmdsd.h"
 
 #define SECTOR_SIZE 512
@@ -40,19 +39,61 @@ void CmdSd::d_error(DRESULT res)
 	switch(res)
 	{
         default:
-            console->print("error: %x\n", res);
+            console->print("disk result error: %x\n", res);
 
-		case RES_OK: break;
+		case RES_OK:
+            console->print("disk result ok\n");
+            break;
 			
 		case RES_ERROR: 
-			console->print("disk error\n");break;
+			console->print("disk result error\n");break;
 		case RES_NOTRDY:
-			console->print("disk not ready\n");break;		
+			console->print("disk result not ready\n");break;		
 		case RES_PARERR:  
-			console->print("invalid parameter\n");break;		
+			console->print("disk result invalid parameter\n");break;		
 	}	
 }
 
+void CmdSd::d_status(DSTATUS sta)
+{
+	switch(sta)
+	{
+        default: console->print("disk status error: %x\n", sta); break;
+		case STA_OK: console->print("disk status ok\n"); break;			
+		case STA_NOINIT: console->print("disk status not initialised\n");break;
+		case STA_NODISK: console->print("disk status not present\n");break;		
+	}	
+}
+
+FRESULT CmdSd::listDir (const char* path, bool recursive)
+{
+    FRESULT res;
+    FILINFO fno;
+    DIR dir;
+    uint32_t i;
+    char localpath[32];
+
+    xstrcpy(localpath, path, sizeof(localpath));
+
+    res = pf_opendir(&dir, localpath);
+    if (res == FR_OK) {
+        for (;;) {
+            res = pf_readdir(&dir, &fno);                   /* Read a directory item */
+            if (res != FR_OK || fno.fname[0] == 0) break;   /* Break on error or end of dir */
+            if (fno.fattrib & AM_DIR && recursive) {                     /* It is a directory */
+                i = strlen(localpath);
+                xsprintf(&localpath[i], "/%s", fno.fname);
+                res = listDir(localpath, true);                   /* Enter the directory */
+                if (res != FR_OK) break;
+                localpath[i] = 0;
+            } else {                                        /* It is a file. */
+                console->print("%s/%s\n", localpath, fno.fname);
+            }
+        }
+    }
+
+    return res;
+}
 //--------------------------------------
 //
 //--------------------------------------
@@ -87,72 +128,41 @@ void CmdSd::help(void){
 
 }
 
-char CmdSd::execute(void *ptr){
-char c, *p1 = (char*)ptr;
-uint32_t operation = 0, sector;
+char CmdSd::execute(int argc, char **argv){
+    uint32_t sector;
 
-	 // check parameters
-    if( p1 == NULL || *p1 == '\0'){
+	// check parameters
+    if( argc < 2){
         help();
         return CMD_OK;
     }
 
-    while( !(operation & SD_OP_START) ){
-        c = nextChar(&p1);
-         switch(c){
-            case 'd':                
-                if(!nextHex(&p1, &sector)){
-                  console->print("Invalid sector\n");
-                    return CMD_BAD_PARAM;
-                }
-                SD_OP_SET_OPER(operation, SD_OP_DUMP_SECTOR);
-                break;
-
-            case 'i':
-                SD_OP_SET_OPER(operation, SD_OP_INIT_DISK);
-                break;
-
-            case 'x':
-                if(!nextHex(&p1, &sector)){
-                  console->print("Invalid sector\n");
-                    return CMD_BAD_PARAM;
-                }
-                SD_OP_SET_OPER(operation, SD_OP_ERASE_SECTOR);
-                break;
-
-            case '\n':
-            case '\r':    
-            case '\0':
-                SD_OP_SET_FLAG(operation, SD_OP_START);
+    if(xstrcmp("init", (const char*)argv[1]) == 0){
+        DSTATUS sta = disk_initialize();
+        d_status(sta);
+        if(sta == STA_OK){
+            f_error(pf_mount(&sdcard));
         }
-    }
-
-    
-    f_error(pf_mount(&sdcard));	
-	    
-
-	switch(SD_OPER(operation)){
-        case SD_OP_DUMP_SECTOR:
-             dumpSector(sector);
-            break;
-
-        case SD_OP_INIT_DISK:
-            console->print("sdcard init: %x\n", disk_initialize());
-            break;
-
-        case SD_OP_ERASE_SECTOR:
+        return CMD_OK;
+    }else if(xstrcmp("dump", (const char*)argv[1]) == 0){
+        if(hatoi(argv[2], &sector)){
+            dumpSector(sector);
+            return CMD_OK;
+        }
+    }else if(xstrcmp("erase", (const char*)argv[1]) == 0){
+        if(hatoi(argv[2], &sector)){
             for(int i = 0; i < SECTOR_SIZE; i++){
                 sector_data[i] = 0xFF;
             }
             d_error(disk_writep(NULL, sector));
             d_error(disk_writep(sector_data, SECTOR_SIZE));
             d_error(disk_writep(NULL, 0));
-            break;
-
-        default:
-            console->print("Not implemented\n");
-            break;
+            return CMD_OK;
+        }
+    }else if(xstrcmp("list", (const char*)argv[1]) == 0){
+        f_error(listDir(argv[2], false));
+        return CMD_OK;
     }
 
-    return CMD_OK;
+    return CMD_BAD_PARAM;
 }
