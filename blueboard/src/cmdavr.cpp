@@ -50,15 +50,15 @@ SpiBuffer serial_instruction = {
 };
 */
 
-static AvrDevice Device;
+static AvrDevice s_avr_device;
 
 static inline void avrWaitReady(void){
 uint32_t timeout = 0x100000;
     while(timeout--){
         
-        memcpy(Device.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
-        BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-        if( !(Device.data[3] & 0x01)){
+        memcpy(s_avr_device.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
+        BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+        if( !(s_avr_device.data[3] & 0x01)){
             return;
         }                
     }
@@ -85,15 +85,15 @@ uint32_t timeout = 0x100000;
 
 // Called when a falling edge is detected on reset pin (P0.23 for blue board)
 void autoBaudCb(uint32_t capValue){
-    static uint32_t count = 0;
-	if(count == 0){
-		count = capValue;
+    static uint32_t delta = 0;
+	if(delta == 0){
+		delta = capValue;
 	}else{
-		count = capValue - count - 1;
+		delta = capValue - delta - 1;
 		
 		TIM_Reset(LPC_TIM3);
-        tbit = count - 2;
-		count = 0;
+        tbit = delta - 2;
+		delta = 0;
 	}
 }
 
@@ -186,12 +186,12 @@ char avrDisable_dW(void){
  * */
 char avrProgrammingEnable(uint8_t trydW){
 
-    if(Device.status & AVR_PROGRAMMING_ACTIVE)
+    if(s_avr_device.status & AVR_PROGRAMMING_ACTIVE)
     {
        return AVR_RESPONSE_OK; 
     }
 
-    memcpy(Device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
+    memcpy(s_avr_device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
 
     BOARD_SPI_SetFrequency(DEFAULT_AVR_SPI_FREQ);
     
@@ -202,9 +202,9 @@ char avrProgrammingEnable(uint8_t trydW){
         DelayMs(2);
         AVR_RST0;
         DelayMs(20);
-        BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-        if(Device.data[2] == 0x53){
-            Device.status |= AVR_PROGRAMMING_ACTIVE;
+        BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+        if(s_avr_device.data[2] == 0x53){
+            s_avr_device.status |= AVR_PROGRAMMING_ACTIVE;
             return AVR_RESPONSE_OK;
         }
 
@@ -212,7 +212,7 @@ char avrProgrammingEnable(uint8_t trydW){
         if(i == AVR_ENABLE_RETRIES) 
             break;
         
-        memcpy(Device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
+        memcpy(s_avr_device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
 
         if(trydW) 
             avrDisable_dW();       
@@ -225,7 +225,7 @@ char avrProgrammingEnable(uint8_t trydW){
  * Clear programming active flag and release reset pin (HIGH state)
  * */
 void avrProgrammingDisable(void){
-    Device.status &= ~(AVR_PROGRAMMING_ACTIVE);
+    s_avr_device.status &= ~(AVR_PROGRAMMING_ACTIVE);
     AVR_RST1;
 }
 
@@ -239,17 +239,17 @@ void avrDeviceCode(uint8_t *buf){
         return;
     }
 
-    memcpy(Device.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    buf[2] = Device.data[3];
+    memcpy(s_avr_device.data, DEVICE_CODE0_CMD, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    buf[2] = s_avr_device.data[3];
 
-    memcpy(Device.data, DEVICE_CODE1_CMD, AVR_INSTRUCTION_SIZE);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    buf[1] = Device.data[3];
+    memcpy(s_avr_device.data, DEVICE_CODE1_CMD, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    buf[1] = s_avr_device.data[3];
 
-    memcpy(Device.data, DEVICE_CODE2_CMD, AVR_INSTRUCTION_SIZE);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    buf[0] = Device.data[3];
+    memcpy(s_avr_device.data, DEVICE_CODE2_CMD, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    buf[0] = s_avr_device.data[3];
 
     buf[3] = 0;
 }
@@ -262,15 +262,15 @@ void avrWriteFuses(uint8_t lh, uint8_t fuses){
     }
 
     if (lh == 1){
-        memcpy(Device.data, WRITE_FUSE_H, AVR_INSTRUCTION_SIZE);
+        memcpy(s_avr_device.data, WRITE_FUSE_H, AVR_INSTRUCTION_SIZE);
     }else{
-        memcpy(Device.data, WRITE_FUSE_L, AVR_INSTRUCTION_SIZE);
+        memcpy(s_avr_device.data, WRITE_FUSE_L, AVR_INSTRUCTION_SIZE);
     }   
 
-    Device.data[3] = fuses;
+    s_avr_device.data[3] = fuses;
     
 
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -282,13 +282,13 @@ uint32_t fuses;
         return -1;
     }
 
-    memcpy(Device.data, READ_FUSE_L, AVR_INSTRUCTION_SIZE);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    fuses = Device.data[3];
+    memcpy(s_avr_device.data, READ_FUSE_L, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    fuses = s_avr_device.data[3];
 
-    memcpy(Device.data, READ_FUSE_H, AVR_INSTRUCTION_SIZE);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    fuses |= Device.data[3] << 8;    
+    memcpy(s_avr_device.data, READ_FUSE_H, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    fuses |= s_avr_device.data[3] << 8;    
 
     return fuses;
 }
@@ -299,9 +299,9 @@ void avrChipErase(void){
         return;
     }
 
-    memcpy(Device.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
+    memcpy(s_avr_device.data, CHIP_ERASE, AVR_INSTRUCTION_SIZE);
 
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -314,20 +314,20 @@ uint16_t value = 0;
     }
 
     /* read high byte */
-    memcpy(Device.data, READ_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
-    Device.data[1] = HIGH_BYTE(addr);
-    Device.data[2] = LOW_BYTE(addr);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    value = Device.data[3];
+    memcpy(s_avr_device.data, READ_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
+    s_avr_device.data[1] = HIGH_BYTE(addr);
+    s_avr_device.data[2] = LOW_BYTE(addr);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    value = s_avr_device.data[3];
 
     value <<= 8;
 
     /* read low byte */
-    memcpy(Device.data, READ_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
-    Device.data[1] = HIGH_BYTE(addr);
-    Device.data[2] = LOW_BYTE(addr);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
-    value |= Device.data[3];    
+    memcpy(s_avr_device.data, READ_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
+    s_avr_device.data[1] = HIGH_BYTE(addr);
+    s_avr_device.data[2] = LOW_BYTE(addr);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
+    value |= s_avr_device.data[3];    
 
     return value;
 }
@@ -339,16 +339,16 @@ void avrLoadProgramPage(uint8_t addr, uint16_t value){
     }
 
     /* load low byte */
-    memcpy(Device.data, LOAD_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
-    Device.data[2] = addr;
-    Device.data[3] = LOW_BYTE(value);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
+    memcpy(s_avr_device.data, LOAD_PROGRAM_PAGE_L, AVR_INSTRUCTION_SIZE);
+    s_avr_device.data[2] = addr;
+    s_avr_device.data[3] = LOW_BYTE(value);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
     
     /* load high byte */
-    memcpy(Device.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
-    Device.data[2] = addr;
-    Device.data[3] = HIGH_BYTE(value);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
+    memcpy(s_avr_device.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
+    s_avr_device.data[2] = addr;
+    s_avr_device.data[3] = HIGH_BYTE(value);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
 }
 
 void avrWriteProgramPage(uint16_t addr){ 
@@ -357,10 +357,10 @@ void avrWriteProgramPage(uint16_t addr){
         return;
     }  
 
-    memcpy(Device.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
-    Device.data[1] = HIGH_BYTE(addr);
-    Device.data[2] = LOW_BYTE(addr);
-    BOARD_SPI_Write(Device.data, AVR_INSTRUCTION_SIZE);
+    memcpy(s_avr_device.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
+    s_avr_device.data[1] = HIGH_BYTE(addr);
+    s_avr_device.data[2] = LOW_BYTE(addr);
+    BOARD_SPI_Write(s_avr_device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
 }
@@ -371,7 +371,7 @@ void avrWriteProgramPage(uint16_t addr){
 //--------------------------------------
 void CmdAvr::help(void){
     console->print("Usage: avr [option] \n\n");  
-    console->print("\t -s, Device signature\n");
+    console->print("\t -s, s_avr_device signature\n");
     console->print("\t -e, Erase device\n");
     console->print("\t -f, Read fuses\n");
     console->print("\t -p, <dw> programming mode, try debug wire \n");
@@ -395,7 +395,7 @@ char *p1;
         return CMD_OK;
     }
 
-    Device.status = 0;
+    s_avr_device.status = 0;
 
 	// parse options
 	while(*p1 != '\0'){
@@ -404,7 +404,7 @@ char *p1;
             if(signature == AVR_RESPONSE_FAIL){
                 console->print("fail to enable programming\n");
             }else{
-                console->print("Device signature 0x%X\n", signature);
+                console->print("s_avr_device signature 0x%X\n", signature);
             }
 		    //busnum = nextInt(&p1);
 		}else if( isNextWord(&p1,"-p")){			

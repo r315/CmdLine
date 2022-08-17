@@ -25,11 +25,11 @@ extern "C" {
 #define BOARD_SPI_SetFrequency  BB_SPI_SetFrequency
 #define BOARD_SPI_AUX_BUS       SPI_BUS2
 
-#define DBG_PIN                 11
-#define DBG_PIN_HIGH            LPC_GPIO2->FIOSET = (1 << DBG_PIN)
-#define DBG_PIN_LOW             LPC_GPIO2->FIOCLR = (1 << DBG_PIN)
-#define DBG_PIN_INIT            LPC_GPIO2->FIODIR |= (1 << DBG_PIN); \
-                                LPC_PINCON->PINSEL4 &= ~(3<<22);  /* P2.11 (used as GPIO) */
+#define DBG_PIN                 26
+#define DBG_PIN_HIGH            LPC_GPIO3->FIOSET = (1 << DBG_PIN)
+#define DBG_PIN_LOW             LPC_GPIO3->FIOCLR = (1 << DBG_PIN)
+#define DBG_PIN_INIT            LPC_GPIO3->FIODIR |= (1 << DBG_PIN); \
+                                LPC_PINCON->PINSEL7 &= ~(3 << 20);  /* P3.26 (used as GPIO) */
 
 #define BOARD_CARD_ACTIVE       LED1_ON
 #define BOARD_CARD_NOT_ACTIVE   LED1_OFF
