@@ -65,7 +65,7 @@ char CmdI2s::execute(int argc, char **argv){
         }
         
         /* Wait for RX and TX complete before comparison */
-        while ( i2s.wridx < (512 - 8) );
+        //FIX: wridx should be restricted to this module while ( i2s.wridx < (512 - 8) );
 
         I2S_Stop(&i2s);
         /* Validate TX and RX buffer */
