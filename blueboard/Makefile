@@ -52,6 +52,7 @@ $(APP_DIR)/cmdtft.cpp \
 $(APP_DIR)/cmdi2s.cpp \
 $(APP_DIR)/cmdgpio.cpp \
 $(APP_DIR)/cmdmsensor.cpp \
+$(APP_DIR)/cmdplayer.cpp \
 $(PRJ_DIR)/src/cmdspi.cpp \
 $(PRJ_DIR)/src/cmdavr.cpp \
 $(PRJ_DIR)/src/cmdlsd.cpp \

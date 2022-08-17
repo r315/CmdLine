@@ -32,6 +32,7 @@ StdOut *userio;
 #include "cmdawg.h"
 #include "cmdgpio.h"
 #include "cmdmsensor.h"
+#include "cmdplayer.h"
 
 enum {
     MODE_LPCBUS = 0,
@@ -131,6 +132,7 @@ extern "C" void App(void){
 	CmdI2s i2s;
 	CmdAdc adc;
 	CmdMSensor msensor;
+	CmdPlayer player;
 
     console.addCommand(&help);
     console.addCommand(&echo);
@@ -146,13 +148,13 @@ extern "C" void App(void){
 	console.addCommand(&i2c);
     //console.addCommand(&spi);
     //console.addCommand(&avr);
-    //console.addCommand(&test);
     console.addCommand(&awg);
 	console.addCommand(&ver);
 	console.addCommand(&tft);
 	console.addCommand(&i2s);
 	console.addCommand(&adc);
 	console.addCommand(&msensor);
+    console.addCommand(&player);
 
     stk500_ServiceInit(userio);
   
