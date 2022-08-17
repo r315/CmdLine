@@ -16,8 +16,9 @@ public:
     void help(void);
 
     void playFile(const char *file);
-    void playBuffer(uint32_t *buf, uint32_t len);
+    void playBuffer(void *buf, uint32_t len);
     void playTone(uint32_t freq);
+    void stop(void);
 
 private:
     Console *console;
