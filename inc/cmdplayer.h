@@ -21,6 +21,7 @@ public:
     void stop(void);
 
 private:
+    void rawFile();
     Console *console;
 };
 

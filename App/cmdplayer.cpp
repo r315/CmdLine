@@ -92,6 +92,32 @@ void CmdPlayer::help(void){
     
 }
 
+/**
+ * @brief Plays raw data 16bit 32kHz
+ * 
+ */
+void CmdPlayer::rawFile(){
+    uint32_t br;
+    char c;
+    uint8_t *ptr = s_temp_buf + (512 * 2);
+    pf_read(s_temp_buf, 512 * 2 * 2 , (UINT*)&br); // Two buffers of 512 samples, 16 bit each
+    playBuffer(s_temp_buf, sdcard.fsize / 2); // 16bit samples
+    do{
+        if(!s_file){
+            s_file = true;
+            uint32_t count = (s_aud_len < 512) ? s_aud_len * 2 : 1024;
+            if(ptr < s_temp_buf + (512 * 2)){
+                ptr = s_temp_buf + (512 * 2);
+                s_aud_ptr = (uint32_t*)&s_temp_buf[0];
+            }else{
+                ptr = s_temp_buf;
+                s_aud_ptr = (uint32_t*)(s_temp_buf + (512 * 2));
+            }
+            pf_read(ptr, count, (UINT*)&br);                   
+        }
+    }while(!console->getCharNonBlocking(&c) && s_aud_len); 
+}
+
 char CmdPlayer::execute(int argc, char **argv){
 
     if(xstrcmp("init", (const char*)argv[1]) == 0){
@@ -112,28 +138,19 @@ char CmdPlayer::execute(int argc, char **argv){
         return CMD_OK;
     }else if(xstrcmp("file", (const char*)argv[1]) == 0){
         if(pf_open (argv[2]) == FR_OK){
-            console->print("Size: %d \n", sdcard.fsize);
-            s_file = true;
-            s_mono = true;
-            uint32_t br;
-            char c;
-            uint8_t *ptr = s_temp_buf + (512 * 2);
-            pf_read(s_temp_buf, 512 * 2 * 2 , (UINT*)&br); // Two buffers of 512 samples, 16 bit each
-            playBuffer(s_temp_buf, sdcard.fsize / 2); // 16bit samples
-            do{
-                if(!s_file){
-                    s_file = true;
-                    uint32_t count = (s_aud_len < 512) ? s_aud_len * 2 : 1024;
-                    if(ptr < s_temp_buf + (512 * 2)){
-                        ptr = s_temp_buf + (512 * 2);
-                        s_aud_ptr = (uint32_t*)&s_temp_buf[0];
-                    }else{
-                        ptr = s_temp_buf;
-                        s_aud_ptr = (uint32_t*)(s_temp_buf + (512 * 2));
-                    }
-                    pf_read(ptr, count, (UINT*)&br);                   
-                }
-            }while(!console->getCharNonBlocking(&c) && s_aud_len);
+            const char *ext = chrinstr(argv[2], '.');
+            if(xstrcmp(".raw", ext) == 0){
+                console->print("Size: %d \n", sdcard.fsize);
+                s_file = true;
+                s_mono = true;
+                rawFile();
+            }else if(xstrcmp(".wav", ext) == 0){
+                uint32_t br;
+                pf_read(s_temp_buf, 44 , (UINT*)&br); // skip header
+                s_file = true;
+                s_mono = true;
+                rawFile();
+            }
             stop();
         }else{
             console->print("can't open file: %s \n", argv[2]);
