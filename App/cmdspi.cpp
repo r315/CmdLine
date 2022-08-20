@@ -30,11 +30,6 @@ static void spiWrite(uint8_t *data, uint32_t len){
 }
 #endif
 
-static void spi_initAux(spibus_t *spi){
-	spi->freq = 100000;
-	spi->flags  = SPI_MODE0 | SPI_HW_CS;
-	SPI_Init(spi);
-}
 //--------------------------------------
 //
 //--------------------------------------
@@ -42,7 +37,10 @@ void CmdSpi::help(void){
     console->putString("\nUsage: spi <bus> <option>  [param]");
 	console->putString("\tsend <data0> [dataN] : Send data");
 	console->putString("\tinit : Initialise auxiliary SPI peripheral");
-	console->putString("\tspeed [speed] : set speed of spi[bus], blank for current speed");
+	console->putString("\tspeed <speed> : set clock frequency");
+    console->putString("\tstatus : bus status");
+    console->putString("\tmode <0-3>: set spi mode");
+    console->putString("\tcs <0-1>: Enable HW CS");
     /*console->putString("  Spi Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
@@ -64,11 +62,11 @@ char CmdSpi::execute(int argc, char **argv){
  		return CMD_BAD_PARAM;
 	}
 
-	spibus_t *spi = (aux > 0) ? BOARD_GetSpiAux() : BOARD_GetSpiMain();
+	spibus_t *spi = (aux != 0) ? BOARD_GetSpiAux() : BOARD_GetSpiMain();
 
 	if(xstrcmp("send", argv[2]) == 0){
 		if(spi == NULL){
-			spi_initAux(spi);
+			SPI_Init(spi);
 		}
 
 		uint8_t n = 0;
@@ -78,19 +76,45 @@ char CmdSpi::execute(int argc, char **argv){
             }
             n++;
         }
-		SPI_Write(spi, data, n);
+		SPI_Transfer(spi, data, n);
 		return CMD_OK;
 	}else if(xstrcmp("init", argv[2]) == 0){
-		spi_initAux(spi);
+		SPI_Init(spi);
 		return CMD_OK;
 	}else if(xstrcmp("speed", argv[2]) == 0){
 		if(yatoi(argv[3], (int32_t*)&aux)){			
-				spi->freq = aux;
-				SPI_Init(spi);
-		}else{
-			console->print("Frequency: %d\n", spi->freq);
+            spi->freq = aux;
+            SPI_Init(spi);
+    		return CMD_OK;
 		}
-		return CMD_OK;
+	}else if(xstrcmp("status", argv[2]) == 0){
+        console->print("Bus: %d\n", spi->bus);
+        console->print("Speed: %d Hz\n", spi->freq);
+        console->print("Flags: MODE%d", spi->flags >> 6);
+        if(spi->flags & SPI_HW_CS){
+            console->print(" | HW_CS");
+        }
+
+        if(spi->flags & SPI_ENABLED){
+            console->print(" | ENABLED");
+        }
+        
+        console->print(" (%02x)\n", spi->flags);        
+        return CMD_OK;
+	}else if(xstrcmp("mode", argv[2]) == 0){
+        if(yatoi(argv[3], (int32_t*)&aux)){
+            aux = (aux & 3) << 6;
+            spi->flags = (spi->flags & ~SPI_MODE3) | aux;
+		    SPI_Init(spi);
+		    return CMD_OK;
+        }
+	}else if(xstrcmp("cs", argv[2]) == 0){
+        if(yatoi(argv[3], (int32_t*)&aux)){
+            aux = (aux & 1) << 3;
+            spi->flags = (spi->flags & ~SPI_HW_CS) | aux;
+		    SPI_Init(spi);
+		    return CMD_OK;
+        }
 	}
 
     return CMD_BAD_PARAM;

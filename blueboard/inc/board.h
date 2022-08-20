@@ -23,7 +23,7 @@ extern "C" {
 #define SW_Reset                BB_SW_Reset
 #define BOARD_SPI_Write         BB_SPI_Write
 #define BOARD_SPI_SetFrequency  BB_SPI_SetFrequency
-#define BOARD_SPI_AUX_BUS       SPI_BUS2
+#define BOARD_SPI_AUX_BUS       SPI_BUS1
 
 #define DBG_PIN                 26
 #define DBG_PIN_HIGH            LPC_GPIO3->FIOSET = (1 << DBG_PIN)

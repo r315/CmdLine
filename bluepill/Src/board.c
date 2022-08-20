@@ -519,6 +519,6 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
 }
 
 uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
-    SPI_Write(BOARD_SPIDEV, src, size);
+    SPI_Transfer(BOARD_SPIDEV, src, size);
     return size;
 }
