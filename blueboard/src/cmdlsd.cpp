@@ -22,9 +22,8 @@ void CmdSd::f_error(FRESULT res)
 	{
         default:
             console->print("error: %x\n", res);
-
 		case FR_OK: break;
-			
+
 		case FR_DISK_ERR: 
 			console->print("disk error\n");break;
 		case FR_NOT_READY:
@@ -138,10 +137,11 @@ char CmdSd::execute(int argc, char **argv){
     }
 
     if(xstrcmp("init", (const char*)argv[1]) == 0){
-        DSTATUS sta = disk_initialize();
-        d_status(sta);
-        if(sta == STA_OK){
-            f_error(pf_mount(&sdcard));
+        FRESULT res = pf_mount(&sdcard);
+        if(res == FR_OK){
+            console->print("memory card init ok\n");
+        }else{
+            f_error(res);
         }
         return CMD_OK;
     }else if(xstrcmp("dump", (const char*)argv[1]) == 0){
