@@ -1,4 +1,4 @@
-
+#include "board.h"
 #include "cmdsd.h"
 
 #define SECTOR_SIZE 512
@@ -29,7 +29,13 @@ void CmdSd::f_error(FRESULT res)
 		case FR_NOT_READY:
 			console->print("disk not ready\n");break;		
 		case FR_NO_FILE:  
-			console->print("invalid file\n");break;		
+			console->print("invalid file\n");break;
+        case FR_NOT_OPENED:  
+			console->print("file not opened\n");break;
+        case FR_NOT_ENABLED:  
+			console->print("file system not enabled\n");break;
+        case FR_NO_FILESYSTEM:  
+			console->print("no file system\n");break;
 	}	
 }
 
@@ -129,6 +135,7 @@ void CmdSd::help(void){
 
 char CmdSd::execute(int argc, char **argv){
     uint32_t sector;
+    uint8_t data[20];
 
 	// check parameters
     if( argc < 2){
@@ -161,6 +168,18 @@ char CmdSd::execute(int argc, char **argv){
         }
     }else if(xstrcmp("list", (const char*)argv[1]) == 0){
         f_error(listDir(argv[2], false));
+        return CMD_OK;
+    }else if(xstrcmp("id", argv[1]) == 0){
+        SDGetCID(data);
+        console->print("Manufacturer ID: %02x\n", data[0]);
+        console->print("Application ID: %c%c, (%04x)\n", data[1], data[2], data[1] << 8 | data[2]);
+        console->print("Product Name: ");
+        for(uint8_t i = 0; i < 5; i++) console->print("%c", (char)data[3 + i]);
+        console->print("\nProduct Revision: %02x\n", data[8]);
+        console->print("Serial Number: ");
+        for(uint8_t i = 0; i < 4; i++) console->print("%02x", data[9 + i]);
+        uint16_t mdt = data[13] << 8 | data[14];
+        console->print("\nManufacture date: %d/%d\n", 2000 + (mdt >> 4), mdt & 15);
         return CMD_OK;
     }
 
