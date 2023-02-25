@@ -193,7 +193,7 @@ void App(void){
 	CmdPwm pwm;
 	CmdTft tft;
 
-	userio = BOARD_STDIO;
+	userio = SERIAL_GetStdout(SERIAL0);
 
 	con.init(userio,"nucleo>");
 	con.addCommand(&help);

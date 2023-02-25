@@ -4,11 +4,11 @@
 
 
 void startRanging(void){
-	BOARD_STDIO->xputchar(START_RANGING);
+	SERIAL_GetStdout(SERIAL0)->xputchar(START_RANGING);
 }
 
 uint8_t readFrame(void){
-	return BOARD_SERIAL1->kbhit();
+	return SERIAL_GetStdout(SERIAL1)->kbhit();
 }
 
 uint8_t checkSum(uint8_t *buf){

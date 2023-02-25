@@ -15,7 +15,7 @@ clean:
 	@"$(MAKE)" -C bluepill clean
 
 nc:
-	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
+	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/Nucleo APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
 
 bp:
 	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill

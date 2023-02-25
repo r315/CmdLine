@@ -2,7 +2,7 @@
 #include "serial.h"
 
 #define UART_FUNCTION_NAME(a, b) UART##a##_##b
-#define HANDLER_NAME(a) BOARD_SERIAL##a##_HANDLER
+#define HANDLER_NAME(a) serial##a##_handler
 
 #define UART_FUNCTIONS(N) \
 static inline void UART_FUNCTION_NAME(N, Init)(void){ UART_Init(&HANDLER_NAME(N).port); } \
@@ -22,7 +22,7 @@ I->out.getCharNonBlocking = UART_FUNCTION_NAME(N, GetCharNonBlocking); \
 I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit)
 
 
-serialhandler_t BOARD_SERIAL_HANDLERS;
+static serialhandler_t serial0_handler, serial1_handler;
 
 /**
  * Uart0/1/3
@@ -62,4 +62,15 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
     port->datalength = SERIAL_CONFIG_GET_DATA(config);
     
     hserial->out.init();
+}
+
+void SERIAL_Init(void)
+{
+    SERIAL_Config(&serial0_handler, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+    SERIAL_Config(&serial1_handler, SERIAL1 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+}
+
+stdout_t *SERIAL_GetStdout(uint8_t nr)
+{
+    return nr == SERIAL0 ? &serial0_handler.out :  &serial1_handler.out;
 }
