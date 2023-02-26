@@ -189,15 +189,15 @@ extern serialhandler_t BOARD_SERIAL_HANDLERS;
 #define LCD_DI_GPIO_Port    GPIOB
 #define LCD_RST_Pin
 #define LCD_RST_GPIO_Port
-#define LCD_BKL_Pin         GPIO_PIN_0
-#define LCD_BKL_GPIO_Port   GPIOA
+#define LCD_BKL_Pin         10
+#define LCD_BKL_GPIO_Port   GPIOB
 
 #define LCD_CS0             BOARD_SPI_CS_LOW
 #define LCD_CS1             BOARD_SPI_CS_HIGH
 #define LCD_CD0             LCD_CD_GPIO_Port->BRR = LCD_CD_Pin
 #define LCD_CD1             LCD_CD_GPIO_Port->BSRR = LCD_CD_Pin
-#define LCD_BKL0            //LCD_BKL_GPIO_Port->BRR = LCD_BKL_Pin
-#define LCD_BKL1            //LCD_BKL_GPIO_Port->BSRR = LCD_BKL_Pin
+#define LCD_BKL0            LCD_BKL_GPIO_Port->BRR = (1 << LCD_BKL_Pin)
+#define LCD_BKL1            LCD_BKL_GPIO_Port->BSRR = (1 << LCD_BKL_Pin)
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 

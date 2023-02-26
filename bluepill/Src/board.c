@@ -6,6 +6,8 @@
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
+uint16_t SPI_Single_Transfer(spibus_t *spidev, uint16_t data);
+
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
     BOARD_SPIDEV->freq = 1000000;
@@ -17,11 +19,11 @@ void BOARD_Init(void){
     //BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CK_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
     BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CS_PIN, PIN_OUT_2MHZ);
+    BOARD_GPIO_Init(LCD_BKL_GPIO_Port, LCD_BKL_Pin, PIN_OUT_2MHZ);
 
     SERVO_Init();
 
-    SERIAL_Config(&BOARD_SERIAL0_HANDLER, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
-    SERIAL_Config(&BOARD_SERIAL4_HANDLER, SERIAL4);
+    SERIAL_Init();
 }
 
 /**
@@ -503,7 +505,7 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 #define DMA_CCR_PSIZE_8     (0<<8)
 
 uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout){
-    return SPI_Single_Transfer(BOARD_SPIDEV, data);
+    return SPI_Xchg(BOARD_SPIDEV, data);
 }
 
 uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
@@ -512,7 +514,7 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
     }
     
     for (uint32_t i = 0; i < size; i++, dst++){
-        *dst = SPI_Single_Transfer(BOARD_SPIDEV, 0xFF);
+        *dst = SPI_Xchg(BOARD_SPIDEV, 0xFF);
     }
 
     return size;
@@ -521,4 +523,9 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
 uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
     SPI_Transfer(BOARD_SPIDEV, src, size);
     return size;
+}
+
+void BOARD_LCD_Init(void)
+{
+    LCD_Init(BOARD_SPIDEV);
 }

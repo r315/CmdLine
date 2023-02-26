@@ -327,6 +327,46 @@ void Error_Handler(void)
 		}
 }
 
+void __debugbreak(void){
+	__asm volatile(
+        "bkpt #01 \n"
+        "b . \n"
+    );
+}
+
+void Fault_Handler(void)
+{
+    volatile uint8_t isr_number = (SCB->ICSR & 255) - 16;
+    // See position number on Table 46 from RM0394
+    UNUSED(isr_number);
+
+    __asm volatile(
+        "bkpt #01 \n"
+        "b . \n"
+    );
+}
+
+typedef struct {
+    uint32_t r0;
+    uint32_t r1;
+    uint32_t r2;
+    uint32_t r3;
+    uint32_t r12;
+    uint32_t lr;
+    uint32_t pc;
+    uint32_t psr;
+}stackframe_t;
+
+void Stack_Dump(stackframe_t *stack){
+    //GPIOJ->MODER = (1 << 26);
+    //HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_SET);
+
+    __asm volatile(
+        "bkpt #01 \n"
+        "b . \n"
+    );
+}
+
 #ifdef USE_FULL_ASSERT
 /**
 	* @brief  Reports the name of the source file and the source line number

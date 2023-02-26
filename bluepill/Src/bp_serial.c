@@ -120,3 +120,27 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
     
     hserial->out.init();
 }
+
+
+void SERIAL_Init(void)
+{
+    SERIAL_Config(&BOARD_SERIAL0_HANDLER, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+    SERIAL_Config(&BOARD_SERIAL4_HANDLER, SERIAL4);
+}
+
+stdout_t *SERIAL_GetStdout(uint8_t nr)
+{
+    switch(nr){
+        case SERIAL0:
+        case SERIAL1:
+            return BOARD_SERIAL0;
+
+        case SERIAL4:
+            return BOARD_SERIAL4;
+
+        default:
+            break;
+    }
+    
+    return NULL;
+}

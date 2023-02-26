@@ -73,6 +73,7 @@ static inline uint32_t GetTick(){ return HAL_GetTick(); }
 #define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
 #define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
 
+#define BOARD_LCD_Init()    LCD_Init(BOARD_SPIDEV)
 
 /**
  * SPI Header

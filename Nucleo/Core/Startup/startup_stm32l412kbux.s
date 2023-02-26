@@ -112,9 +112,23 @@ LoopForever:
 */
     .section	.text.Default_Handler,"ax",%progbits
 Default_Handler:
+    b Fault_Handler
+    bkpt #01
 Infinite_Loop:
 	b	Infinite_Loop
-	.size	Default_Handler, .-Default_Handler
+
+
+HardFault_Handler:
+    tst lr, #4
+    ite eq
+    mrseq r0, msp
+    mrsne r0, psp
+    b Stack_Dump
+    bkpt #01
+    b .
+
+    .size  Default_Handler, .-HardFault_Handler
+
 /******************************************************************************
 *
 * The minimal vector table for a Cortex-M4.  Note that the proper constructs
@@ -241,7 +255,7 @@ g_pfnVectors:
 	.thumb_set NMI_Handler,Default_Handler
 
   .weak	HardFault_Handler
-	.thumb_set HardFault_Handler,Default_Handler
+	.thumb_set HardFault_Handler,HardFault_Handler
 
   .weak	MemManage_Handler
 	.thumb_set MemManage_Handler,Default_Handler
@@ -431,4 +445,6 @@ g_pfnVectors:
 	
 	.weak	CRS_IRQHandler
 	.thumb_set CRS_IRQHandler,Default_Handler
+
+    .weak      Fault_Handler
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/

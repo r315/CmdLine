@@ -143,7 +143,7 @@ char CmdTft::execute(int argc, char **argv){
 
     if(xstrcmp("init", (const char*)argv[1]) == 0){
         if(yatoi(argv[2], (int32_t*)&val1)){
-            //BOARD_LCD_Init(BOARD_SPIDEV); FIX: for NUCLEO and BP, implement on board or main
+            BOARD_LCD_Init();
 		    LCD_Rotation(val1 & 3);
 		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
 		    LCD_Bkl(1);
