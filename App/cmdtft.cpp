@@ -129,6 +129,9 @@ void CmdTft::help(void){
     console->putString("  rc [scroll],         Random colors");
     console->putString("  scroll,              Scroll screen");
     console->putString("  hsv <s> <v>,         HSV color");
+    console->putString("  block,               Color squares");
+    console->putString("  scroll,              Color scroll");
+    console->putString("  demo,                Demo sequence");
     console->putChar('\n');
 }
 
@@ -136,7 +139,7 @@ char CmdTft::execute(int argc, char **argv){
     int32_t val1;
     char c;
 
-    if(argc < 1){
+    if(argc == 1){
         help();
         return CMD_OK;
     }
@@ -166,7 +169,7 @@ char CmdTft::execute(int argc, char **argv){
         for(uint8_t i = 0; i < 128/16; i++){
             for(uint8_t j = 0; j < 160/16; j++){
                 memset(buf, RNG_Get(), 15 * 15 * 2);
-                LCD_WriteArea(j * 16, i * 16, 15, 15, buf);                
+                LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
                 buf = tile + (256 * (j & 1));
             }
         }
@@ -180,7 +183,7 @@ char CmdTft::execute(int argc, char **argv){
             Scroll_Loop();
             userio->getCharNonBlocking(&c);
             DelayMs(16);
-        }while(c != '\n');
+        }while(c != '\n' && c != '\r');
         return CMD_OK_LF;
     }
 
@@ -209,7 +212,7 @@ char CmdTft::execute(int argc, char **argv){
             if(userio->getCharNonBlocking(&c)){
                 seed = RNG_Get() % 256;
             }
-        }while(c != '\n');
+        }while(c != '\n' && c != '\r');
 
         return CMD_OK_LF;
     }
@@ -295,7 +298,7 @@ char CmdTft::execute(int argc, char **argv){
             if(userio->getCharNonBlocking(&c)){
                 sync_fps ^= 1;
             }
-        }while(c != '\n');
+        }while(c != '\n' && c != '\r');
 
         return CMD_OK_LF;
     }

@@ -18,6 +18,7 @@
 #include "cmdpwm.h"
 #include "cmdtft.h"
 #include "cmdencoder.h"
+#include "cmdlmcshd.h"
 
 StdOut *userio;
 
@@ -192,6 +193,7 @@ void App(void){
 	CmdKeyFob keyfob;
 	CmdPwm pwm;
 	CmdTft tft;
+    CmdLmcshd lmcshd;
 
 	userio = SERIAL_GetStdout(SERIAL0);
 
@@ -203,6 +205,7 @@ void App(void){
 	con.addCommand(&keyfob);
 	con.addCommand(&pwm);
 	con.addCommand(&tft);
+    con.addCommand(&lmcshd);
 
 	con.cls();
 	con.print("Freq: %dMHz\n", SystemCoreClock / 1000000);

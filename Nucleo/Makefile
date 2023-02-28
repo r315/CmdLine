@@ -95,6 +95,7 @@ $(APP_DIR)/cmdbuz.cpp \
 $(APP_DIR)/cmdkeyfob.cpp \
 $(APP_DIR)/cmdpwm.cpp \
 $(APP_DIR)/cmdtft.cpp \
+$(APP_DIR)/cmdlmcshd.cpp \
 $(APP_DIR)/agif/AnimatedGIF.cpp \
 
 # ASM sources

@@ -10,8 +10,10 @@ static inline void UART_FUNCTION_NAME(N, PutChar)(char c){ UART_PutChar(&HANDLER
 static inline void UART_FUNCTION_NAME(N, Puts)(const char* str){ UART_Puts(&HANDLER_NAME(N).port, str); } \
 static inline char UART_FUNCTION_NAME(N, GetChar)(void){ return UART_GetChar(&HANDLER_NAME(N).port); } \
 static inline uint8_t UART_FUNCTION_NAME(N, GetCharNonBlocking)(char *c){ return UART_GetCharNonBlocking(&HANDLER_NAME(N).port, c); } \
-static inline uint8_t UART_FUNCTION_NAME(N, Kbhit)(void){ return UART_Kbhit(&HANDLER_NAME(N).port); }
-
+static inline uint8_t UART_FUNCTION_NAME(N, Kbhit)(void){ return UART_Kbhit(&HANDLER_NAME(N).port); } \
+static inline int UART_FUNCTION_NAME(N, read)(void){ char c; return UART_GetCharNonBlocking(&HANDLER_NAME(N).port, &c) > 0 ? c : -1; } \
+static inline int UART_FUNCTION_NAME(N, readBytes)(uint8_t *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, buf, len); } \
+static inline int UART_FUNCTION_NAME(N, write)(uint8_t *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, buf, len);  }
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
 I->out.init = UART_FUNCTION_NAME(N, Init); \
@@ -19,7 +21,11 @@ I->out.xputchar = UART_FUNCTION_NAME(N, PutChar); \
 I->out.xputs = UART_FUNCTION_NAME(N, Puts); \
 I->out.xgetchar = UART_FUNCTION_NAME(N, GetChar); \
 I->out.getCharNonBlocking = UART_FUNCTION_NAME(N, GetCharNonBlocking); \
-I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit)
+I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit); \
+I->serial.available = I->out.kbhit; \
+I->serial.read = UART_FUNCTION_NAME(N, read); \
+I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
+I->serial.write = UART_FUNCTION_NAME(N, write);
 
 
 static serialhandler_t serial0_handler, serial1_handler;
@@ -73,4 +79,9 @@ void SERIAL_Init(void)
 stdout_t *SERIAL_GetStdout(uint8_t nr)
 {
     return nr == SERIAL0 ? &serial0_handler.out :  &serial1_handler.out;
+}
+
+serial_t *SERIAL_GetSerial(uint8_t nr)
+{
+    return nr == SERIAL0 ? &serial0_handler.serial :  &serial1_handler.serial;
 }
