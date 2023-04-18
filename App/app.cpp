@@ -23,6 +23,7 @@
 StdOut *userio;
 
 #if defined (BOARD_BLUEBOARD)
+#include "display.h"
 #include "cmdspi.h"
 #include "cmdavr.h"
 #include "cmdreset.h"
@@ -59,8 +60,8 @@ option_type options[] = {
 void printOptions(option_type *opt, uint8_t nopt){
 	DISPLAY_Goto(0,0);
 	for(uint8_t i = 0; i < nopt; i++){
-		if(opt[i].selected) DISPLAY_SetColors(WHITE, YELLOW);
-		else DISPLAY_SetColors(WHITE, BLUE);
+		if(opt[i].selected) DISPLAY_SetColors(LCD_WHITE, LCD_YELLOW);
+		else DISPLAY_SetColors(LCD_WHITE, LCD_BLUE);
 		DISPLAY_printf("%s\n", opt[i].name);
 	}
 }
@@ -126,7 +127,7 @@ extern "C" void App(void){
 	CmdPwm pwm;
 	CmdVersion ver;
 	CmdGpio gpio;
-	//CmdMem mem;
+	CmdMem mem;
 	CmdI2c i2c;
     CmdAwg awg;
 	CmdTft tft;
@@ -145,7 +146,7 @@ extern "C" void App(void){
 	console.addCommand(&pwm);
 	console.addCommand(&gpio);
 	//console.addCommand(&led);
-	//console.addCommand(&mem);
+	console.addCommand(&mem);
 	console.addCommand(&i2c);
     //console.addCommand(&spi);
     //console.addCommand(&avr);
@@ -159,7 +160,7 @@ extern "C" void App(void){
 
     stk500_ServiceInit(userio);
   
-	LCD_Clear(BLACK);
+	LCD_Clear(LCD_BLACK);
 
     printOptions(options, sizeof(options) / sizeof(option_type));
     

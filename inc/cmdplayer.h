@@ -22,6 +22,7 @@ public:
 
 private:
     void rawFile();
+    void mp3File();
     Console *console;
 };
 

@@ -35,7 +35,7 @@ void CmdPwm::disable(uint8_t ch){
 char CmdPwm::execute(int argc, char **argv){
     int32_t val1, val2;
 
-    if(argc < 1){
+    if(argc == 1){
         help();
         return CMD_OK;
     }

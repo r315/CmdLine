@@ -1,5 +1,5 @@
-BUILD_DIR  	:=$(PWD)/build
-APP_DIR 	:=$(PWD)/App
+BUILD_DIR  	:=$(CURDIR)/build
+APP_DIR 	:=$(CURDIR)/App
 
 norule:
 	@echo "specify board"
@@ -10,26 +10,26 @@ norule:
 
 clean: 
 	@${RM} -rf build
-	@"$(MAKE)" -C blueboard clean
-	@"$(MAKE)" -C Nucleo clean
-	@"$(MAKE)" -C bluepill clean
+	@"$(MAKE)" -C target/blueboard clean
+	@"$(MAKE)" -C target/Nucleo clean
+	@"$(MAKE)" -C target/bluepill clean
 
 nc:
-	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
+	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR)
 
 bp:
-	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill
+	@"$(MAKE)" -C target/bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR)
 
 bb:
-	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard
+	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR)
 	
-program-bb:
-	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard program
+bb-program:
+	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) program
 
-program-bp:
-	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill program
+bp-program:
+	@"$(MAKE)" -C target/bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) program
 
-program-nc:
-	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo program
+nc-program:
+	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR) program
 
 .PHONY:

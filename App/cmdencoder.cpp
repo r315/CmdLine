@@ -8,9 +8,9 @@
 
 #define BAR_GRAPH_WIDTH     150
 #define BAR_GRAPH_HEIGHT    12
-#define BAR_GRAPH_BCOLOR    BLACK
-#define BAR_GRAPH_FCOLOR    ORANGE
-#define BAR_GRAPH_OUTLINE   WHITE
+#define BAR_GRAPH_BCOLOR    LCD_BLACK
+#define BAR_GRAPH_FCOLOR    LCD_ORANGE
+#define BAR_GRAPH_OUTLINE   LCD_WHITE
 
 static uint16_t enc_count = 0;
 static uint16_t enc_pos = 0;
@@ -96,8 +96,8 @@ char CmdEncoder::execute(int argc, char **argv){
 
         BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
         LCD_Init(TFT_SPIDEV);
-        LCD_Rotation(LCD_LANDSCAPE);
-        LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
+        LCD_SetOrientation(LCD_LANDSCAPE);
+        LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
 
         LCD_DrawRect(
             (LCD_GetWidth()/2) - (BAR_GRAPH_WIDTH/2) - 2,

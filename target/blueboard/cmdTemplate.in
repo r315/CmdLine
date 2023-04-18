@@ -1,0 +1,25 @@
+#ifndef _cmd%NAME%_h_
+#define _cmd%NAME%_h_
+
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+ 
+#include "console.h"
+
+class Cmd%CLASSNAME% : public ConsoleCommand{
+    Console *console;
+public:
+    Cmd%CLASSNAME% () : ConsoleCommand("%NAME%") { }
+    void init(void *params) { console = static_cast<Console*>(params); }
+    char execute(int argc, char **argv);
+    void help(void);
+};
+
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif

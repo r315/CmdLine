@@ -1,0 +1,3 @@
+loadfile console_blueboard.hex
+r
+q

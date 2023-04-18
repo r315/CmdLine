@@ -147,8 +147,8 @@ char CmdTft::execute(int argc, char **argv){
     if(xstrcmp("init", (const char*)argv[1]) == 0){
         if(yatoi(argv[2], (int32_t*)&val1)){
             BOARD_LCD_Init();
-		    LCD_Rotation(val1 & 3);
-		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), BLACK);
+		    LCD_SetOrientation(val1 & 3);
+		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
 		    LCD_Bkl(1);
             return CMD_OK;
         }
@@ -514,7 +514,7 @@ static void AmigaBall_Loop(void)
     
     for (int i = 0; i < 14; i++)
     {
-        palette[i + 1] = ((i + anim) % 14) < 7 ? WHITE : RED;
+        palette[i + 1] = ((i + anim) % 14) < 7 ? LCD_WHITE : LCD_RED;
         //int c=((i+anim)%14); // with ping between white and red
         //if(c<6) palette[i+1]=WHITE; else if(c==6 || c==13) palette[i+1]=RGB565(255,128,128); else palette[i+1]=RED;
     }
@@ -671,7 +671,7 @@ static uint8_t isPrime(uint16_t n){
 }
 
 static void Spiral_Setup(void){
-    LCD_Clear(BLACK);
+    LCD_Clear(LCD_BLACK);
     x = LCD_GetWidth() / 2;
     y = LCD_GetHeight() / 2;
 
