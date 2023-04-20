@@ -19,141 +19,22 @@
 // limitations under the License.
 //===========================================================================
 #include "AnimatedGIF.h"
+#include "agif.h"
 
 #ifdef HAL_ESP32_HAL_H_
 #define memcpy_P memcpy
 #endif
 
+//
+// Macro to extract a variable length code
+//
+#define GET_CODE    if (bitnum > (REGISTER_WIDTH - codesize)) { pImage->iLZWOff += (bitnum >> 3); \
+                    bitnum &= 7; ulBits = INTELLONG(&p[pImage->iLZWOff]); } \
+                    code = (unsigned short) (ulBits >> bitnum); /* Read a 32-bit chunk */ \
+                    code &= sMask; bitnum += codesize;
+
 static const unsigned char cGIFBits[9] = {1,4,4,4,8,8,8,8,8}; // convert odd bpp values to ones we can handle
 
-// forward references
-static int GIFInit(GIFIMAGE *pGIF);
-static int GIFParseInfo(GIFIMAGE *pPage, int bInfoOnly);
-static int GIFGetMoreData(GIFIMAGE *pPage);
-static void GIFMakePels(GIFIMAGE *pPage, unsigned int code);
-static int DecodeLZW(GIFIMAGE *pImage, int iOptions);
-static int32_t readMem(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen);
-static int32_t seekMem(GIFFILE *pFile, int32_t iPosition);
-int GIF_getInfo(GIFIMAGE *pPage, GIFINFO *pInfo);
-#if defined( PICO_BUILD ) || defined( __LINUX__ ) || defined( __MCUXPRESSO )
-static int32_t readFile(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen);
-static int32_t seekFile(GIFFILE *pFile, int32_t iPosition);
-static void closeFile(void *handle);
-
-// C API
-int GIF_openRAM(GIFIMAGE *pGIF, uint8_t *pData, int iDataSize, GIF_DRAW_CALLBACK *pfnDraw)
-{
-    pGIF->iError = GIF_SUCCESS;
-    pGIF->pfnRead = readMem;
-    pGIF->pfnSeek = seekMem;
-    pGIF->pfnDraw = pfnDraw;
-    pGIF->pfnOpen = NULL;
-    pGIF->pfnClose = NULL;
-    pGIF->GIFFile.iSize = iDataSize;
-    pGIF->GIFFile.pData = pData;
-    return GIFInit(pGIF);
-} /* GIF_openRAM() */
-
-#ifdef __LINUX__
-int GIF_openFile(GIFIMAGE *pGIF, const char *szFilename, GIF_DRAW_CALLBACK *pfnDraw)
-{
-    pGIF->iError = GIF_SUCCESS;
-    pGIF->pfnRead = readFile;
-    pGIF->pfnSeek = seekFile;
-    pGIF->pfnDraw = pfnDraw;
-    pGIF->pfnOpen = NULL;
-    pGIF->pfnClose = closeFile;
-    pGIF->GIFFile.fHandle = fopen(szFilename, "r+b");
-    if (pGIF->GIFFile.fHandle == NULL)
-       return 0;
-    fseek((FILE *)pGIF->GIFFile.fHandle, 0, SEEK_END);
-    pGIF->GIFFile.iSize = (int)ftell((FILE *)pGIF->GIFFile.fHandle);
-    fseek((FILE *)pGIF->GIFFile.fHandle, 0, SEEK_SET);
-    return GIFInit(pGIF);
-} /* GIF_openFile() */
-#endif
-
-void GIF_close(GIFIMAGE *pGIF)
-{
-    if (pGIF->pfnClose)
-        (*pGIF->pfnClose)(pGIF->GIFFile.fHandle);
-} /* GIF_close() */
-
-void GIF_begin(GIFIMAGE *pGIF, unsigned char ucPaletteType)
-{
-    memset(pGIF, 0, sizeof(GIFIMAGE));
-    pGIF->ucPaletteType = ucPaletteType;
-} /* GIF_begin() */
-
-void GIF_reset(GIFIMAGE *pGIF)
-{
-    (*pGIF->pfnSeek)(&pGIF->GIFFile, 0);
-} /* GIF_reset() */
-
-//
-// Return value:
-// 1 = good decode, more frames exist
-// 0 = good decode, no more frames
-// -1 = error
-//
-int GIF_playFrame(GIFIMAGE *pGIF, int *delayMilliseconds, void *pUser)
-{
-int rc;
-
-    if (delayMilliseconds)
-       *delayMilliseconds = 0; // clear any old valid
-    if (pGIF->GIFFile.iPos >= pGIF->GIFFile.iSize-1) // no more data exists
-    {   
-        (*pGIF->pfnSeek)(&pGIF->GIFFile, 0); // seek to start
-    }
-    if (GIFParseInfo(pGIF, 0))
-    {
-        pGIF->pUser = pUser;
-        if (pGIF->iError == GIF_EMPTY_FRAME) // don't try to decode it
-            return 0;
-        rc = DecodeLZW(pGIF, 0);
-        if (rc != 0) // problem
-            return -1;
-    }
-    else
-    {
-        return -1; // error parsing the frame info, we may be at the end of the file
-    }
-    // Return 1 for more frames or 0 if this was the last frame
-    if (delayMilliseconds) // if not NULL, return the frame delay time
-        *delayMilliseconds = pGIF->iFrameDelay;
-    return (pGIF->GIFFile.iPos < pGIF->GIFFile.iSize-1);
-} /* GIF_playFrame() */
-
-int GIF_getCanvasWidth(GIFIMAGE *pGIF)
-{
-    return pGIF->iCanvasWidth;
-} /* GIF_getCanvasWidth() */
-
-int GIF_getCanvasHeight(GIFIMAGE *pGIF)
-{
-    return pGIF->iCanvasHeight;
-} /* GIF_getCanvasHeight() */
-
-int GIF_getComment(GIFIMAGE *pGIF, char *pDest)
-{
-int32_t iOldPos;
-
-    iOldPos = pGIF->GIFFile.iPos; // keep old position
-    (*pGIF->pfnSeek)(&pGIF->GIFFile, pGIF->iCommentPos);
-    (*pGIF->pfnRead)(&pGIF->GIFFile, (uint8_t *)pDest, pGIF->sCommentLen);
-    (*pGIF->pfnSeek)(&pGIF->GIFFile, iOldPos);
-    pDest[pGIF->sCommentLen] = 0; // zero terminate the string
-    return (int)pGIF->sCommentLen;
-
-} /* GIF_getComment() */
-
-int GIF_getLastError(GIFIMAGE *pGIF)
-{
-    return pGIF->iError;
-} /* GIF_getLastError() */
-
-#endif // !__cplusplus
 //
 // Helper functions for memory based images
 //
@@ -179,7 +60,48 @@ static int32_t seekMem(GIFFILE *pFile, int32_t iPosition)
     return iPosition;
 } /* seekMem() */
 
-#if defined ( __LINUX__ ) || defined( __MCUXPRESSO )
+// C API
+int GIF_OpenRAM(GIFIMAGE *pGIF, uint8_t *pData, int iDataSize, GIF_DRAW_CALLBACK *pfnDraw)
+{
+    pGIF->iError = GIF_SUCCESS;
+    pGIF->pfnRead = readMem;
+    pGIF->pfnSeek = seekMem;
+    pGIF->pfnDraw = pfnDraw;
+    pGIF->pfnOpen = NULL;
+    pGIF->pfnClose = NULL;
+    pGIF->GIFFile.iSize = iDataSize;
+    pGIF->GIFFile.pData = pData;
+    return GIF_Init(pGIF);
+} /* GIF_openRAM() */
+
+#if defined( __LINUX__ )
+static int32_t readFile(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen);
+static int32_t seekFile(GIFFILE *pFile, int32_t iPosition);
+static void closeFile(void *handle);
+
+int GIF_OpenFile(GIFIMAGE *pGIF, const char *szFilename, GIF_DRAW_CALLBACK *pfnDraw)
+{
+    pGIF->iError = GIF_SUCCESS;
+    pGIF->pfnRead = readFile;
+    pGIF->pfnSeek = seekFile;
+    pGIF->pfnDraw = pfnDraw;
+    pGIF->pfnOpen = NULL;
+    pGIF->pfnClose = closeFile;
+    pGIF->GIFFile.fHandle = fopen(szFilename, "r+b");
+    if (pGIF->GIFFile.fHandle == NULL)
+       return 0;
+    fseek((FILE *)pGIF->GIFFile.fHandle, 0, SEEK_END);
+    pGIF->GIFFile.iSize = (int)ftell((FILE *)pGIF->GIFFile.fHandle);
+    fseek((FILE *)pGIF->GIFFile.fHandle, 0, SEEK_SET);
+    return GIF_Init(pGIF);
+} /* GIF_openFile() */
+
+void GIF_Close(GIFIMAGE *pGIF)
+{
+    if (pGIF->pfnClose)
+        (*pGIF->pfnClose)(pGIF->GIFFile.fHandle);
+} /* GIF_close() */
+
 static void closeFile(void *handle)
 {
     fclose((FILE *)handle);
@@ -207,8 +129,83 @@ static int32_t readFile(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen)
     pFile->iPos += iBytesRead;
     return iBytesRead;
 } /* readFile() */
+#endif
 
-#endif // __LINUX__
+void GIF_Begin(GIFIMAGE *pGIF, unsigned char ucPaletteType)
+{
+    memset(pGIF, 0, sizeof(GIFIMAGE));
+    pGIF->ucPaletteType = ucPaletteType;
+} /* GIF_begin() */
+
+void GIF_Reset(GIFIMAGE *pGIF)
+{
+    (*pGIF->pfnSeek)(&pGIF->GIFFile, 0);
+} /* GIF_reset() */
+
+//
+// Return value:
+// 1 = good decode, more frames exist
+// 0 = good decode, no more frames
+// -1 = error
+//
+int GIF_PlayFrame(GIFIMAGE *pGIF, int *delayMilliseconds, void *pUser)
+{
+int rc;
+
+    if (delayMilliseconds)
+       *delayMilliseconds = 0; // clear any old valid
+    if (pGIF->GIFFile.iPos >= pGIF->GIFFile.iSize-1) // no more data exists
+    {   
+        (*pGIF->pfnSeek)(&pGIF->GIFFile, 0); // seek to start
+    }
+    if (GIF_ParseInfo(pGIF, 0))
+    {
+        pGIF->pUser = pUser;
+        if (pGIF->iError == GIF_EMPTY_FRAME) // don't try to decode it
+            return 0;
+        rc = DecodeLZW(pGIF, 0);
+        if (rc != 0) // problem
+            return -1;
+    }
+    else
+    {
+        return -1; // error parsing the frame info, we may be at the end of the file
+    }
+    // Return 1 for more frames or 0 if this was the last frame
+    if (delayMilliseconds) // if not NULL, return the frame delay time
+        *delayMilliseconds = pGIF->iFrameDelay;
+    return (pGIF->GIFFile.iPos < pGIF->GIFFile.iSize-1);
+} /* GIF_playFrame() */
+
+int GIF_GetCanvasWidth(GIFIMAGE *pGIF)
+{
+    return pGIF->iCanvasWidth;
+} /* GIF_getCanvasWidth() */
+
+int GIF_GetCanvasHeight(GIFIMAGE *pGIF)
+{
+    return pGIF->iCanvasHeight;
+} /* GIF_getCanvasHeight() */
+
+int GIF_GetComment(GIFIMAGE *pGIF, char *pDest)
+{
+int32_t iOldPos;
+
+    iOldPos = pGIF->GIFFile.iPos; // keep old position
+    (*pGIF->pfnSeek)(&pGIF->GIFFile, pGIF->iCommentPos);
+    (*pGIF->pfnRead)(&pGIF->GIFFile, (uint8_t *)pDest, pGIF->sCommentLen);
+    (*pGIF->pfnSeek)(&pGIF->GIFFile, iOldPos);
+    pDest[pGIF->sCommentLen] = 0; // zero terminate the string
+    return (int)pGIF->sCommentLen;
+
+} /* GIF_getComment() */
+
+int GIF_GetLastError(GIFIMAGE *pGIF)
+{
+    return pGIF->iError;
+} /* GIF_getLastError() */
+
+
 //
 // The following functions are written in plain C and have no
 // 3rd party dependencies, not even the C runtime library
@@ -218,10 +215,10 @@ static int32_t readFile(GIFFILE *pFile, uint8_t *pBuf, int32_t iLen)
 // returns 1 for success, 0 for failure
 // Fills in the canvas size of the GIFIMAGE structure
 //
-static int GIFInit(GIFIMAGE *pGIF)
+int GIF_Init(GIFIMAGE *pGIF)
 {
     pGIF->GIFFile.iPos = 0; // start at beginning of file
-    if (!GIFParseInfo(pGIF, 1)) // gather info for the first frame
+    if (!GIF_ParseInfo(pGIF, 1)) // gather info for the first frame
        return 0; // something went wrong; not a GIF file?
     (*pGIF->pfnSeek)(&pGIF->GIFFile, 0); // seek back to start of the file
     if (pGIF->iCanvasWidth > MAX_WIDTH) { // need to allocate more space
@@ -237,7 +234,7 @@ static int GIFInit(GIFIMAGE *pGIF)
 // and return the canvas size only
 // Returns 1 for success, 0 for failure
 //
-static int GIFParseInfo(GIFIMAGE *pPage, int bInfoOnly)
+int GIF_ParseInfo(GIFIMAGE *pPage, int bInfoOnly)
 {
     int i, j, iColorTableBits;
     int iBytesRead;
@@ -489,11 +486,11 @@ static int GIFParseInfo(GIFIMAGE *pPage, int bInfoOnly)
      (*pPage->pfnSeek)(&pPage->GIFFile, iStartPos + iOffset); // position file to new spot
    }
     return 1; // we are now at the start of the chunk data
-} /* GIFParseInfo() */
+} /* GIF_ParseInfo() */
 //
 // Gather info about an animated GIF file
 //
-int GIF_getInfo(GIFIMAGE *pPage, GIFINFO *pInfo)
+int GIF_GetInfo(GIFIMAGE *pPage, GIFINFO *pInfo)
 {
     int iOff, iNumFrames;
     int iDelay, iMaxDelay, iMinDelay, iTotalDelay;
@@ -737,10 +734,11 @@ static void ConvertNewPixels(GIFIMAGE *pPage, GIFDRAW *pDraw)
     }
 } /* ConvertNewPixels() */
 
+
 //
 // GIFMakePels
 //
-static void GIFMakePels(GIFIMAGE *pPage, unsigned int code)
+static void GIF_MakePels(GIFIMAGE *pPage, unsigned int code)
 {
     int iPixCount;
     unsigned short *giftabs;
@@ -837,18 +835,11 @@ static void GIFMakePels(GIFIMAGE *pPage, unsigned int code)
         GIFGetMoreData(pPage); // check if we need to read more LZW data every 4 lines
     return;
 } /* GIFMakePels() */
-//
-// Macro to extract a variable length code
-//
-#define GET_CODE if (bitnum > (REGISTER_WIDTH - codesize)) { pImage->iLZWOff += (bitnum >> 3); \
-            bitnum &= 7; ulBits = INTELLONG(&p[pImage->iLZWOff]); } \
-        code = (unsigned short) (ulBits >> bitnum); /* Read a 32-bit chunk */ \
-        code &= sMask; bitnum += codesize;
 
 //
 // Decode LZW into an image
 //
-static int DecodeLZW(GIFIMAGE *pImage, int iOptions)
+int DecodeLZW(GIFIMAGE *pImage, int iOptions)
 {
     int i, bitnum;
     unsigned short oldcode, codesize, nextcode, nextlim;
@@ -898,7 +889,7 @@ init_codetable:
       GET_CODE
     }
     oldcode = code;
-    GIFMakePels(pImage, code); // first code is output as the first pixel
+    GIF_MakePels(pImage, code); // first code is output as the first pixel
     // Main decode loop
     while (code != eoi && pImage->iYCount > 0) // && y < pImage->iHeight+1) /* Loop through all lines of the image (or strip) */
     {
@@ -923,7 +914,7 @@ init_codetable:
                     nextlim <<= 1;
                     sMask = (sMask << 1) | 1;
                 }
-            GIFMakePels(pImage, code);
+            GIF_MakePels(pImage, code);
             oldcode = code;
         }
     } /* while not end of LZW code stream */

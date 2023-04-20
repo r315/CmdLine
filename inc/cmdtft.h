@@ -17,7 +17,7 @@ public:
 
     char execute(int argc, char **argv);
     void help(void);
-    uint32_t fps(void (*func)(void));
+    void fps(void);
 };
 
 #ifdef __cplusplus

@@ -8,8 +8,8 @@
 
 #define SENSOR_WRITE_REG             0x80
 
-#define SENSOR_SDIO_PIN             (1 << 0)
-#define SENSOR_SCLK_PIN             (1 << 1)
+#define SENSOR_SDIO_PIN             (1 << 0)  // P0.0 SDA1
+#define SENSOR_SCLK_PIN             (1 << 1)  // P0.1 SCL1
 #define SENSOR_SCLK_LOW             LPC_GPIO0->FIOCLR = SENSOR_SCLK_PIN
 #define SENSOR_SCLK_HIGH            LPC_GPIO0->FIOSET = SENSOR_SCLK_PIN
 #define SENSOR_SDIO_LOW             LPC_GPIO0->FIOCLR = SENSOR_SDIO_PIN

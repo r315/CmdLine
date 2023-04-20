@@ -2,10 +2,10 @@
 #########################################################
 # project files
 #########################################################
-TARGET 		=console_blueboard
+TARGET 		=bb-console
 TARGET_PATH =$(CURDIR)
-EXEC		=$(TARGET_PATH)/console_blueboard
 BUILD_DIR 	:=build
+EXEC		=$(BUILD_DIR)/$(TARGET)
 
 CMSIS_PATH   =$(TARGET_PATH)/../Drivers/CMSIS
 CMSIS_DEVICE =$(CMSIS_PATH)/Device/NXP/LPC17xx
@@ -127,32 +127,32 @@ CHECKSUM =$(LIBEMB_PATH)/tools/checksum
 ##########################################################
 # RULES
 ##########################################################
-all: $(TARGET).elf stats
+all: $(EXEC).elf stats
 
 
-$(TARGET).elf:  $(OBJECTS)
+$(EXEC).elf:  $(OBJECTS)
 	@echo "Linking" $@
-	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $(TARGET).elf
+	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $@
 
-$(TARGET).hex: $(TARGET).elf
+$(EXEC).hex: $(EXEC).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 
-$(TARGET).bin: $(TARGET).elf $(CHECKSUM)
+$(EXEC).bin: $(EXEC).elf $(CHECKSUM)
 	@echo "Generating bin file" $@
 	$(OBJCOPY) -O binary -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 #hd -n 128 $@
 	$(CHECKSUM) $@
 
-bin: $(TARGET).bin
-hex: $(TARGET).hex
+bin: $(EXEC).bin
+hex: $(EXEC).hex
 
-stats: $(TARGET).elf
+stats: $(EXEC).elf
 	@echo "---- Sections Summary ---"
 	@$(SIZE) -A -x $<
 	@$(SIZE) -B $<
 
-aslist: $(TARGET).elf
-	@$(OBJDUMP) -D $(TARGET).elf > $(TARGET).lst
+aslist: $(EXEC).elf
+	@$(OBJDUMP) -D $< > $(EXEC).lst
 
 clean:
 #$(REMOVE) $(BUILD_DIR)/*.obj $(BUILD_DIR)/*.o *.hex *.elf *.bin	
@@ -164,21 +164,21 @@ inline_asm:
 	$(GCC) -Og -g -mcpu=cortex-m3 -mthumb -Wall -c inline_asm.c -o inline_asm.o
 	$(GCC) -Tinline_asm.ld inline_asm.o -nostdlib -nostartfiles -o inline_asm.elf
 
-$(TARGET).jlink: $(TARGET).hex
+$(EXEC).jlink: $(EXEC).hex
 	@echo "Creating Jlink configuration file"
 	@echo "loadfile $<" >> $@
 	@echo "r" >> $@
 	@echo "q" >> $@
 	#@echo "erase" > $@
 	
-$(TARGET).cfg:
+$(EXEC).cfg:
 	@echo "Creating opencod configuration file"
-	@echo "adapter driver jlink" > $(TARGET).cfg
-	@echo "transport select swd" >> $(TARGET).cfg
-	@echo "source [find target/lpc17xx.cfg]" >> $(TARGET).cfg
-	@echo "adapter speed 4000" >> $(TARGET).cfg
+	@echo "adapter driver jlink" > $(EXEC).cfg
+	@echo "transport select swd" >> $(EXEC).cfg
+	@echo "source [find target/lpc17xx.cfg]" >> $(EXEC).cfg
+	@echo "adapter speed 4000" >> $(EXEC).cfg
 
-program: $(TARGET).jlink
+program: $(EXEC).jlink
 #openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
 	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
 

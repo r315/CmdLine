@@ -15,19 +15,6 @@
 ######################################
 TARGET =console_nucleo
 
-
-######################################
-# building variables
-######################################
-ifeq ($(RELEASE), 1)
-DEBUG =0
-OPT =-Os
-else
-DEBUG =1
-OPT =-Og
-endif
-
-
 #######################################
 # paths
 #######################################
@@ -41,7 +28,21 @@ else
 REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 endif
 
+# AS includes
+AS_INCLUDES = 
 
+# C includes
+C_INCLUDES =  \
+-I$(TARGET_PATH)/Core/Inc \
+-I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
+-I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
+-I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
+-I$(REPOSITORY)/Drivers/CMSIS/Include \
+-I$(LIBEMB_PATH)/include \
+-I$(LIBEMB_PATH)/drv/inc \
+-I$(APP_DIR)/../inc \
+-I$(APP_DIR)/agif \
 ######################################
 # source
 ######################################
@@ -104,25 +105,25 @@ $(TARGET_PATH)/Core/Startup/startup_stm32l412kbux.s
 # link script
 LDSCRIPT =$(TARGET_PATH)/STM32L412KBUx_FLASH.ld
 
-#######################################
-# Include
-#######################################
+######################################
+# building variables
+######################################
+ifeq ($(RELEASE), 1)
+DEBUG =0
+OPT =-Os
+else
+DEBUG =1
+OPT =-Og
+endif
 
-# AS includes
-AS_INCLUDES = 
-
-# C includes
-C_INCLUDES =  \
--I$(TARGET_PATH)/Core/Inc \
--I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
--I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
--I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(LIBEMB_PATH)/include \
--I$(LIBEMB_PATH)/drv/inc \
--I$(APP_DIR)/../inc \
--I$(APP_DIR)/agif \
+# macros for gcc
+COMMON_DEFS = \
+-D__NUCLEO_L412KB__\
+-DBOARD_NUCLEO_L412KB \
+-DSTM32L412xx \
+-DUSE_HAL_DRIVER \
+'-DVERSION_STRING="$(VERSION)"' \
+-DFEATURE_GIF \
 
 #######################################
 # binaries
@@ -171,7 +172,7 @@ endif
 # CFLAGS
 #######################################
 # cpu
-CPU =-mcpu=cortex-m4
+CPU =-mcpu=cortex-m4 -mthumb
 
 # fpu
 FPU =-mfpu=fpv4-sp-d16
@@ -180,15 +181,7 @@ FPU =-mfpu=fpv4-sp-d16
 FLOAT-ABI =-mfloat-abi=hard
 
 # mcu
-MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
-
-# macros for gcc
-COMMON_DEFS = \
--D__NUCLEO_L412KB__\
--DBOARD_NUCLEO_L412KB \
--DSTM32L412xx \
--DUSE_HAL_DRIVER \
-'-DVERSION_STRING="$(VERSION)"' \
+MCU = $(CPU) $(FPU) $(FLOAT-ABI)
 
 # AS defines
 AS_DEFS = 
@@ -229,7 +222,7 @@ CPPFLAGS =$(CPP_DEFS) $(C_INCLUDES) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
 # libraries
 LIBS = -lm
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections
+LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
 # Rules

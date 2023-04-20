@@ -5,7 +5,6 @@
 #ifdef FEATURE_GIF
 #include "AnimatedGIF.h"
 #include "badgers.h"
-//#include "guy.h"
 
 #define GIF_DATA        (uint8_t*)ucBadgers
 #define GIF_DATA_SIZE   sizeof(ucBadgers)
@@ -14,7 +13,12 @@ void GIFDraw(GIFDRAW *pDraw);
 void gifPlayFrame(void);
 #endif
 
-typedef void (*func_t) (void);
+
+typedef struct demo_s {
+    void (*setup)(void);
+    uint32_t (*loop)(void);
+    void (*end)(void);
+}demo_t;
 
 extern StdOut *userio;
 
@@ -22,26 +26,30 @@ static uint16_t tile[512];
 static uint16_t seed, scroll;
 static int16_t x, y, px,py;
 static uint16_t state, step, stepSize, numSteps, tcount, color;
-uint8_t hue = 0;
+static uint8_t hue = 0;
+static uint32_t demo_frames;
 
-static void AmigaBall_Loop(void);
 static void AmigaBall_Setup(void);
+static uint32_t AmigaBall_Loop(void);
 static void Spiral_Setup(void);
-static void Spiral_Loop(void);
+static uint32_t Spiral_Loop(void);
 static void Scroll_Setup(void);
-static void Scroll_Loop(void);
+static uint32_t Scroll_Loop(void);
 static void RandomColors_Setup(void);
-static void RandomColors_Loop(void);
-
-const func_t demos[] = {
-    AmigaBall_Setup,
-    AmigaBall_Loop,
-    Spiral_Setup, // Ulam
-    Spiral_Loop,
-    RandomColors_Setup,
-    RandomColors_Loop,
-    Scroll_Setup,
-    Scroll_Loop
+static uint32_t RandomColors_Loop(void);
+#ifdef FEATURE_GIF
+static void Gif_Setup(void);
+static uint32_t Gif_Loop(void);
+static void Gif_End(void);
+#endif
+const demo_t demos[] = {
+    {AmigaBall_Setup, AmigaBall_Loop, NULL},
+    {Spiral_Setup, Spiral_Loop, NULL},
+    {RandomColors_Setup, RandomColors_Loop, NULL},
+    {Scroll_Setup, Scroll_Loop, NULL},
+#ifdef FEATURE_GIF
+    {Gif_Setup, Gif_Loop, Gif_End}
+#endif
 };
 
 uint16_t generateRandomColor(int32_t mix) {
@@ -59,7 +67,7 @@ uint16_t generateRandomColor(int32_t mix) {
     return (red << 11) | (green << 5) | (blue << 0);
 }
 
-void randomTiles(){
+uint32_t Tiles_Loop(){
     uint16_t *buf = tile;
     for(uint8_t i = 0; i < LCD_GetHeight()/16; i++){
         for(uint8_t j = 0; j < LCD_GetWidth()/16; j++){
@@ -68,6 +76,7 @@ void randomTiles(){
             buf = tile + (256 * (j & 1));
         }
     }
+    return (++demo_frames) < 300;
 }
 
 uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
@@ -198,8 +207,8 @@ char CmdTft::execute(int argc, char **argv){
         seed = RNG_Get() % 256;
 
         do{
-
-            fps(randomTiles);
+            Tiles_Loop();
+            fps();
 
             if(f == 0){
                 scroll = (scroll + 1) % 160;                
@@ -235,69 +244,52 @@ char CmdTft::execute(int argc, char **argv){
     }
 
     if(xstrcmp("demo", (const char*)argv[1]) == 0){        
-        char c, sync_fps = 0;
-        uint32_t elapsed = 0;
+        char c, limit_fps = 1;
+        uint32_t time = 0;
         uint8_t state = 0, demo = 0;
-        uint32_t frame_count = 0;        
 
         LCD_Scroll(0);
 
         do{
             switch(state){
                 case 0:
-                    frame_count = 0;
+                    demo_frames = 0;
                     state = 1;
-                    demos[demo++]();
+                    demos[demo].setup();
                     break;
 
                 case 1:
-                    elapsed = fps(demos[demo]);
-                    frame_count++;
+                    time = GetTick();
+
+                    if(demos[demo].loop() == 0){
+                        state = 2;                        
+                    }
+
+                    fps();
+
+                    time = GetTick() - time;
                     break;
 
                 case 2:
+                    if(demos[demo].end != NULL){
+                        demos[demo].end();
+                    }
+                    demo = (demo + 1) % (sizeof(demos) / sizeof(demo_t));
                     state = 0;
                     break;
-#ifdef FEATURE_GIF
-                case 3:
-                    gif.begin(BIG_ENDIAN_PIXELS);
-                    if (gif.open(GIF_DATA, GIF_DATA_SIZE, GIFDraw))
-                    {
-                        demo++;
-                    }else{
-                        // skip this demo
-                        demo += 3;
-                    }
-                    break;
-                
-                case 4:
-                    elapsed = fps(gifPlayFrame);
-                    frame_count++;
-                    break;
 
-                case 5:
-                    gif.close();
-                    demo++;
-                    break;
-#endif
                 default:                   
                     break;
             }
 
-            if(frame_count > 300){
-                frame_count = 0;
-                state = 0;
-                demo = (demo + 1) % (sizeof(demos) / sizeof(func_t));
-            }
-
-            if(!sync_fps){
-                if(elapsed < 20)
-                    DelayMs(20 - elapsed); // 50fps
+            if(limit_fps && time < 16){
+                DelayMs(16 - time);
             }
             
             if(userio->getCharNonBlocking(&c)){
-                sync_fps ^= 1;
+                limit_fps ^= 1;
             }
+
         }while(c != '\n' && c != '\r');
 
         return CMD_OK_LF;
@@ -328,22 +320,17 @@ char CmdTft::execute(int argc, char **argv){
     return CMD_BAD_PARAM;
 }
 
-uint32_t CmdTft::fps(void (*func)(void)){
-    static uint32_t start, totalms = 0;
+void CmdTft::fps(void){
+    static uint32_t expire = 0;
     static uint16_t fps = 0;
-
-    start = GetTick();
-    func();
-    fps++;
-    
-    if(GetTick() - totalms >= 1000){
+ 
+    if(GetTick() > expire){
         console->print("\rfps %d ", fps);
         fps = 0;
-        totalms = GetTick();;
+        expire = GetTick() + 1000;
         LED1_TOGGLE;
     }
-
-    return GetTick() - start; // return elapsed time from last call
+    fps++;
 }
 
 // ST7735 library example
@@ -506,7 +493,7 @@ static void AmigaBall_Setup(void)
 }
 
 
-static void AmigaBall_Loop(void)
+static uint32_t AmigaBall_Loop(void)
 {
     static int16_t anim=0, animd=1;
     static int16_t x=0, y=0;
@@ -554,6 +541,8 @@ static void AmigaBall_Loop(void)
         y = LINE_YS + vline_h1 + 1- BALL_HT;
         yd = -yd;
     }
+
+    return (++demo_frames) < 300;
 }
 
 #ifdef FEATURE_GIF
@@ -619,7 +608,7 @@ void GIFDraw(GIFDRAW *pDraw)
         {
           //pilcdSetPosition(&lcd, pDraw->iX+x, y, iCount, 1, DRAW_TO_LCD);
           //spilcdWriteDataBlock(&lcd, (uint8_t *)usTemp, iCount*2, DRAW_TO_LCD);
-          BOARD_LCD_WriteArea(pDraw->iX+x, y, iCount, 1, usTemp);
+          LCD_WriteArea(pDraw->iX+x, y, iCount, 1, usTemp);
           x += iCount;
           iCount = 0;
         }
@@ -650,13 +639,31 @@ void GIFDraw(GIFDRAW *pDraw)
       }
       //spilcdSetPosition(&lcd, pDraw->iX, y, iWidth, 1, DRAW_TO_LCD);
       //spilcdWriteDataBlock(&lcd, (uint8_t *)usTemp, iWidth*2, DRAW_TO_LCD);
-      BOARD_LCD_WriteArea(pDraw->iX, y, iWidth, 1, usTemp);
+      LCD_WriteArea(pDraw->iX, y, iWidth, 1, usTemp);
       //drawTileLine(pDraw->iX, y, iWidth, usTemp);
     }
 }
 
-void gifPlayFrame(void){
-    gif.playFrame(true, NULL);
+static void Gif_Setup(void){
+    gif.begin(BIG_ENDIAN_PIXELS);
+    if(gif.open(GIF_DATA, GIF_DATA_SIZE, GIFDraw)){
+        demo_frames = gif.getInfo()->iFrameCount * 8;
+    }
+}
+
+static uint32_t Gif_Loop(void){
+    
+    if(gif.playFrame(true, NULL) == 0){
+        gif.reset();
+        gif.playFrame(true, NULL);
+    }
+
+    demo_frames--;
+    return demo_frames;
+}
+
+static void Gif_End(void){
+    gif.close();   
 }
 #endif
 
@@ -687,7 +694,7 @@ static void Spiral_Setup(void){
     color = RNG_Get();
 }
 
-static void Spiral_Loop(void){
+static uint32_t Spiral_Loop(void){
 
     if(isPrime(step)){
         LCD_FillRect(x - (stepSize >> 1), y - (stepSize >> 1), stepSize - 1, stepSize - 1,color);
@@ -721,6 +728,8 @@ static void Spiral_Loop(void){
     }
 
     step++;
+
+    return (++demo_frames) < 300;
 }
 
 static void Scroll_Setup(void){
@@ -728,20 +737,22 @@ static void Scroll_Setup(void){
     hue = RNG_Get();
 }
 
-static void Scroll_Loop(void){
+static uint32_t Scroll_Loop(void){
     y = (LCD_GetHeight() - 1) - scroll;
     scroll = (scroll + 1) % LCD_GetHeight();
 
     LCD_FillRect(0, y, LCD_GetWidth(), 1,  HsvToRgb(hue++, 255, 255));      
     
     LCD_Scroll(scroll);
+
+    return (++demo_frames) < 300;
 }
 
 static void RandomColors_Setup(void){
 
 }
 
-static void RandomColors_Loop(void){
+static uint32_t RandomColors_Loop(void){
     for(size_t i = 0; i < LCD_GetHeight(); i++){
         uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
         for (size_t j = 0; j < LCD_GetWidth(); j++){
@@ -749,4 +760,5 @@ static void RandomColors_Loop(void){
         }                
         LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
     }
+    return (++demo_frames) < 50;
 }

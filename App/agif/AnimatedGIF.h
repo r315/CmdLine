@@ -179,12 +179,13 @@ class AnimatedGIF
     int freeFrameBuf(GIF_FREE_CALLBACK *pfnFree);
     uint8_t *getFrameBuf();
     int getCanvasHeight();
-    int getInfo(GIFINFO *pInfo);
+    GIFINFO *getInfo(void);
     int getLastError();
     int getComment(char *destBuffer);
 
   private:
     GIFIMAGE _gif;
+    GIFINFO _info;
 };
 #else
 // C interface

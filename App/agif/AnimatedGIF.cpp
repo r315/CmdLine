@@ -19,24 +19,14 @@
 // limitations under the License.
 //===========================================================================
 #include "AnimatedGIF.h"
-
-// Here is all of the actual code...
-#include "agif.c"
+#include "agif.h"
 
 //
 // Memory initialization
 //
 int AnimatedGIF::open(uint8_t *pData, int iDataSize, GIF_DRAW_CALLBACK *pfnDraw)
-{
-    _gif.iError = GIF_SUCCESS;
-    _gif.pfnRead = readMem;
-    _gif.pfnSeek = seekMem;
-    _gif.pfnDraw = pfnDraw;
-    _gif.pfnOpen = NULL;
-    _gif.pfnClose = NULL;
-    _gif.GIFFile.iSize = iDataSize;
-    _gif.GIFFile.pData = pData;
-    return GIFInit(&_gif);
+{    
+    return GIF_OpenRAM(&_gif, pData, iDataSize, pfnDraw);
 } /* open() */
 
 //
@@ -113,9 +103,10 @@ int AnimatedGIF::getCanvasHeight()
     return _gif.iCanvasHeight;
 } /* getCanvasHeight() */
 
-int AnimatedGIF::getInfo(GIFINFO *pInfo)
+GIFINFO *AnimatedGIF::getInfo(void)
 {
-   return GIF_getInfo(&_gif, pInfo);
+    GIF_GetInfo(&_gif, &_info);
+    return &_info;
 } /* getInfo() */
 
 int AnimatedGIF::getLastError()
@@ -139,7 +130,7 @@ int AnimatedGIF::open(const char *szFilename, GIF_OPEN_CALLBACK *pfnOpen, GIF_CL
        _gif.iError = GIF_FILE_NOT_OPEN;
        return 0;
     }
-    return GIFInit(&_gif);
+    return GIF_Init(&_gif);
 
 } /* open() */
 
@@ -180,7 +171,7 @@ long lTime = GetTick();
     {
         (*_gif.pfnSeek)(&_gif.GIFFile, 0); // seek to start
     }
-    if (GIFParseInfo(&_gif, 0))
+    if (GIF_ParseInfo(&_gif, 0))
     {
         _gif.pUser = pUser;
         if (_gif.iError == GIF_EMPTY_FRAME) // don't try to decode it
