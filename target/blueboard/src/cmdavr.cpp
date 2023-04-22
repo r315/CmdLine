@@ -383,11 +383,12 @@ void CmdAvr::help(void){
 
 }
 
-char CmdAvr::execute(void *ptr){
+char CmdAvr::execute(int argc, char **argv){
 int32_t signature, aux;
 char *p1;
 
-	p1 = (char*)ptr;
+    // TODO: FIX parser
+	p1 = (char*)argv[0];
 
 	// check parameters
     if( p1 == NULL || *p1 == '\0'){

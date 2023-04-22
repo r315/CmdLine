@@ -225,10 +225,9 @@ CPPFLAGS =$(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_F
 #######################################
 
 # libraries
-# -specs=nano.specs
+SPECS =--specs=nosys.specs --specs=nano.specs 
 LIBS =-lm -lstdc++
 LIBDIR =
-#SPECS =--specs=nosys.specs --specs=nano.specs 
 LDFLAGS = $(MCU) $(SPECS) -u _printf_float -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################

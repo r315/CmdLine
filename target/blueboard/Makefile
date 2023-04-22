@@ -93,8 +93,8 @@ GCSYMBOLS =__NEWLIB__ BOARD_BLUEBOARD ENABLE_DEBUG MSC_CLOCK
 GCFLAGS =$(CPU) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
 GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
 
-SPECS=--specs=nano.specs#--specs=nosys.specs -u _printf_float 
-LIBS =-lgcc -lstdc++
+SPECS=--specs=nosys.specs --specs=nano.specs #-u _printf_float 
+LIBS =-lstdc++
 #LIBS +=-nostdlib
 LIBSPATH +=
 LDFLAGS =$(CPU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(EXEC).map,--cref
