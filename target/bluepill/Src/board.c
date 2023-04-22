@@ -505,16 +505,18 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 #define DMA_CCR_PSIZE_8     (0<<8)
 
 uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout){
-    return SPI_Xchg(BOARD_SPIDEV, data);
+    return SPI_Xchg(BOARD_SPIDEV, (uint8_t*)&data);
 }
 
 uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
+    uint8_t dummy;
     if(size == 0 || dst == NULL){
         return 0;
     }
     
+    dummy = 0xFF;
     for (uint32_t i = 0; i < size; i++, dst++){
-        *dst = SPI_Xchg(BOARD_SPIDEV, 0xFF);
+        *dst = SPI_Xchg(BOARD_SPIDEV, &dummy);
     }
 
     return size;
@@ -528,4 +530,9 @@ uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
 void BOARD_LCD_Init(void)
 {
     LCD_Init(BOARD_SPIDEV);
+}
+
+void SW_Reset(void)
+{
+    NVIC_SystemReset();
 }
