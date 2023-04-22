@@ -20,8 +20,6 @@ typedef struct demo_s {
     void (*end)(void);
 }demo_t;
 
-extern StdOut *userio;
-
 static uint16_t tile[512];
 static uint16_t seed, scroll;
 static int16_t x, y, px,py;
@@ -190,7 +188,7 @@ char CmdTft::execute(int argc, char **argv){
         do{           
             console->print("\r%d  ", scroll);
             Scroll_Loop();
-            userio->getCharNonBlocking(&c);
+            console->getCharNonBlocking(&c);
             DelayMs(16);
         }while(c != '\n' && c != '\r');
         return CMD_OK_LF;
@@ -218,7 +216,7 @@ char CmdTft::execute(int argc, char **argv){
 
             f--;
             c = '\0';
-            if(userio->getCharNonBlocking(&c)){
+            if(console->getCharNonBlocking(&c)){
                 seed = RNG_Get() % 256;
             }
         }while(c != '\n' && c != '\r');
@@ -286,7 +284,7 @@ char CmdTft::execute(int argc, char **argv){
                 DelayMs(16 - time);
             }
             
-            if(userio->getCharNonBlocking(&c)){
+            if(console->getCharNonBlocking(&c)){
                 limit_fps ^= 1;
             }
 

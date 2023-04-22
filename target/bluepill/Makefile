@@ -21,8 +21,7 @@ TARGET =$(BUILD_DIR)/console_bluepill
 ######################################
 # debug build?
 DEBUG = 1
-# optimization
-OPT = -Og
+
 
 
 #######################################
@@ -97,7 +96,6 @@ $(APP_DIR)/cmdsbus.cpp \
 $(APP_DIR)/cmdtft.cpp \
 $(APP_DIR)/cmdadc.cpp \
 $(APP_DIR)/cmdmem.cpp \
-$(APP_DIR)/cmdrst.cpp \
 $(APP_DIR)/cmdrfinder.cpp \
 $(APP_DIR)/cmdservo.cpp \
 $(APP_DIR)/cmdspiflash.cpp \
@@ -122,17 +120,17 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--IInc \
--I$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
--I$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
--I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
--I$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
--I$(LIBEMB_PATH)/include \
--I$(LIBEMB_PATH)/drv/inc \
--I$(APP_DIR)/../inc \
--I$(APP_DIR)/agif
+Inc \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
+$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
+$(REPOSITORY)/Drivers/CMSIS/Include \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
+$(LIBEMB_PATH)/include \
+$(LIBEMB_PATH)/drv/inc \
+$(APP_DIR)/../inc \
+$(APP_DIR)/agif
 
 #######################################
 # binaries
@@ -168,7 +166,7 @@ endif
 # CFLAGS
 #######################################
 # cpu
-CPU = -mcpu=cortex-m3
+CPU =-mcpu=cortex-m3 -mthumb
 DEVICE =STM32F103xB
 
 # fpu
@@ -178,7 +176,7 @@ DEVICE =STM32F103xB
 #FLOAT-ABI =
 
 # mcu
-MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI) -D$(DEVICE) -DBOARD_BLUEPILL
+MCU =$(CPU) $(FPU) $(FLOAT-ABI) 
 
 # macros for gcc
 # AS defines
@@ -186,30 +184,27 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
--DUSE_HAL_DRIVER \
--D_STDOUT_UART \
--D_UART_IT \
+USE_HAL_DRIVER \
+$(DEVICE) \
+BOARD_BLUEPILL \
 
 # CPP defines
 CPP_DEFS = \
-'-D__weak=__attribute__((weak))' \
-'-D__packed=__attribute__((__packed__))' \
--DUSE_HAL_DRIVER \
--D_STDOUT_UART \
+USE_HAL_DRIVER \
+$(DEVICE) \
+BOARD_BLUEPILL \
+'__weak=__attribute__((weak))' \
+'__packed=__attribute__((__packed__))' \
+
+# optimization
+OPT = -Og -gdwarf-2
 
 # compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+ASFLAGS = $(MCU) $(OPT) $(AS_DEFS) $(addprefix -I, $(AS_INCLUDES)) -Wall -fdata-sections -ffunction-sections
 
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS = $(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -Wall -fdata-sections -ffunction-sections
 
-CPPFLAGS = $(MCU) $(CPP_DEFS) $(C_INCLUDES) $(OPT) -Wall -fmessage-length=0 -ffunction-sections -c -fno-exceptions -fno-rtti
-
- 
-
-ifeq ($(DEBUG), 1)
-CFLAGS += -g -gdwarf-2
-CPPFLAGS += -g -gdwarf-2
-endif
+CPPFLAGS = $(MCU) $(OPT) $(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) -Wall -fdata-sections -ffunction-sections -fno-exceptions -fmessage-length=0 -fno-rtti
 
 
 # Generate dependency information
@@ -222,9 +217,10 @@ endif
 # LDFLAGS
 #######################################
 # libraries
-LIBS = -lm# -lnosys 
+SPECS =-specs=nosys.specs -specs=nano.specs
+LIBS =-lstdc++
 LIBDIR = 
-LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,-Map=$(TARGET).map,--cref -Wl,--gc-sections -fno-exceptions -fno-rtti
+LDFLAGS = $(MCU) $(SPECS) -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(TARGET).map,--cref
 
 # default action: build all
 all: $(TARGET).elf
@@ -265,15 +261,15 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
-	@echo "Compiling " $<
+	@echo "[CC] " $<
 	@$(CC) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	@echo "Assembling " $<
+	@echo "[AS] " $<
 	@$(AS) -c $(ASFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR) 
-	@echo "Compiling " $<
+	@echo "[CC] " $<
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
 $(TARGET).elf: $(OBJECTS) Makefile

@@ -40,7 +40,7 @@ int main()
     TIM_InitMatch(LPC_TIM0);    // Use TIMER0 as timebase for generic timer
 
     BOARD_Init();
-    BOARD_SERIAL_Init();
+    SERIAL_Init();
     DISPLAY_Init(0);
     LCD_SetOrientation(LCD_LANDSCAPE);
     LCD_Bkl(1);
@@ -49,11 +49,4 @@ int main()
     App();
 
 	return 0;
-}
-
-
-extern uint32_t GetTick(void);
-
-clock_t clock(void){
-    return (clock_t)GetTick();
 }

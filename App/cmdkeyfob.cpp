@@ -4,7 +4,6 @@
 #include "dscr.h"
 
 static CmdKeyFob *kfob;
-extern StdOut *userio;
 
 static uint16_t med_btn[] = {
     400,200,750,250,800,150,700,600,400,550,350,600,400,250,650,300,700,600,300,650,350,600,350,600,350,10000
@@ -174,7 +173,7 @@ char CmdKeyFob::execute(int argc, char **argv){
                         break;
                     }
                 }
-                userio->getCharNonBlocking(&c);                
+                console->getCharNonBlocking(&c);
             }while(c != '\n');
             return CMD_OK;
         }   

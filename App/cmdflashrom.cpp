@@ -11,8 +11,6 @@ typedef enum {
 #define LOW     0
 #define HIGH    1
 
-extern StdOut *userio;
-
 void CmdFlashRom::help(void){ 
     console->print("flashrom\n");
     console->print("q  exits flashrom mode\n");
@@ -34,7 +32,7 @@ char CmdFlashRom::execute(int argc, char **argv){
     console->print("FLASHROM OK");
 
     while(done == FALSE){
-        char c = userio->xgetchar();
+        char c = console->getChar();
 
         switch (state){
             case IDLE:            

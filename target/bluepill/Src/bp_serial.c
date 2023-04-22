@@ -128,7 +128,7 @@ void SERIAL_Init(void)
     SERIAL_Config(&BOARD_SERIAL4_HANDLER, SERIAL4);
 }
 
-stdout_t *SERIAL_GetStdout(uint8_t nr)
+stdout_t *SERIAL_GetStdout(int32_t nr)
 {
     switch(nr){
         case SERIAL0:

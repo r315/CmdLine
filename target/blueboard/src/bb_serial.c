@@ -134,19 +134,19 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
     hserial->out.init();
 }
 
-void BOARD_SERIAL_Init(){
+void SERIAL_Init(void){
     //SERIAL_Config(&hs0, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
     SERIAL_Config(&hs1, SERIAL1 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
     SERIAL_Config(&hs3, SERIAL3 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
     SERIAL_Config(&hs4, SERIAL4);
 }
 
-serialhandler_t *BOARD_GetSerial(void){
-    return &hs1;
+stdout_t *SERIAL_GetStdout(int32_t nr){
+    return &hs1.out;
 }
 
-serialhandler_t *BOARD_GetSerialAux(void){
-    return &hs3;
+serialbus_t *SERIAL_GetSerialBus(int32_t nr){
+    return &hs3.port;
 }
 
 int _write(int file, char *ptr, int len)

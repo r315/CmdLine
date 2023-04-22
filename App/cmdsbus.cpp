@@ -30,8 +30,6 @@
 #include "uart.h"
 #include "timer.h"
 
-//static StdOut uart;
-
 #define FRAME_RATE              14000 // Send frame each 14ms
 #define PWM_MIN_PULSE           128  // 960
 #define PWM_CENTER_PULSE        992  // 1500
@@ -226,7 +224,7 @@ char CmdSbus::execute(int argc, char **argv){
 	}
 
 	if (sbus.state == NOT_RUNNING) {
-        sbus.uart = &BOARD_GetSerialAux()->port;
+        sbus.uart = SERIAL_GetSerialBus(1);
         sbus.uart->speed = SBUS_BAUDRATE;
         UART_Init(sbus.uart);
 		sbus.state = RUNNING;

@@ -33,9 +33,6 @@ extern "C" {
 #define BOARD_CARD_NOT_ACTIVE   LED1_OFF
 #define BOARD_SD_GET_SPI        BOARD_GetSpiAux()
 
-void BOARD_SERIAL_Init();
-serialhandler_t *BOARD_GetSerial(void);
-serialhandler_t *BOARD_GetSerialAux(void);
 void BOARD_LCD_Init(void);
 void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data);
 void BOARD_LCD_Scroll(uint16_t sc);
