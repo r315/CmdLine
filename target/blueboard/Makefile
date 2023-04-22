@@ -16,6 +16,7 @@ $(TARGET_PATH)/usbdrv \
 $(APP_DIR)/../inc \
 $(APP_DIR)/minimp3 \
 $(APP_DIR)/agif \
+$(APP_DIR)/stk500 \
 $(LIBEMB_PATH)/include \
 $(LIBEMB_PATH)/pff \
 $(LIBEMB_PATH)/drv/inc \
@@ -52,7 +53,7 @@ $(TARGET_PATH)/usbdrv/usbserial.c \
 $(TARGET_PATH)/usbdrv/usbhw_lpc.c \
 $(TARGET_PATH)/usbdrv/usbcontrol.c \
 $(TARGET_PATH)/usbdrv/usbstdreq.c \
-$(TARGET_PATH)/stk500/stk500.c \
+$(APP_DIR)/stk500/stk500.c \
 $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
 
@@ -74,7 +75,7 @@ $(TARGET_PATH)/src/cmdpwm.cpp \
 $(TARGET_PATH)/src/cmdawg.cpp \
 $(TARGET_PATH)/src/cmdadc.cpp \
 $(TARGET_PATH)/src/cmdi2c.cpp \
-$(TARGET_PATH)/stk500/stk500_service.cpp \
+$(APP_DIR)/stk500/stk500_service.cpp \
 
 
 LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
