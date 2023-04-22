@@ -24,9 +24,11 @@ $(CMSIS_DEVICE)/inc \
 $(CMSIS_PATH)/Core/Include \
 
 C_SOURCES =\
-$(TARGET_PATH)/src/startup_lpc1768.c \
+$(CMSIS_DEVICE)/src/startup_LPC17xx.c \
+$(CMSIS_DEVICE)/src/system_LPC17xx.c \
 $(TARGET_PATH)/src/blueboard.c \
 $(TARGET_PATH)/src/sysmem.c \
+$(TARGET_PATH)/src/syscalls.c \
 $(LIBEMB_PATH)/drv/clock/clock_lpc17xx.c \
 $(LIBEMB_PATH)/drv/timer/tim_lpc17xx.c \
 $(LIBEMB_PATH)/drv/tft/ili9328.c \
@@ -85,14 +87,15 @@ LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
 DEVICE =LPC1768
 CPU =-mcpu=cortex-m3 -mthumb
 
-OPT =-O3 -g
+OPT =-O0 -g
 
 GCSYMBOLS =__NEWLIB__ BOARD_BLUEBOARD ENABLE_DEBUG MSC_CLOCK
 GCFLAGS =$(CPU) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
 GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
 
-#SPECS=--specs=nosys.specs --specs=nano.specs -u _printf_float 
-LIBS =-nostdlib -lgcc
+SPECS=--specs=nano.specs#--specs=nosys.specs -u _printf_float 
+LIBS =-lgcc -lstdc++
+#LIBS +=-nostdlib
 LIBSPATH +=
 LDFLAGS =$(CPU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(EXEC).map,--cref
 
@@ -205,15 +208,15 @@ command:
 # 
 ########################################################
 $(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
-	@echo "Compile" $<
+	@echo "[CC]  $<"
 	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
 
 $(BUILD_DIR)/%.obj : %.cpp | $(BUILD_DIR)
-	@echo "Compile" $<
+	@echo "[CC]  $<"
 	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
 	
 $(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
-	@echo "Assemble" $<
+	@echo "[AS]  $<"
 	@$(AS) $(ASFLAGS) $< -o $@
 
 ifeq ($(GCC_COLORS),)

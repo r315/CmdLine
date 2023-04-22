@@ -124,7 +124,7 @@ unsigned long pulStack[STACK_SIZE];
 __attribute__ ((section(".isr_vector")))
 void (* const g_pfnVectors[])(void) =
 {
-         (intfunc)((unsigned long)&_stack),                   // The initial stack pointer */
+        (intfunc)((unsigned long)&_stack),                   // The initial stack pointer */
 		//(void (*)(void))((unsigned long)pulStack + sizeof(pulStack)),  // The initial stack pointer
         Reset_Handler,             /* Reset Handler */
         NMI_Handler,               /* NMI Handler */
@@ -224,7 +224,7 @@ void Reset_Handler(void)
 	
 	//Initialize static constructors.
 	
-	// __libc_init_array();
+	__libc_init_array();
     //
     // Call the application's entry point.
     //
