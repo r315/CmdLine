@@ -76,12 +76,17 @@ void SERIAL_Init(void)
     SERIAL_Config(&serial1_handler, SERIAL1 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
 }
 
-stdout_t *SERIAL_GetStdout(uint8_t nr)
+stdout_t *SERIAL_GetStdout(int32_t nr)
 {
-    return nr == SERIAL0 ? &serial0_handler.out :  &serial1_handler.out;
+    if(nr == 1)
+    {
+        return &serial1_handler.out;
+    }
+
+    return &serial0_handler.out;
 }
 
-serial_t *SERIAL_GetSerial(uint8_t nr)
+serial_t *SERIAL_GetSerial(int32_t nr)
 {
     return nr == SERIAL0 ? &serial0_handler.serial :  &serial1_handler.serial;
 }

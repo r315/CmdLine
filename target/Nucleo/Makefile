@@ -54,7 +54,8 @@ $(TARGET_PATH)/Core/Src/stm32l4xx_it.c \
 $(TARGET_PATH)/Core/Src/stm32l4xx_hal_msp.c \
 $(TARGET_PATH)/Core/Src/system_stm32l4xx.c \
 $(TARGET_PATH)/Core/Src/syscalls.c \
-$(TARGET_PATH)/Core/Src/serial.c \
+$(TARGET_PATH)/Core/Src/sysmem.c \
+$(TARGET_PATH)/Core/Src/nc_serial.c \
 $(TARGET_PATH)/Core/Src/dscr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
@@ -225,9 +226,10 @@ CPPFLAGS =$(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_F
 
 # libraries
 # -specs=nano.specs
-LIBS = -lm
+LIBS =-lm -lstdc++
 LIBDIR =
-LDFLAGS = $(MCU) --specs=nosys.specs --specs=nano.specs -u _printf_float -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
+#SPECS =--specs=nosys.specs --specs=nano.specs 
+LDFLAGS = $(MCU) $(SPECS) -u _printf_float -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
 # Rules
