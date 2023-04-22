@@ -8,7 +8,6 @@ extern "C" {
 
 #include "console.h"
 
-#define GPIO_PORT_TYPE LPC_GPIO_TypeDef
 
 class CmdGpio : public ConsoleCommand{
     Console *console;
@@ -17,9 +16,9 @@ public:
     void init(void *params) { console = static_cast<Console*>(params); }
     char execute(int argc, char **argv);
     void help(void);
-    char setPortState(GPIO_PORT_TYPE *port, uint32_t value);
-    char getPortState(GPIO_PORT_TYPE *port);
-    char setPinState(GPIO_PORT_TYPE *port, uint8_t pin, uint8_t state);
+    char setPortState(uint32_t port, uint32_t value);
+    char getPortState(uint32_t port);
+    char setPinState(uint32_t port, uint8_t pin, uint8_t state);
 };
 
 

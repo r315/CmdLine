@@ -4,7 +4,8 @@
 //-------------------------------------------------------
 // 
 //-------------------------------------------------------
-char CmdGpio::setPinState(GPIO_PORT_TYPE *port, uint8_t pin, uint8_t state){
+char CmdGpio::setPinState(uint32_t p, uint8_t pin, uint8_t state){
+    LPC_GPIO_TypeDef *port = (LPC_GPIO_TypeDef*)p;
 
 	port->FIODIR |= (1<<pin);
 	port->FIOMASK &= ~(1<<pin);
@@ -19,7 +20,8 @@ char CmdGpio::setPinState(GPIO_PORT_TYPE *port, uint8_t pin, uint8_t state){
 //-------------------------------------------------------
 //
 //-------------------------------------------------------
-char CmdGpio::setPortState(GPIO_PORT_TYPE *port, uint32_t value){
+char CmdGpio::setPortState(uint32_t p, uint32_t value){
+    LPC_GPIO_TypeDef *port = (LPC_GPIO_TypeDef*)p;
 	port->FIODIR = 0xFFFFFFFF; //32bit output
 	port->FIOMASK = 0; 
 	port->FIOPIN = value;
@@ -28,8 +30,9 @@ char CmdGpio::setPortState(GPIO_PORT_TYPE *port, uint32_t value){
 /**
  * 
  * */
-char CmdGpio::getPortState(GPIO_PORT_TYPE *port){
-uint32_t value;	
+char CmdGpio::getPortState(uint32_t p){
+    uint32_t value;	
+    LPC_GPIO_TypeDef *port = (LPC_GPIO_TypeDef*)p;
 	//ports[port]->FIOMASK = 0; 
 
 	value = port->FIOPIN;
