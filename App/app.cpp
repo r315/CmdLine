@@ -19,6 +19,7 @@
 #include "cmdtft.h"
 #include "cmdencoder.h"
 #include "cmdlmcshd.h"
+#include "cmdbenchmark.h"
 
 StdOut *userio;
 
@@ -195,6 +196,7 @@ void App(void){
 	CmdPwm pwm;
 	CmdTft tft;
     CmdLmcshd lmcshd;
+    CmdBenchmark benchmark;
 
 	userio = SERIAL_GetStdout(SERIAL0);
 
@@ -207,6 +209,7 @@ void App(void){
 	con.addCommand(&pwm);
 	con.addCommand(&tft);
     con.addCommand(&lmcshd);
+    con.addCommand(&benchmark);
 
 	con.cls();
 	con.print("Freq: %dMHz\n", SystemCoreClock / 1000000);

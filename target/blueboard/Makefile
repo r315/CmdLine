@@ -15,6 +15,7 @@ $(TARGET_PATH)/inc \
 $(TARGET_PATH)/usbdrv \
 $(APP_DIR)/../inc \
 $(APP_DIR)/minimp3 \
+$(APP_DIR)/agif \
 $(LIBEMB_PATH)/include \
 $(LIBEMB_PATH)/pff \
 $(LIBEMB_PATH)/drv/inc \
@@ -24,6 +25,7 @@ $(CMSIS_PATH)/Core/Include \
 C_SOURCES =\
 $(TARGET_PATH)/src/startup_lpc1768.c \
 $(TARGET_PATH)/src/blueboard.c \
+$(TARGET_PATH)/src/sysmem.c \
 $(LIBEMB_PATH)/drv/clock/clock_lpc17xx.c \
 $(LIBEMB_PATH)/drv/timer/tim_lpc17xx.c \
 $(LIBEMB_PATH)/drv/tft/ili9328.c \
@@ -54,8 +56,6 @@ $(TARGET_PATH)/stk500/stk500.c \
 $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
 
-#$(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
-$(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
@@ -81,15 +81,19 @@ LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
 #########################################################
 #Startup files and libraries
 #########################################################
-
-LIBSPATH +=
-
-GCSYMBOLS =-D__NEWLIB__ -DBOARD_BLUEBOARD -DENABLE_DEBUG
-GCFLAGS =-mcpu=cortex-m3 -mthumb -Wall -Wextra -Og -g -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
-GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
-LDFLAGS =-mcpu=cortex-m3 -mthumb -nostdlib -lgcc -Wl,--gc-sections -nodefaultlibs #-nostartfiles #-lstdc++ 
-
 DEVICE =LPC1768
+CPU =-mcpu=cortex-m3 -mthumb
+
+OPT =-O3 -g
+
+GCSYMBOLS =__NEWLIB__ BOARD_BLUEBOARD ENABLE_DEBUG MSC_CLOCK
+GCFLAGS =$(CPU) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
+GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
+
+#SPECS=--specs=nosys.specs --specs=nano.specs -u _printf_float 
+LIBS =-nostdlib -lgcc
+LIBSPATH +=
+LDFLAGS =$(CPU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(EXEC).map,--cref
 
 #########################################################
 GCC_EXEC_PREFIX = arm-none-eabi
@@ -129,10 +133,9 @@ CHECKSUM =$(LIBEMB_PATH)/tools/checksum
 ##########################################################
 all: $(EXEC).elf stats
 
-
 $(EXEC).elf:  $(OBJECTS)
 	@echo "Linking" $@
-	@$(GCC) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LDFLAGS) -o $@
+	@$(GCC) $(LDFLAGS) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LIBS) -o $@
 
 $(EXEC).hex: $(EXEC).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
@@ -160,9 +163,6 @@ clean:
 
 rebuild: clean all
 
-inline_asm:
-	$(GCC) -Og -g -mcpu=cortex-m3 -mthumb -Wall -c inline_asm.c -o inline_asm.o
-	$(GCC) -Tinline_asm.ld inline_asm.o -nostdlib -nostartfiles -o inline_asm.elf
 
 $(EXEC).jlink: $(EXEC).hex
 	@echo "Creating Jlink configuration file"
@@ -205,11 +205,11 @@ command:
 ########################################################
 $(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
 	@echo "Compile" $<
-	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
+	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
 
 $(BUILD_DIR)/%.obj : %.cpp | $(BUILD_DIR)
 	@echo "Compile" $<
-	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(GCSYMBOLS) -c $< -o $@
+	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
 	
 $(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
 	@echo "Assemble" $<

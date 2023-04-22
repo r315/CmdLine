@@ -28,7 +28,7 @@ I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit)
 #define BOARD_SERIAL3                   (&hs1.out)
 #define BOARD_SERIAL4                   (&hs4.out)
 
-static serialhandler_t hs0, hs1, hs3, hs4;;
+static serialhandler_t hs0, hs1, hs3, hs4;
 
 /**
  * Uart0/1/3
@@ -147,4 +147,13 @@ serialhandler_t *BOARD_GetSerial(void){
 
 serialhandler_t *BOARD_GetSerialAux(void){
     return &hs3;
+}
+
+int _write(int file, char *ptr, int len)
+{
+    (void)file;
+    
+	UART_Write(&hs1.port, (uint8_t*)ptr, len);
+		
+	return len;
 }

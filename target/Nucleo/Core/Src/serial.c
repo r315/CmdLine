@@ -22,7 +22,7 @@ I->out.xputs = UART_FUNCTION_NAME(N, Puts); \
 I->out.xgetchar = UART_FUNCTION_NAME(N, GetChar); \
 I->out.getCharNonBlocking = UART_FUNCTION_NAME(N, GetCharNonBlocking); \
 I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit); \
-I->serial.available = I->out.kbhit; \
+I->serial.available = (int(*)(void))I->out.kbhit; \
 I->serial.read = UART_FUNCTION_NAME(N, read); \
 I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
 I->serial.write = UART_FUNCTION_NAME(N, write);
@@ -84,4 +84,9 @@ stdout_t *SERIAL_GetStdout(uint8_t nr)
 serial_t *SERIAL_GetSerial(uint8_t nr)
 {
     return nr == SERIAL0 ? &serial0_handler.serial :  &serial1_handler.serial;
+}
+
+int __io_putchar(int ch){
+    serial0_handler.out.xputchar(ch);
+    return 0;
 }

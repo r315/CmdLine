@@ -13,7 +13,7 @@
 ######################################
 # target
 ######################################
-TARGET =console_nucleo
+TARGET =console-nucleo
 
 #######################################
 # paths
@@ -33,16 +33,17 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
--I$(TARGET_PATH)/Core/Inc \
--I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
--I$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
--I$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(REPOSITORY)/Drivers/CMSIS/Include \
--I$(LIBEMB_PATH)/include \
--I$(LIBEMB_PATH)/drv/inc \
--I$(APP_DIR)/../inc \
--I$(APP_DIR)/agif \
+$(TARGET_PATH)/Core/Inc \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
+$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
+$(REPOSITORY)/Drivers/CMSIS/Include \
+$(REPOSITORY)/Drivers/CMSIS/Include \
+$(LIBEMB_PATH)/include \
+$(LIBEMB_PATH)/drv/inc \
+$(APP_DIR)/../inc \
+$(APP_DIR)/agif \
+$(APP_DIR)/dhrystone \
 ######################################
 # source
 ######################################
@@ -84,7 +85,9 @@ $(LIBEMB_PATH)/drv/spi/spi_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/uart/uart_stm32l4xx.c \
 $(LIBEMB_PATH)/drv/dma/dma_stm32l4xx.c \
 $(LIBEMB_PATH)/display/lcd.c \
-$(APP_DIR)/agif/agif.c \
+$(APP_DIR)/dhrystone/dhry_1.c \
+$(APP_DIR)/dhrystone/dhry_2.c \
+#$(APP_DIR)/agif/agif.c \
 
 CPP_SOURCES = \
 $(LIBEMB_PATH)/console/console.cpp \
@@ -96,7 +99,8 @@ $(APP_DIR)/cmdkeyfob.cpp \
 $(APP_DIR)/cmdpwm.cpp \
 $(APP_DIR)/cmdtft.cpp \
 $(APP_DIR)/cmdlmcshd.cpp \
-$(APP_DIR)/agif/AnimatedGIF.cpp \
+$(APP_DIR)/cmdbenchmark.cpp \
+#$(APP_DIR)/agif/AnimatedGIF.cpp \
 
 # ASM sources
 ASM_SOURCES =  \
@@ -113,17 +117,18 @@ DEBUG =0
 OPT =-Os
 else
 DEBUG =1
-OPT =-Og
+OPT =-O3
 endif
 
 # macros for gcc
 COMMON_DEFS = \
--D__NUCLEO_L412KB__\
--DBOARD_NUCLEO_L412KB \
--DSTM32L412xx \
--DUSE_HAL_DRIVER \
-'-DVERSION_STRING="$(VERSION)"' \
--DFEATURE_GIF \
+__NUCLEO_L412KB__\
+BOARD_NUCLEO_L412KB \
+STM32L412xx \
+USE_HAL_DRIVER \
+'VERSION_STRING="$(VERSION)"' \
+_FEATURE_GIF \
+MSC_CLOCK 
 
 #######################################
 # binaries
@@ -193,21 +198,20 @@ $(COMMON_DEFS) \
 # CPP defines
 CPP_DEFS = \
 $(COMMON_DEFS) \
-'-D__weak=__attribute__((weak))' \
-'-D__packed=__attribute__((__packed__))' \
+'__weak=__attribute__((weak))' \
+'__packed=__attribute__((__packed__))' \
 
-COMMON_FLAGS =$(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections
-
+COMMON_FLAGS =$(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections -u _printf_float
 ifeq ($(DEBUG), 1)
-COMMON_FLAGS +=-Og -g -gdwarf-2
+COMMON_FLAGS +=-g -gdwarf-2
 endif
 
 # compile gcc flags
 ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)
 
-CFLAGS =$(C_DEFS) $(C_INCLUDES) $(COMMON_FLAGS)
+CFLAGS =$(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_FLAGS)
 
-CPPFLAGS =$(CPP_DEFS) $(C_INCLUDES) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
+CPPFLAGS =$(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
 
 # Generate dependency information
 #CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
@@ -220,9 +224,10 @@ CPPFLAGS =$(CPP_DEFS) $(C_INCLUDES) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
 #######################################
 
 # libraries
+# -specs=nano.specs
 LIBS = -lm
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nosys.specs -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
+LDFLAGS = $(MCU) --specs=nosys.specs --specs=nano.specs -u _printf_float -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
 # Rules
@@ -267,19 +272,19 @@ OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.o)))
 vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
-	@echo "Compiling " $<
+	@echo "[CC]  " $<
 	@$(CC) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
-	@echo "Assembling " $<
+	@echo "[AS]  " $<
 	@$(AS) -c $(ASFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR) 
-	@echo "Compiling " $<
+	@echo "[CC]  " $<
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
-	@echo "Linking " $@
+	@echo "[LD]  " $@
 	@$(LD) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)

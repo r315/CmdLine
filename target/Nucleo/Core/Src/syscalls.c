@@ -179,3 +179,9 @@ int _execve(char *name, char **argv, char **env)
 	errno = ENOMEM;
 	return -1;
 }
+
+extern uint32_t HAL_GetTick(void);
+
+clock_t clock(void){
+    return (clock_t)HAL_GetTick();
+}

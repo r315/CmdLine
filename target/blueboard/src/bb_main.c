@@ -50,3 +50,10 @@ int main()
 
 	return 0;
 }
+
+
+extern uint32_t GetTick(void);
+
+clock_t clock(void){
+    return (clock_t)GetTick();
+}
