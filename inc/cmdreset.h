@@ -11,13 +11,16 @@ extern "C" {
 
 class CmdReset : public ConsoleCommand{
     Console *console;
+
 public:
-    CmdReset () : ConsoleCommand("reset") { }
     void init(void *params) { console = static_cast<Console*>(params); }
-    char execute(void *ptr){
+    CmdReset () : ConsoleCommand("reset") { }
+    
+    char execute(int argc, char **argv){
         SW_Reset();
-        while(1);        
+        return CMD_OK;        
     }
+    
     void help(void){}
 };
 

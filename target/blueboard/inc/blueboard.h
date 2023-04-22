@@ -123,7 +123,7 @@ extern "C" {
 
 //-----------------------------------------------------
 void BB_Init(void);
-void BB_SW_Reset(void);
+void SW_Reset(void);
 void BB_ConfigClockOut(uint8_t en);
 void BB_RitTimeBase_Init(void);
 void BB_RitDelay(uint32_t ms);

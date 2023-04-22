@@ -315,6 +315,11 @@ static void MX_GPIO_Init(void)
 		HAL_GPIO_Init(LCD_BKL_GPIO_Port, &GPIO_InitStruct);
 }
 
+void SW_Reset(void)
+{
+    NVIC_SystemReset();
+}
+
 /**
 	* @brief  This function is executed in case of error occurrence.
 	* @retval None

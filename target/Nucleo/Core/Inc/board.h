@@ -82,6 +82,7 @@ static inline uint32_t GetTick(){ return HAL_GetTick(); }
 #define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
 extern spibus_t BOARD_SPIDEV_HANDLER;
 
+void SW_Reset(void);
 
 #ifdef __cplusplus
 }

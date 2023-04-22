@@ -13,7 +13,7 @@ class CmdLed : public Command{
 public:
     CmdLed (Vcom *vc) : Command("led", vc) { }
     void help(void){}
-    char execute(void *ptr){
+    char execute(int argc, char **argv){
         vcom->puts("Name  Color  Designator  Pin\n"
                     "LED1  Blue   D8          P1.29\n"
                     "LED2  Red    D7          P1.18\n"

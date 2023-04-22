@@ -47,10 +47,8 @@ void BB_Init(void){
 	//ACC_Init();
 }
 
-void BB_SW_Reset(void){
-    LPC_WDT->WDCLKSEL = WDCLKSEL_WDSEL_PCLK;
-    LPC_WDT->MOD |= WDMOD_WDEN | WDMOD_WDRESET;    
-    WDT_RELOAD;
+void SW_Reset(void){
+    NVIC_SystemReset();
 }
 
 void DelayMs(uint32_t ms){

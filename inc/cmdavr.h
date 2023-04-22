@@ -37,7 +37,7 @@ public:
 		console = static_cast<Console*>(params);		
 	}
     CmdAvr () : ConsoleCommand("avr") { }
-    char execute(void *ptr);
+    char execute(int argc, char **argv);
     void help(void);
     char avrFuses(void *ptr);
 };

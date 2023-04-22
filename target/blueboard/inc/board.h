@@ -19,7 +19,6 @@ extern "C" {
 #include "button.h"
 
 #define BOARD_Init              BB_Init
-#define SW_Reset                BB_SW_Reset
 #define BOARD_SPI_Write         BB_SPI_Write
 #define BOARD_SPI_SetFrequency  BB_SPI_SetFrequency
 #define BOARD_SPI_AUX_BUS       SPI_BUS1
