@@ -42,8 +42,8 @@ static ConsoleCommand *app_commands[] = {
     new CmdReset(),
 	//new CmdPwm(),
 	new CmdVersion(),
-	new CmdTft(),
     new CmdMem(),
+	//new CmdTft(),
 #if defined(BOARD_BLUEBOARD)
     new CmdSpi(),
     new CmdAvr(),
@@ -81,7 +81,9 @@ extern "C" void App(void)
     console.init(userio, "bluepill>");
 #elif defined (BOARD_NUCLEO_L412KB)
     console.init(userio, "nucleo>");
-#endif    
+#else
+    console.init(userio, ">");
+#endif
 
     for(unsigned int i = 0; i < sizeof(app_commands)/sizeof(ConsoleCommand*); i++){
         console.addCommand(app_commands[i]);

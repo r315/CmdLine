@@ -12,7 +12,6 @@ TARGET_PATH 	=$(CURDIR)
 LIB_PATH        =$(LIBEMB_PATH)
 DRIVERS_PATH 	=$(LIB_PATH)/drv
 CMSIS_PATH 		=$(DRIVERS_PATH)/CMSIS
-
 DRIVERS_PER_PATH =$(DRIVERS_PATH)/StdPeriph_Driver
 
 
@@ -22,8 +21,8 @@ $(DRIVERS_PER_PATH)/inc \
 $(DRIVERS_PATH)/inc \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
-$(EMU_PATH)/inc \
 $(LIB_PATH)/inc \
+$(APP_DIR)/inc \
 
 AS_INCLUDES =\
 
@@ -52,6 +51,8 @@ $(DRIVERS_PATH)/src/uart_at32f4xx.c \
 CSRCS = \
 $(BOARD_SOURCES) \
 $(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/strfunc.c \
+$(DRIVERS_PATH)/rng/rng_software.c \
 #$(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
@@ -63,8 +64,16 @@ $(EMU_PATH)/src/video.c \
 $(EMU_PATH)/src/decoder.c \
 $(EMU_PATH)/src/cgbmu.c \
 
+CPP_SOURCES = \
+$(LIB_PATH)/src/console.cpp \
+$(APP_DIR)/app.cpp \
+$(APP_DIR)/cmdmem.cpp \
+#$(APP_DIR)/cmdtft.cpp \
+
 # ASM sources
 #ASM_SOURCES =startup_at32f415cbt7.s
+
+
 
 #######################################
 # Misc files
@@ -128,7 +137,7 @@ DEBUG =0
 OPT   =-O2
 else
 DEBUG =1
-OPT   =-O0 -g -gdwarf-2 -std=gnu11 -Wall -Wextra
+OPT   =-O0 -g -gdwarf-2 -Wall #-Wextra
 endif
 
 
@@ -142,33 +151,34 @@ ifdef SEMIHOSTING
 SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
 else
-SPECS =--specs=nano.specs
+SPECS=--specs=nosys.specs --specs=nano.specs
 #-nostdlib -lstd++ -lnosys -lm 
-LDLIBS =
+LIBS =-lstdc++
 endif
 
 LDLIBS_PATH =
 # Generate dependency information
 #CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst))
 
-CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections
+CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -std=gnu11 -fdata-sections -ffunction-sections #-fstack-usage
 
-CPPFLAGS =$(CFLAGS)
+CPPFLAGS =$(CPU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti 
 ASFLAGS  =$(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-LDFLAGS  =$(MCU) $(SPECS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref,--gc-sections
+LDFLAGS  =$(MCU) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
 # Objects
 #######################################
 
 OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(CSRCS:.c=.o)))
-#vpath %.c $(sort $(dir $(CSRCS)))
-#OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.obj)))
-#vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+vpath %.c $(sort $(dir $(CSRCS)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/, $(notdir $(CPP_SOURCES:.cpp=.obj)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 #OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 #vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-VPATH +=$(sort $(dir $(CSRCS)))
+#VPATH +=$(sort $(dir $(CSRCS)))
 #######################################
 # Rules
 #######################################
@@ -187,15 +197,15 @@ $(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
 
 $(BUILD_DIR)/%.obj: %.cpp | $(BUILD_DIR)
 	@echo "[CP]  $<"
-	$(VERBOSE)$(CPP) -c $(CPPFLAGS)  -fno-exceptions -fno-unwind-tables -fno-rtti $< -o $@
+	$(VERBOSE)$(CPP) -c $(CPPFLAGS)  $< -o $@
 
 $(BUILD_DIR)/%.o: %.s | $(BUILD_DIR)
 	@echo "[AS]  $<"
 	$(VERBOSE)$(AS) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) $(ROM_OBJ)
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS)
 	@echo "[LD]  $@"
-	$(VERBOSE)$(LD) -T$(LDSCRIPT) $(LDFLAGS) $(LDOBJECTS) $^ -o $@
+	$(VERBOSE)$(LD) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(VERBOSE)$(HEX) $< $@

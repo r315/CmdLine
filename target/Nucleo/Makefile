@@ -45,7 +45,7 @@ $(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
 $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
 $(LIBEMB_PATH)/drv/inc \
-$(APP_DIR)/../inc \
+$(APP_DIR)/inc \
 $(APP_DIR)/agif \
 $(APP_DIR)/dhrystone \
 ######################################

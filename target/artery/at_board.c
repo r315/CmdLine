@@ -63,6 +63,10 @@ void BOARD_Init(void)
     SERIAL_Init();
 }
 
+void SW_Reset(void){
+    NVIC_SystemReset();
+}
+
 void __debugbreak(void){
 	 asm volatile
     (

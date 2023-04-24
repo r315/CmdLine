@@ -1,6 +1,7 @@
 #include "cmdtft.h"
 #include "board.h"
 #include "lcd.h"
+#include "rng.h"
 
 #ifdef FEATURE_GIF
 #include "AnimatedGIF.h"

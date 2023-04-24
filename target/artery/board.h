@@ -93,14 +93,16 @@ extern "C" {
 #define DBG_PIN_INIT    LED1_PIN_INIT
 #define DBG_PIN_TOGGLE  LED1_TOGGLE
 
-enum {false = 0, true, OFF = false, ON = true};
+//enum {false = 0, true, OFF = false, ON = true};
 
 void BOARD_Init(void);
 void DelayMs(uint32_t ms);
 uint32_t ElapsedTicks(uint32_t start_ticks);
 uint32_t GetTick(void);
-
+void SW_Reset(void);
 void __debugbreak(void);
+
+void BOARD_LCD_Init(void);
 #ifdef __cplusplus
 }
 #endif

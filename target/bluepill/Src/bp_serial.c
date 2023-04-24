@@ -10,8 +10,8 @@ static inline void UART_FUNCTION_NAME(N, Init)(void){ UART_Init(&HANDLER_NAME(N)
 static inline void UART_FUNCTION_NAME(N, PutChar)(char c){ UART_PutChar(&HANDLER_NAME(N).port, c); } \
 static inline void UART_FUNCTION_NAME(N, Puts)(const char* str){ UART_Puts(&HANDLER_NAME(N).port, str); } \
 static inline char UART_FUNCTION_NAME(N, GetChar)(void){ return UART_GetChar(&HANDLER_NAME(N).port); } \
-static inline uint8_t UART_FUNCTION_NAME(N, GetCharNonBlocking)(char *c){ return UART_GetCharNonBlocking(&HANDLER_NAME(N).port, c); } \
-static inline uint8_t UART_FUNCTION_NAME(N, Kbhit)(void){ return UART_Kbhit(&HANDLER_NAME(N).port); }
+static inline int UART_FUNCTION_NAME(N, GetCharNonBlocking)(char *c){ return UART_GetCharNonBlocking(&HANDLER_NAME(N).port, c); } \
+static inline int UART_FUNCTION_NAME(N, Kbhit)(void){ return UART_Kbhit(&HANDLER_NAME(N).port); }
 
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
@@ -73,12 +73,12 @@ static inline char SERIAL4_GetChar(void){
     return c;
 }
 
-static inline uint8_t SERIAL4_GetCharNonBlocking(char *c){
+static inline int SERIAL4_GetCharNonBlocking(char *c){
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
     return fifo_get(&serial->rxfifo, (uint8_t*)c);
 }
 
-static inline uint8_t SERIAL4_Kbhit(void){
+static inline int SERIAL4_Kbhit(void){
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
     return fifo_avail(&serial->rxfifo);
 }

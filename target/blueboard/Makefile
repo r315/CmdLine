@@ -15,7 +15,7 @@ CMSIS_DEVICE =$(CMSIS_PATH)/Device/NXP/LPC17xx
 INCSPATH =\
 $(TARGET_PATH)/inc \
 $(TARGET_PATH)/usbdrv \
-$(APP_DIR)/../inc \
+$(APP_DIR)/inc \
 $(APP_DIR)/minimp3 \
 $(APP_DIR)/agif \
 $(APP_DIR)/stk500 \

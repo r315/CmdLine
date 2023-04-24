@@ -1,5 +1,9 @@
 #include <stdio.h>
 #include "board.h"
+#include "app.h"
+
+void BOARD_LCD_Init(void){
+}
 
 int main(void)
 {
@@ -10,8 +14,7 @@ int main(void)
     //LIB2D_Init();
     //LIB2D_Print("CPU %uMHz\n", SystemCoreClock/1000000);
 
-    printf("Hello\n");
-    puts("put string");
+    App();
     
     while (1)
     {
