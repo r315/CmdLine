@@ -7,6 +7,7 @@ norule:
 	@echo "	bb - blueboard"
 	@echo "	bp - bluepill"
 	@echo "	nc - Nucleo"
+	@echo "	at - at32f415"
 
 clean: 
 	@${RM} -rf build
@@ -22,6 +23,9 @@ bp:
 
 bb:
 	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR)
+
+at:
+	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR)
 	
 bb-program:
 	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) program

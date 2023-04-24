@@ -7,7 +7,9 @@ TARGET_PATH =$(CURDIR)
 BUILD_DIR 	:=build
 EXEC		=$(BUILD_DIR)/$(TARGET)
 
-CMSIS_PATH   =$(TARGET_PATH)/../Drivers/CMSIS
+LIB_PATH =$(LIBEMB_PATH)
+DRIVERS_PATH =$(LIBEMB_PATH)/drv
+CMSIS_PATH   =$(DRIVERS_PATH)/CMSIS
 CMSIS_DEVICE =$(CMSIS_PATH)/Device/NXP/LPC17xx
 
 INCSPATH =\
@@ -17,9 +19,9 @@ $(APP_DIR)/../inc \
 $(APP_DIR)/minimp3 \
 $(APP_DIR)/agif \
 $(APP_DIR)/stk500 \
-$(LIBEMB_PATH)/include \
-$(LIBEMB_PATH)/pff \
-$(LIBEMB_PATH)/drv/inc \
+$(LIB_PATH)/inc \
+$(LIB_PATH)/pff \
+$(DRIVERS_PATH)/inc \
 $(CMSIS_DEVICE)/inc \
 $(CMSIS_PATH)/Core/Include \
 
@@ -29,39 +31,39 @@ $(CMSIS_DEVICE)/src/system_LPC17xx.c \
 $(TARGET_PATH)/src/blueboard.c \
 $(TARGET_PATH)/src/sysmem.c \
 $(TARGET_PATH)/src/syscalls.c \
-$(LIBEMB_PATH)/drv/clock/clock_lpc17xx.c \
-$(LIBEMB_PATH)/drv/timer/tim_lpc17xx.c \
-$(LIBEMB_PATH)/drv/tft/ili9328.c \
-$(LIBEMB_PATH)/display/lcd.c \
-$(LIBEMB_PATH)/display/display.c \
-$(LIBEMB_PATH)/display/font.c \
-$(LIBEMB_PATH)/drv/pwm/pwm_lpc17xx.c \
-$(LIBEMB_PATH)/drv/i2c/i2c_lpc17xx.c \
-$(LIBEMB_PATH)/drv/i2s/i2s_lpc17xx.c \
-$(LIBEMB_PATH)/drv/spi/spi_lpc17xx.c \
-$(LIBEMB_PATH)/drv/dac/dac_lpc17xx.c \
-$(LIBEMB_PATH)/drv/gpio/gpio_lpc17xx.c \
-$(LIBEMB_PATH)/drv/uart/uart_lpc17xx.c \
-$(LIBEMB_PATH)/drv/dma/dma_lpc17xx.c \
-$(LIBEMB_PATH)/drv/adc/adc_lpc17xx.c \
-$(LIBEMB_PATH)/drv/rng/rng_software.c \
-$(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/misc/strfunc.c \
-$(LIBEMB_PATH)/misc/debug.c \
-$(LIBEMB_PATH)/button/button.c \
-$(LIBEMB_PATH)/drv/storage/memcard.c \
-$(LIBEMB_PATH)/pff/pff.c \
+$(DRIVERS_PATH)/clock/clock_lpc17xx.c \
+$(DRIVERS_PATH)/timer/tim_lpc17xx.c \
+$(DRIVERS_PATH)/tft/ili9328.c \
+$(DRIVERS_PATH)/pwm/pwm_lpc17xx.c \
+$(DRIVERS_PATH)/i2c/i2c_lpc17xx.c \
+$(DRIVERS_PATH)/i2s/i2s_lpc17xx.c \
+$(DRIVERS_PATH)/spi/spi_lpc17xx.c \
+$(DRIVERS_PATH)/dac/dac_lpc17xx.c \
+$(DRIVERS_PATH)/gpio/gpio_lpc17xx.c \
+$(DRIVERS_PATH)/uart/uart_lpc17xx.c \
+$(DRIVERS_PATH)/dma/dma_lpc17xx.c \
+$(DRIVERS_PATH)/adc/adc_lpc17xx.c \
+$(DRIVERS_PATH)/rng/rng_software.c \
+$(DRIVERS_PATH)/storage/memcard.c \
+$(LIB_PATH)/src/lcd.c \
+$(LIB_PATH)/src/display.c \
+$(LIB_PATH)/src/font.c \
+$(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/debug.c \
+$(LIB_PATH)/src/button.c \
+$(LIB_PATH)/pff/pff.c \
 $(TARGET_PATH)/usbdrv/usbserial.c \
 $(TARGET_PATH)/usbdrv/usbhw_lpc.c \
 $(TARGET_PATH)/usbdrv/usbcontrol.c \
 $(TARGET_PATH)/usbdrv/usbstdreq.c \
-$(APP_DIR)/stk500/stk500.c \
 $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
+$(APP_DIR)/stk500/stk500.c \
 
 
 CPP_SOURCES = \
-$(LIBEMB_PATH)/console/console.cpp \
+$(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdsbus.cpp \
 $(APP_DIR)/cmdtft.cpp \
@@ -126,12 +128,7 @@ vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-ifeq ($(LIBEMB_PATH), )
-erro:
-	@echo "Please export LIBEMB_PATH"
-endif
-
-CHECKSUM =$(LIBEMB_PATH)/tools/checksum
+CHECKSUM =$(LIB_PATH)/tools/checksum
 ##########################################################
 # RULES
 ##########################################################
@@ -190,7 +187,7 @@ $(BUILD_DIR):
 	mkdir -p $@
 
 $(CHECKSUM):
-	$(MAKE) -C $(LIBEMB_PATH)/tools
+	$(MAKE) -C $(LIB_PATH)/tools
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0

@@ -1,8 +1,7 @@
 .vscode/
-obj/
 *.cfg
 *.elf
-deprecated/
 build/
 doc/
-debug/
+
+

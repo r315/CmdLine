@@ -22,6 +22,10 @@ TARGET =console-nucleo
 BUILD_DIR :=build
 TARGET_PATH =$(CURDIR)
 
+LIB_PATH =$(LIBEMB_PATH)
+DRIVERS_PATH =$(LIB_PATH)/drv
+CMSIS_PATH 	=$(DRIVERS_PATH)/CMSIS
+
 ifeq ($(shell uname -s), Linux)
 REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 else
@@ -33,13 +37,13 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
-$(TARGET_PATH)/Core/Inc \
+Core\Inc \
+$(CMSIS_PATH)/Core/Include \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
-$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32L4xx/Include \
-$(REPOSITORY)/Drivers/CMSIS/Include \
-$(REPOSITORY)/Drivers/CMSIS/Include \
-$(LIBEMB_PATH)/include \
+$(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
+$(CMSIS_PATH)/Core/Include \
+$(LIB_PATH)/inc \
 $(LIBEMB_PATH)/drv/inc \
 $(APP_DIR)/../inc \
 $(APP_DIR)/agif \
@@ -76,22 +80,22 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(LIBEMB_PATH)/misc/strfunc.c \
-$(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/sound/stm32_buzzer.c \
-$(LIBEMB_PATH)/drv/pwm/pwm_stm32l4xx.c \
-$(LIBEMB_PATH)/drv/tft/st7735.c \
-$(LIBEMB_PATH)/drv/rng/rng_software.c \
-$(LIBEMB_PATH)/drv/spi/spi_stm32l4xx.c \
-$(LIBEMB_PATH)/drv/uart/uart_stm32l4xx.c \
-$(LIBEMB_PATH)/drv/dma/dma_stm32l4xx.c \
-$(LIBEMB_PATH)/display/lcd.c \
+$(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/stm32_buzzer.c \
+$(DRIVERS_PATH)/pwm/pwm_stm32l4xx.c \
+$(DRIVERS_PATH)/tft/st7735.c \
+$(DRIVERS_PATH)/rng/rng_software.c \
+$(DRIVERS_PATH)/spi/spi_stm32l4xx.c \
+$(DRIVERS_PATH)/uart/uart_stm32l4xx.c \
+$(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
+$(LIB_PATH)/src/lcd.c \
 $(APP_DIR)/dhrystone/dhry_1.c \
 $(APP_DIR)/dhrystone/dhry_2.c \
 #$(APP_DIR)/agif/agif.c \
 
 CPP_SOURCES = \
-$(LIBEMB_PATH)/console/console.cpp \
+$(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdmem.cpp \
 $(APP_DIR)/cmdrfinder.cpp \

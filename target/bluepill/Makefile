@@ -31,6 +31,9 @@ DEBUG = 1
 BUILD_DIR :=build
 TARGET_PATH =$(CURDIR)
 
+LIB_PATH =$(LIBEMB_PATH)
+DRIVERS_PATH = $(LIB_PATH)/drv
+
 ifeq ($(STM32REPO), )
 $(error Missing STM32REPO environment variable)
 endif
@@ -42,6 +45,21 @@ $(info $(REPOSITORY))
 ######################################
 # source
 ######################################
+
+# C includes
+C_INCLUDES =  \
+Inc \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
+$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
+$(REPOSITORY)/Drivers/CMSIS/Include \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
+$(LIB_PATH)/inc \
+$(DRIVERS_PATH)/inc \
+$(APP_DIR)/../inc \
+$(APP_DIR)/agif
+
 # C sources
 C_SOURCES =  \
 $(APP_DIR)/spi_flash.c \
@@ -79,18 +97,18 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
-$(LIBEMB_PATH)/misc/strfunc.c \
-$(LIBEMB_PATH)/misc/fifo.c \
-$(LIBEMB_PATH)/drv/uart/uart_stm32f10x.c \
-$(LIBEMB_PATH)/drv/spi/spi_stm32f1xx.c \
-$(LIBEMB_PATH)/drv/tft/st7735.c \
-$(LIBEMB_PATH)/display/lcd.c \
-$(LIBEMB_PATH)/drv/rng/rng_software.c \
+$(DRIVERS_PATH)/uart/uart_stm32f10x.c \
+$(DRIVERS_PATH)/spi/spi_stm32f1xx.c \
+$(DRIVERS_PATH)/tft/st7735.c \
+$(DRIVERS_PATH)/rng/rng_software.c \
+$(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/lcd.c \
 #$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
 
 
 CPP_SOURCES = \
-$(LIBEMB_PATH)/console/console.cpp \
+$(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdsbus.cpp \
 $(APP_DIR)/cmdtft.cpp \
@@ -118,19 +136,7 @@ LDSCRIPT =$(TARGET_PATH)/startup/STM32F103C8Tx_FLASH.ld
 # AS includes
 AS_INCLUDES = 
 
-# C includes
-C_INCLUDES =  \
-Inc \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
-$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
-$(REPOSITORY)/Drivers/CMSIS/Include \
-$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
-$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
-$(LIBEMB_PATH)/include \
-$(LIBEMB_PATH)/drv/inc \
-$(APP_DIR)/../inc \
-$(APP_DIR)/agif
+
 
 #######################################
 # binaries
