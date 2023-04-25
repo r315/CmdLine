@@ -53,16 +53,10 @@ $(BOARD_SOURCES) \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
-#$(LIB_PATH)/src/liblcd.c \
-$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/liblcd.c \
+#$(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
-$(LIB_PATH)/src/libbutton.c \
-$(EMU_PATH)/src/instrs.c \
-$(EMU_PATH)/src/cartridge.c \
-$(EMU_PATH)/src/dmgcpu.c \
-$(EMU_PATH)/src/video.c \
-$(EMU_PATH)/src/decoder.c \
-$(EMU_PATH)/src/cgbmu.c \
+
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -88,7 +82,7 @@ OCD_CONFIG =$(TARGET_PATH)/at32f415.cfg
 # C defines
 C_DEFS +=\
 $(DEVICE) \
-USE_STDPERIPH_DRIVER
+USE_STDPERIPH_DRIVER \
 #######################################
 # binaries
 #######################################
@@ -125,6 +119,7 @@ CPU =-mcpu=cortex-m4 -mthumb
 # fpu
 #at43f415 does not have FPU
 #FPU =-mfloat-abi=hard -mfpu=fpv4-sp-d16 
+#FPU =-mfloat-abi=soft
 
 # float-abi
 FLOAT_ABI =#-u_printf_float

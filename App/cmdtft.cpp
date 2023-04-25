@@ -383,7 +383,7 @@ void CmdTft::fps(void){
 // SPI transfer only  - 4-5ms/250fps (128x64x16bit)
 
 uint16_t palette[16];
-uint16_t linebuffer[160  * 2];
+
 uint16_t bgCol, bgColS, lineCol, lineColS;
 uint16_t grid_sx1, vline_h1;
 uint8_t nvlines, nhlines;
@@ -391,11 +391,12 @@ uint8_t nvlines, nhlines;
 void drawBall(int x, int y)
 {
     static uint8_t bf = 0;
+    uint16_t linebuffer[SCR_WD  * 2];
     int i, j, ii;    
 
     for (j = 0; j < BALL_HT; j++)
     {
-        uint16_t *line = linebuffer + (160 * ((bf++) & 1)); // swap buffer
+        uint16_t *line = linebuffer + (SCR_WD * ((bf++) & 1)); // swap buffer
 
         uint8_t v, *img = (uint8_t *)ball + 16 * 2 + 6 + j * BALL_WD / 2 + BALL_WD / 2;
         
@@ -471,7 +472,7 @@ static void AmigaBall_Setup(void)
         nhlines = 13;
     }else{
         grid_sx1 = 20;
-        vline_h1 = 90;
+        vline_h1 = 160;
         nvlines = 13;
         nhlines = 10;
     }
