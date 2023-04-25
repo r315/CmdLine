@@ -2,6 +2,7 @@
 #include "board.h"
 #include "spi.h"
 #include "serial.h"
+#include "liblcd.h"
 
 static spibus_t spibus;
 
@@ -45,6 +46,12 @@ inline uint32_t GetTick(void)
 clock_t clock(void){
     return (clock_t)GetTick();
 }
+
+void BOARD_LCD_Init(void){
+    LCD_PIN_INIT;
+    LCD_Init(&spibus);
+}
+
 
 void BOARD_Init(void)
 {	

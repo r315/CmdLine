@@ -1,18 +1,12 @@
 #include <stdio.h>
 #include "board.h"
 #include "app.h"
-
-void BOARD_LCD_Init(void){
-}
+#include "lib2d.h"
+#include "liblcd.h"
 
 int main(void)
 {
     BOARD_Init();
-
-    //LCD_SetOrientation(LCD_REVERSE_LANDSCAPE);
-    
-    //LIB2D_Init();
-    //LIB2D_Print("CPU %uMHz\n", SystemCoreClock/1000000);
 
     App();
     

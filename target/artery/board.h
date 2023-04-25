@@ -13,7 +13,8 @@ extern "C" {
 #include "gpio_at32f4xx.h"
 //#include "ili9341.h"
 //#include "st7735.h"
-//#include "st7789.h"
+#include "st7789.h"
+
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
 

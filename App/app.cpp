@@ -42,8 +42,8 @@ static ConsoleCommand *app_commands[] = {
     new CmdReset(),
 	//new CmdPwm(),
 	new CmdVersion(),
-    new CmdMem(),
-	//new CmdTft(),
+    //new CmdMem(),
+	new CmdTft(),
 #if defined(BOARD_BLUEBOARD)
     new CmdSpi(),
     new CmdAvr(),

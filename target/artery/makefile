@@ -39,13 +39,13 @@ $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
 $(DRIVERS_PER_PATH)/src/at32f4xx_rcc.c \
-$(DRIVERS_PATH)/src/spi_at32f4xx.c \
-$(DRIVERS_PATH)/src/dma_at32f4xx.c \
-$(DRIVERS_PATH)/src/gpio_at32f4xx.c \
-$(DRIVERS_PATH)/src/uart_at32f4xx.c \
-#$(DRIVERS_COMPONENT_PATH)/src/st7789.c \
-#$(DRIVERS_COMPONENT_PATH)/src/ili9341.c \
+$(DRIVERS_PATH)/spi/spi_at32f4xx.c \
+$(DRIVERS_PATH)/dma/dma_at32f4xx.c \
+$(DRIVERS_PATH)/gpio/gpio_at32f4xx.c \
+$(DRIVERS_PATH)/uart/uart_at32f4xx.c \
+$(DRIVERS_PATH)/tft/st7789.c \
 #$(DRIVERS_COMPONENT_PATH)/src/st7735.c \
+#$(DRIVERS_COMPONENT_PATH)/src/ili9341.c \
 
 
 CSRCS = \
@@ -68,7 +68,7 @@ CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdmem.cpp \
-#$(APP_DIR)/cmdtft.cpp \
+$(APP_DIR)/cmdtft.cpp \
 
 # ASM sources
 #ASM_SOURCES =startup_at32f415cbt7.s
@@ -127,10 +127,10 @@ CPU =-mcpu=cortex-m4 -mthumb
 #FPU =-mfloat-abi=hard -mfpu=fpv4-sp-d16 
 
 # float-abi
-FLOAT-ABI = #-u_printf_float
+FLOAT_ABI =#-u_printf_float
 
 # mcu
-MCU = $(CPU) $(FPU) $(FLOAT-ABI)
+MCU = $(CPU) $(FPU) $(FLOAT_ABI)
 
 ifdef RELEASE
 DEBUG =0

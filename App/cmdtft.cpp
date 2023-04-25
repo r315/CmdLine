@@ -1,6 +1,6 @@
 #include "cmdtft.h"
 #include "board.h"
-#include "lcd.h"
+#include "liblcd.h"
 #include "rng.h"
 
 #ifdef FEATURE_GIF
@@ -49,6 +49,17 @@ const demo_t demos[] = {
 #ifdef FEATURE_GIF
     {Gif_Setup, Gif_Loop, Gif_End}
 #endif
+};
+
+static const uint16_t f_data [] = {
+0xffff,0xf800,0xf800,0xf800,0xf800,0xf800,0xf800,0xffff,
+0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
+0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
+0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
+0xffff,0xf800,0xf800,0xf800,0xf800,0xffff,0xffff,0xffff,
+0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
+0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
+0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
 };
 
 uint16_t generateRandomColor(int32_t mix) {
@@ -155,9 +166,18 @@ char CmdTft::execute(int argc, char **argv){
     if(xstrcmp("init", (const char*)argv[1]) == 0){
         if(yatoi(argv[2], (int32_t*)&val1)){
             BOARD_LCD_Init();
+		    LCD_Clear(LCD_BLACK);
 		    LCD_SetOrientation(val1 & 3);
-		    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
 		    LCD_Bkl(1);
+            return CMD_OK;
+        }
+    }
+
+    if(xstrcmp("orientation", (const char*)argv[1]) == 0){
+        if(yatoi(argv[2], (int32_t*)&val1)){            
+		    LCD_SetOrientation(val1 & 3);
+            LCD_Clear(LCD_BLACK);                        
+            LCD_WriteArea(0, 0, 8, 8, (uint16_t*)f_data);
             return CMD_OK;
         }
     }
@@ -464,30 +484,30 @@ static void AmigaBall_Setup(void)
         palette[i] = *pal++;
 
     for (uint8_t i = 0; i < nvlines; i++){
-        LCD_DrawVLine(grid_sx1 + i * 10, LINE_YS, vline_h1, lineCol);
+        LCD_VLine(grid_sx1 + i * 10, LINE_YS, vline_h1, lineCol);
     }
 
     for (uint8_t i = 0; i < nhlines; i++){
-        LCD_DrawHLine(grid_sx1, LINE_YS + i * 10, SCR_WD - grid_sx1 * 2, lineCol);
+        LCD_HLine(grid_sx1, LINE_YS + i * 10, SCR_WD - grid_sx1 * 2, lineCol);
     }
 
     int dy = SCR_HT - LINE_YS - (LINE_YS + vline_h1);
     int dx = grid_sx1 - LINE_XS2;
     
     int o = 7 * dx / dy;
-    LCD_DrawHLine(LINE_XS2 + o, LINE_YS + vline_h1 + 6 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, lineCol);
+    LCD_HLine(LINE_XS2 + o, LINE_YS + vline_h1 + 6 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, lineCol);
     o = (7 + 6) * dx / dy;
-    LCD_DrawHLine(LINE_XS2 + o, LINE_YS + vline_h1 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, lineCol);
+    LCD_HLine(LINE_XS2 + o, LINE_YS + vline_h1 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, lineCol);
     o = (7 + 6 + 4) * dx / dy;
-    LCD_DrawHLine(LINE_XS2 + o,LINE_YS + vline_h1, SCR_WD - LINE_XS2 * 2 - o * 2, lineCol);
+    LCD_HLine(LINE_XS2 + o,LINE_YS + vline_h1, SCR_WD - LINE_XS2 * 2 - o * 2, lineCol);
 
     uint16_t last_w = SCR_WD - (LINE_XS2 * 2);
-    LCD_DrawHLine(LINE_XS2, SCR_HT - LINE_YS, last_w, lineCol);
+    LCD_HLine(LINE_XS2, SCR_HT - LINE_YS, last_w, lineCol);
 
     last_w = last_w / (nvlines - 1);
 
     for (uint8_t i = 0; i < nvlines; i++){
-        LCD_DrawLine(grid_sx1 + i * 10, LINE_YS + vline_h1, LINE_XS2 + i * last_w, SCR_HT - LINE_YS, lineCol);
+        LCD_Line(grid_sx1 + i * 10, LINE_YS + vline_h1, LINE_XS2 + i * last_w, SCR_HT - LINE_YS, lineCol);
     }
 }
 
@@ -699,7 +719,7 @@ static uint32_t Spiral_Loop(void){
         LCD_FillRect(x - (stepSize >> 1), y - (stepSize >> 1), stepSize - 1, stepSize - 1,color);
     }
 
-    LCD_DrawLine(px, py, x, y, color);
+    LCD_Line(px, py, x, y, color);
     px = x;
     py = y;
 
