@@ -9,7 +9,7 @@ extern "C" {
 #include <stdout.h>
 #include "main.h"
 #include "pwm.h"
-#include "lcd.h"
+#include "liblcd.h"
 #include "spi.h"
 #include "rng.h"
 #include "serial.h"

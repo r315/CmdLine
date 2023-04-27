@@ -2,7 +2,7 @@
 #include "board.h"
 #include "buzzer.h"
 
-#include <console.h>
+#include "console.h"
 #include "cmdecho.h"
 #include "cmdhelp.h"
 #include "cmdmem.h"
@@ -19,7 +19,6 @@
 #include "cmdencoder.h"
 #include "cmdlmcshd.h"
 #include "cmdbenchmark.h"
-#include "display.h"
 #include "cmdspi.h"
 #include "cmdavr.h"
 #include "cmdreset.h"
@@ -43,7 +42,10 @@ static ConsoleCommand *app_commands[] = {
 	//new CmdPwm(),
 	new CmdVersion(),
     //new CmdMem(),
+#if defined(ENABLE_TFT_DISPLAY)
 	new CmdTft(),
+#endif
+    new CmdBenchmark(),
 #if defined(BOARD_BLUEBOARD)
     new CmdSpi(),
     new CmdAvr(),
@@ -66,7 +68,6 @@ static ConsoleCommand *app_commands[] = {
 	new CmdBuz(),
 	new CmdKeyFob(),
     new CmdLmcshd(),
-    new CmdBenchmark(),
 #endif
 };
 
