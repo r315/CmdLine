@@ -3,6 +3,9 @@
 ######################################
 TARGET =console-artery
 
+FEATURE_BENCHMAK_DHYSTONE :=no
+FEATURE_TFT_DISPLAY :=no
+
 #######################################
 # paths
 #######################################
@@ -54,7 +57,7 @@ $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
 $(LIB_PATH)/src/liblcd.c \
-#$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 
 
@@ -63,11 +66,7 @@ $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/app.cpp \
 $(APP_DIR)/cmdmem.cpp \
 $(APP_DIR)/cmdtft.cpp \
-
-# ASM sources
-#ASM_SOURCES =startup_at32f415cbt7.s
-
-
+$(APP_DIR)/cmdbenchmark.cpp \
 
 #######################################
 # Misc files
@@ -149,6 +148,14 @@ else
 SPECS=--specs=nosys.specs --specs=nano.specs
 #-nostdlib -lstd++ -lnosys -lm 
 LIBS =-lstdc++
+endif
+
+ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
+C_DEFS +=ENABLE_BENCHMAK_DHYSTONE
+endif
+
+ifeq ($(FEATURE_TFT_DISPLAY),yes)
+C_DEFS +=ENABLE_TFT_DISPLAY
 endif
 
 LDLIBS_PATH =

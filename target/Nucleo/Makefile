@@ -15,6 +15,8 @@
 ######################################
 TARGET =console-nucleo
 
+FEATURE_TFT_DISPLAY :=yes
+
 #######################################
 # paths
 #######################################
@@ -89,7 +91,9 @@ $(DRIVERS_PATH)/rng/rng_software.c \
 $(DRIVERS_PATH)/spi/spi_stm32l4xx.c \
 $(DRIVERS_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
-$(LIB_PATH)/src/lcd.c \
+$(LIB_PATH)/src/liblcd.c \
+$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/font.c \
 $(APP_DIR)/dhrystone/dhry_1.c \
 $(APP_DIR)/dhrystone/dhry_2.c \
 #$(APP_DIR)/agif/agif.c \
@@ -195,6 +199,10 @@ MCU = $(CPU) $(FPU) $(FLOAT-ABI)
 
 # AS defines
 AS_DEFS = 
+
+ifeq ($(FEATURE_TFT_DISPLAY),yes)
+COMMON_DEFS +=ENABLE_TFT_DISPLAY
+endif
 
 # C defines
 C_DEFS =  \

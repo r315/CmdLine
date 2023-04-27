@@ -22,7 +22,7 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = 0x20007FFF;    /* end of RAM */
+_estack = 0x20008000;    /* Stack top for naked reset handler  */
 
 /* Generate a link error if heap and stack don't fit into RAM */
 _Min_Heap_Size = 0x200;      /* required amount of heap  */
@@ -118,9 +118,9 @@ SECTIONS
   } >RAM AT> FLASH
 
   /* Uninitialized data section */
-  . = ALIGN(4);
   .bss :
   {
+    . = ALIGN(4);
     /* This is used by the startup in order to initialize the .bss secion */
     _sbss = .;         /* define a global symbol at bss start */
     __bss_start__ = _sbss;

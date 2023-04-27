@@ -36,4 +36,7 @@ bp-program:
 nc-program:
 	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR) program
 
+at-program:
+	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR) program
+
 .PHONY:
