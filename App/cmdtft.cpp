@@ -146,7 +146,7 @@ void CmdTft::help(void){
     console->putString("  init <orientation>,  orientation 0-3");
     console->putString("  clear <color>,       Fill display with color");
     console->putString("  rc [scroll],         Random colors");
-    console->putString("  scroll,              Scroll screen");
+    console->putString("  scroll [lines],      Scroll screen");
     console->putString("  hsv <s> <v>,         HSV color");
     console->putString("  block,               Color squares");
     console->putString("  scroll,              Color scroll");
@@ -204,14 +204,18 @@ char CmdTft::execute(int argc, char **argv){
         return CMD_OK;
     }
 
-    if(xstrcmp("scroll", (const char*)argv[1]) == 0){    
-        Scroll_Setup();
-        do{           
-            console->print("\r%d  ", scroll);
-            Scroll_Loop();
-            console->getCharNonBlocking(&c);
-            DelayMs(16);
-        }while(c != '\n' && c != '\r');
+    if(xstrcmp("scroll", (const char*)argv[1]) == 0){
+        if(ia2i(argv[2], (int32_t*)&val1)){
+            LCD_Scroll(val1);
+        }else{
+            Scroll_Setup();
+            do{           
+                console->print("\r%d  ", scroll);
+                Scroll_Loop();
+                console->getCharNonBlocking(&c);
+                DelayMs(16);
+            }while(c != '\n' && c != '\r');
+        }
         return CMD_OK_LF;
     }
 
