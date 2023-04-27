@@ -108,7 +108,7 @@ char CmdAwg::execute(int argc, char **argv){
     }
 
     if(xstrcmp("rate", (const char*)argv[1]) == 0){
-        if(yatoi(argv[2], (int32_t*)&argc)){ 
+        if(ia2i(argv[2], (int32_t*)&argc)){ 
             DAC_UpdateRate(&dac, argc);
         }
     }

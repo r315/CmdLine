@@ -242,7 +242,7 @@ char CmdSbus::execute(int argc, char **argv){
 	}	
 
 	if(xstrcmp("flags", (const char*)argv[1]) == 0){
-        if(yatoi(argv[2], &aux)){
+        if(ia2i(argv[2], &aux)){
             sbus.next_frame.flags = aux;	
         }else {
             Flags();
@@ -250,7 +250,7 @@ char CmdSbus::execute(int argc, char **argv){
         }
 	}else if(xstrcmp("arm", (const char*)argv[1]) == 0){
         aux = 0;
-        yatoi(argv[2], &aux);
+        ia2i(argv[2], &aux);
         if (aux == 1) {
             updateChannel(&sbus.next_frame, ARM_CHANNEL, (aux == 1) ? ARM_VALUE : DISARM_VALUE);
             updateChannel(&sbus.next_frame, THROTLE_CHANNEL, PWM_MIN_PULSE);
@@ -261,9 +261,9 @@ char CmdSbus::execute(int argc, char **argv){
         }
         return CMD_OK;        
     }else if(xstrcmp("set", (const char*)argv[1]) == 0){
-        if(yatoi(argv[2], &aux)){
+        if(ia2i(argv[2], &aux)){
             channel = aux;
-            if(yatoi(argv[3], &aux)){
+            if(ia2i(argv[3], &aux)){
                 pulse = aux;
                 updateChannel(&sbus.next_frame, channel, pulse);
                 SET_FLAG(NEW_DATA_FLAG);

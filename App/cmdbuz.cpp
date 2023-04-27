@@ -26,7 +26,7 @@ char CmdBuz::execute(int argc, char **argv) {
     }
 
     if(strcmp((const char*)argv[1], "vol") == 0){
-        if(!yatoi(argv[2], &level)){
+        if(!ia2i(argv[2], &level)){
             console->print("vol: %d\n", buzSetLevel(200));
         }else{
             console->print("vol: %d\n", buzSetLevel(level));
@@ -35,7 +35,7 @@ char CmdBuz::execute(int argc, char **argv) {
     }
 
     if(strcmp((const char*)argv[1], "demo") == 0){
-        if(!yatoi(argv[2], &level)){
+        if(!ia2i(argv[2], &level)){
 
             return CMD_OK;
         }
@@ -45,7 +45,7 @@ char CmdBuz::execute(int argc, char **argv) {
         return CMD_OK;
     }
 
-    if(!yatoi(argv[1], &freq) || !yatoi(argv[2], &duration)){
+    if(!ia2i(argv[1], &freq) || !ia2i(argv[2], &duration)){
         help();
         return CMD_BAD_PARAM;
     }

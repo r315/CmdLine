@@ -58,7 +58,7 @@ char CmdSpi::execute(int argc, char **argv){
         return CMD_OK;
     }
 
-    if(yatoi(argv[1], (int32_t*)&aux) == 0){
+    if(ia2i(argv[1], (int32_t*)&aux) == 0){
  		return CMD_BAD_PARAM;
 	}
 
@@ -82,7 +82,7 @@ char CmdSpi::execute(int argc, char **argv){
 		SPI_Init(spi);
 		return CMD_OK;
 	}else if(xstrcmp("speed", argv[2]) == 0){
-		if(yatoi(argv[3], (int32_t*)&aux)){			
+		if(ia2i(argv[3], (int32_t*)&aux)){			
             spi->freq = aux;
             SPI_Init(spi);
     		return CMD_OK;
@@ -102,14 +102,14 @@ char CmdSpi::execute(int argc, char **argv){
         console->print(" (%02x)\n", spi->flags);        
         return CMD_OK;
 	}else if(xstrcmp("mode", argv[2]) == 0){
-        if(yatoi(argv[3], (int32_t*)&aux)){
+        if(ia2i(argv[3], (int32_t*)&aux)){
             aux = (aux & 3) << 6;
             spi->flags = (spi->flags & ~SPI_MODE3) | aux;
 		    SPI_Init(spi);
 		    return CMD_OK;
         }
 	}else if(xstrcmp("cs", argv[2]) == 0){
-        if(yatoi(argv[3], (int32_t*)&aux)){
+        if(ia2i(argv[3], (int32_t*)&aux)){
             aux = (aux & 1) << 3;
             spi->flags = (spi->flags & ~SPI_HW_CS) | aux;
 		    SPI_Init(spi);

@@ -9,7 +9,7 @@ void CmdServo::help(void){
 char CmdServo::execute(int argc, char **argv){
 int32_t curValue;
 
-    if(!yatoi(argv[1], &curValue)){
+    if(!ia2i(argv[1], &curValue)){
         help(); 
         return CMD_BAD_PARAM;
     }

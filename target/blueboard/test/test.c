@@ -40,13 +40,13 @@ void TEST_pitoa(void){
 	}
 
     printf("\nyatoi Test\n");
-    printf("%d\n", yatoi(""));
-    printf("%d\n", yatoi("1234"));
-    printf("%d\n", yatoi("-1234"));
-    printf("%d\n", yatoi("12w34"));
+    printf("%d\n", ia2i(""));
+    printf("%d\n", ia2i("1234"));
+    printf("%d\n", ia2i("-1234"));
+    printf("%d\n", ia2i("12w34"));
 
-    printf("%d\n", yatoi("1234 dfs"));
-    printf("%d\n", yatoi("1234\n"));
+    printf("%d\n", ia2i("1234 dfs"));
+    printf("%d\n", ia2i("1234\n"));
 
 void *ptr = "1 2 3";
 uint8_t args[4], i = 0;

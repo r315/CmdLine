@@ -164,7 +164,7 @@ char CmdTft::execute(int argc, char **argv){
     }
 
     if(xstrcmp("init", (const char*)argv[1]) == 0){
-        if(yatoi(argv[2], (int32_t*)&val1)){
+        if(ia2i(argv[2], (int32_t*)&val1)){
             BOARD_LCD_Init();
 		    LCD_Clear(LCD_BLACK);
 		    LCD_SetOrientation(val1 & 3);
@@ -174,7 +174,7 @@ char CmdTft::execute(int argc, char **argv){
     }
 
     if(xstrcmp("orientation", (const char*)argv[1]) == 0){
-        if(yatoi(argv[2], (int32_t*)&val1)){            
+        if(ia2i(argv[2], (int32_t*)&val1)){            
 		    LCD_SetOrientation(val1 & 3);
             LCD_Clear(LCD_BLACK);                        
             LCD_WriteArea(0, 0, 8, 8, (uint16_t*)f_data);
@@ -183,7 +183,7 @@ char CmdTft::execute(int argc, char **argv){
     }
 
     if(xstrcmp("clear", (const char*)argv[1]) == 0){
-        if(hatoi(argv[2], (uint32_t*)&val1)){
+        if(ha2i(argv[2], (uint32_t*)&val1)){
             uint32_t ms = GetTick();
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
             ms = GetTick() - ms;
@@ -248,8 +248,8 @@ char CmdTft::execute(int argc, char **argv){
     if(xstrcmp("hsv", (const char*)argv[1]) == 0){
         uint8_t h = 0, s, v;
         uint16_t *buf = tile;
-        if(yatoi(argv[2], (int32_t*)&s)){
-            if(yatoi(argv[3], (int32_t*)&v)){                
+        if(ia2i(argv[2], (int32_t*)&s)){
+            if(ia2i(argv[3], (int32_t*)&v)){                
                 for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
                     for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
                         memset16(buf, HsvToRgb(h++, s, v), 64);                        

@@ -45,7 +45,7 @@ char CmdI2c::execute(int argc, char **argv){
 		return CMD_NOT_FOUND;
     }
 
-    if(yatoi(argv[2], &val) == 0){
+    if(ia2i(argv[2], &val) == 0){
         return CMD_BAD_PARAM;
     }
 
@@ -81,7 +81,7 @@ char CmdI2c::execute(int argc, char **argv){
             break;
 
         case I2C_OP_READ:
-            if(yatoi(argv[4], &val)){ // count
+            if(ia2i(argv[4], &val)){ // count
                 if(I2C_Read(&i2c, i2c_buf, val)){
                     for(int i = 0; i < val; i ++){
                         if( (i & 15) == 0) console->print("\n%02X: ", i & 0xF0);                

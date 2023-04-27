@@ -24,8 +24,8 @@ char CmdI2s::execute(int argc, char **argv){
     }
 
     if(xstrcmp("init", (const char*)argv[1]) == 0){
-        if(yatoi(argv[2], &val1)){
-            if(yatoi(argv[3], &val2)){
+        if(ia2i(argv[2], &val1)){
+            if(ia2i(argv[3], &val2)){
                 i2s.sample_rate = val1;
                 i2s.data_size = val2;
                 i2s.bus = I2S_BUS0;

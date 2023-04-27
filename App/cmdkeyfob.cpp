@@ -157,7 +157,7 @@ char CmdKeyFob::execute(int argc, char **argv){
             single_cap = true;
         }
 
-        if(yatoi(argv[1], &val1)){
+        if(ia2i(argv[1], &val1)){
             char c;
             do{
                 if(m_capturing == false){
@@ -180,7 +180,7 @@ char CmdKeyFob::execute(int argc, char **argv){
     }
 
     if(strcmp((const char*)argv[1], "decode") == 0){        
-        if(yatoi(argv[2], &val1)){  // get bit time
+        if(ia2i(argv[2], &val1)){  // get bit time
             bitstreamview_e format;
             if(strcmp((const char*)argv[3], "raw") == 0){
                 format = BITSTREAM_RAW;
@@ -206,7 +206,7 @@ char CmdKeyFob::execute(int argc, char **argv){
     }
 
     if(strcmp((const char*)argv[1], "push") == 0){
-        if(yatoi(argv[2], &val1)){  // get bit time
+        if(ia2i(argv[2], &val1)){  // get bit time
             switch(val1){
                 case 1:
                 case 3:
