@@ -1,6 +1,7 @@
 #include "cmdencoder.h"
 #include "board.h"
-#include "lcd.h"
+#include "app.h"
+#include "liblcd.h"
 
 #define ENC_TIM             TIM2
 #define ENC_MIN_POS         1000
@@ -36,10 +37,6 @@ uint16_t getEncoder(void){
     }
 
     return enc_pos;
-}
-
-static int16_t map(int16_t x, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max){
-  return ((x - in_min) * (out_max - out_min) / (in_max - in_min)) + out_min;
 }
 
 void drawEncoder(int16_t val){
