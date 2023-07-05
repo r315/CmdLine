@@ -193,19 +193,19 @@ bin: $(BUILD_DIR)/$(TARGET).bin
 program: $(BUILD_DIR)/$(TARGET).jlink bin
 	$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
 
-$(BUILD_DIR)/%.o: %.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
 	$(VERBOSE)$(CC) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/%.obj: %.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/%.obj: %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CP]  $<"
 	$(VERBOSE)$(CPP) -c $(CPPFLAGS)  $< -o $@
 
-$(BUILD_DIR)/%.o: %.s | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "[AS]  $<"
 	$(VERBOSE)$(AS) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS)
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
 	@echo "[LD]  $@"
 	$(VERBOSE)$(LD) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
 

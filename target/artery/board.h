@@ -9,6 +9,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 #include "at32f4xx.h"
+#include "spi.h"
 #include "gpio.h"
 #include "gpio_at32f4xx.h"
 //#include "ili9341.h"
@@ -20,7 +21,8 @@ extern "C" {
 
 #define BOARD_ARTERY
 
-#define SPI_FREQ    18000 //kHz
+#define SPI_FREQ        18000 //kHz
+#define BOARD_SPIDEV    &spibus
 
 #define LCD_IO_SET(port, pinmask) port->BSRE = pinmask
 #define LCD_IO_RESET(port, pinmask) port->BRE = pinmask
@@ -95,6 +97,7 @@ extern "C" {
 #define DBG_PIN_TOGGLE  LED1_TOGGLE
 
 //enum {false = 0, true, OFF = false, ON = true};
+extern spibus_t spibus;
 
 void BOARD_Init(void);
 void DelayMs(uint32_t ms);

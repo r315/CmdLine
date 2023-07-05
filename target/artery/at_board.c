@@ -4,7 +4,7 @@
 #include "serial.h"
 #include "liblcd.h"
 
-static spibus_t spibus;
+spibus_t spibus;
 
 static void InitTimeBase(void){
 #if (USE_TIMER_SYSTICK == 1)

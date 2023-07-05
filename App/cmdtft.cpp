@@ -151,6 +151,7 @@ void CmdTft::help(void){
     console->putString("  block,               Color squares");
     console->putString("  scroll,              Color scroll");
     console->putString("  demo,                Demo sequence");
+    console->putString("  cmd <reg> <param>    Send command");
     console->putChar('\n');
 }
 
@@ -161,6 +162,21 @@ char CmdTft::execute(int argc, char **argv){
     if(argc == 1){
         help();
         return CMD_OK;
+    }
+
+    if(xstrcmp("cmd", (const char*)argv[1]) == 0){
+        if(ha2i(argv[2], (uint32_t*)&val1)){
+            uint32_t param;
+            if(ha2i(argv[3], (uint32_t*)&param)){
+                LCD_CS0;
+                LCD_CD0;
+                SPI_Transfer(BOARD_SPIDEV, (uint8_t*)&val1, 1);
+                LCD_CD1;
+                SPI_Transfer(BOARD_SPIDEV, (uint8_t*)&param, 1);
+                LCD_CS1;
+                return CMD_OK;
+            }
+        }
     }
 
     if(xstrcmp("init", (const char*)argv[1]) == 0){
