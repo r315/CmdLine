@@ -13,19 +13,19 @@ extern "C" {
 #include "pwm.h"
 #include "spi.h"
 #include "rng.h"
-#include "gpio_stm32f1xx.h"
 #include "serial.h"
 #include "uart.h"
-#include "lcd.h"
 #include "st7735.h"
+#include "gpio.h"
+#include "gpio_stm32f1xx.h"
 
 /**
  * HW symbols
  * */
 
-#define DBG_LED_TOGGLE          HAL_GPIO_TogglePin(DBG_GPIO_Port, DBG_Pin)
-#define DBG_LED_ON              HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_SET)
-#define DBG_LED_OFF             HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET)
+#define DBG_LED_TOGGLE          GPIO_Toggle(PC_13)
+#define DBG_LED_ON              GPIO_Write(PC_13, GPIO_PIN_SET)
+#define DBG_LED_OFF             GPIO_Write(PC_13, GPIO_PIN_RESET)
 #define LED_TOGGLE              DBG_LED_TOGGLE
 #define LED1_TOGGLE             LED_TOGGLE
 
@@ -39,7 +39,6 @@ static inline uint32_t ElapsedTicks(uint32_t start_ticks){
     return (current > start_ticks) ? current - start_ticks : 0xFFFFFFFF - start_ticks + current;
 }
 
-void BOARD_GPIO_Init(GPIO_TypeDef *port, uint8_t pin, uint8_t mode);
 void BOARD_Init(void);
 
 /** 
@@ -136,14 +135,14 @@ void SERVO_SetPulse(uint16_t pulse);
  * 
  * ************************************************************ */
 #define SPI_XFER_TIMEOUT        1000
-#define BOARD_SPI_PORT          GPIOB
-#define BOARD_SPI_DO_PIN        15
-#define BOARD_SPI_DI_PIN        14
-#define BOARD_SPI_CK_PIN        13
-#define BOARD_SPI_CS_PIN        12
 
-#define BOARD_SPI_CS_LOW        PIN_RESET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
-#define BOARD_SPI_CS_HIGH       PIN_SET(BOARD_SPI_PORT, BOARD_SPI_CS_PIN)
+#define BOARD_SPI_DO_PIN        PB_15
+#define BOARD_SPI_DI_PIN        PB_14
+#define BOARD_SPI_CK_PIN        PB_13
+#define BOARD_SPI_CS_PIN        PB_12
+
+#define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12) 
+#define BOARD_SPI_CS_HIGH       GPIOB->BSRR = (1 << 12)
 
 void BOARD_SPI_Init(void);
 void BOARD_SPI_SetCS(uint8_t cs);

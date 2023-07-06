@@ -162,18 +162,6 @@ void DebugMon_Handler(void)
 /******************************************************************************/
 
 /**
-  * @brief This function handles DMA1 channel4 global interrupt.
-  */
-void DMA1_Channel4_IRQHandler(void){
-
-  if(DMA1->ISR & DMA_ISR_TCIF4){
-    I2C2->CR1 |= I2C_CR1_STOP;
-    I2C2->CR2 &= ~I2C_CR2_DMAEN;
-  }
-  DMA1->IFCR = DMA_IFCR_CGIF4;  
-}
-
-/**
   * @brief This function handles USB low priority or CAN RX0 interrupts.
   */
 void USB_LP_CAN1_RX0_IRQHandler(void)
@@ -202,13 +190,21 @@ void TIM4_IRQHandler(void)
 }
 
 /* USER CODE BEGIN 1 */
+/*
+void _DMA1_Channel4_IRQHandler(void){
+
+  if(DMA1->ISR & DMA_ISR_TCIF4){
+    I2C2->CR1 |= I2C_CR1_STOP;
+    I2C2->CR2 &= ~I2C_CR2_DMAEN;
+  }
+  DMA1->IFCR = DMA_IFCR_CGIF4;  
+}
 void DMA1_Channel5_IRQHandler(void){
     if(DMA1->ISR & DMA_ISR_TCIF5){
         SPI_DMA_IRQHandler(BOARD_SPIDEV);
     }
     DMA1->IFCR = DMA_IFCR_CGIF5;
 }
-/*
 void DMA1_Channel3_IRQHandler(void){
     if(DMA1->ISR & DMA_ISR_TCIF3){
         SPI_DMA_IRQHandler(&spi1);

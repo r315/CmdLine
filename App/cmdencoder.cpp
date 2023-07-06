@@ -88,15 +88,16 @@ char CmdEncoder::execute(int argc, char **argv){
         ENC_TIM->CR1 = TIM_CR1_CEN;
         ENC_TIM->SR = 0;
 
-        BOARD_GPIO_Init(GPIOB, 3, PIN_IN_PU);
-        BOARD_GPIO_Init(GPIOA, 15, PIN_IN_PU);
+        GPIO_Config(PB_3, GPI_PU);
+        GPIO_Config(PA_15, GPI_PU);
 
-        BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);
+        GPIO_Config(BOARD_SPI_DI_PIN, GPO_2MHZ);
+
         LCD_Init(TFT_SPIDEV);
         LCD_SetOrientation(LCD_LANDSCAPE);
         LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
 
-        LCD_DrawRect(
+        LCD_Rect(
             (LCD_GetWidth()/2) - (BAR_GRAPH_WIDTH/2) - 2,
             (LCD_GetHeight()/2) - (BAR_GRAPH_HEIGHT/2) - 2,
             BAR_GRAPH_WIDTH + 3,

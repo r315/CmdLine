@@ -101,9 +101,11 @@ $(DRIVERS_PATH)/uart/uart_stm32f10x.c \
 $(DRIVERS_PATH)/spi/spi_stm32f1xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
+$(DRIVERS_PATH)/gpio/gpio_stm32f1xx.c \
+$(DRIVERS_PATH)/dma/dma_stm32f1xx.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
-$(LIB_PATH)/src/lcd.c \
+$(LIB_PATH)/src/liblcd.c \
 #$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
 
 
@@ -119,6 +121,7 @@ $(APP_DIR)/cmdservo.cpp \
 $(APP_DIR)/cmdspiflash.cpp \
 $(APP_DIR)/cmdflashrom.cpp \
 $(APP_DIR)/cmdencoder.cpp \
+$(APP_DIR)/cmdbenchmark.cpp \
 
 
 

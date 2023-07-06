@@ -6,57 +6,22 @@
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
-uint16_t SPI_Single_Transfer(spibus_t *spidev, uint16_t data);
-
 void BOARD_Init(void){
     BOARD_SPIDEV->bus = SPI_BUS1;
     BOARD_SPIDEV->freq = 1000000;
     BOARD_SPIDEV->flags = SPI_HW_CS;
 
     SPI_Init(BOARD_SPIDEV);
-    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DO_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
-    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_2MHZ);  // LCD_CD
-    //BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_DI_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
-    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CK_PIN, PIN_OUT_AF | PIN_OUT_50MHZ);
-    BOARD_GPIO_Init(BOARD_SPI_PORT, BOARD_SPI_CS_PIN, PIN_OUT_2MHZ);
-    BOARD_GPIO_Init(LCD_BKL_GPIO_Port, LCD_BKL_Pin, PIN_OUT_2MHZ);
+    GPIO_Config(PB_15, GPO_AF | GPO_50MHZ);
+    GPIO_Config(PB_13, GPO_AF | GPO_50MHZ);
+    GPIO_Config(PB_14, GPO_2MHZ);  // LCD_CD
+    //GPIO_Config(PB_14, PIN_OUT_AF | PIN_OUT_50MHZ);
+    GPIO_Config(PB_12, GPO_2MHZ); // LCD_CS
+    GPIO_Config(PB_10, GPO_50MHZ); // LCD_BKL
 
     SERVO_Init();
 
     SERIAL_Init();
-}
-
-/**
- * @brief Configure GPIO pin
- * @param port : pin port
- * @param pin : pin number 0 - 15
- * @param mode : Output
- *                  GPO_2MHZ
- *                  GPO_10MHZ
- *                  GPO_50MHZ
- *                  GPO_AF | GPO_xxMHZ
- *                  GPO_AF_OD | GPO_xxMHZ
- *               Input
- *                  GPI_FLOAT
- *                  GPI_ANALOG
- *                  GPI_PD
- *                  GPI_PU
- * */
-void BOARD_GPIO_Init(GPIO_TypeDef *port, uint8_t pin, uint8_t mode) {
-    
-    if(mode == PIN_IN_PD){
-        port->BRR = (1 << pin);
-    }else if(mode == PIN_IN_PU){
-        port->BSRR = (1 << pin);
-    }    
-
-    mode &= 0x0f;
-
-    if(pin <  8){ 
-        port->CRL = (port->CRL & ~(15 << (pin << 2))) | (mode << (pin << 2));
-    }else{ 
-        port->CRH = (port->CRH & ~(15 << ((pin - 8) << 2))) | (mode << ((pin - 8) << 2)); 
-    }
 }
 
 
@@ -150,23 +115,23 @@ uint8_t PWM_Get(uint8_t ch){
  * PB1   ------> TIM1_CH4
  * */
 static void PWM_CfgGpio(uint8_t ch, uint8_t enable){
-    enable = (enable == 0) ? PIN_IN_ANALOG :  PIN_OUT_AF | PIN_OUT_2MHZ;
+    enable = (enable == 0) ? GPI_ANALOG :  GPO_AF | GPO_2MHZ;
 
     switch(ch){
         case PWM_1:
-            BOARD_GPIO_Init(GPIOA, GPIO_PIN_6, enable);
+            GPIO_Config(PA_6, enable);
             break;
 
         case PWM_2:
-            BOARD_GPIO_Init(GPIOA, GPIO_PIN_7, enable);
+            GPIO_Config(PA_7, enable);
             break;
 
         case PWM_3:
-            BOARD_GPIO_Init(GPIOB, GPIO_PIN_0, enable);
+            GPIO_Config(PB_0, enable);
             break;
 
         case PWM_4:
-            BOARD_GPIO_Init(GPIOB, GPIO_PIN_1, enable);
+            GPIO_Config(PB_1, enable);
             break;
 
         default:
@@ -234,7 +199,7 @@ void SERVO_Init(void){
 
     TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
 
-    BOARD_GPIO_Init(SERVO_PORT, SERVO_PIN, PIN_OUT_2MHZ);    
+    GPIO_Config(PB_9, GPO_2MHZ);    
 }
 
 /**
@@ -255,7 +220,7 @@ void SERVO_Stop(void){
 
     NVIC_DisableIRQ(TIM3_IRQn);
     
-    BOARD_GPIO_Init(SERVO_PORT, SERVO_PIN, PIN_IN_FLOAT);
+    GPIO_Config(PB_9, GPI_FLOAT);
 }
 
 uint16_t SERVO_Get(void){
@@ -467,7 +432,9 @@ void ADC_Stop(adctype_t *adc){
 
 /**
  * DMA transfer interrupt handler
+ * TODO: FIX ADC
  * */
+#if 0
 void DMA1_Channel1_IRQHandler(void){
 
     if(DMA1->ISR & DMA_ISR_TCIF1){
@@ -479,6 +446,7 @@ void DMA1_Channel1_IRQHandler(void){
 
     DMA1->IFCR = DMA_IFCR_CGIF1;    // Clear DMA Flags TODO: ADD DMA Error handling ?
 }
+#endif
 
 
 void ADC_SetCallBack(void (*cb)(uint16_t*)){
@@ -503,6 +471,23 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 #define DMA_CCR_MSIZE_32    (2<<10)
 #define DMA_CCR_PSIZE_16    (1<<8)
 #define DMA_CCR_PSIZE_8     (0<<8)
+
+/**
+ * @brief Configures SPI2 to be used by flashrom command
+ * 
+ */
+void BOARD_SPI_Init(void)
+{
+    BOARD_SPIDEV->bus = SPI_BUS1;
+    BOARD_SPIDEV->freq = 5000000;
+    BOARD_SPIDEV->flags = SPI_HW_CS;
+    SPI_Init(BOARD_SPIDEV);
+
+    GPIO_Config(BOARD_SPI_DO_PIN, GPO_AF | GPO_50MHZ);
+    GPIO_Config(BOARD_SPI_DI_PIN, GPO_AF | GPO_50MHZ);
+    GPIO_Config(BOARD_SPI_CK_PIN, GPO_AF | GPO_50MHZ);
+    GPIO_Config(BOARD_SPI_CS_PIN, GPO_2MHZ);
+}
 
 uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout){
     return SPI_Xchg(BOARD_SPIDEV, (uint8_t*)&data);

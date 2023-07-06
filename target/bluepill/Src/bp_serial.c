@@ -135,12 +135,9 @@ stdout_t *SERIAL_GetStdout(int32_t nr)
         case SERIAL1:
             return BOARD_SERIAL0;
 
-        case SERIAL4:
-            return BOARD_SERIAL4;
-
         default:
             break;
     }
     
-    return NULL;
+    return BOARD_SERIAL4;
 }
