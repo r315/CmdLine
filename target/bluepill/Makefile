@@ -74,7 +74,6 @@ $(TARGET_PATH)/Src/stm32f1xx_hal_msp.c \
 $(TARGET_PATH)/Src/stm32f1xx_hal_timebase_tim.c \
 $(TARGET_PATH)/Src/board.c \
 $(TARGET_PATH)/Src/bp_serial.c \
-$(TARGET_PATH)/Src/bp_it.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \

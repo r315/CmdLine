@@ -7,18 +7,11 @@
 spibus_t BOARD_SPIDEV_HANDLER;
 
 void BOARD_Init(void){
+
     BOARD_SPIDEV->bus = SPI_BUS1;
-    BOARD_SPIDEV->freq = 1000000;
-    BOARD_SPIDEV->flags = SPI_HW_CS;
-
-    SPI_Init(BOARD_SPIDEV);
-    GPIO_Config(PB_15, GPO_AF | GPO_50MHZ);
-    GPIO_Config(PB_13, GPO_AF | GPO_50MHZ);
-    GPIO_Config(PB_14, GPO_2MHZ);  // LCD_CD
-    //GPIO_Config(PB_14, PIN_OUT_AF | PIN_OUT_50MHZ);
-    GPIO_Config(PB_12, GPO_2MHZ); // LCD_CS
-    GPIO_Config(PB_10, GPO_50MHZ); // LCD_BKL
-
+    BOARD_SPIDEV->freq = 5000;
+    BOARD_SPIDEV->flags = SPI_IDLE;
+   
     SERVO_Init();
 
     SERIAL_Init();
@@ -478,9 +471,6 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
  */
 void BOARD_SPI_Init(void)
 {
-    BOARD_SPIDEV->bus = SPI_BUS1;
-    BOARD_SPIDEV->freq = 5000000;
-    BOARD_SPIDEV->flags = SPI_HW_CS;
     SPI_Init(BOARD_SPIDEV);
 
     GPIO_Config(BOARD_SPI_DO_PIN, GPO_AF | GPO_50MHZ);
@@ -514,6 +504,15 @@ uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
 
 void BOARD_LCD_Init(void)
 {
+    BOARD_SPIDEV->bus = SPI_BUS1;
+    BOARD_SPIDEV->freq = 5000;
+    BOARD_SPIDEV->flags = SPI_IDLE;
+
+    BOARD_SPI_Init();
+
+    GPIO_Config(PB_14, GPO_2MHZ);  // LCD_CD
+    GPIO_Config(PB_10, GPO_50MHZ); // LCD_BKL
+
     LCD_Init(BOARD_SPIDEV);
 }
 
