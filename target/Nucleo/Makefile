@@ -39,12 +39,11 @@ AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
-Core\Inc \
+$(TARGET_PATH)/Core/Inc \
 $(CMSIS_PATH)/Core/Include \
+$(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
-$(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
-$(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
 $(LIBEMB_PATH)/drv/inc \
 $(APP_DIR)/inc \
@@ -266,9 +265,9 @@ program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 
 test:
-	@echo $(VERSION)
+#@echo $(VERSION)
 #@echo ""; $(foreach d, $(OBJECTS), echo $(d);)
-#@echo $(sort $(dir $(C_SOURCES)))
+	@echo $(sort $(C_INCLUDES))
 #@echo $(C_SOURCES)
 
 #######################################
