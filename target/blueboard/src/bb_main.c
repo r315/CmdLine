@@ -2,7 +2,6 @@
 #include "clock_lpc17xx.h"
 #include "tim_lpc17xx.h"
 #include "app.h"
-#include "display.h"
 
 void App(void);
 
@@ -41,7 +40,7 @@ int main()
 
     BOARD_Init();
     SERIAL_Init();
-    DISPLAY_Init(0);
+    
     LCD_SetOrientation(LCD_LANDSCAPE);
     LCD_Bkl(1);
     DBG_PIN_INIT;

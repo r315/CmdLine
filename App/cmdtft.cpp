@@ -163,7 +163,7 @@ char CmdTft::execute(int argc, char **argv){
         help();
         return CMD_OK;
     }
-
+#if 0 //TODO: Fix
     if(xstrcmp("cmd", (const char*)argv[1]) == 0){
         if(ha2i(argv[2], (uint32_t*)&val1)){
             uint32_t param;
@@ -178,7 +178,7 @@ char CmdTft::execute(int argc, char **argv){
             }
         }
     }
-
+#endif
     if(xstrcmp("init", (const char*)argv[1]) == 0){
         if(ia2i(argv[2], (int32_t*)&val1)){
             BOARD_LCD_Init();

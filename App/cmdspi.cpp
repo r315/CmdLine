@@ -71,7 +71,7 @@ char CmdSpi::execute(int argc, char **argv){
 
 		uint8_t n = 0;
 		while(argv[n + 3] != NULL){
-            if(hatoi(argv[n + 3], &aux)){        
+            if(ha2i(argv[n + 3], &aux)){        
                 data[n] = aux;
             }
             n++;

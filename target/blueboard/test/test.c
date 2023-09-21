@@ -87,7 +87,7 @@ char *tmp;
         return -1;
     }
 */
-    //printf("0x%s = %d\n", argv[1], hatoi(argv[1]));
+    //printf("0x%s = %d\n", argv[1], ha2i(argv[1]));
 //TEST_strtok_s();
 TEST_pitoa();
     return 0;

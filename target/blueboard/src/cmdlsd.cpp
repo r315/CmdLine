@@ -179,12 +179,12 @@ char CmdSd::execute(int argc, char **argv){
         }
         return CMD_OK;
     }else if(xstrcmp("dump", (const char*)argv[1]) == 0){
-        if(hatoi(argv[2], &sector)){
+        if(ha2i(argv[2], &sector)){
             dumpSector(sector);
             return CMD_OK;
         }
     }else if(xstrcmp("erase", (const char*)argv[1]) == 0){
-        if(hatoi(argv[2], &sector)){
+        if(ha2i(argv[2], &sector)){
             for(int i = 0; i < SECTOR_SIZE; i++){
                 sector_data[i] = 0xFF;
             }

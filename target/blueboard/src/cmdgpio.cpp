@@ -65,8 +65,8 @@ char CmdGpio::execute(int argc, char **argv){
 	uint32_t aux, pin;
 
 	if( !xstrcmp(argv[1],"init")){		
-		if(hatoi(argv[2], &pin)){
-        	if(hatoi(argv[3], &aux)){
+		if(ha2i(argv[2], &pin)){
+        	if(ha2i(argv[3], &aux)){
 				GPIO_Init((pinName_e)pin, aux);
 			}
 		}
@@ -75,8 +75,8 @@ char CmdGpio::execute(int argc, char **argv){
 	}
 
 	if( !xstrcmp(argv[1],"mode")){		
-		if(hatoi(argv[2], &pin)){
-        	if(hatoi(argv[3], &aux)){
+		if(ha2i(argv[2], &pin)){
+        	if(ha2i(argv[3], &aux)){
 				GPIO_Mode((pinName_e)pin, aux);
 			}
 		}
@@ -85,8 +85,8 @@ char CmdGpio::execute(int argc, char **argv){
 	}
 
 	if( !xstrcmp(argv[1],"func")){		
-		if(hatoi(argv[2], &pin)){
-        	if(hatoi(argv[3], &aux)){
+		if(ha2i(argv[2], &pin)){
+        	if(ha2i(argv[3], &aux)){
 				GPIO_Function((pinName_e)pin, aux);
 			}
 		}
@@ -95,15 +95,14 @@ char CmdGpio::execute(int argc, char **argv){
 	}
 
 	if( !xstrcmp(argv[1],"dir")){		
-		if(hatoi(argv[2], &pin)){
-        	if(hatoi(argv[3], &aux)){
+		if(ha2i(argv[2], &pin)){
+        	if(ha2i(argv[3], &aux)){
 				GPIO_Direction((pinName_e)pin, aux);
 			}
 		}
         
 		return CMD_OK;
 	}
-
 
 	return CMD_BAD_PARAM;
 }

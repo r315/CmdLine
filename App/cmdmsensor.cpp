@@ -123,16 +123,16 @@ char CmdMSensor::execute(int argc, char **argv){
         sensor_sync(SENSOR_TIMEOUT_NORMAL);
         return CMD_OK;
     }else if(xstrcmp("read", (const char*)argv[1]) == 0){
-        if(hatoi(argv[2], (uint32_t*)&val)){
+        if(ha2i(argv[2], (uint32_t*)&val)){
             if(sensor_read(val, &data)){
                 console->print("Reg[%x]: %x\n", val, data);
                 return CMD_OK;
             }
         }
     }else if(xstrcmp("write", (const char*)argv[1]) == 0){
-        if(hatoi(argv[2], (uint32_t*)&val)){
+        if(ha2i(argv[2], (uint32_t*)&val)){
             uint8_t reg = val;
-            if(hatoi(argv[3], (uint32_t*)&val)){
+            if(ha2i(argv[3], (uint32_t*)&val)){
                 data = val;
                 sensor_write(reg, &data);
                 return CMD_OK;                

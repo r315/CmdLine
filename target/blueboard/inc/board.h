@@ -7,7 +7,7 @@ extern "C" {
 
 #include <stdint.h>
 #include "blueboard.h"
-#include "lcd.h"
+#include "ili9328.h"
 #include "stdout.h"
 #include "debug.h"
 #include "pwm.h"

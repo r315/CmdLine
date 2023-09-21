@@ -60,7 +60,7 @@ char CmdI2c::execute(int argc, char **argv){
         I2C_Init(&i2c);
     }
 
-    if(hatoi(argv[3], (uint32_t*)&val)){
+    if(ha2i(argv[3], (uint32_t*)&val)){
         i2c.addr = val;    
     }   
 
@@ -71,7 +71,7 @@ char CmdI2c::execute(int argc, char **argv){
 
         case I2C_OP_WRITE:
             op = 0;
-            while(hatoi(argv[op + 4], (uint32_t*)&val)){
+            while(ha2i(argv[op + 4], (uint32_t*)&val)){
                 i2c_buf[op++] = (uint8_t)val;
             }   
                 

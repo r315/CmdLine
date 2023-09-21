@@ -98,7 +98,7 @@ char CmdAwg::execute(int argc, char **argv){
     }
 
     if(xstrcmp("write", (const char*)argv[1]) == 0){
-        if(hatoi(argv[2], (uint32_t*)&argc)){ 
+        if(ha2i(argv[2], (uint32_t*)&argc)){ 
             DAC_Write(&dac, argc);
         }
     }

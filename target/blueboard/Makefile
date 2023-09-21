@@ -45,8 +45,6 @@ $(DRIVERS_PATH)/dma/dma_lpc17xx.c \
 $(DRIVERS_PATH)/adc/adc_lpc17xx.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
 $(DRIVERS_PATH)/storage/memcard.c \
-$(LIB_PATH)/src/lcd.c \
-$(LIB_PATH)/src/display.c \
 $(LIB_PATH)/src/font.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
@@ -72,6 +70,7 @@ $(APP_DIR)/cmdgpio.cpp \
 $(APP_DIR)/cmdmsensor.cpp \
 $(APP_DIR)/cmdplayer.cpp \
 $(APP_DIR)/cmdmem.cpp \
+$(APP_DIR)/cmdbenchmark.cpp \
 $(TARGET_PATH)/src/cmdspi.cpp \
 $(TARGET_PATH)/src/cmdavr.cpp \
 $(TARGET_PATH)/src/cmdlsd.cpp \
