@@ -90,7 +90,18 @@ serial_t *SERIAL_GetSerial(int32_t nr)
     return nr == SERIAL0 ? &serial0_handler.serial :  &serial1_handler.serial;
 }
 
-int __io_putchar(int ch){
+int kbhit (void)
+{
+    return serial0_handler.out.kbhit();
+}
+
+int __io_putchar(int ch)
+{
     serial0_handler.out.xputchar(ch);
     return 0;
+}
+
+int __io_getchar(void)
+{
+    return serial0_handler.out.xgetchar();
 }

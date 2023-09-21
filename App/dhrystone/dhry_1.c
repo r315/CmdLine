@@ -145,6 +145,8 @@ Number_Of_Runs = nRuns;
   Begin_Time = clock();
 #endif
 
+  Int_1_Loc = Int_2_Loc = 0;
+
   for (Run_Index = 1; Run_Index <= Number_Of_Runs; ++Run_Index)
   {
 

@@ -90,14 +90,19 @@ void _exit (int status)
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
-	int DataIdx;
+	//int DataIdx;
 
-	for (DataIdx = 0; DataIdx < len; DataIdx++)
-	{
-		*ptr++ = __io_getchar();
-	}
+    if(file == 0){
+        *ptr++ = __io_getchar();
+        return 1;
+    }
 
-return len;
+	//for (DataIdx = 0; DataIdx < len; DataIdx++)
+	//{
+	//	*ptr++ = __io_getchar();
+	//}
+
+    return len;
 }
 
 __attribute__((weak)) int _write(int file, char *ptr, int len)
