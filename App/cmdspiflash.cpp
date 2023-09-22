@@ -10,22 +10,22 @@ void CmdSpiFlash::flashDump(uint32_t addr){
         return;
     }
 
-    console->print("%08X ",addr);
+    console->printf("%08X ",addr);
 
     for(uint8_t i = 0; i < 16; i++){
         if((i&7) == 0){
-            console->putChar(' ');
+            console->printchar(' ');
         }
-        console->print("%02X ",buf[i]);
+        console->printf("%02X ",buf[i]);
     }
 
     console->print(" |");
 
 	for(uint8_t i=0; i < 16; i++){
 		if(buf[i] > (' '-1) && buf[i] < 0x7F)
-			console->putChar(buf[i]);
+			console->printchar(buf[i]);
 		else{
-			console->putChar(' ');
+			console->printchar(' ');
 		}
 	}
 
@@ -33,11 +33,11 @@ void CmdSpiFlash::flashDump(uint32_t addr){
 }
 
 void CmdSpiFlash::help(void){ 
-    console->print("Usage: spiflash <read <addr> | id | rs | ws>\n");
-    console->print("\tread,\t read 256 bytes from address\n");
-    console->print("\tid,\t read identification\n");
-    console->print("\trs,\t read status register\n");
-    console->print("\tws,\t write status register\n");
+    console->println("Usage: spiflash <read <addr> | id | rs | ws>");
+    console->println("\tread,\t read 256 bytes from address");
+    console->println("\tid,\t read identification");
+    console->println("\trs,\t read status register");
+    console->println("\tws,\t write status register");
 }
 
 char CmdSpiFlash::execute(int argc, char **argv){
@@ -50,9 +50,9 @@ char CmdSpiFlash::execute(int argc, char **argv){
     }
 
     if(strFind("id", argv, argc) != -1){
-        console->print("JEDEC Id: %x\n", flashJEDEC_ID());
-        console->print("MFD Id: %x\n", flashMFD_ID());
-        console->print("Device Id: %x\n", flashDevice_ID());
+        console->printf("JEDEC Id: %x\n", flashJEDEC_ID());
+        console->printf("MFD Id: %x\n", flashMFD_ID());
+        console->printf("Device Id: %x\n", flashDevice_ID());
         return CMD_OK;
     }
 
@@ -66,7 +66,7 @@ char CmdSpiFlash::execute(int argc, char **argv){
     }
 
     if(strFind("rs", argv, argc) != -1){
-        console->print("Status: %2X\n", flashReadStatus());
+        console->printf("Status: %2X\n", flashReadStatus());
         return CMD_OK;
     }
 

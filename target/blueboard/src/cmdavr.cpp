@@ -375,7 +375,7 @@ void CmdAvr::help(void){
     console->print("\t -e, Erase device\n");
     console->print("\t -f, Read fuses\n");
     console->print("\t -p, <dw> programming mode, try debug wire \n");
-    console->putString("  Avr Pins\n"
+    console->println("  Avr Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
                     "\tMOSI  P0.9\n"
@@ -405,7 +405,7 @@ char *p1;
             if(signature == AVR_RESPONSE_FAIL){
                 console->print("fail to enable programming\n");
             }else{
-                console->print("s_avr_device signature 0x%X\n", signature);
+                console->printf("s_avr_device signature 0x%X\n", signature);
             }
 		    //busnum = nextInt(&p1);
 		}else if( isNextWord(&p1,"-p")){			
@@ -450,7 +450,7 @@ uint32_t fuses;
     }  
 
     fuses = avrReadFuses();
-    console->print("Fuses: H=%X L=%X\n", (fuses >> 8) & 255, fuses & 255 );
+    console->printf("Fuses: H=%X L=%X\n", (fuses >> 8) & 255, fuses & 255 );
 
     return CMD_OK;
 }

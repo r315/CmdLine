@@ -36,10 +36,10 @@ char CmdAdc::execute(int argc, char **argv){
         //ADC_Start(&s_adc);
         DelayMs(10);
         //ADC_Stop(&s_adc);
-        console->print("AN0: %u\n", adcvalues[0]);
-        console->print("AN1: %u\n", adcvalues[1]);
-        console->print("AN2: %u\n", adcvalues[2]);
-        console->print("AN3: %u\n\n", adcvalues[3]);
+        console->printf("AN0: %u\n", adcvalues[0]);
+        console->printf("AN1: %u\n", adcvalues[1]);
+        console->printf("AN2: %u\n", adcvalues[2]);
+        console->printf("AN3: %u\n\n", adcvalues[3]);
     }
 
     if(xstrcmp("single", (const char*)argv[1]) == 0) {
@@ -57,10 +57,10 @@ char CmdAdc::execute(int argc, char **argv){
             }
         }
         if(adc_flags & ADC_DONE){
-            console->print("AN0: %u\n", adcvalues[0]);
-            console->print("AN1: %u\n", adcvalues[1]);
-            console->print("AN2: %u\n", adcvalues[2]);
-            console->print("AN3: %u\n\n", adcvalues[3]);
+            console->printf("AN0: %u\n", adcvalues[0]);
+            console->printf("AN1: %u\n", adcvalues[1]);
+            console->printf("AN2: %u\n", adcvalues[2]);
+            console->printf("AN3: %u\n\n", adcvalues[3]);
             adc_flags = ADC_INIT;
         }
     }

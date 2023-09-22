@@ -91,7 +91,7 @@ extern "C" void App(void)
     }
 
 	console.cls();
-	console.print("Freq: %dMHz\n", SystemCoreClock / 1000000);
+	console.printf("Freq: %dMHz\n", SystemCoreClock / 1000000);
 
 #if defined (BOARD_NUCLEO_L412KB)
 	LED_OFF;

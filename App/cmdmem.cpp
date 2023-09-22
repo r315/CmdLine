@@ -27,9 +27,9 @@ void CmdMem::help(void){
 char CmdMem::execute(int argc, char **argv){
 
     if(xstrcmp("test", (const char*)argv[1]) == 0){
-        console->print("Ram0: %u\n", memTest(ram0, sizeof(ram0)));
-        console->print("Ram1: %u\n", memTest(ram1, sizeof(ram1)));
-        console->print("Ram2: %u\n", memTest(ram2, sizeof(ram2)));
+        console->printf("Ram0: %u\n", memTest(ram0, sizeof(ram0)));
+        console->printf("Ram1: %u\n", memTest(ram1, sizeof(ram1)));
+        console->printf("Ram2: %u\n", memTest(ram2, sizeof(ram2)));
     }
 
     return CMD_OK;

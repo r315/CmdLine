@@ -88,9 +88,9 @@ char CmdBenchmark::execute(int argc, char **argv){
         float pi;
         uint32_t time = piBenchmark(PI_ITERATIONS, &pi);
         //double pi_d = pi;
-        console->print("Pi calculated: %f\n", pi);
-        console->print("Iterations: %u\n", PI_ITERATIONS);
-        console->print("Time: %ums\n", time);
+        console->printf("Pi calculated: %f\n", pi);
+        console->printf("Iterations: %u\n", PI_ITERATIONS);
+        console->printf("Time: %ums\n", time);
 
         #if defined(ENABLE_TFT_DISPLAY)
         LIB2D_SetPos(0, PBAR_POSY + 30);

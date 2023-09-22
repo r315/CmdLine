@@ -47,7 +47,7 @@ uint8_t m = 0;
 		}else{
 			if(readFrame() && checkSum(buf)){
 				distance = (buf[1] << 8) | buf[2];
-				console->print("\r%dmm  ", distance);
+				console->printf("\r%dmm  ", distance);
 			}
 			m = 0;
 		}

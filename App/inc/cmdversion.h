@@ -20,7 +20,7 @@ public:
 
     char execute(int argc, char **argv){
         //console->print("Version %d.%d.%d %s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_STRING);
-        console->print("%s\n", VERSION_STRING);
+        console->printf("%s\n", VERSION_STRING);
         return CMD_OK;
     }
 

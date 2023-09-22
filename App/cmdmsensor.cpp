@@ -125,7 +125,7 @@ char CmdMSensor::execute(int argc, char **argv){
     }else if(xstrcmp("read", (const char*)argv[1]) == 0){
         if(ha2i(argv[2], (uint32_t*)&val)){
             if(sensor_read(val, &data)){
-                console->print("Reg[%x]: %x\n", val, data);
+                console->printf("Reg[%x]: %x\n", val, data);
                 return CMD_OK;
             }
         }
@@ -145,7 +145,7 @@ char CmdMSensor::execute(int argc, char **argv){
         for(uint8_t i = 0; i < 32; i++){
             sensor_read(i, &data);
             DelayMs(1);
-            console->print("Reg[%x]: %x\n", i, data);            
+            console->printf("Reg[%x]: %x\n", i, data);            
         }
         return CMD_OK;
     }else if(xstrcmp("track", (const char*)argv[1]) == 0){
@@ -155,7 +155,7 @@ char CmdMSensor::execute(int argc, char **argv){
         for(uint8_t i = 0; i < 32; i++){
             console->print("%02X ",i);
         }
-        console->putChar('\n');
+        console->printchar('\n');
         #endif
 
         while(console->getCharNonBlocking((char*)&data) == 0){
@@ -167,14 +167,14 @@ char CmdMSensor::execute(int argc, char **argv){
                 if(data & 0x80){
                     sensor_read(3, (uint8_t*)&x);
                     sensor_read(4, (uint8_t*)&y);
-                    console->print("\r x = %d, y = %d       \r", x, y);
+                    console->printf("\r x = %d, y = %d       \r", x, y);
                 }
                 #else
                 for(uint8_t i = 0; i < 32; i++){
                     sensor_read(i, &data);
                     console->print("%02X ",data);
                 }
-                console->putChar('\r');
+                console->printchar('\r');
                 #endif
                 timeout = 0;
             }

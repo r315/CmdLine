@@ -46,21 +46,21 @@ void CmdSd::f_error(FRESULT res)
 	switch(res)
 	{
         default:
-            console->print("error: %x\n", res);
+            console->printf("error: %x\n", res);
 		case FR_OK: break;
 
 		case FR_DISK_ERR: 
-			console->print("disk error\n");break;
+			console->println("disk error");break;
 		case FR_NOT_READY:
-			console->print("disk not ready\n");break;		
+			console->println("disk not ready");break;		
 		case FR_NO_FILE:  
-			console->print("invalid file\n");break;
+			console->println("invalid file");break;
         case FR_NOT_OPENED:  
-			console->print("file not opened\n");break;
+			console->println("file not opened");break;
         case FR_NOT_ENABLED:  
-			console->print("file system not enabled\n");break;
+			console->println("file system not enabled");break;
         case FR_NO_FILESYSTEM:  
-			console->print("no file system\n");break;
+			console->println("no file system");break;
 	}	
 }
 
@@ -69,18 +69,18 @@ void CmdSd::d_error(DRESULT res)
 	switch(res)
 	{
         default:
-            console->print("disk result error: %x\n", res);
+            console->printf("disk result error: %x\n", res);
 
 		case RES_OK:
-            console->print("disk result ok\n");
+            console->println("disk result ok");
             break;
 			
 		case RES_ERROR: 
-			console->print("disk result error\n");break;
+			console->println("disk result error");break;
 		case RES_NOTRDY:
-			console->print("disk result not ready\n");break;		
+			console->println("disk result not ready");break;
 		case RES_PARERR:  
-			console->print("disk result invalid parameter\n");break;		
+			console->println("disk result invalid parameter");break;		
 	}	
 }
 
@@ -88,10 +88,10 @@ void CmdSd::d_status(DSTATUS sta)
 {
 	switch(sta)
 	{
-        default: console->print("disk status error: %x\n", sta); break;
-		case STA_OK: console->print("disk status ok\n"); break;			
-		case STA_NOINIT: console->print("disk status not initialised\n");break;
-		case STA_NODISK: console->print("disk status not present\n");break;		
+        default: console->printf("disk status error: %x\n", sta); break;
+		case STA_OK: console->println("disk status ok"); break;
+		case STA_NOINIT: console->println("disk status not initialised");break;
+		case STA_NODISK: console->println("disk status not present");break;		
 	}	
 }
 
@@ -117,7 +117,7 @@ FRESULT CmdSd::listDir (const char* path, bool recursive)
                 if (res != FR_OK) break;
                 localpath[i] = 0;
             } else {                                        /* It is a file. */
-                console->print("%s/%s\n", localpath, fno.fname);
+                console->printf("%s/%s\n", localpath, fno.fname);
             }
         }
     }
@@ -130,7 +130,7 @@ FRESULT CmdSd::listDir (const char* path, bool recursive)
 void CmdSd::dumpSector(uint32_t sector){
     disk_readp(sector_data, sector, 0, SECTOR_SIZE);
 
-    console->print("\n Sector : %d", sector);
+    console->printf("\n Sector : %d", sector);
 
     for(uint32_t i = 0; i < SECTOR_SIZE; i++){
         if((i & 0x0F) == 0){
@@ -140,23 +140,23 @@ void CmdSd::dumpSector(uint32_t sector){
                     if(c < ' ' || c > '~'){
                         c = ' ';
                     }
-                    console->putChar(c);
+                    console->printchar(c);
                 }
             }           
-            console->print("\n%08X: ", i);
+            console->printf("\n%08X: ", i);
         }
-        console->print("%02X ", sector_data[i]);
+        console->printf("%02X ", sector_data[i]);
     }
-    console->putChar('\n');
+    console->printchar('\n');
 }
 
 void CmdSd::help(void){
-    console->putString("\nUsage: sd <option>");
-    console->putString("Options:"); 
-    console->putString(" dump <lba>, dump sector"); 
-    console->putString(" list      , List files");
-    console->putString(" init      , Initialise SD");
-    console->putString(" info      , SD Info");
+    console->println("\nUsage: sd <option>");
+    console->println("Options:"); 
+    console->println(" dump <lba>, dump sector"); 
+    console->println(" list      , List files");
+    console->println(" init      , Initialise SD");
+    console->println(" info      , SD Info");
 
 }
 
@@ -198,78 +198,78 @@ char CmdSd::execute(int argc, char **argv){
         return CMD_OK;
     }else if(xstrcmp("info", argv[1]) == 0){
         SDGetCID(data);
-        console->putString("--------------------------------------------");
-        console->putString("              Card ID (CID)");
-        console->putString("--------------------------------------------");
-        console->print("Manufacturer ID: %02x\n", data[0]);
-        console->print("Application ID: %c%c, (%04x)\n", data[1], data[2], data[1] << 8 | data[2]);
-        console->print("Product Name: ");
-        for(uint8_t i = 0; i < 5; i++) console->print("%c", (char)data[3 + i]);
-        console->print("\nProduct Revision: %02x\n", data[8]);
-        console->print("Serial Number: ");
-        for(uint8_t i = 0; i < 4; i++) console->print("%02x", data[9 + i]);
+        console->println("--------------------------------------------");
+        console->println("              Card ID (CID)");
+        console->println("--------------------------------------------");
+        console->printf("Manufacturer ID: %02x\n", data[0]);
+        console->printf("Application ID: %c%c, (%04x)\n", data[1], data[2], data[1] << 8 | data[2]);
+        console->printf("Product Name: ");
+        for(uint8_t i = 0; i < 5; i++) console->printf("%c", (char)data[3 + i]);
+        console->printf("\nProduct Revision: %02x\n", data[8]);
+        console->printf("Serial Number: ");
+        for(uint8_t i = 0; i < 4; i++) console->printf("%02x", data[9 + i]);
         uint16_t mdt = data[13] << 8 | data[14];
-        console->print("\nManufacture date: %d/%d\n", 2000 + (mdt >> 4), mdt & 15);
+        console->printf("\nManufacture date: %d/%d\n", 2000 + (mdt >> 4), mdt & 15);
 
         SDGetCSD(data);
-        console->putString("--------------------------------------------");
-        console->putString("          Card Specific Data (CSD)");
-        console->putString("--------------------------------------------");
+        console->println("--------------------------------------------");
+        console->println("          Card Specific Data (CSD)");
+        console->println("--------------------------------------------");
 
         sector = 0;
         
         for(uint8_t i = 0; i < 16; i++){
-            console->print("%02x ", data[i]);
+            console->printf("%02x ", data[i]);
         }
         
-        console->print("\nCSD Structure: %u\n", getBits(data, &sector, 2));
+        console->printf("\nCSD Structure: %u\n", getBits(data, &sector, 2));
         getBits(data, &sector, 6); // Reserved
-        console->print("TAAC: %u\n", getBits(data, &sector, 8));
-        console->print("NSAC: %u\n", getBits(data, &sector, 8));
-        console->print("TRANS_SPEED: %xh\n", getBits(data, &sector, 8));
-        console->print("CCC: %xh\n",getBits(data, &sector, 12));
+        console->printf("TAAC: %u\n", getBits(data, &sector, 8));
+        console->printf("NSAC: %u\n", getBits(data, &sector, 8));
+        console->printf("TRANS_SPEED: %xh\n", getBits(data, &sector, 8));
+        console->printf("CCC: %xh\n",getBits(data, &sector, 12));
         uint32_t block_len = getBits(data, &sector, 4);
-        console->print("READ_BLOCK_LEN: %u (%ubyte)\n", block_len, (1UL << block_len));
-        console->print("READ_BL_PARTIAL: %xb\n", getBits(data, &sector, 1));
-        console->print("WRITE_BLK_MISALIGN: %xb\n", getBits(data, &sector, 1));
-        console->print("READ_BLK_MISALIGN: %xb\n", getBits(data, &sector, 1));
-        console->print("DSR_IMP: %xb\n", getBits(data, &sector, 1));
+        console->printf("READ_BLOCK_LEN: %u (%ubyte)\n", block_len, (1UL << block_len));
+        console->printf("READ_BL_PARTIAL: %xb\n", getBits(data, &sector, 1));
+        console->printf("WRITE_BLK_MISALIGN: %xb\n", getBits(data, &sector, 1));
+        console->printf("READ_BLK_MISALIGN: %xb\n", getBits(data, &sector, 1));
+        console->printf("DSR_IMP: %xb\n", getBits(data, &sector, 1));
         getBits(data, &sector, 2); // Reserved
         uint32_t c_size = getBits(data, &sector, 12);
-        console->print("C_SIZE: %u\n", c_size);
-        console->print("VDD_R_CURR_MIN: %u\n", getBits(data, &sector, 3));
-        console->print("VDD_R_CURR_MAX: %u\n", getBits(data, &sector, 3));
-        console->print("VDD_W_CURR_MIN: %u\n", getBits(data, &sector, 3));
-        console->print("VDD_W_CURR_MAX: %u\n", getBits(data, &sector, 3));
+        console->printf("C_SIZE: %u\n", c_size);
+        console->printf("VDD_R_CURR_MIN: %u\n", getBits(data, &sector, 3));
+        console->printf("VDD_R_CURR_MAX: %u\n", getBits(data, &sector, 3));
+        console->printf("VDD_W_CURR_MIN: %u\n", getBits(data, &sector, 3));
+        console->printf("VDD_W_CURR_MAX: %u\n", getBits(data, &sector, 3));
         uint32_t mult = getBits(data, &sector, 3);
-        console->print("C_SIZE_MULT: %u (%u)\n", mult, (1UL << (mult + 2)) );
-        console->print("ERASE_BLK_EN: %xb\n", getBits(data, &sector, 1));
-        console->print("SECTOR_SIZE: %u\n", getBits(data, &sector, 7));
-        console->print("WP_GRP_SIZE: %u\n", getBits(data, &sector, 7));
-        console->print("WP_GRP_ENABLE: %xb\n", getBits(data, &sector, 1));
+        console->printf("C_SIZE_MULT: %u (%u)\n", mult, (1UL << (mult + 2)) );
+        console->printf("ERASE_BLK_EN: %xb\n", getBits(data, &sector, 1));
+        console->printf("SECTOR_SIZE: %u\n", getBits(data, &sector, 7));
+        console->printf("WP_GRP_SIZE: %u\n", getBits(data, &sector, 7));
+        console->printf("WP_GRP_ENABLE: %xb\n", getBits(data, &sector, 1));
         getBits(data, &sector, 2); // Reserved
-        console->print("R2W_FACTOR: %x\n", getBits(data, &sector, 3));
+        console->printf("R2W_FACTOR: %x\n", getBits(data, &sector, 3));
         uint32_t w_bl_len = getBits(data, &sector, 4);
-        console->print("WRITE_BL_LEN: %x (%d)\n", w_bl_len, (1UL << w_bl_len));
-        console->print("WRITE_BL_PARTIAL: %xb\n", getBits(data, &sector, 1));
+        console->printf("WRITE_BL_LEN: %x (%d)\n", w_bl_len, (1UL << w_bl_len));
+        console->printf("WRITE_BL_PARTIAL: %xb\n", getBits(data, &sector, 1));
         getBits(data, &sector, 5); // Reserved
-        console->print("FILE_FORMAT_GRP: %xb\n", getBits(data, &sector, 1));
-        console->print("COPY: %xb\n", getBits(data, &sector, 1));
-        console->print("PERM_WRITE_PROTECT: %xb\n", getBits(data, &sector, 1));
-        console->print("TEM_WRITE_PROTECT: %xb\n", getBits(data, &sector, 1));
-        console->print("FILE_FORMAR: %x\n", getBits(data, &sector, 2));
-        console->putString("--------------------------------------------");
+        console->printf("FILE_FORMAT_GRP: %xb\n", getBits(data, &sector, 1));
+        console->printf("COPY: %xb\n", getBits(data, &sector, 1));
+        console->printf("PERM_WRITE_PROTECT: %xb\n", getBits(data, &sector, 1));
+        console->printf("TEM_WRITE_PROTECT: %xb\n", getBits(data, &sector, 1));
+        console->printf("FILE_FORMAR: %x\n", getBits(data, &sector, 2));
+        console->println("--------------------------------------------");
        
-        console->print("Card size %d bytes\n", (c_size + 1) * (1UL << (mult + 2)) * (1UL << block_len));
+        console->printf("Card size %d bytes\n", (c_size + 1) * (1UL << (mult + 2)) * (1UL << block_len));
 
         
         
 
 /*
         SDGetSCR(data);
-        console->putString("--------------------------------------------");
-        console->putString("     Card Configuration Register (SCR)");
-        console->putString("--------------------------------------------");
+        console->println("--------------------------------------------");
+        console->println("     Card Configuration Register (SCR)");
+        console->println("--------------------------------------------");
         */
         return CMD_OK;
     }

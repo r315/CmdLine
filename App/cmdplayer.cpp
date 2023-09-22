@@ -194,7 +194,7 @@ char CmdPlayer::execute(int argc, char **argv){
         if(pf_open (argv[2]) == FR_OK){
             const char *ext = chrinstr(argv[2], '.');
             if(xstrcmp(".raw", ext) == 0){
-                console->print("Size: %d \n", sdcard.fsize);
+                console->printf("Size: %d \n", sdcard.fsize);
                 s_file = true;
                 s_mono = true;
                 rawFile();
@@ -209,7 +209,7 @@ char CmdPlayer::execute(int argc, char **argv){
             }
             stop();
         }else{
-            console->print("can't open file: %s \n", argv[2]);
+            console->printf("can't open file: %s \n", argv[2]);
         }
         return CMD_OK;
     }

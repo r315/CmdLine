@@ -59,8 +59,8 @@ void drawEncoder(int16_t val){
 }
 
 void CmdEncoder::help(void){
-    console->print("Usage: encoder <on/off> \n");
-    console->print("Reads encoder connected to pins PB3/PA15\n"); 
+    console->println("Usage: encoder <on/off>");
+    console->println("Reads encoder connected to pins PB3/PA15"); 
 }
 
 char CmdEncoder::execute(int argc, char **argv){    
@@ -114,7 +114,7 @@ char CmdEncoder::execute(int argc, char **argv){
         do{
             uint16_t raw = getEncoder();
             uint16_t val = map(raw, ENC_MIN_POS, ENC_MAX_POS, 0, BAR_GRAPH_WIDTH);
-            console->print("\r%d %d ", raw, val);
+            console->printf("\r%d %d ", raw, val);
             drawEncoder(val);
             DelayMs(20);
             console->getCharNonBlocking(&c);

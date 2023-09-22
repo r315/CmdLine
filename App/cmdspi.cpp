@@ -34,14 +34,14 @@ static void spiWrite(uint8_t *data, uint32_t len){
 //
 //--------------------------------------
 void CmdSpi::help(void){
-    console->putString("\nUsage: spi <bus> <option>  [param]");
-	console->putString("\tsend <data0> [dataN] : Send data");
-	console->putString("\tinit : Initialise auxiliary SPI peripheral");
-	console->putString("\tspeed <speed> : set clock frequency");
-    console->putString("\tstatus : bus status");
-    console->putString("\tmode <0-3>: set spi mode");
-    console->putString("\tcs <0-1>: Enable HW CS");
-    /*console->putString("  Spi Pins\n"
+    console->println("\nUsage: spi <bus> <option>  [param]");
+	console->println("\tsend <data0> [dataN] : Send data");
+	console->println("\tinit : Initialise auxiliary SPI peripheral");
+	console->println("\tspeed <speed> : set clock frequency");
+    console->println("\tstatus : bus status");
+    console->println("\tmode <0-3>: set spi mode");
+    console->println("\tcs <0-1>: Enable HW CS");
+    /*console->println("  Spi Pins\n"
                     "\tSCK   P0.7\n"
                     "\tMISO  P0.8\n"
                     "\tMOSI  P0.9\n"
@@ -88,9 +88,9 @@ char CmdSpi::execute(int argc, char **argv){
     		return CMD_OK;
 		}
 	}else if(xstrcmp("status", argv[2]) == 0){
-        console->print("Bus: %d\n", spi->bus);
-        console->print("Speed: %d Hz\n", spi->freq);
-        console->print("Flags: MODE%d", spi->flags >> 6);
+        console->printf("Bus: %d\n", spi->bus);
+        console->printf("Speed: %d Hz\n", spi->freq);
+        console->printf("Flags: MODE%d", spi->flags >> 6);
         if(spi->flags & SPI_HW_CS){
             console->print(" | HW_CS");
         }
@@ -99,7 +99,7 @@ char CmdSpi::execute(int argc, char **argv){
             console->print(" | ENABLED");
         }
         
-        console->print(" (%02x)\n", spi->flags);        
+        console->printf(" (%02x)\n", spi->flags);        
         return CMD_OK;
 	}else if(xstrcmp("mode", argv[2]) == 0){
         if(ia2i(argv[3], (int32_t*)&aux)){

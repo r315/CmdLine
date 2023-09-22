@@ -196,20 +196,20 @@ uint8_t i,b;
 }
 
 void CmdSbus::Flags(void){
-    console->print("CH7: %s\n", (sbus.frame.flags & (1 << 7)) ? "ON" : "OFF" );  
-    console->print("CH8: %s\n", (sbus.frame.flags & (1 << 6)) ? "ON" : "OFF" );
-    console->print("Frame lost: %s\n", (sbus.frame.flags & (1 << 5)) ? "YES" : "NO" );  
-    console->print("Failsafe: %s\n", (sbus.frame.flags & (1 << 4)) ? "ON" : "OFF" );
-    console->putChar('\n');
+    console->printf("CH7: %s\n", (sbus.frame.flags & (1 << 7)) ? "ON" : "OFF" );  
+    console->printf("CH8: %s\n", (sbus.frame.flags & (1 << 6)) ? "ON" : "OFF" );
+    console->printf("Frame lost: %s\n", (sbus.frame.flags & (1 << 5)) ? "YES" : "NO" );  
+    console->printf("Failsafe: %s\n", (sbus.frame.flags & (1 << 4)) ? "ON" : "OFF" );
+    console->printchar('\n');
 }
 
 
 void CmdSbus::help(void){
-    console->print("Usage: sbus <option> [params]\n\n");  
-    console->print("\tset <ch> <value>, Channel number 1-16, value 1000-2000\n");
-    console->print("\tarm <st>,  State 1: arm, other disarm\n");
-    console->print("\tflags <value>, Value 0-255\n");
-    console->print("\treceive, receive mode\n");
+    console->println("Usage: sbus <option> [params]\n");  
+    console->println("\tset <ch> <value>, Channel number 1-16, value 1000-2000");
+    console->println("\tarm <st>,  State 1: arm, other disarm");
+    console->println("\tflags <value>, Value 0-255");
+    console->println("\treceive, receive mode");
 }
 
 

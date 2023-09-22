@@ -18,10 +18,10 @@ public:
 
     char execute(int argc, char **argv){
         for (int i = 1; i < argc; i++) {
-            console->print("%s ", argv[i]);
+            console->printf("%s ", argv[i]);
         }
         
-        console->putChar('\n');
+        console->printchar('\n');
         return CMD_OK;
     }
     void help(void){}

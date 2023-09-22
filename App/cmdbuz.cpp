@@ -8,7 +8,7 @@ static const char *demo[2] = {
 };
 
 void CmdBuz::help(void) {
-		console->putString("usage: buz <freq | vol | rtttl | demo > <duration | level | string | 1,0>");
+		console->print("usage: buz <freq | vol | rtttl | demo > <duration | level | string | 1,0>\n");
 }
 
 char CmdBuz::execute(int argc, char **argv) {
@@ -27,9 +27,9 @@ char CmdBuz::execute(int argc, char **argv) {
 
     if(strcmp((const char*)argv[1], "vol") == 0){
         if(!ia2i(argv[2], &level)){
-            console->print("vol: %d\n", buzSetLevel(200));
+            console->printf("vol: %d\n", buzSetLevel(200));
         }else{
-            console->print("vol: %d\n", buzSetLevel(level));
+            console->printf("vol: %d\n", buzSetLevel(level));
         }
         return CMD_OK;
     }

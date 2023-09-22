@@ -34,19 +34,19 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
     switch(view){
         case BITSTREAM_RAW:
             for(uint32_t i = 0; i < len; i++){            
-                console->print(" %d%c", bitstream[i], (i%2) == 0 ? ',' : '\n');
+                console->printf(" %d%c", bitstream[i], (i%2) == 0 ? ',' : '\n');
             }
-            console->print("\n");
+            console->printchar('\n');
             break;
 
         case BITSTREAM_WIDTH:
             console->print("Pulses duration in us :");
         case BITSTREAM_JSON:
-            console->print("[");
+            console->printchar('[');
             for(uint32_t i = 0; i < len - 1; i++){
                 int16_t diff = bitstream[i + 1] - bitstream[i];
                 diff = (diff < 0) ? -diff : diff;
-                console->print("%d%s", diff, (i < len - 2) ? ", " : "]\r\n");
+                console->printf("%d%s", diff, (i < len - 2) ? ", " : "]\r\n");
             }
             break;
 
@@ -62,13 +62,13 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
                 }
                 // TODO: Frames are separated by pulse larger than 10ms,
                 // this can be used to identify frames
-                console->print("Using bit time = %dus\n", bittime);
+                console->printf("Using bit time = %dus\n", bittime);
             }
 
             uint16_t bit_count = 0;
             for(uint32_t i = 0; i < len - 1; i++){
                 if(i%64 == 0){
-                    console->putChar('\n');
+                    console->printchar('\n');
                 }
 
                 int16_t diff = bitstream[i + 1] - bitstream[i];
@@ -77,7 +77,7 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
                 }
 
                 if(diff < bittime){
-                    console->print("\nError: bit time > pulse width\n");
+                    console->println("\nError: bit time > pulse width");
                     return;
                 }
 
@@ -87,10 +87,10 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
                 bit_count += bits;
                 
                 while(bits--){
-                    console->print("%d", idle_state);
+                    console->printf("%d", idle_state);
                 }                
             }
-            console->print("\n%d bits decoded\n", bit_count);     
+            console->printf("\n%d bits decoded\n", bit_count);     
             break;
         }
 
@@ -102,7 +102,7 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
                 diff /= 10;
                 
                 while(diff){
-                    console->print("%d\r\n", i%2 * 100);
+                    console->printf("%d\r\n", i%2 * 100);
                     diff--;
                 }
             }
@@ -115,16 +115,15 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
 }
 
 void CmdKeyFob::help(void){
-    console->putString("usage: keyfob <capture|decode> <time|bit time> [raw|width|single]\n");
-    console->putString("options:");
-    console->putString("  capture <time> [single], start capture with a maximum time [ms]");
-    console->putString("      [single]      - do single capture");
-    console->putString("  decode <bit time> [format], decode a capture");
-    console->putString("      <bit time>    bit time [us] for decode, 0 find and use smallest pulse width");
-    console->putString("      [format]      - not specified use bit time for decode");
-    console->putString("                    - \"raw\", capture value from timer");
-    console->putString("                    - \"width\", pulse width [us]");
-    console->putChar('\n');
+    console->println("usage: keyfob <capture|decode> <time|bit time> [raw|width|single]\n");
+    console->println("options:");
+    console->println("  capture <time> [single], start capture with a maximum time [ms]");
+    console->println("      [single]      - do single capture");
+    console->println("  decode <bit time> [format], decode a capture");
+    console->println("      <bit time>    bit time [us] for decode, 0 find and use smallest pulse width");
+    console->println("      [format]      - not specified use bit time for decode");
+    console->println("                    - \"raw\", capture value from timer");
+    console->println("                    - \"width\", pulse width [us]\n");
 }
 
 char CmdKeyFob::execute(int argc, char **argv){

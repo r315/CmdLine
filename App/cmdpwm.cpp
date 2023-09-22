@@ -3,14 +3,14 @@
 
 
 void CmdPwm::help(void){
-    console->putString("Usage: pwm <option> [params] \n");    
-    console->putString("options:");
-    console->putString("  start <period>,    Start pwm with period [us]");
-    console->putString("  period <period>,   Change pwm frequency through period [us]");
-    console->putString("  set <ch> <duty>,   Set duty(0 -100) for channel (1 - 6)");
-    console->putString("  enable <ch>,       Enable channel (1 - 6)");
-    console->putString("  disable <ch>,      Disable channel (1 - 6)");
-    console->putString("  pol <ch> <pol>,    Polarity (1 - 0)\n");
+    console->println("Usage: pwm <option> [params] \n");    
+    console->println("options:");
+    console->println("  start <period>,    Start pwm with period [us]");
+    console->println("  period <period>,   Change pwm frequency through period [us]");
+    console->println("  set <ch> <duty>,   Set duty(0 -100) for channel (1 - 6)");
+    console->println("  enable <ch>,       Enable channel (1 - 6)");
+    console->println("  disable <ch>,      Disable channel (1 - 6)");
+    console->println("  pol <ch> <pol>,    Polarity (1 - 0)\n");
 }
 
 void CmdPwm::start(uint32_t period){
@@ -80,7 +80,7 @@ char CmdPwm::execute(int argc, char **argv){
     if(xstrcmp("get", (const char*)argv[1]) == 0){
         if(ia2i(argv[2], &val1)){            
             val2 = PWM_Get(val1);
-            console->print("PWM%d = %d\n", val1, val2);
+            console->printf("PWM%d = %d\n", val1, val2);
             return CMD_OK;            
         }
     }

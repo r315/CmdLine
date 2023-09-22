@@ -104,7 +104,7 @@ char CmdAwg::execute(int argc, char **argv){
     }
     
     if(xstrcmp("pclk", (const char*)argv[1]) == 0){
-        console->print("PCLK: %d\n", CLOCK_GetPCLK(PCLK_DAC));
+        console->printf("PCLK: %d\n", CLOCK_GetPCLK(PCLK_DAC));
     }
 
     if(xstrcmp("rate", (const char*)argv[1]) == 0){

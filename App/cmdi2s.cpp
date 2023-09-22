@@ -5,14 +5,14 @@ static i2sbus_t i2s;
 
 
 void CmdI2s::help(void){
-    console->putString("Usage: i2s <option> [params] \n");    
-    console->putString("options:");
-    console->putString("  init <sample rate> <bits sample>,\n"
+    console->println("Usage: i2s <option> [params] \n");    
+    console->println("options:");
+    console->println("  init <sample rate> <bits sample>,\n"
                        "                    sample rate: 16000 to 96000\n"
                        "                    bits sample: 8, 16 1n 32");
-    console->putString("  start,     Start FS and data output");
-    console->putString("  stop,      Stop FS and data output");
-    console->putChar('\n');
+    console->println("  start,     Start FS and data output");
+    console->println("  stop,      Stop FS and data output");
+    console->printchar('\n');
 }
 
 char CmdI2s::execute(int argc, char **argv){
@@ -71,7 +71,7 @@ char CmdI2s::execute(int argc, char **argv){
         /* Validate TX and RX buffer */
         for (int i=1; i< 512; i++ ){
 	        if ( i2s.rxbuffer[i] != i2s.txbuffer[i-1] ){
-	            console->print("Audio loopback fail at index %d\n", i);
+	            console->printf("Audio loopback fail at index %d\n", i);
                 break;
 	        }
         }        

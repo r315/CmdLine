@@ -16,10 +16,10 @@ void CmdLmcshd::init(void *params)
 
 void CmdLmcshd::help(void)
 {
-    console->putString("usage: lmcshd <option>\n");
-    console->putString("LED Matrix Control Software HD");
-    console->putString("Options:");
-    console->putString("\tstart - start LMCSHD protocol");
+    console->println("usage: lmcshd <option>\n");
+    console->println("LED Matrix Control Software HD");
+    console->println("Options:");
+    console->println("\tstart - start LMCSHD protocol");
 }
 
 char CmdLmcshd::execute(int argc, char **argv)
@@ -37,7 +37,7 @@ char CmdLmcshd::execute(int argc, char **argv)
             //update = false;
             switch(c){
                 case 0x05:
-                    console->print("%d\r\n%d\r\n", m_matrix_w, m_matrix_h);
+                    console->printf("%d\r\n%d\r\n", m_matrix_w, m_matrix_h);
                     break;
 
                  case 'A': //24bpp frame data

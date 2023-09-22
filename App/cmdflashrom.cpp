@@ -66,7 +66,7 @@ char CmdFlashRom::execute(int argc, char **argv){
 
                 for(idx = 0; idx < xfer_count; idx++){
                     //BOARD_STDIO->xputchar(buf[idx]);  
-                    console->putChar(buf[idx]);
+                    console->printchar(buf[idx]);
                 }
                 
                 state = IDLE;

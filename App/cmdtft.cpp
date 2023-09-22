@@ -141,18 +141,18 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
  * Public API
  * */
 void CmdTft::help(void){
-    console->putString("Usage: tft <option> [params] \n");    
-    console->putString("options:");
-    console->putString("  init <orientation>,  orientation 0-3");
-    console->putString("  clear <color>,       Fill display with color");
-    console->putString("  rc [scroll],         Random colors");
-    console->putString("  scroll [lines],      Scroll screen");
-    console->putString("  hsv <s> <v>,         HSV color");
-    console->putString("  block,               Color squares");
-    console->putString("  scroll,              Color scroll");
-    console->putString("  demo,                Demo sequence");
-    console->putString("  cmd <reg> <param>    Send command");
-    console->putChar('\n');
+    console->println("Usage: tft <option> [params] \n");    
+    console->println("options:");
+    console->println("  init <orientation>,  orientation 0-3");
+    console->println("  clear <color>,       Fill display with color");
+    console->println("  rc [scroll],         Random colors");
+    console->println("  scroll [lines],      Scroll screen");
+    console->println("  hsv <s> <v>,         HSV color");
+    console->println("  block,               Color squares");
+    console->println("  scroll,              Color scroll");
+    console->println("  demo,                Demo sequence");
+    console->println("  cmd <reg> <param>    Send command");
+    console->printchar('\n');
 }
 
 char CmdTft::execute(int argc, char **argv){
@@ -203,7 +203,7 @@ char CmdTft::execute(int argc, char **argv){
             uint32_t ms = GetTick();
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
             ms = GetTick() - ms;
-            console->print("Time: %dms\n", ms);
+            console->printf("Time: %dms\n", ms);
             return CMD_OK;
         }
     }
@@ -226,7 +226,7 @@ char CmdTft::execute(int argc, char **argv){
         }else{
             Scroll_Setup();
             do{           
-                console->print("\r%d  ", scroll);
+                console->printf("\r%d  ", scroll);
                 Scroll_Loop();
                 console->getCharNonBlocking(&c);
                 DelayMs(16);
@@ -364,7 +364,7 @@ void CmdTft::fps(void){
     static uint16_t fps = 0;
  
     if(GetTick() > expire){
-        console->print("\rfps %d ", fps);
+        console->printf("\rfps %d ", fps);
         fps = 0;
         expire = GetTick() + 1000;
         LED1_TOGGLE;
