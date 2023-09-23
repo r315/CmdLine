@@ -75,6 +75,11 @@ static inline uint32_t GetTick(){ return HAL_GetTick(); }
 
 #define BOARD_LCD_Init()    LCD_Init(BOARD_SPIDEV)
 
+#define I2C_MAX_ITF         3
+#define I2C_IF0 	        0
+#define I2C_IF1 	        1
+#define I2C_IF2 	        2
+
 /**
  * SPI Header
  * */

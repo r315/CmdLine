@@ -88,6 +88,7 @@ $(DRIVERS_PATH)/pwm/pwm_stm32l4xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
 $(DRIVERS_PATH)/spi/spi_stm32l4xx.c \
+$(DRIVERS_PATH)/i2c/i2c_stm32l4xx.c \
 $(DRIVERS_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
 $(LIB_PATH)/src/liblcd.c \
@@ -108,6 +109,7 @@ $(APP_DIR)/cmdpwm.cpp \
 $(APP_DIR)/cmdtft.cpp \
 $(APP_DIR)/cmdlmcshd.cpp \
 $(APP_DIR)/cmdbenchmark.cpp \
+$(APP_DIR)/cmdi2c.cpp \
 #$(APP_DIR)/agif/AnimatedGIF.cpp \
 
 # ASM sources

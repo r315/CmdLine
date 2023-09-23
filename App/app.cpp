@@ -52,7 +52,6 @@ static ConsoleCommand *app_commands[] = {
     new CmdSbus(),
     new CmdSd(),
 	new CmdGpio(),
-	new CmdI2c(),
 	new CmdI2s(),
 	new CmdMSensor(),
 	new CmdPlayer(),
@@ -65,6 +64,7 @@ static ConsoleCommand *app_commands[] = {
 	new CmdFlashRom(),
 	new CmdEncoder(),
 #elif defined (BOARD_NUCLEO_L412KB)
+    new CmdI2c(),
 	new CmdBuz(),
 	new CmdKeyFob(),
     new CmdLmcshd(),
@@ -91,7 +91,8 @@ extern "C" void App(void)
     }
 
 	console.cls();
-	console.printf("Freq: %dMHz\n", SystemCoreClock / 1000000);
+
+	console.printf("CPU Clock: %dMHz\n", SystemCoreClock / 1000000);
 
 #if defined (BOARD_NUCLEO_L412KB)
 	LED_OFF;
