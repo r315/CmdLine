@@ -7,28 +7,25 @@
 #define HANDLER_NAME(a) hs##a
 
 #define UART_FUNCTIONS(N) \
-static inline void UART_FUNCTION_NAME(N, Init)(void){ UART_Init(&HANDLER_NAME(N).port); } \
-static inline void UART_FUNCTION_NAME(N, PutChar)(char c){ UART_PutChar(&HANDLER_NAME(N).port, c); } \
-static inline int UART_FUNCTION_NAME(N, Puts)(const char* str){ return UART_Puts(&HANDLER_NAME(N).port, str); } \
-static inline char UART_FUNCTION_NAME(N, GetChar)(void){ return UART_GetChar(&HANDLER_NAME(N).port); } \
-static inline int UART_FUNCTION_NAME(N, GetCharNonBlocking)(char *c){ return UART_GetCharNonBlocking(&HANDLER_NAME(N).port, c); } \
-static inline int UART_FUNCTION_NAME(N, Kbhit)(void){ return UART_Kbhit(&HANDLER_NAME(N).port); }
-
+static inline int UART_FUNCTION_NAME(N, Available)(void){ return UART_Available(&HANDLER_NAME(N).port); } \
+static inline int UART_FUNCTION_NAME(N, read)(void){ uint8_t c; UART_Read(&HANDLER_NAME(N).port, &c, 1); return c; } \
+static inline int UART_FUNCTION_NAME(N, readBytes)(uint8_t *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, buf, len); } \
+static inline int UART_FUNCTION_NAME(N, write)(uint8_t c){ return UART_Write(&HANDLER_NAME(N).port, &c, 1);  } \
+static inline int UART_FUNCTION_NAME(N, writeBytes)(const uint8_t *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, buf, len);  }
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
-I->out.init = UART_FUNCTION_NAME(N, Init); \
-I->out.xputchar = UART_FUNCTION_NAME(N, PutChar); \
-I->out.xputs = UART_FUNCTION_NAME(N, Puts); \
-I->out.xgetchar = UART_FUNCTION_NAME(N, GetChar); \
-I->out.getCharNonBlocking = UART_FUNCTION_NAME(N, GetCharNonBlocking); \
-I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit)
+I->serial.available = UART_FUNCTION_NAME(N, Available); \
+I->serial.read = UART_FUNCTION_NAME(N, read); \
+I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
+I->serial.write = UART_FUNCTION_NAME(N, write); \
+I->serial.writeBytes = UART_FUNCTION_NAME(N, writeBytes);
 
 #define BOARD_SERIAL0                   (&hs0.out)
 #define BOARD_SERIAL1                   (&hs1.out)
 #define BOARD_SERIAL3                   (&hs1.out)
 #define BOARD_SERIAL4                   (&hs4.out)
 
-static serialhandler_t hs0, hs1, hs3, hs4;
+static serialport_t hs0, hs1, hs3, hs4;
 
 /**
  * Uart0/1/3
@@ -40,7 +37,7 @@ UART_FUNCTIONS(3)
 /**
  * virtual com port
  * */
-static inline void SERIAL4_Init(void){
+static void SERIAL4_Init(void){
     serialbus_t *serial = &hs4.port;
     
 	fifo_init(&serial->txfifo);
@@ -53,38 +50,45 @@ static inline void SERIAL4_Init(void){
 	fifo_flush(&serial->rxfifo);
 }
 
-static inline void SERIAL4_PutChar(char c){
+static int SERIAL4_Write(uint8_t c){
     serialbus_t *serial = &hs4.port;
     while(!fifo_put(&serial->txfifo, c));
-}
-
-static inline int SERIAL4_Puts(const char* str){
-    int len = 0;
-    serialbus_t *serial = &hs4.port;
-    while(*str){
-        while(!fifo_put(&serial->txfifo, *str));
-        str++;
-        len++;
-    }
-    
-    while(!fifo_put(&serial->txfifo, '\n'));
-    
-    return len + 1;
-}
-
-static inline char SERIAL4_GetChar(void){
-    serialbus_t *serial = &hs4.port;
-    char c;
-    while(!fifo_get(&serial->rxfifo, (uint8_t*)&c));
     return c;
 }
 
-static inline int SERIAL4_GetCharNonBlocking(char *c){
+static int SERIAL4_WriteBytes(const uint8_t *str, int len){
     serialbus_t *serial = &hs4.port;
-    return fifo_get(&serial->rxfifo, (uint8_t*)c);
+    int count = len;
+
+    while(count--){
+        while(!fifo_put(&serial->txfifo, *str));
+        str++;
+    }
+    
+    return len;
 }
 
-static inline int SERIAL4_Kbhit(void){
+static int SERIAL4_Read(void){
+    serialbus_t *serial = &hs4.port;
+    uint8_t c;
+    while(!fifo_get(&serial->rxfifo, &c));
+    return c;
+}
+
+static int SERIAL4_ReadBytes(uint8_t *dst, int len)
+{
+    serialbus_t *serial = &hs4.port;
+    int count = len;
+
+    while(count--) {
+        while(!fifo_get(&serial->rxfifo, dst)); 
+        dst++; 
+    }
+
+    return len;
+}
+
+static int SERIAL4_Available(void){
     serialbus_t *serial = &hs4.port;
     return fifo_avail(&serial->rxfifo);
 }
@@ -92,14 +96,14 @@ static inline int SERIAL4_Kbhit(void){
 /**
  * API
  * */
-void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
+void SERIAL_Config(serialport_t *hserial, uint32_t config){
 
     if(hserial == NULL){
         return ;
     }
 
     switch(SERIAL_CONFIG_GET_NUM(config)){
-        case SERIAL0: // Conflit with LCD on BB
+        case SERIAL0: // Conflicts with LCD on BB
             ASSIGN_UART_FUNCTIONS(hserial, 0);
             hserial->port.bus = UART_BUS0;
             break;
@@ -117,14 +121,13 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
             hserial->port.bus = UART_BUS3;
             break;
 
-        case SERIAL4:
-            hserial->out.init = SERIAL4_Init;
-            hserial->out.xputchar = SERIAL4_PutChar;
-            hserial->out.xputs = SERIAL4_Puts;
-            hserial->out.xgetchar = SERIAL4_GetChar;
-            hserial->out.getCharNonBlocking = SERIAL4_GetCharNonBlocking;
-            hserial->out.kbhit = SERIAL4_Kbhit;
-            break;
+        case SERIAL4:            
+            hserial->serial.available = SERIAL4_Available;
+            hserial->serial.write = SERIAL4_Write;
+            hserial->serial.writeBytes = SERIAL4_WriteBytes;
+            hserial->serial.read = SERIAL4_Read;
+            hserial->serial.readBytes = SERIAL4_ReadBytes;
+            SERIAL4_Init();          
 
         default:
             return;
@@ -137,7 +140,7 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
     port->stopbit = SERIAL_CONFIG_GET_STOP(config);
     port->datalength = SERIAL_CONFIG_GET_DATA(config);
     
-    hserial->out.init();
+    UART_Init(&hserial->port);
 }
 
 void SERIAL_Init(void){
@@ -147,8 +150,18 @@ void SERIAL_Init(void){
     SERIAL_Config(&hs4, SERIAL4);
 }
 
-stdout_t *SERIAL_GetStdout(int32_t nr){
-    return &hs1.out;
+serialops_t *SERIAL_GetSerialOps(int32_t nr){
+   
+    switch(nr){
+        case SERIAL1:
+            return &hs1.serial;
+        case SERIAL3:
+            return &hs3.serial; 
+        default:
+            break;    
+    }
+    
+    return &hs4.serial; 
 }
 
 serialbus_t *SERIAL_GetSerialBus(int32_t nr){

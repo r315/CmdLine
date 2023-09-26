@@ -32,7 +32,7 @@ typedef enum
 void stk500_setup(void);
 stk500_error_t stk500_process(unsigned char*, unsigned int, unsigned int*);
 void stk500_timeout(unsigned char*, unsigned int, unsigned int*);
-void stk500_ServiceInit(StdOut *sp);
+void stk500_ServiceInit(stdout_t *sp);
 void stk500_Service(void);
 void lpcBus_Service(void);
 

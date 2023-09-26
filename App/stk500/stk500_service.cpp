@@ -32,7 +32,7 @@ typedef struct _Service{
     unsigned char buf[STK500_BUF_MAX_SIZE];
 }Service;
 
-static StdOut *serialport;
+static stdout_t *serialport;
 static Service stkService;
 
 //------------------------------------------------------------
@@ -119,7 +119,7 @@ uint8_t spi_write_read(uint8_t *buf){
 return buf[3];
 }
 
-void stk500_ServiceInit(StdOut *sp){
+void stk500_ServiceInit(stdout_t *sp){
     serialport = sp;    
     stkService.state = STK500_ERROR_SUCCESS;
     stkService.isize = 0;
@@ -129,15 +129,15 @@ void stk500_ServiceInit(StdOut *sp){
 
 void serial_write(uint8_t * s, uint32_t len){
     while(len--)
-        serialport->xputchar(*(s++));
+        serialport->writechar(*(s++));
 }
 
 int read_uint8(uint8_t *c, uint8_t do_timeout){
 
 #if !NO_SERVICE
-    if(!serialport->kbhit())
+    if(!serialport->available())
         return -1;
-    *c = (uint8_t)serialport->xgetchar();    
+    *c = (uint8_t)serialport->readchar();    
 #else
 uint32_t ticks;
 int rc;

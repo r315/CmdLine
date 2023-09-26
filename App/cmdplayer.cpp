@@ -135,7 +135,7 @@ void CmdPlayer::rawFile(){
             // Read samples from file
             pf_read(ptr, count, (UINT*)&br);                   
         }
-    }while(!console->getCharNonBlocking(&c) && s_aud_len); 
+    }while(!console->getchNonBlocking(&c) && s_aud_len); 
 }
 
 /**
@@ -169,7 +169,7 @@ void CmdPlayer::mp3File(){
             uint32_t count = (s_aud_len < 512) ? s_aud_len * 2 : 1024;
             pf_read(ptr, count, (UINT*)&br);                   
         }
-    }while(!console->getCharNonBlocking(&c) && s_aud_len); 
+    }while(!console->getchNonBlocking(&c) && s_aud_len); 
 }
 
 char CmdPlayer::execute(int argc, char **argv){

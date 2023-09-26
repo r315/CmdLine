@@ -2,7 +2,7 @@
 #########################################################
 # project files
 #########################################################
-TARGET 		=bb-console
+TARGET 		=console-blueboard
 TARGET_PATH =$(CURDIR)
 BUILD_DIR 	:=build
 EXEC		=$(BUILD_DIR)/$(TARGET)
@@ -19,6 +19,7 @@ $(APP_DIR)/inc \
 $(APP_DIR)/minimp3 \
 $(APP_DIR)/agif \
 $(APP_DIR)/stk500 \
+$(APP_DIR)/si5351 \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(DRIVERS_PATH)/inc \

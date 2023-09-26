@@ -158,7 +158,7 @@ char CmdMSensor::execute(int argc, char **argv){
         console->printchar('\n');
         #endif
 
-        while(console->getCharNonBlocking((char*)&data) == 0){
+        while(console->getchNonBlocking((char*)&data) == 0){
             
             if(timeout){
                 #if 1

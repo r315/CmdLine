@@ -4,11 +4,11 @@
 
 
 void startRanging(void){
-	SERIAL_GetStdout(SERIAL0)->xputchar(START_RANGING);
+	SERIAL_GetSerialOps(SERIAL0)->write(START_RANGING);
 }
 
 uint8_t readFrame(void){
-	return SERIAL_GetStdout(SERIAL1)->kbhit();
+	return SERIAL_GetSerialOps(SERIAL1)->available();
 }
 
 uint8_t checkSum(uint8_t *buf){
@@ -39,7 +39,7 @@ uint8_t m = 0;
 	//BOARD_SERIAL1.init();
 
 
-	while(!console->kbhit()){
+	while(!console->available()){
 
 		if(m == 0){
 			startRanging();

@@ -11,7 +11,7 @@ extern "C" {
 
 class CmdLmcshd : public ConsoleCommand{
 	Console *console;
-    serial_t *m_serial;
+    serialops_t *m_serial;
     uint8_t m_matrix_w;
     uint8_t m_matrix_h;
     uint8_t *m_matrix_buffer;

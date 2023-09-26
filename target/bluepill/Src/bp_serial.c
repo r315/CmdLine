@@ -6,24 +6,20 @@
 #define HANDLER_NAME(a) BOARD_SERIAL##a##_HANDLER
 
 #define UART_FUNCTIONS(N) \
-static inline void UART_FUNCTION_NAME(N, Init)(void){ UART_Init(&HANDLER_NAME(N).port); } \
-static inline void UART_FUNCTION_NAME(N, PutChar)(char c){ UART_PutChar(&HANDLER_NAME(N).port, c); } \
-static inline int UART_FUNCTION_NAME(N, Puts)(const char* str){ return UART_Puts(&HANDLER_NAME(N).port, str); } \
-static inline char UART_FUNCTION_NAME(N, GetChar)(void){ return UART_GetChar(&HANDLER_NAME(N).port); } \
-static inline int UART_FUNCTION_NAME(N, GetCharNonBlocking)(char *c){ return UART_GetCharNonBlocking(&HANDLER_NAME(N).port, c); } \
-static inline int UART_FUNCTION_NAME(N, Kbhit)(void){ return UART_Kbhit(&HANDLER_NAME(N).port); }
-
+static inline int UART_FUNCTION_NAME(N, Available)(void){ return UART_Available(&HANDLER_NAME(N).port); } \
+static inline int UART_FUNCTION_NAME(N, read)(void){ uint8_t c; UART_Read(&HANDLER_NAME(N).port, &c, 1); return c; } \
+static inline int UART_FUNCTION_NAME(N, readBytes)(uint8_t *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, buf, len); } \
+static inline int UART_FUNCTION_NAME(N, write)(uint8_t c){ return UART_Write(&HANDLER_NAME(N).port, &c, 1);  } \
+static inline int UART_FUNCTION_NAME(N, writeBytes)(const uint8_t *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, buf, len);  }
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
-I->out.init = UART_FUNCTION_NAME(N, Init); \
-I->out.xputchar = UART_FUNCTION_NAME(N, PutChar); \
-I->out.xputs = UART_FUNCTION_NAME(N, Puts); \
-I->out.xgetchar = UART_FUNCTION_NAME(N, GetChar); \
-I->out.getCharNonBlocking = UART_FUNCTION_NAME(N, GetCharNonBlocking); \
-I->out.kbhit = UART_FUNCTION_NAME(N, Kbhit)
+I->serial.available = UART_FUNCTION_NAME(N, Available); \
+I->serial.read = UART_FUNCTION_NAME(N, read); \
+I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
+I->serial.write = UART_FUNCTION_NAME(N, write); \
+I->serial.writeBytes = UART_FUNCTION_NAME(N, writeBytes);
 
-
-serialhandler_t BOARD_SERIAL_HANDLERS;
+serialport_t BOARD_SERIAL_HANDLERS;
 
 /**
  * Uart0/1/3
@@ -33,7 +29,7 @@ UART_FUNCTIONS(0)
 /**
  * virtual com port
  * */
-static inline void SERIAL4_Init(void){
+static void SERIAL4_Init(void){
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
     
 	fifo_init(&serial->txfifo);
@@ -42,44 +38,45 @@ static inline void SERIAL4_Init(void){
     DelayMs(1500);
     fifo_flush(&serial->txfifo);
 	fifo_flush(&serial->rxfifo);
+
+    USBSERIAL_Init(&serial->txfifo, &serial->rxfifo);
 }
 
-static int SERIAL4_Write(uint8_t *data, uint16_t len){
+static int SERIAL4_WriteBytes(const uint8_t *data, int len){
     uint32_t retries = 1000;
 	while(retries--){
-		if(	CDC_Transmit_FS(data, len) == USBD_OK)
+		if(	CDC_Transmit_FS((uint8_t *)data, len) == USBD_OK)
 			return len;
 	}
     return 0;
 }
 
-static inline void SERIAL4_PutChar(char c){
-    SERIAL4_Write((uint8_t*)&c, 1);
+static int SERIAL4_Write(uint8_t c){
+    SERIAL4_WriteBytes(&c, 1);
+    return c;
 }
 
-static inline int SERIAL4_Puts(const char* str){
-    uint16_t len = 0;
-	
-	while( *((const char*)(str + len)) != '\0'){
-		len++;	
-	}
-
-	return SERIAL4_Write((uint8_t*)str, len);
-}
-
-static inline char SERIAL4_GetChar(void){
+static int SERIAL4_Read(void){
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
     char c;
     while(!fifo_get(&serial->rxfifo, (uint8_t*)&c));
     return c;
 }
 
-static inline int SERIAL4_GetCharNonBlocking(char *c){
+static int SERIAL4_ReadBytes(uint8_t *dst, int len)
+{
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
-    return fifo_get(&serial->rxfifo, (uint8_t*)c);
+    int count = len;
+
+    while(count--) {
+        while(!fifo_get(&serial->rxfifo, dst)); 
+        dst++; 
+    }
+
+    return len;
 }
 
-static inline int SERIAL4_Kbhit(void){
+static inline int SERIAL4_Available(void){
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
     return fifo_avail(&serial->rxfifo);
 }
@@ -87,7 +84,7 @@ static inline int SERIAL4_Kbhit(void){
 /**
  * API
  * */
-void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
+void SERIAL_Config(serialport_t *hserial, uint32_t config){
 
     if(hserial == NULL){
         return ;
@@ -100,13 +97,12 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
             break;
 
         case SERIAL4:
-            hserial->out.init = SERIAL4_Init;
-            hserial->out.xputchar = SERIAL4_PutChar;
-            hserial->out.xputs = SERIAL4_Puts;
-            hserial->out.xgetchar = SERIAL4_GetChar;
-            hserial->out.getCharNonBlocking = SERIAL4_GetCharNonBlocking;
-            hserial->out.kbhit = SERIAL4_Kbhit;
-            break;
+            hserial->serial.write = SERIAL4_Write;
+            hserial->serial.writeBytes = SERIAL4_WriteBytes;
+            hserial->serial.read = SERIAL4_Read;
+            hserial->serial.readBytes = SERIAL4_ReadBytes;
+            hserial->serial.available = SERIAL4_Available;
+            SERIAL4_Init();
 
         default:
             return;
@@ -119,7 +115,7 @@ void SERIAL_Config(serialhandler_t *hserial, uint32_t config){
     port->stopbit = SERIAL_CONFIG_GET_STOP(config);
     port->datalength = SERIAL_CONFIG_GET_DATA(config);
     
-    hserial->out.init();
+    UART_Init(&hserial->port);
 }
 
 
@@ -129,7 +125,7 @@ void SERIAL_Init(void)
     SERIAL_Config(&BOARD_SERIAL4_HANDLER, SERIAL4);
 }
 
-stdout_t *SERIAL_GetStdout(int32_t nr)
+serialops_t *SERIAL_GetSerialOps(int32_t nr)
 {
     switch(nr){
         case SERIAL0:

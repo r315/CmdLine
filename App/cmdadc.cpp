@@ -51,7 +51,7 @@ char CmdAdc::execute(int argc, char **argv){
 #if 0
     while(quit == 0 ){
         char c;
-        if(console->getCharNonBlocking(&c)){
+        if(console->getchNonBlocking(&c)){
             if(c == 0x1B){
                 quit = 1;
             }

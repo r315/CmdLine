@@ -26,6 +26,7 @@ $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
 $(APP_DIR)/inc \
+$(APP_DIR)/si5351 \
 
 AS_INCLUDES =\
 

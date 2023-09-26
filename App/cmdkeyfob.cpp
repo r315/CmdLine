@@ -171,8 +171,8 @@ char CmdKeyFob::execute(int argc, char **argv){
                     if(single_cap){
                         break;
                     }
-                }
-                console->getCharNonBlocking(&c);
+                }                
+                console->getchNonBlocking(&c);
             }while(c != '\n');
             return CMD_OK;
         }   

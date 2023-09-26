@@ -29,6 +29,7 @@
 #include "cmdgpio.h"
 #include "cmdmsensor.h"
 #include "cmdplayer.h"
+#include "cmdsi5351.h"
 
 #if defined (BOARD_BLUEBOARD)
 #include "cmdsd.h"
@@ -75,7 +76,8 @@ static ConsoleCommand *app_commands[] = {
 extern "C" void App(void)
 {   
     Console console;
-    stdout_t *userio = SERIAL_GetStdout(-1);
+    // stdout_t and serialops_t must be compatible for this to work
+    stdout_t *userio = (stdout_t*)SERIAL_GetSerialOps(-1);
 
 #if defined (BOARD_BLUEBOARD)
     console.init(userio, "Blueboard>");    

@@ -159,12 +159,12 @@ extern spibus_t BOARD_SPIDEV_HANDLER;
  * UART
  * */
 #define BOARD_SERIAL_HANDLERS   BOARD_SERIAL0_HANDLER, BOARD_SERIAL4_HANDLER
-#define BOARD_SERIAL0           (&BOARD_SERIAL0_HANDLER.out)
+#define BOARD_SERIAL0           (&BOARD_SERIAL0_HANDLER.serial)
 #define BOARD_SERIAL1           BOARD_SERIAL0
-#define BOARD_SERIAL4           (&BOARD_SERIAL4_HANDLER.out)
+#define BOARD_SERIAL4           (&BOARD_SERIAL4_HANDLER.serial)
 #define BOARD_STDIO             BOARD_SERIAL4
 
-extern serialhandler_t BOARD_SERIAL_HANDLERS;
+extern serialport_t BOARD_SERIAL_HANDLERS;
 
 /**
  * TFT stuff

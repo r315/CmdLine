@@ -58,7 +58,8 @@ $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 $(LIB_PATH)/inc \
 $(DRIVERS_PATH)/inc \
 $(APP_DIR)/inc \
-$(APP_DIR)/agif
+$(APP_DIR)/agif \
+$(APP_DIR)/si5351
 
 # C sources
 C_SOURCES =  \

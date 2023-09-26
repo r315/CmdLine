@@ -228,7 +228,7 @@ char CmdTft::execute(int argc, char **argv){
             do{           
                 console->printf("\r%d  ", scroll);
                 Scroll_Loop();
-                console->getCharNonBlocking(&c);
+                console->getchNonBlocking(&c);
                 DelayMs(16);
             }while(c != '\n' && c != '\r');
         }
@@ -257,7 +257,7 @@ char CmdTft::execute(int argc, char **argv){
 
             f--;
             c = '\0';
-            if(console->getCharNonBlocking(&c)){
+            if(console->getchNonBlocking(&c)){
                 seed = RNG_Get() % 256;
             }
         }while(c != '\n' && c != '\r');
@@ -325,7 +325,7 @@ char CmdTft::execute(int argc, char **argv){
                 DelayMs(16 - time);
             }
             
-            if(console->getCharNonBlocking(&c)){
+            if(console->getchNonBlocking(&c)){
                 limit_fps ^= 1;
             }
 

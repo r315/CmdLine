@@ -117,7 +117,7 @@ char CmdEncoder::execute(int argc, char **argv){
             console->printf("\r%d %d ", raw, val);
             drawEncoder(val);
             DelayMs(20);
-            console->getCharNonBlocking(&c);
+            console->getchNonBlocking(&c);
         }while(c != '\n');
     }
 

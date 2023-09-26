@@ -23,7 +23,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-#include "board.h"
+#include "fifo.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -99,7 +99,7 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
+static fifo_t *usb_txfifo, *usb_rxfifo;
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -147,6 +147,11 @@ USBD_CDC_ItfTypeDef USBD_Interface_fops_FS =
   CDC_Receive_FS
 };
 
+void USBSERIAL_Init(fifo_t *tx, fifo_t *rx)
+{
+    usb_rxfifo = rx;
+    usb_txfifo = tx;
+}
 /* Private functions ---------------------------------------------------------*/
 /**
   * @brief  Initializes the CDC media low layer over the FS USB IP
@@ -268,7 +273,7 @@ static int8_t CDC_Receive_FS(uint8_t* Buf, uint32_t *Len)
   USBD_CDC_ReceivePacket(&hUsbDeviceFS);
   
   while(size--){
-    fifo_put(&BOARD_SERIAL4_HANDLER.port.rxfifo, *Buf++);
+    fifo_put(usb_rxfifo, *Buf++);
   }
 
   return (USBD_OK);

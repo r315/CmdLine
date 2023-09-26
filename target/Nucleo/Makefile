@@ -141,7 +141,8 @@ STM32L412xx \
 USE_HAL_DRIVER \
 'VERSION_STRING="$(VERSION)"' \
 _FEATURE_GIF \
-MSC_CLOCK 
+MSC_CLOCK \
+FIFO_SIZE=512
 
 #######################################
 # binaries
