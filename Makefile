@@ -39,4 +39,17 @@ nc-program:
 at-program:
 	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR) program
 
+
+#make command CMDNAME=<name>
+CMDTEMPLATEHEADER =CmdTemplateHeader.in
+CMDTEMPLATEMODULE =CmdTemplateModule.in
+L1 =en
+SHELL := /bin/bash
+command:	
+	@cat  $(CMDTEMPLATEHEADER) > App/inc/cmd$(CMDNAME).h
+	@sed -i -- "s/%NAME%/$(CMDNAME)/g" App/inc/cmd$(CMDNAME).h
+	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" App/inc/cmd$(CMDNAME).h
+	@cat  $(CMDTEMPLATEMODULE) > App/cmd$(CMDNAME).cpp
+	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" App/cmd$(CMDNAME).cpp
+
 .PHONY:

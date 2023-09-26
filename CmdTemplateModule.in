@@ -1,0 +1,20 @@
+#include "cmd%CLASSNAME%.h"
+
+
+Cmd%CLASSNAME%::init(void *params)
+{
+
+}
+
+void Cmd%CLASSNAME%::help(void)
+{
+
+}
+
+char Cmd%CLASSNAME%::execute(int argc, char **argv)
+{
+
+}
+
+
+

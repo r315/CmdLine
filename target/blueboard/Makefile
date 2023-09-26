@@ -190,15 +190,6 @@ $(CHECKSUM):
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
-
-#make command CMDNAME=<name>
-TEMPLATEIN =cmdTemplate.in
-L1 =en
-SHELL := /bin/bash
-command:	
-	@cat  $(TEMPLATEIN) > inc/cmd$(CMDNAME).h
-	@sed -i -- "s/%NAME%/$(CMDNAME)/g" inc/cmd$(CMDNAME).h
-	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" inc/cmd$(CMDNAME).h
 	
 #########################################################
 # 
