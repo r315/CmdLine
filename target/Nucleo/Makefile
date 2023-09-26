@@ -49,6 +49,7 @@ $(LIBEMB_PATH)/drv/inc \
 $(APP_DIR)/inc \
 $(APP_DIR)/agif \
 $(APP_DIR)/dhrystone \
+$(APP_DIR)/si5351 \
 ######################################
 # source
 ######################################
@@ -110,6 +111,8 @@ $(APP_DIR)/cmdtft.cpp \
 $(APP_DIR)/cmdlmcshd.cpp \
 $(APP_DIR)/cmdbenchmark.cpp \
 $(APP_DIR)/cmdi2c.cpp \
+$(APP_DIR)/cmdsi5351.cpp \
+$(APP_DIR)/si5351/si5351.cpp \
 #$(APP_DIR)/agif/AnimatedGIF.cpp \
 
 # ASM sources

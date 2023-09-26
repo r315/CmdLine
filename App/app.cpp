@@ -68,6 +68,7 @@ static ConsoleCommand *app_commands[] = {
 	new CmdBuz(),
 	new CmdKeyFob(),
     new CmdLmcshd(),
+    new CmdSi5351(),
 #endif
 };
 
