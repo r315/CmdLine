@@ -74,7 +74,7 @@ bool Si5351::init(i2cbus_t *i2c, uint32_t xo_freq, int32_t corr)
 	if(I2C_Read(m_i2c, &reg_val, 1) != 0)
 	{
 		// Wait for SYS_INIT flag to be clear, indicating that device is ready		
-		while (read_reg(SI5351_DEVICE_STATUS) & 0x80);
+		while (read_reg(SI5351_DEVICE_STATUS_REG) & 0x80);
 	
     	reset();
 
@@ -103,14 +103,14 @@ bool Si5351::init(i2cbus_t *i2c, uint32_t xo_freq, int32_t corr)
 void Si5351::reset(void)
 {
     // Disable outputs
-    write_reg(SI5351_OUTPUT_ENABLE_CTRL, 0xFF);
+    write_reg(SI5351_OUTPUT_ENABLE_CTRL_REG, 0xFF);
 
     // Set disable state to Hi-Z
     write_reg(SI5351_CLK3_0_DISABLE_STATE, 0xAA);
     write_reg(SI5351_CLK7_4_DISABLE_STATE, 0xAA);
 
     // Mask interrupts
-    write_reg(SI5351_INTERRUPT_MASK, 0xF8);
+    write_reg(SI5351_INTERRUPT_MASK_REG, 0xF8);
     
     // Turn off all CLK outputs
     for(uint8_t i = 0; i < 8; i++){
@@ -151,28 +151,6 @@ void Si5351::reset(void)
 	for(uint8_t i = 0; i < 8; i++){
 		clk_freq[i] = 0;
 	}
-}
-
-/*
- * update_status(void)
- *
- * Call this to update the status structs, then access them
- * via the dev_status and dev_int_status global members.
- *
- * See the header file for the struct definitions. These
- * correspond to the flag names for registers 0 and 1 in
- * the Si5351 datasheet.
- */
-uint8_t Si5351::update_status(void)
-{
-    if(m_i2c == NULL){
-        return 0;
-    }
-
-	update_sys_status(&dev_status);
-	update_int_status(&dev_int_status);
-
-    return 1;
 }
 
 /*
@@ -486,7 +464,7 @@ void Si5351::set_output_enable(enum si5351_clock clk, uint8_t enable)
 {
   uint8_t reg_val;
 
-  reg_val = read_reg(SI5351_OUTPUT_ENABLE_CTRL);
+  reg_val = read_reg(SI5351_OUTPUT_ENABLE_CTRL_REG);
 
   if(enable == 1){
     reg_val &= ~(1 << (uint8_t)clk);
@@ -494,7 +472,7 @@ void Si5351::set_output_enable(enum si5351_clock clk, uint8_t enable)
     reg_val |= (1 << (uint8_t)clk);
   }
 
-  write_reg(SI5351_OUTPUT_ENABLE_CTRL, reg_val);
+  write_reg(SI5351_OUTPUT_ENABLE_CTRL_REG, reg_val);
 }
 
 /*
@@ -925,7 +903,7 @@ void Si5351::set_ms(enum si5351_clock clk, struct Si5351RegSet ms_reg, uint8_t i
 void Si5351::set_pll_input(enum si5351_pll pll, enum si5351_pll_input input)
 {
 	uint8_t reg_val;
-	reg_val = read_reg(SI5351_PLL_INPUT_SOURCE);
+	reg_val = read_reg(SI5351_PLL_INPUT_SOURCE_REG);
 
 	// Clear the bits first
 	//reg_val &= ~(SI5351_CLKIN_DIV_MASK);
@@ -962,7 +940,7 @@ void Si5351::set_pll_input(enum si5351_pll pll, enum si5351_pll_input input)
 		return;
 	}
 
-	write_reg(SI5351_PLL_INPUT_SOURCE, reg_val);
+	write_reg(SI5351_PLL_INPUT_SOURCE_REG, reg_val);
 
 	set_pll(plla_freq, SI5351_PLLA);
 	set_pll(pllb_freq, SI5351_PLLB);
@@ -1525,31 +1503,35 @@ uint64_t Si5351::multisynth67_calc(uint64_t freq, uint64_t pll_freq, struct Si53
 	}
 }
 
-void Si5351::update_sys_status(struct Si5351Status *status)
+Si5351Status_t Si5351::get_device_status(void)
 {
-  uint8_t reg_val = 0;
+  uint8_t reg_val;
 
-  reg_val = read_reg(SI5351_DEVICE_STATUS);
+  if(m_i2c == NULL){
+    dev_status.status.REVID = 0;
+    return dev_status;
+  }
+
+  reg_val = read_reg(SI5351_DEVICE_STATUS_REG);
 
   // Parse the register
-  status->SYS_INIT = (reg_val >> 7) & 0x01;
-  status->LOL_B = (reg_val >> 6) & 0x01;
-  status->LOL_A = (reg_val >> 5) & 0x01;
-  status->LOS = (reg_val >> 4) & 0x01;
-  status->REVID = reg_val & 0x03;
-}
+  dev_status.status.SYS_INIT = !(reg_val & SI5351_STATUS_SYS_INIT);  // SYS_INIT = 1 => System is ready
+  dev_status.status.LOL_B = !(reg_val & SI5351_STATUS_LOL_B);
+  dev_status.status.LOL_A = !(reg_val & SI5351_STATUS_LOL_A);
+  dev_status.status.LOS_CLKIN = !(reg_val & SI5351_STATUS_LOS_CLKIN);
+  dev_status.status.LOS_XTAL = !(reg_val & SI5351_STATUS_LOS_XTAL);
+  dev_status.status.REVID = reg_val & 0x03;
 
-void Si5351::update_int_status(struct Si5351IntStatus *int_status)
-{
-  uint8_t reg_val = 0;
-
-  reg_val = read_reg(SI5351_INTERRUPT_STATUS);
+  reg_val = read_reg(SI5351_INTERRUPT_STATUS_REG);
 
   // Parse the register
-  int_status->SYS_INIT_STKY = (reg_val >> 7) & 0x01;
-  int_status->LOL_B_STKY = (reg_val >> 6) & 0x01;
-  int_status->LOL_A_STKY = (reg_val >> 5) & 0x01;
-  int_status->LOS_STKY = (reg_val >> 4) & 0x01;
+  dev_status.intr.SYS_INIT_STKY = !(reg_val & SI5351_INTERRUPT_SYS_INIT_STKY);
+  dev_status.intr.LOL_B_STKY = !(reg_val & SI5351_INTERRUPT_LOL_B_STKY);
+  dev_status.intr.LOL_A_STKY = !(reg_val & SI5351_INTERRUPT_LOL_A_STKY);
+  dev_status.intr.LOS_CLKIN_STKY = !(reg_val & SI5351_INTERRUPT_LOS_CLKIN_STKY);
+  dev_status.intr.LOS_XTAL_STKY = !(reg_val & SI5351_INTERRUPT_LOS_XTAL_STKY);
+
+  return dev_status;
 }
 
 void Si5351::ms_div(enum si5351_clock clk, uint8_t r_div, uint8_t div_by_4)

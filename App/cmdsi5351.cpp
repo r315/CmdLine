@@ -2,6 +2,46 @@
 #include "cmdSi5351.h"
 #include "si5351.h"
 
+static uint8_t parseFreq(char *number, uint64_t *out)
+{
+    uint64_t freq = 0;
+    int32_t value;
+
+    char *ptr = number;
+
+    while(*ptr != '\0') {
+        if(*ptr == '.'){
+            // Found decimal point, split it in two numbers
+            *(ptr++) = '\0';
+            // and truncate decimal part into two digits, assuming 
+            // that buffer has at least three more bytes after '.'
+            ptr[2] = '\0';
+            // ensure two digits
+            if(ptr[1] == '\0'){
+                ptr[1] = '0';
+            }
+            break;
+        }
+        ptr++;
+    }
+
+    // Parse integer part
+    ia2i(number, &value);
+    freq = value * SI5351_FREQ_MULT;
+    // Parse decimal part
+    value = 0;
+    ia2i(number, &value);
+    freq += value;   
+    
+
+    if(freq > SI5351_MULTISYNTH_DIVBY4_FREQ * SI5351_FREQ_MULT){
+        return 0;
+    }
+    
+    *out = freq;
+    return 1;
+
+}
 
 void CmdSi5351::help(void)
 {
@@ -10,7 +50,7 @@ void CmdSi5351::help(void)
     console->println("\tinit,               Initialize si5351, clock's disabled");
     console->println("\tfreq <clk> <freq>,  Sets desired clock frequency");
     console->println("\t\tclk: 0-7");
-    console->println("\t\tfreq: 800000-15000000000 (8kHz-150MHz)");
+    console->println("\t\tfreq: 8000.00-150000000.00 (8kHz-150MHz)");
     console->println("\tenable <clk>,       Enables Clock output");
     console->println("\tdisable <clk>,      Disables Clock output");
     console->println("\tdrive <clk> <0-3>,  Clock output drive 2, 4, 6, 8mA ");
@@ -25,8 +65,8 @@ char CmdSi5351::execute(int argc, char **argv)
     }
 
     if ( !xstrcmp("start", argv[1])){
-        int32_t val1, val2;
-        if(si5351.update_status() == 0){
+        int32_t val1;
+        if(si5351.get_device_status().status.REVID == 0){
             if(si5351.init(&m_i2c, 0, 0) == 0){
                 console->println("Failed to initialize Si5351");
                 return CMD_OK;
@@ -34,26 +74,32 @@ char CmdSi5351::execute(int argc, char **argv)
         }
         
         if(ia2i(argv[2], &val1)){
-            if(ia2i(argv[3], &val2)){
-                si5351.set_freq((si5351_clock)val1, val2);
-                si5351.set_clock_pwr((si5351_clock)val1, 1);            
-                si5351.set_output_enable((si5351_clock)val1, 1);
+            uint64_t freq;
+            if(parseFreq(argv[3], &freq)){
+                si5351.set_freq((si5351_clock)val1, freq);
+
+                if(si5351.get_device_status().status.LOL_A == 1){
+                    si5351.set_clock_pwr((si5351_clock)val1, 1);            
+                    si5351.set_output_enable((si5351_clock)val1, 1);
+                }
                 return CMD_OK;
             }
         }
     }
 
     if( !xstrcmp("init", argv[1])){
-        if(si5351.init(&m_i2c, 0, 0)){
-            return CMD_OK;
+        if(si5351.init(&m_i2c, 0, 0) == 0){
+            console->println("Failed to initialize Si5351");
         }
+        return CMD_OK;
     }
 
     if ( !xstrcmp("freq", argv[1])){
-        int32_t val1, val2;
+        int32_t val1;
+        uint64_t freq;
         if(ia2i(argv[2], &val1)){
-            if(ia2i(argv[3], &val2)){
-                si5351.set_freq((si5351_clock)val1, val2);
+            if(parseFreq(argv[3], &freq)){
+                si5351.set_freq((si5351_clock)val1, freq);
                 return CMD_OK;
             }
         }

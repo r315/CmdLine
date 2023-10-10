@@ -126,12 +126,11 @@ LDSCRIPT =$(TARGET_PATH)/STM32L412KBUx_FLASH.ld
 # building variables
 ######################################
 ifeq ($(RELEASE), 1)
-DEBUG =0
 OPT =-Os
 else
-DEBUG =1
-OPT =-O3
+OPT =-Og -g -gdwarf-2
 endif
+
 
 # macros for gcc
 COMMON_DEFS = \
@@ -142,7 +141,8 @@ USE_HAL_DRIVER \
 'VERSION_STRING="$(VERSION)"' \
 _FEATURE_GIF \
 MSC_CLOCK \
-FIFO_SIZE=512
+FIFO_INTERRUPT_SAFE=1 \
+FIFO_SIZE=128
 
 #######################################
 # binaries
@@ -220,9 +220,6 @@ $(COMMON_DEFS) \
 '__packed=__attribute__((__packed__))' \
 
 COMMON_FLAGS =$(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections -u _printf_float
-ifeq ($(DEBUG), 1)
-COMMON_FLAGS +=-g -gdwarf-2
-endif
 
 # compile gcc flags
 ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)

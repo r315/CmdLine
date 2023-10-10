@@ -70,16 +70,23 @@
 #define SI5351_VCXO_PULL_MAX            240
 #define SI5351_VCXO_MARGIN              103
 
-#define SI5351_DEVICE_STATUS            0
-#define SI5351_INTERRUPT_STATUS         1
-#define SI5351_INTERRUPT_MASK           2
+// Registers and register bits
+#define SI5351_DEVICE_STATUS_REG        0
 #define SI5351_STATUS_SYS_INIT          (1<<7)
 #define SI5351_STATUS_LOL_B             (1<<6)
 #define SI5351_STATUS_LOL_A             (1<<5)
-#define SI5351_STATUS_LOS               (1<<4)
-#define SI5351_OUTPUT_ENABLE_CTRL       3
-#define SI5351_OEB_PIN_ENABLE_CTRL      9
-#define SI5351_PLL_INPUT_SOURCE         15
+#define SI5351_STATUS_LOS_CLKIN         (1<<4)
+#define SI5351_STATUS_LOS_XTAL          (1<<3)
+#define SI5351_INTERRUPT_STATUS_REG     1
+#define SI5351_INTERRUPT_SYS_INIT_STKY  (1<<7)
+#define SI5351_INTERRUPT_LOL_B_STKY     (1<<6)
+#define SI5351_INTERRUPT_LOL_A_STKY     (1<<5)
+#define SI5351_INTERRUPT_LOS_CLKIN_STKY (1<<4)
+#define SI5351_INTERRUPT_LOS_XTAL_STKY  (1<<3)
+#define SI5351_INTERRUPT_MASK_REG       2
+#define SI5351_OUTPUT_ENABLE_CTRL_REG   3
+#define SI5351_OEB_PIN_ENABLE_CTRL_REG  9
+#define SI5351_PLL_INPUT_SOURCE_REG     15
 #define SI5351_CLKIN_DIV_MASK           (3<<6)
 #define SI5351_CLKIN_DIV_1              (0<<6)
 #define SI5351_CLKIN_DIV_2              (1<<6)
@@ -257,22 +264,30 @@ struct Si5351RegSet
 	uint32_t p3;
 };
 
-struct Si5351Status
+struct Si5351StatusFlags
 {
 	uint8_t SYS_INIT;
 	uint8_t LOL_B;
 	uint8_t LOL_A;
-	uint8_t LOS;
+	uint8_t LOS_CLKIN;
+    uint8_t LOS_XTAL;
 	uint8_t REVID;
 };
 
-struct Si5351IntStatus
+struct Si5351IntFlags
 {
 	uint8_t SYS_INIT_STKY;
 	uint8_t LOL_B_STKY;
 	uint8_t LOL_A_STKY;
-	uint8_t LOS_STKY;
+	uint8_t LOS_CLKIN_STKY;
+    uint8_t LOS_XTAL_STKY;
 };
+
+typedef struct Si5351Status_s 
+{
+    struct Si5351StatusFlags status;
+    struct Si5351IntFlags intr;
+}Si5351Status_t;
 
 struct Si5251ClkPara
 {
@@ -300,7 +315,7 @@ public:
     Si5351();
 	bool init(i2cbus_t*, uint32_t, int32_t);
 	void reset(void);
-	uint8_t update_status(void);
+	Si5351Status_t get_device_status(void);
 	uint8_t set_freq(enum si5351_clock, uint64_t);
 	uint8_t set_freq_manual(enum si5351_clock, uint64_t, uint64_t);	
 	void set_output_enable(enum si5351_clock, uint8_t);
@@ -335,11 +350,10 @@ private:
 	void set_vcxo(uint64_t, uint8_t);
     void set_ref_freq(uint32_t, enum si5351_pll_input);
     void set_xtal_cl(enum si5351_xtal_cl);
-    struct Si5351Status dev_status = {.SYS_INIT = 0, .LOL_B = 0, .LOL_A = 0, .LOS = 0, .REVID = 0};
-	struct Si5351IntStatus dev_int_status = {.SYS_INIT_STKY = 0, .LOL_B_STKY = 0, .LOL_A_STKY = 0, .LOS_STKY = 0};
 	enum si5351_pll pll_assignment[8];
     enum si5351_pll_input plla_ref_osc;
     enum si5351_pll_input pllb_ref_osc;
+    Si5351Status_t dev_status;
     uint64_t clk_freq[8];
 	uint64_t plla_freq;
 	uint64_t pllb_freq;

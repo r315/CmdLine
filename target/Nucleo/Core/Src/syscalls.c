@@ -105,6 +105,7 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
     return len;
 }
 
+// setvbuf(stdout, NULL, _IONBF, 0); // make stdio non-buffered, so that printf always calls __io_putchar
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
 	int DataIdx;
