@@ -16,10 +16,10 @@ INCSPATH =\
 $(TARGET_PATH)/inc \
 $(TARGET_PATH)/usbdrv \
 $(APP_DIR)/inc \
-$(APP_DIR)/minimp3 \
-$(APP_DIR)/agif \
-$(APP_DIR)/stk500 \
-$(APP_DIR)/si5351 \
+$(APP_DIR)/libs/minimp3 \
+$(APP_DIR)/libs/agif \
+$(APP_DIR)/libs/stk500 \
+$(APP_DIR)/libs/si5351 \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(DRIVERS_PATH)/inc \
@@ -58,20 +58,20 @@ $(TARGET_PATH)/usbdrv/usbcontrol.c \
 $(TARGET_PATH)/usbdrv/usbstdreq.c \
 $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
-$(APP_DIR)/stk500/stk500.c \
+$(APP_DIR)/libs/stk500/stk500.c \
 
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
-$(APP_DIR)/app.cpp \
-$(APP_DIR)/cmdsbus.cpp \
-$(APP_DIR)/cmdtft.cpp \
-$(APP_DIR)/cmdi2s.cpp \
-$(APP_DIR)/cmdgpio.cpp \
-$(APP_DIR)/cmdmsensor.cpp \
-$(APP_DIR)/cmdplayer.cpp \
-$(APP_DIR)/cmdmem.cpp \
-$(APP_DIR)/cmdbenchmark.cpp \
+$(APP_DIR)/src/app.cpp \
+$(APP_DIR)/src/cmdsbus.cpp \
+$(APP_DIR)/src/cmdtft.cpp \
+$(APP_DIR)/src/cmdi2s.cpp \
+$(APP_DIR)/src/cmdgpio.cpp \
+$(APP_DIR)/src/cmdmsensor.cpp \
+$(APP_DIR)/src/cmdplayer.cpp \
+$(APP_DIR)/src/cmdmem.cpp \
+$(APP_DIR)/src/cmdbenchmark.cpp \
 $(TARGET_PATH)/src/cmdspi.cpp \
 $(TARGET_PATH)/src/cmdavr.cpp \
 $(TARGET_PATH)/src/cmdlsd.cpp \
@@ -79,7 +79,7 @@ $(TARGET_PATH)/src/cmdpwm.cpp \
 $(TARGET_PATH)/src/cmdawg.cpp \
 $(TARGET_PATH)/src/cmdadc.cpp \
 $(TARGET_PATH)/src/cmdi2c.cpp \
-$(APP_DIR)/stk500/stk500_service.cpp \
+$(APP_DIR)/libs/stk500/stk500_service.cpp \
 
 
 LDSCRIPT =$(TARGET_PATH)/lpc1768.ld

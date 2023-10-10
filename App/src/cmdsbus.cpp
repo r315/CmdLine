@@ -146,14 +146,14 @@ void sendFrame(void){
         // At this point either fifo is empty, or head is pointing to a frame start
         // or a frame was received
         if(available >= sizeof(sbusframe_t)){
-            DBG_PIN_HIGH;
+            //DBG_PIN_HIGH;
             // A frame is available, get data
             sbusframe_t tmp_frame;
             for (uint32_t i = 0; i < sizeof(sbusframe_t); i++){
                 fifo_get(&sbus.uart->rxfifo, (uint8_t*)&tmp_frame + i);
             }
             printSbusFrame(&tmp_frame);            
-            DBG_PIN_LOW;
+            //DBG_PIN_LOW;
         }
     }
 }

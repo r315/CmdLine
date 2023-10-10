@@ -26,7 +26,7 @@ $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
 $(APP_DIR)/inc \
-$(APP_DIR)/si5351 \
+$(APP_DIR)/libs/si5351 \
 
 AS_INCLUDES =\
 
@@ -64,10 +64,10 @@ $(LIB_PATH)/src/font.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
-$(APP_DIR)/app.cpp \
-$(APP_DIR)/cmdmem.cpp \
-$(APP_DIR)/cmdtft.cpp \
-$(APP_DIR)/cmdbenchmark.cpp \
+$(APP_DIR)/src/app.cpp \
+$(APP_DIR)/src/cmdmem.cpp \
+$(APP_DIR)/src/cmdtft.cpp \
+$(APP_DIR)/src/cmdbenchmark.cpp \
 
 #######################################
 # Misc files

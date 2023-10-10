@@ -47,9 +47,9 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
 $(LIB_PATH)/inc \
 $(LIBEMB_PATH)/drv/inc \
 $(APP_DIR)/inc \
-$(APP_DIR)/agif \
-$(APP_DIR)/dhrystone \
-$(APP_DIR)/si5351 \
+$(APP_DIR)/libs/agif \
+$(APP_DIR)/libs/dhrystone \
+$(APP_DIR)/libs/si5351 \
 ######################################
 # source
 ######################################
@@ -95,24 +95,24 @@ $(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
-$(APP_DIR)/dhrystone/dhry_1.c \
-$(APP_DIR)/dhrystone/dhry_2.c \
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c \
 #$(APP_DIR)/agif/agif.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
-$(APP_DIR)/app.cpp \
-$(APP_DIR)/cmdmem.cpp \
-$(APP_DIR)/cmdrfinder.cpp \
-$(APP_DIR)/cmdbuz.cpp \
-$(APP_DIR)/cmdkeyfob.cpp \
-$(APP_DIR)/cmdpwm.cpp \
-$(APP_DIR)/cmdtft.cpp \
-$(APP_DIR)/cmdlmcshd.cpp \
-$(APP_DIR)/cmdbenchmark.cpp \
-$(APP_DIR)/cmdi2c.cpp \
-$(APP_DIR)/cmdsi5351.cpp \
-$(APP_DIR)/si5351/si5351.cpp \
+$(APP_DIR)/src/app.cpp \
+$(APP_DIR)/src/cmdmem.cpp \
+$(APP_DIR)/src/cmdrfinder.cpp \
+$(APP_DIR)/src/cmdbuz.cpp \
+$(APP_DIR)/src/cmdkeyfob.cpp \
+$(APP_DIR)/src/cmdpwm.cpp \
+$(APP_DIR)/src/cmdtft.cpp \
+$(APP_DIR)/src/cmdlmcshd.cpp \
+$(APP_DIR)/src/cmdbenchmark.cpp \
+$(APP_DIR)/src/cmdi2c.cpp \
+$(APP_DIR)/src/cmdsi5351.cpp \
+$(APP_DIR)/libs/si5351/si5351.cpp \
 #$(APP_DIR)/agif/AnimatedGIF.cpp \
 
 # ASM sources

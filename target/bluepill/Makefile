@@ -58,12 +58,12 @@ $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 $(LIB_PATH)/inc \
 $(DRIVERS_PATH)/inc \
 $(APP_DIR)/inc \
-$(APP_DIR)/agif \
-$(APP_DIR)/si5351
+$(APP_DIR)/libs/agif \
+$(APP_DIR)/libs/si5351
 
 # C sources
 C_SOURCES =  \
-$(APP_DIR)/spi_flash.c \
+$(APP_DIR)/libs/spiflash/spi_flash.c \
 $(TARGET_PATH)/Src/bp_main.c \
 $(TARGET_PATH)/Src/usbd_desc.c \
 $(TARGET_PATH)/Src/usbd_conf.c \
@@ -111,17 +111,17 @@ $(LIB_PATH)/src/liblcd.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
-$(APP_DIR)/app.cpp \
-$(APP_DIR)/cmdsbus.cpp \
-$(APP_DIR)/cmdtft.cpp \
-$(APP_DIR)/cmdadc.cpp \
-$(APP_DIR)/cmdmem.cpp \
-$(APP_DIR)/cmdrfinder.cpp \
-$(APP_DIR)/cmdservo.cpp \
-$(APP_DIR)/cmdspiflash.cpp \
-$(APP_DIR)/cmdflashrom.cpp \
-$(APP_DIR)/cmdencoder.cpp \
-$(APP_DIR)/cmdbenchmark.cpp \
+$(APP_DIR)/src/app.cpp \
+$(APP_DIR)/src/cmdsbus.cpp \
+$(APP_DIR)/src/cmdtft.cpp \
+$(APP_DIR)/src/cmdadc.cpp \
+$(APP_DIR)/src/cmdmem.cpp \
+$(APP_DIR)/src/cmdrfinder.cpp \
+$(APP_DIR)/src/cmdservo.cpp \
+$(APP_DIR)/src/cmdspiflash.cpp \
+$(APP_DIR)/src/cmdflashrom.cpp \
+$(APP_DIR)/src/cmdencoder.cpp \
+$(APP_DIR)/src/cmdbenchmark.cpp \
 
 
 
