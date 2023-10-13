@@ -43,11 +43,11 @@ static ConsoleCommand *app_commands[] = {
 	//new CmdPwm(),
 	new CmdVersion(),
     //new CmdMem(),
-#if defined(ENABLE_TFT_DISPLAY)
+#if defined (ENABLE_TFT_DISPLAY)
 	new CmdTft(),
 #endif
     new CmdBenchmark(),
-#if defined(BOARD_BLUEBOARD)
+#if defined (BOARD_BLUEBOARD)
     new CmdSpi(),
     new CmdAvr(),
     new CmdSbus(),
@@ -86,7 +86,7 @@ extern "C" void App(void)
 #elif defined (BOARD_NUCLEO_L412KB)
     console.init(userio, "nucleo>");
 #else
-    console.init(userio, ">");
+    console.init(userio, "415dk>");
 #endif
 
     for(unsigned int i = 0; i < sizeof(app_commands)/sizeof(ConsoleCommand*); i++){

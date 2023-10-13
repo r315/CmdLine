@@ -17,6 +17,7 @@ DRIVERS_PATH 	=$(LIB_PATH)/drv
 CMSIS_PATH 		=$(DRIVERS_PATH)/CMSIS
 DRIVERS_PER_PATH =$(DRIVERS_PATH)/StdPeriph_Driver
 
+APP_DIR			?=../../App
 
 C_INCLUDES = \
 $(TARGET_PATH) \
@@ -81,8 +82,10 @@ OCD_CONFIG =$(TARGET_PATH)/at32f415.cfg
 
 # C defines
 C_DEFS +=\
+BOARD_415DK \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
+
 #######################################
 # binaries
 #######################################
@@ -107,7 +110,7 @@ endif
 ifeq ($(shell uname -s), Linux)
 JLK ="/opt/SEGGER/JLink/JLinkExe"
 else
-JLK =$(JLINK)/jlink
+JLK :=$(JLINK)
 endif
 #######################################
 # CFLAGS
@@ -229,6 +232,7 @@ $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 	@echo "loadfile $< 0x00000000" > $@
 	@echo "r" >> $@
 	@echo "q" >> $@
+
 #######################################
 # clean up
 #######################################

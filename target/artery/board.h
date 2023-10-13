@@ -19,7 +19,9 @@ extern "C" {
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
 
-#define BOARD_ARTERY
+#ifndef BOARD_415DK
+#define BOARD_415DK
+#endif
 
 #define SPI_FREQ        18000 //kHz
 #define BOARD_SPIDEV    &spibus
