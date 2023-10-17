@@ -82,9 +82,7 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(LIB_PATH)/src/strfunc.c \
-$(LIB_PATH)/src/fifo.c \
-$(LIB_PATH)/src/stm32_buzzer.c \
+$(DRIVERS_PATH)/buzzer/buzzer_stm32l4.c \
 $(DRIVERS_PATH)/pwm/pwm_stm32l4xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
@@ -92,9 +90,12 @@ $(DRIVERS_PATH)/spi/spi_stm32l4xx.c \
 $(DRIVERS_PATH)/i2c/i2c_stm32l4xx.c \
 $(DRIVERS_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
+$(DRIVERS_PATH)/gpio/gpio_stm32l4xx.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
+$(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/fifo.c \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c \
 #$(APP_DIR)/agif/agif.c \
@@ -142,7 +143,8 @@ USE_HAL_DRIVER \
 _FEATURE_GIF \
 MSC_CLOCK \
 FIFO_INTERRUPT_SAFE=1 \
-FIFO_SIZE=128
+FIFO_SIZE=128 \
+ENABLE_BENCHMARK \
 
 #######################################
 # binaries

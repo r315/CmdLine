@@ -106,13 +106,14 @@ $(DRIVERS_PATH)/dma/dma_stm32f1xx.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/liblcd.c \
+$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/font.c \
 #$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
 
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdsbus.cpp \
 $(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdadc.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
@@ -120,8 +121,9 @@ $(APP_DIR)/src/cmdrfinder.cpp \
 $(APP_DIR)/src/cmdservo.cpp \
 $(APP_DIR)/src/cmdspiflash.cpp \
 $(APP_DIR)/src/cmdflashrom.cpp \
-$(APP_DIR)/src/cmdencoder.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
+#$(APP_DIR)/src/cmdsbus.cpp \
+$(APP_DIR)/src/cmdencoder.cpp \
 
 
 
@@ -167,7 +169,7 @@ BIN = $(CP) -O binary -S
 ifeq ($(shell uname -s), Linux)
 JLINK =JLinkExe
 else
-JLINK ="C:\Tools\JLink_V500\jlink"
+JLINK =jlink
 endif
 
 
@@ -193,17 +195,19 @@ AS_DEFS =
 
 # C defines
 C_DEFS =  \
-USE_HAL_DRIVER \
 $(DEVICE) \
+USE_HAL_DRIVER \
 BOARD_BLUEPILL \
+ENABLE_TFT_DISPLAY \
 
 # CPP defines
 CPP_DEFS = \
-USE_HAL_DRIVER \
 $(DEVICE) \
+USE_HAL_DRIVER \
 BOARD_BLUEPILL \
-'__weak=__attribute__((weak))' \
-'__packed=__attribute__((__packed__))' \
+ENABLE_TFT_DISPLAY \
+ENABLE_BENCHMARK \
+_ENABLE_DEBUG MSC_CLOCK \
 
 # optimization
 OPT = -Og -gdwarf-2

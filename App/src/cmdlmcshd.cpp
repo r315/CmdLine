@@ -7,8 +7,6 @@
 void CmdLmcshd::init(void *params) 
 { 
     console = static_cast<Console*>(params);
-    BOARD_LCD_Init();
-    LCD_SetOrientation(1);
     m_matrix_w = LCD_GetWidth() / MATRIX_SIZE;
     m_matrix_h = LCD_GetHeight() / MATRIX_SIZE;
     m_serial = SERIAL_GetSerialOps(0);

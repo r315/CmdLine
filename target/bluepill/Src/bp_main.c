@@ -61,6 +61,21 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void DelayMs(uint32_t ms) 
+{ 
+    HAL_Delay(ms); 
+}
+
+uint32_t GetTick(void)
+{ 
+    return HAL_GetTick(); 
+}
+
+uint32_t ElapsedTicks(uint32_t start_ticks)
+{ 
+    uint32_t current = GetTick(); 
+    return (current > start_ticks) ? current - start_ticks : 0xFFFFFFFF - start_ticks + current;
+}
 
 /* USER CODE END 0 */
 
@@ -128,7 +143,7 @@ int main(void)
 
   BOARD_Init();
   
-	App();
+  App();
   /* Start scheduler */
   
   /* We should never get here as control is now taken by the scheduler */

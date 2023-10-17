@@ -66,6 +66,8 @@ register char * stack_ptr asm("sp");
 char *__env[1] = { 0 };
 char **environ = __env;
 
+extern serialops_t *default_sops;
+
 
 /* Functions */
 void initialise_monitor_handles()
@@ -93,15 +95,22 @@ void _exit (int status)
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
-	int DataIdx;
-    UNUSED(file);
+	if(file == 0){
+        *ptr = default_sops->read();
+        return 1;
+    }
 
-	for (DataIdx = 0; DataIdx < len; DataIdx++)
-	{
-		*ptr++ = __io_getchar();
-	}
+    return default_sops->readBytes((uint8_t *)ptr, len);
+}
 
-return len;
+__attribute__((weak)) int _write(int file, char *ptr, int len){
+    (void)file;
+
+    if(file == 1){
+        return default_sops->writeBytes((uint8_t *)ptr, len);
+    }
+
+	return 0;
 }
 
 int _close(int file)

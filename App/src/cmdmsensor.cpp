@@ -1,6 +1,5 @@
 #include "cmdmsensor.h"
 #include "board.h"
-#include "timer.h"
 
 #define SENSOR_TIMEOUT_NORMAL       2
 #define SENSOR_TIMEOUT_SLEEP1       32

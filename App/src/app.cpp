@@ -46,15 +46,19 @@ static ConsoleCommand *app_commands[] = {
 #if defined (ENABLE_TFT_DISPLAY)
 	new CmdTft(),
 #endif
+
+#if defined (ENABLE_BENCHMARK)
     new CmdBenchmark(),
+#endif
+
 #if defined (BOARD_BLUEBOARD)
     new CmdSpi(),
-    new CmdAvr(),
-    new CmdSbus(),
+    //new CmdAvr(),
+    //new CmdSbus(),
     new CmdSd(),
 	new CmdGpio(),
 	new CmdI2s(),
-	new CmdMSensor(),
+	//new CmdMSensor(),
 	new CmdPlayer(),
     
 #elif defined (BOARD_BLUEPILL)
@@ -63,7 +67,7 @@ static ConsoleCommand *app_commands[] = {
 	new CmdServo(),
 	new CmdSpiFlash(),
 	new CmdFlashRom(),
-	new CmdEncoder(),
+	//new CmdEncoder(),
 #elif defined (BOARD_NUCLEO_L412KB)
     new CmdI2c(),
 	new CmdBuz(),

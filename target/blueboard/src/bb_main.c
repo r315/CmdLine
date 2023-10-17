@@ -2,8 +2,10 @@
 #include "clock_lpc17xx.h"
 #include "tim_lpc17xx.h"
 #include "app.h"
+#include "gpio.h"
 
 void App(void);
+
 
 static spibus_t spi_aux = {
     .bus = BOARD_SPI_AUX_BUS,
@@ -33,16 +35,16 @@ void BOARD_LCD_Scroll(uint16_t sc){
 
 int main()
 {
-    CLOCK_Init(100);
-	CLOCK_InitUSBCLK();
+    BB_Init();
+
+    CLOCK_InitUSBCLK();
+    SERIAL_Init();   
 
     TIM_InitMatch(LPC_TIM0);    // Use TIMER0 as timebase for generic timer
 
-    BOARD_Init();
-    SERIAL_Init();
     
-    LCD_SetOrientation(LCD_LANDSCAPE);
-    LCD_Bkl(1);
+    //LCD_SetOrientation(LCD_LANDSCAPE);
+    
     DBG_PIN_INIT;
 
     App();

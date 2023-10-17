@@ -48,7 +48,7 @@ $(DRIVERS_PATH)/spi/spi_at32f4xx.c \
 $(DRIVERS_PATH)/dma/dma_at32f4xx.c \
 $(DRIVERS_PATH)/gpio/gpio_at32f4xx.c \
 $(DRIVERS_PATH)/uart/uart_at32f4xx.c \
-$(DRIVERS_PATH)/tft/st7789.c \
+$(DRIVERS_PATH)/tft/st7735.c \
 #$(DRIVERS_COMPONENT_PATH)/src/st7735.c \
 #$(DRIVERS_COMPONENT_PATH)/src/ili9341.c \
 
@@ -85,6 +85,8 @@ C_DEFS +=\
 BOARD_415DK \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
+ENABLE_TFT_DISPLAY \
+ENABLE_BENCHMARK \
 
 #######################################
 # binaries
@@ -195,7 +197,8 @@ all: $(BUILD_DIR)/$(TARGET).elf size
 bin: $(BUILD_DIR)/$(TARGET).bin
 
 program: $(BUILD_DIR)/$(TARGET).jlink bin
-	$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
+#$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
+	openocd -f at32f415.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"

@@ -13,8 +13,8 @@ extern "C" {
 #include "gpio.h"
 #include "gpio_at32f4xx.h"
 //#include "ili9341.h"
-//#include "st7735.h"
-#include "st7789.h"
+#include "st7735.h"
+//#include "st7789.h"
 
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
@@ -43,33 +43,13 @@ extern "C" {
 #endif
 /**
 * @brief Lcd Pin configuration:
-*       PA4  CS
-*       PB1  RST
-*       PB10 C'/D
-*       PA7  SI
-*       PA5  SCK
-*       PB11 Backlight enable
-*       PA6  SO
 **/
-#define LCD_CS   PA_4
-#define LCD_CD   PB_10
-#define LCD_RST  PB_1
-#define LCD_BKL  PB_11
-
-#define LCD_CS0  LCD_IO_RESET(GPIOA, 1 << 4)
-#define LCD_CS1  LCD_IO_SET(GPIOA, 1 << 4)
-#define LCD_CD0  LCD_IO_RESET(GPIOB, 1 << 10)
-#define LCD_CD1  LCD_IO_SET(GPIOB, 1 << 10)
-#define LCD_RST0 LCD_IO_RESET(GPIOB, 1 << 1)
-#define LCD_RST1 LCD_IO_SET(GPIOB, 1 << 1)
-#define LCD_BKL0 LCD_IO_RESET(GPIOB, 1 << 11)
-#define LCD_BKL1 LCD_IO_SET(GPIOB, 1 << 11)
-
-#define LCD_PIN_INIT \
-    GPIO_Config(LCD_BKL, GPIO_OUTPUT); \
-    GPIO_Config(LCD_RST, GPIO_OUTPUT); \
-    GPIO_Config(LCD_CD, GPIO_OUTPUT);  \
-    GPIO_Config(LCD_CS, GPIO_OUTPUT); 
+#define LCD_CS      PB_12
+#define LCD_CD      PB_13
+#define LCD_RST     -1
+#define LCD_BKL     PB_14
+#define LCD_SCLK    PB_3
+#define LCD_DI      PB_5
 
 /**
  * @brief Button pins
@@ -87,7 +67,7 @@ extern "C" {
 
 #define LED_PIN         PB_3
 #define LED1_PIN_INIT \
-    GPIO_Config(LED_PIN, GPIO_OUTPUT); \
+    GPIO_Config(LED_PIN, GPO_LS); \
     RCC->APB2EN |= RCC_APB2EN_AFIOEN; /* Remap Jtag pins */ \
     AFIO->MAP = AFIO_MAP_SWJTAG_CONF_JTAGDISABLE;
 
@@ -95,8 +75,8 @@ extern "C" {
 #define LED1_ON         GPIO_Write(LED_PIN, GPIO_PIN_LOW)
 #define LED1_TOGGLE     GPIO_Toggle(LED_PIN)
 
-#define DBG_PIN_INIT    LED1_PIN_INIT
-#define DBG_PIN_TOGGLE  LED1_TOGGLE
+#define DBG_PIN_INIT    //LED1_PIN_INIT
+#define DBG_PIN_TOGGLE  //LED1_TOGGLE
 
 //enum {false = 0, true, OFF = false, ON = true};
 extern spibus_t spibus;

@@ -1,5 +1,6 @@
 #include "board.h"
 #include "cmdgpio.h"
+#include "gpio.h"
 
 //-------------------------------------------------------
 // 
@@ -67,7 +68,7 @@ char CmdGpio::execute(int argc, char **argv){
 	if( !xstrcmp(argv[1],"init")){		
 		if(ha2i(argv[2], &pin)){
         	if(ha2i(argv[3], &aux)){
-				GPIO_Init((pinName_e)pin, aux);
+				GPIO_Config((uint32_t)pin, aux);
 			}
 		}
         
@@ -77,7 +78,7 @@ char CmdGpio::execute(int argc, char **argv){
 	if( !xstrcmp(argv[1],"mode")){		
 		if(ha2i(argv[2], &pin)){
         	if(ha2i(argv[3], &aux)){
-				GPIO_Mode((pinName_e)pin, aux);
+				GPIO_Mode((uint32_t)pin, aux);
 			}
 		}
         
@@ -87,7 +88,7 @@ char CmdGpio::execute(int argc, char **argv){
 	if( !xstrcmp(argv[1],"func")){		
 		if(ha2i(argv[2], &pin)){
         	if(ha2i(argv[3], &aux)){
-				GPIO_Function((pinName_e)pin, aux);
+				GPIO_Function((uint32_t)pin, aux);
 			}
 		}
         
@@ -97,7 +98,7 @@ char CmdGpio::execute(int argc, char **argv){
 	if( !xstrcmp(argv[1],"dir")){		
 		if(ha2i(argv[2], &pin)){
         	if(ha2i(argv[3], &aux)){
-				GPIO_Direction((pinName_e)pin, aux);
+				GPIO_Direction((uint32_t)pin, aux);
 			}
 		}
         

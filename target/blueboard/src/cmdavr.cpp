@@ -2,7 +2,6 @@
 #include "cmdavr.h"
 #include "cmdspi.h"
 #include "debug.h"
-#include "timer.h"
 
 #define READ_PROGRAM_PAGE_L "\x20\x00\x00\x00"
 #define READ_PROGRAM_PAGE_H "\x28\x00\x00\x00"

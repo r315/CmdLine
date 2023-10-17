@@ -59,27 +59,27 @@ $(TARGET_PATH)/usbdrv/usbstdreq.c \
 $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
 $(APP_DIR)/libs/stk500/stk500.c \
-
+#$(LIBEMB_PATH)/drv/lib2d.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdsbus.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdi2s.cpp \
 $(APP_DIR)/src/cmdgpio.cpp \
-$(APP_DIR)/src/cmdmsensor.cpp \
 $(APP_DIR)/src/cmdplayer.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
-$(APP_DIR)/src/cmdbenchmark.cpp \
+$(APP_DIR)/src/cmdtft.cpp \
 $(TARGET_PATH)/src/cmdspi.cpp \
-$(TARGET_PATH)/src/cmdavr.cpp \
 $(TARGET_PATH)/src/cmdlsd.cpp \
 $(TARGET_PATH)/src/cmdpwm.cpp \
 $(TARGET_PATH)/src/cmdawg.cpp \
 $(TARGET_PATH)/src/cmdadc.cpp \
 $(TARGET_PATH)/src/cmdi2c.cpp \
+#$(APP_DIR)/src/cmdsbus.cpp \
+$(TARGET_PATH)/src/cmdavr.cpp \
+$(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/libs/stk500/stk500_service.cpp \
+$(APP_DIR)/src/cmdmsensor.cpp \
 
 
 LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
@@ -91,7 +91,15 @@ CPU =-mcpu=cortex-m3 -mthumb
 
 OPT =-O0 -g
 
-GCSYMBOLS =__NEWLIB__ BOARD_BLUEBOARD ENABLE_DEBUG MSC_CLOCK
+GCSYMBOLS = \
+__NEWLIB__ \
+BOARD_BLUEBOARD \
+_ENABLE_BUTTONS \
+_ENABLE_SDCARD \
+ENABLE_TFT_DISPLAY \
+_ENABLE_BENCHMARK \
+_ENABLE_DEBUG MSC_CLOCK \
+
 GCFLAGS =$(CPU) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
 GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
 
@@ -117,7 +125,7 @@ REMOVE = rm -fR
 ifeq ($(shell uname -s), Linux)
 JLINK ="/opt/SEGGER/JLink/JLinkExe"
 else
-JLINK ="C:\Tools\JLink_V500\jlink"
+JLINK =jlink
 endif
 OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
 vpath %.c $(sort $(dir $(C_SOURCES)))
@@ -134,7 +142,7 @@ CHECKSUM =$(LIB_PATH)/tools/checksum
 ##########################################################
 all: $(EXEC).elf stats
 
-$(EXEC).elf:  $(OBJECTS)
+$(EXEC).elf: $(OBJECTS)
 	@echo "Linking" $@
 	@$(GCC) $(LDFLAGS) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LIBS) -o $@
 
@@ -195,11 +203,11 @@ minicom:
 #########################################################
 # 
 ########################################################
-$(BUILD_DIR)/%.o : %.c | $(BUILD_DIR)
+$(BUILD_DIR)/%.o : %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
 	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
 
-$(BUILD_DIR)/%.obj : %.cpp | $(BUILD_DIR)
+$(BUILD_DIR)/%.obj : %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
 	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
 	

@@ -28,7 +28,6 @@
 #include "board.h"
 #include "cmdsbus.h"
 #include "uart.h"
-#include "timer.h"
 
 #define FRAME_RATE              14000 // Send frame each 14ms
 #define PWM_MIN_PULSE           128  // 960

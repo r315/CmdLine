@@ -1,7 +1,7 @@
 #include "board.h"
 #include "cmdbenchmark.h"
 #include "lib2d.h"
-#include "liblcd.h"
+#include "drvlcd.h"
 #include "app.h"
 
 #if defined(ENABLE_BENCHMARK_DHRYSTONE)
@@ -17,11 +17,12 @@
 #if defined(ENABLE_TFT_DISPLAY)
 static void setupDisplay(void){
     BOARD_LCD_Init();
-    LCD_Clear(0);
     LIB2D_Init();
+    LIB2D_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight());
     LIB2D_String("PI Benchmark");
     uint16_t x = (LCD_GetWidth() - PBAR_WIDTH) / 2;
-    LCD_Rect(x, PBAR_POSY, PBAR_WIDTH, PBAR_HEIGHT, LCD_FBBLUE);
+    LIB2D_SetFcolor(LCD_FBBLUE);
+    LIB2D_Rect(x, PBAR_POSY, PBAR_WIDTH, PBAR_HEIGHT);
     LCD_Bkl(1);
 }
 
@@ -64,13 +65,22 @@ static uint32_t piBenchmark(uint32_t iterations, float *calc_pi){
 }
 
 void CmdBenchmark::help(void){
-
+    console->println("Usage: benchmark <option>\n");
+    console->print("\t pi   - PI benchmark");
+    #if defined(ENABLE_BENCHMARK_DHRYSTONE)
+    console->print("\t dhry - Dhrystone benchmark");
+    #endif
 }
 
 char CmdBenchmark::execute(int argc, char **argv){
+
+    if(argc < 2){
+        help();
+        return CMD_BAD_PARAM;
+    }
     
 #if defined(ENABLE_BENCHMARK_DHRYSTONE)
-    if(xstrcmp("dhrystone", (const char*)argv[1]) == 0){
+    if(xstrcmp("dhry", (const char*)argv[1]) == 0){
         float res = dhry(1000000) / 1757.0f;
         if(res){
             console->print("%.2f DMIPS/MHz\n",  res / (SystemCoreClock / 1000000));
@@ -95,6 +105,7 @@ char CmdBenchmark::execute(int argc, char **argv){
         #if defined(ENABLE_TFT_DISPLAY)
         LIB2D_SetPos(0, PBAR_POSY + 30);
         LIB2D_Printf("PI: %f\n", pi);
+        LIB2D_Printf("Iter: %u\n", PI_ITERATIONS);
         LIB2D_Printf("Time: %ums\n", time);
         #endif
     }

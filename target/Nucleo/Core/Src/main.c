@@ -25,6 +25,7 @@
 /* USER CODE BEGIN Includes */
 #include "board.h"
 #include "app.h"
+#include "gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -53,6 +54,48 @@ static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
 
+void DelayMs(uint32_t ms) { HAL_Delay(ms); }
+uint32_t GetTick(void){ return HAL_GetTick(); }
+
+
+#ifdef ENABLE_TFT_DISPLAY
+static drvlcdspi_t lcd0;
+
+static void displayInit()
+{
+    //LPC_GPIO1->FIODIR |= LCD_CS|LCD_RS|LCD_WR|LCD_RD|LCD_LED|LCD_RST;
+    
+    lcd0.spidev.bus = SPI_BUS0;
+    lcd0.spidev.flags = SPI_HW_CS;
+    lcd0.w = 128;
+    lcd0.h = 160;
+    lcd0.cs = LCD_CS_PIN;
+    lcd0.cd = LCD_CD_PIN;
+    lcd0.bkl = LCD_BKL_PIN;
+    lcd0.rst = LCD_RST_PIN;
+
+    GPIO_Config(lcd0.cs, GPO_MS);
+    GPIO_Config(lcd0.cd, GPO_MS);
+    GPIO_Config(lcd0.rst, GPO_MS);   
+    GPIO_Config(lcd0.bkl, GPO_MS);
+    GPIO_Config(LCD_DI_PIN, GPIO_AF_SPI1_SPI2);
+    GPIO_Config(LCD_SCK_PIN, GPIO_AF_SPI1_SPI2);
+
+    LCD_Init(&lcd0);
+
+    LCD_Bkl(1);
+
+    LCD_FillRect(0, 0, lcd0.w, lcd0.h, 0);
+}
+#endif
+
+void BOARD_LCD_Init(void)
+{
+    #ifdef ENABLE_TFT_DISPLAY
+    displayInit();
+    #endif
+}
+
 /**
 	* @brief  The application entry point.
 	* @retval int
@@ -63,8 +106,6 @@ int main(void)
 
 	SystemClock_Config();
 
-	BOARD_SPIDEV->flags = SPI_HW_CS; // GPIO_Init depends of this
-
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
@@ -73,10 +114,9 @@ int main(void)
 
     SERIAL_Init();
 
-	BOARD_SPIDEV->bus = SPI_BUS0;
-	BOARD_SPIDEV->freq = 40000;
-
-	SPI_Init(BOARD_SPIDEV);
+	#ifdef ENABLE_TFT_DISPLAY
+    displayInit();
+    #endif
 	
 	App();
 
@@ -286,33 +326,6 @@ static void MX_GPIO_Init(void)
 		GPIO_InitStruct.Pull = GPIO_NOPULL;
 		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 		HAL_GPIO_Init(LD3_GPIO_Port, &GPIO_InitStruct);
-
-		if(BOARD_SPIDEV->flags & SPI_HW_CS){
-			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin | LCD_CS_Pin;
-		}else{
-			GPIO_InitStruct.Pin = LCD_CK_Pin | LCD_DI_Pin;
-		}
-		GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-		GPIO_InitStruct.Pull = GPIO_NOPULL;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
-		GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
-		HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-		/*Configure GPIO pins : LCD_BKL_Pin LCD_CS_Pin LCD_CD_Pin */
-		GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-		GPIO_InitStruct.Pull = GPIO_NOPULL;
-		GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-
-		if(!(BOARD_SPIDEV->flags & SPI_HW_CS)){
-			GPIO_InitStruct.Pin = LCD_CS_Pin;
-			HAL_GPIO_Init(LCD_CS_GPIO_Port, &GPIO_InitStruct);
-		}
-
-		GPIO_InitStruct.Pin = LCD_CD_Pin;
-		HAL_GPIO_Init(LCD_CD_GPIO_Port, &GPIO_InitStruct);
-
-		GPIO_InitStruct.Pin = LCD_BKL_Pin;
-		HAL_GPIO_Init(LCD_BKL_GPIO_Port, &GPIO_InitStruct);
 }
 
 void SW_Reset(void)

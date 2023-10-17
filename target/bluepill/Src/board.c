@@ -3,18 +3,49 @@
 #include "board.h"
 #include "usbd_cdc_if.h"
 #include "adc.h"
+#include "gpio.h"
+#include "drvlcd.h"
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
-void BOARD_Init(void){
+#ifdef ENABLE_TFT_DISPLAY
+static drvlcdspi_t lcd0;
 
-    BOARD_SPIDEV->bus = SPI_BUS1;
-    BOARD_SPIDEV->freq = 5000;
-    BOARD_SPIDEV->flags = SPI_IDLE;
-   
+static void displayInit()
+{
+    //LPC_GPIO1->FIODIR |= LCD_CS|LCD_RS|LCD_WR|LCD_RD|LCD_LED|LCD_RST;
+    
+    lcd0.spidev.bus = SPI_BUS1;
+    lcd0.w = 128;
+    lcd0.h = 160;
+    lcd0.cs = LCD_CS_PIN;
+    lcd0.cd = LCD_CD_PIN;
+    lcd0.bkl = LCD_BKL_PIN;
+    lcd0.rst = LCD_RST_PIN;
+
+    GPIO_Config(lcd0.cs, GPO_MS);
+    GPIO_Config(lcd0.cd, GPO_MS);
+    GPIO_Config(lcd0.rst, GPO_MS);   
+    GPIO_Config(lcd0.bkl, GPO_MS);
+    GPIO_Config(LCD_DI_PIN, GPO_HS_AF);
+    GPIO_Config(LCD_SCK_PIN, GPO_HS_AF);
+
+    LCD_Init(&lcd0);
+
+    LCD_Bkl(1);
+
+    LCD_FillRect(0, 0, lcd0.w, lcd0.h, 0);
+}
+#endif
+
+void BOARD_Init(void){
     SERVO_Init();
 
     SERIAL_Init();
+
+    #ifdef ENABLE_TFT_DISPLAY
+    displayInit();
+    #endif
 }
 
 
@@ -108,7 +139,7 @@ uint8_t PWM_Get(uint8_t ch){
  * PB1   ------> TIM1_CH4
  * */
 static void PWM_CfgGpio(uint8_t ch, uint8_t enable){
-    enable = (enable == 0) ? GPI_ANALOG :  GPO_AF | GPO_2MHZ;
+    enable = (enable == 0) ? GPI_ANALOG :  GPO_LS_AF;
 
     switch(ch){
         case PWM_1:
@@ -192,7 +223,7 @@ void SERVO_Init(void){
 
     TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
 
-    GPIO_Config(PB_9, GPO_2MHZ);    
+    GPIO_Config(PB_9, GPO_LS);    
 }
 
 /**
@@ -473,10 +504,10 @@ void BOARD_SPI_Init(void)
 {
     SPI_Init(BOARD_SPIDEV);
 
-    GPIO_Config(BOARD_SPI_DO_PIN, GPO_AF | GPO_50MHZ);
-    GPIO_Config(BOARD_SPI_DI_PIN, GPO_AF | GPO_50MHZ);
-    GPIO_Config(BOARD_SPI_CK_PIN, GPO_AF | GPO_50MHZ);
-    GPIO_Config(BOARD_SPI_CS_PIN, GPO_2MHZ);
+    GPIO_Config(BOARD_SPI_DO_PIN, GPO_HS_AF);
+    GPIO_Config(BOARD_SPI_DI_PIN, GPO_HS_AF);
+    GPIO_Config(BOARD_SPI_CK_PIN, GPO_HS_AF);
+    GPIO_Config(BOARD_SPI_CS_PIN, GPO_MS);
 }
 
 uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout){
@@ -504,16 +535,9 @@ uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
 
 void BOARD_LCD_Init(void)
 {
-    BOARD_SPIDEV->bus = SPI_BUS1;
-    BOARD_SPIDEV->freq = 5000;
-    BOARD_SPIDEV->flags = SPI_IDLE;
-
-    BOARD_SPI_Init();
-
-    GPIO_Config(PB_14, GPO_2MHZ);  // LCD_CD
-    GPIO_Config(PB_10, GPO_50MHZ); // LCD_BKL
-
-    LCD_Init(BOARD_SPIDEV);
+    #ifdef ENABLE_TFT_DISPLAY
+    displayInit();
+    #endif
 }
 
 void SW_Reset(void)

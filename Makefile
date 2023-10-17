@@ -1,6 +1,8 @@
 BUILD_DIR  	:=$(CURDIR)/build
 APP_DIR 	:=$(CURDIR)/App
 
+all: nc bp bb at
+
 norule:
 	@echo "specify board"
 	@echo "Available boards:"

@@ -32,14 +32,10 @@ extern "C" {
 /* 
  *
  * */
-static inline void DelayMs(uint32_t ms) { HAL_Delay(ms); }
-static inline uint32_t GetTick(){ return HAL_GetTick(); }
-static inline uint32_t ElapsedTicks(uint32_t start_ticks){ 
-    uint32_t current = GetTick(); 
-    return (current > start_ticks) ? current - start_ticks : 0xFFFFFFFF - start_ticks + current;
-}
-
 void BOARD_Init(void);
+uint32_t GetTick(void);
+uint32_t ElapsedTicks(uint32_t start_ticks);
+void DelayMs(uint32_t ms);
 
 /** 
  * Global variables
@@ -128,13 +124,16 @@ void SERVO_SetPulse(uint16_t pulse);
 /* ************************************************************
  * SPI API
  *
- * PB15 AF -> MOSI
- * PB14 IF <- MISO
- * PB13 AF -> SCLK
- * PB12 GPO -> CS
  * 
  * ************************************************************ */
 #define SPI_XFER_TIMEOUT        1000
+
+#define LCD_DI_PIN              PB_15
+#define LCD_SCK_PIN             PB_13
+#define LCD_CS_PIN              PB_12
+#define LCD_CD_PIN              PB_14
+#define LCD_RST_PIN             -1
+#define LCD_BKL_PIN             PB_10
 
 #define BOARD_SPI_DO_PIN        PB_15
 #define BOARD_SPI_DI_PIN        PB_14
@@ -144,16 +143,16 @@ void SERVO_SetPulse(uint16_t pulse);
 #define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12) 
 #define BOARD_SPI_CS_HIGH       GPIOB->BSRR = (1 << 12)
 
+#define BOARD_SPIDEV_HANDLER    spi2
+#define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
+
+extern spibus_t BOARD_SPIDEV_HANDLER;
+
 void BOARD_SPI_Init(void);
 void BOARD_SPI_SetCS(uint8_t cs);
 uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
 uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
 uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
-
-#define BOARD_SPIDEV_HANDLER    spi2
-#define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
-
-extern spibus_t BOARD_SPIDEV_HANDLER;
 
 /**
  * UART

@@ -19,6 +19,7 @@ I->serial.write = UART_FUNCTION_NAME(N, write); \
 I->serial.writeBytes = UART_FUNCTION_NAME(N, writeBytes);
 
 static serialport_t serial0_handler;
+serialops_t *default_sops;
 
 /**
  * Uart0/1/3
@@ -57,6 +58,11 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
 void SERIAL_Init(void)
 {
     SERIAL_Config(&serial0_handler, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+
+    GPIO_Config(PA_9, GPIO_USART1_TX);
+    GPIO_Config(PA_10, GPIO_USART1_RX);
+
+    default_sops = SERIAL_GetSerialOps(-1);
 }
 
 serialops_t *SERIAL_GetSerialOps(int32_t nr)
@@ -65,8 +71,3 @@ serialops_t *SERIAL_GetSerialOps(int32_t nr)
     return &serial0_handler.serial;
 }
 
-int _write(int file, char *ptr, int len){
-    (void)file;
-    serial0_handler.serial.writeBytes((uint8_t*)ptr, len);
-    return len;
-}

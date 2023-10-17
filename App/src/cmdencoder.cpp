@@ -1,7 +1,7 @@
 #include "cmdencoder.h"
 #include "board.h"
 #include "app.h"
-#include "liblcd.h"
+#include "lib2d.h"
 
 #define ENC_TIM             TIM2
 #define ENC_MIN_POS         1000
@@ -97,7 +97,7 @@ char CmdEncoder::execute(int argc, char **argv){
         LCD_SetOrientation(LCD_LANDSCAPE);
         LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
 
-        LCD_Rect(
+        LIB2D_Rect(
             (LCD_GetWidth()/2) - (BAR_GRAPH_WIDTH/2) - 2,
             (LCD_GetHeight()/2) - (BAR_GRAPH_HEIGHT/2) - 2,
             BAR_GRAPH_WIDTH + 3,

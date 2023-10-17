@@ -2,7 +2,7 @@
 #include "board.h"
 #include "app.h"
 #include "lib2d.h"
-#include "liblcd.h"
+#include "drvlcd.h"
 
 int main(void)
 {
