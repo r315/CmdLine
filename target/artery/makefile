@@ -3,22 +3,30 @@
 ######################################
 TARGET =console-artery
 
+#######################################
+# Features
+#######################################
+
+FEATURE_TFT_DISPLAY :=yes
+FEATURE_BENCHMAK :=yes
 FEATURE_BENCHMAK_DHYSTONE :=no
-FEATURE_TFT_DISPLAY :=no
 
 #######################################
 # paths
 #######################################
+
 BUILD_DIR 		:=build
 TARGET_PATH 	=$(CURDIR)
 
+APP_DIR			?=../../App
 LIB_PATH        =$(LIBEMB_PATH)
 DRIVERS_PATH 	=$(LIB_PATH)/drv
 CMSIS_PATH 		=$(DRIVERS_PATH)/CMSIS
 DRIVERS_PER_PATH =$(DRIVERS_PATH)/StdPeriph_Driver
 
-APP_DIR			?=../../App
-
+#######################################
+# Includes
+#######################################
 C_INCLUDES = \
 $(TARGET_PATH) \
 $(DRIVERS_PER_PATH)/inc \
@@ -32,9 +40,8 @@ $(APP_DIR)/libs/si5351 \
 AS_INCLUDES =\
 
 ######################################
-# sources
+# Sources
 ######################################
-
 BOARD_SOURCES = \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/src/startup_at32f415cbt7.c\
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/src/system_at32f4xx.c\
@@ -51,7 +58,6 @@ $(DRIVERS_PATH)/uart/uart_at32f4xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
 #$(DRIVERS_COMPONENT_PATH)/src/st7735.c \
 #$(DRIVERS_COMPONENT_PATH)/src/ili9341.c \
-
 
 CSRCS = \
 $(BOARD_SOURCES) \
@@ -70,14 +76,11 @@ $(APP_DIR)/src/cmdmem.cpp \
 $(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
 
-#######################################
-# Misc files
-#######################################
-
-# Linker script
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
+#######################################
+# Misc
+#######################################
 
-# Openocd configuration
 OCD_CONFIG =$(TARGET_PATH)/at32f415.cfg
 
 # C defines
@@ -85,39 +88,23 @@ C_DEFS +=\
 BOARD_415DK \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
-ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMARK \
 
-#######################################
-# binaries
-#######################################
-BINPATH = 
-PREFIX = arm-none-eabi-
-CC =$(BINPATH)$(PREFIX)gcc
-CPP =$(BINPATH)$(PREFIX)g++
-AS =$(BINPATH)$(PREFIX)gcc -x assembler-with-cpp
-LD =$(BINPATH)$(PREFIX)gcc
-AR =$(BINPATH)$(PREFIX)ar
-SZ =$(BINPATH)$(PREFIX)size
-OBJCOPY =$(BINPATH)$(PREFIX)objcopy
-OBJDUMP =$(BINPATH)$(PREFIX)objdump
-HEX = $(OBJCOPY) -O ihex
-BIN = $(OBJCOPY) -O binary -S
-
-ifeq ($(GCC_COLORS), )
-export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
-#unexport GCC_COLORS
+ifeq ($(FEATURE_BENCHMAK), yes)
+C_DEFS +=ENABLE_BENCHMARK
 endif
 
-ifeq ($(shell uname -s), Linux)
-JLK ="/opt/SEGGER/JLink/JLinkExe"
-else
-JLK :=$(JLINK)
+ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
+C_DEFS +=ENABLE_BENCHMAK_DHYSTONE
 endif
+
+ifeq ($(FEATURE_TFT_DISPLAY),yes)
+C_DEFS +=ENABLE_TFT_DISPLAY
+endif
+
 #######################################
 # CFLAGS
 #######################################
-# cpu
+
 DEVICE =AT32F415CBT7
 CPU =-mcpu=cortex-m4 -mthumb
 
@@ -140,13 +127,25 @@ DEBUG =1
 OPT   =-O0 -g -gdwarf-2 -Wall #-Wextra
 endif
 
-
 ifndef V
 VERBOSE =@
 else
 VERBOSE =
 endif
 
+# Generate dependency information
+#CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst))
+
+ASFLAGS  =$(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
+CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -std=gnu11 -fdata-sections -ffunction-sections #-fstack-usage
+CPPFLAGS =$(CPU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti 
+LDFLAGS  =$(MCU) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
+
+#######################################
+# Libraries
+#######################################
+
+LIBDIR =
 ifdef SEMIHOSTING
 SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
@@ -155,24 +154,6 @@ SPECS=--specs=nosys.specs --specs=nano.specs
 #-nostdlib -lstd++ -lnosys -lm 
 LIBS =-lstdc++
 endif
-
-ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
-C_DEFS +=ENABLE_BENCHMAK_DHYSTONE
-endif
-
-ifeq ($(FEATURE_TFT_DISPLAY),yes)
-C_DEFS +=ENABLE_TFT_DISPLAY
-endif
-
-LDLIBS_PATH =
-# Generate dependency information
-#CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst))
-
-CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -std=gnu11 -fdata-sections -ffunction-sections #-fstack-usage
-
-CPPFLAGS =$(CPU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti 
-ASFLAGS  =$(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-LDFLAGS  =$(MCU) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
 # Objects
@@ -187,10 +168,31 @@ vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 #vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 #VPATH +=$(sort $(dir $(CSRCS)))
+
+#######################################
+# Tool binaries
+#######################################
+PREFIX = arm-none-eabi-
+CC  =$(PREFIX)gcc
+CPP =$(PREFIX)g++
+AS  =$(PREFIX)gcc -x assembler-with-cpp
+LD  =$(PREFIX)gcc
+AR  =$(PREFIX)ar
+SZ  =$(PREFIX)size
+OBJCOPY =$(PREFIX)objcopy
+OBJDUMP =$(PREFIX)objdump
+HEX = $(OBJCOPY) -O ihex
+BIN = $(OBJCOPY) -O binary -S
+
+ifeq ($(shell uname -s), Linux)
+JLK ="/opt/SEGGER/JLink/JLinkExe"
+else
+JLK :=$(JLINK)
+endif
+
 #######################################
 # Rules
 #######################################
-# default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf size
 #@echo $(CMSIS_PATH)
 
@@ -200,6 +202,14 @@ program: $(BUILD_DIR)/$(TARGET).jlink bin
 #$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
 	openocd -f at32f415.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 
+$(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
+	@echo "Creating Jlink configuration file"
+	@echo "loadfile $< 0x00000000" > $@
+	@echo "r" >> $@
+	@echo "q" >> $@
+#######################################
+# build rules
+#######################################
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
 	$(VERBOSE)$(CC) -c $(CFLAGS) $< -o $@
@@ -214,7 +224,7 @@ $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
 	@echo "[LD]  $@"
-	$(VERBOSE)$(LD) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
+	$(VERBOSE)$(LD) $(LIBDIR) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(VERBOSE)$(HEX) $< $@
@@ -230,12 +240,6 @@ size: $(BUILD_DIR)/$(TARGET).elf
 	$(VERBOSE)$(SZ) -A -x $<
 	$(VERBOSE)$(SZ) -B $<
 
-$(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
-	@echo "Creating Jlink configuration file"
-	@echo "loadfile $< 0x00000000" > $@
-	@echo "r" >> $@
-	@echo "q" >> $@
-
 #######################################
 # clean up
 #######################################
@@ -246,5 +250,9 @@ clean:
 # dependencies
 #######################################
 #-include $(shell mkdir .dep 2>/dev/null) $(wildcard .dep/*)
+ifeq ($(GCC_COLORS), )
+export GCC_COLORS='error=01;31:warning=01;35:note=01;36:caret=01;32:locus=01:quote=01'
+#unexport GCC_COLORS
+endif
 
 # *** EOF ***

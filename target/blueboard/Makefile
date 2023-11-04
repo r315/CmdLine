@@ -3,16 +3,32 @@
 # project files
 #########################################################
 TARGET 		=console-blueboard
-TARGET_PATH =$(CURDIR)
-BUILD_DIR 	:=build
 EXEC		=$(BUILD_DIR)/$(TARGET)
 
-LIB_PATH =$(LIBEMB_PATH)
+#######################################
+# Features
+#######################################
+
+FEATURE_TFT_DISPLAY :=no
+FEATURE_BENCHMAK :=yes
+FEATURE_BENCHMAK_DHYSTONE :=no
+
+#######################################
+# paths
+#######################################
+
+TARGET_PATH  =$(CURDIR)
+BUILD_DIR 	 :=build
+
+LIB_PATH 	 =$(LIBEMB_PATH)
 DRIVERS_PATH =$(LIBEMB_PATH)/drv
 CMSIS_PATH   =$(DRIVERS_PATH)/CMSIS
 CMSIS_DEVICE =$(CMSIS_PATH)/Device/NXP/LPC17xx
 
-INCSPATH =\
+#######################################
+# Includes
+#######################################
+C_INCLUDES =\
 $(TARGET_PATH)/inc \
 $(TARGET_PATH)/usbdrv \
 $(APP_DIR)/inc \
@@ -26,6 +42,9 @@ $(DRIVERS_PATH)/inc \
 $(CMSIS_DEVICE)/inc \
 $(CMSIS_PATH)/Core/Include \
 
+######################################
+# Sources
+######################################
 C_SOURCES =\
 $(CMSIS_DEVICE)/src/startup_LPC17xx.c \
 $(CMSIS_DEVICE)/src/system_LPC17xx.c \
@@ -69,6 +88,7 @@ $(APP_DIR)/src/cmdgpio.cpp \
 $(APP_DIR)/src/cmdplayer.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 $(APP_DIR)/src/cmdtft.cpp \
+$(APP_DIR)/src/cmdbenchmark.cpp \
 $(TARGET_PATH)/src/cmdspi.cpp \
 $(TARGET_PATH)/src/cmdlsd.cpp \
 $(TARGET_PATH)/src/cmdpwm.cpp \
@@ -81,27 +101,44 @@ $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/libs/stk500/stk500_service.cpp \
 $(APP_DIR)/src/cmdmsensor.cpp \
 
-
 LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
-#########################################################
-#Startup files and libraries
-#########################################################
+#######################################
+# Misc
+#######################################
+
+C_DEFS = \
+BOARD_BLUEBOARD \
+_ENABLE_BUTTONS \
+_ENABLE_SDCARD \
+
+ifeq ($(FEATURE_BENCHMAK), yes)
+C_DEFS +=ENABLE_BENCHMARK
+endif
+
+ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
+C_DEFS +=\
+ENABLE_BENCHMAK_DHYSTONE \
+ENABLE_DEBUG MSC_CLOCK
+endif
+
+ifeq ($(FEATURE_TFT_DISPLAY),yes)
+C_DEFS +=ENABLE_TFT_DISPLAY
+endif
+#######################################
+# CFLAGS
+#######################################
+
 DEVICE =LPC1768
 CPU =-mcpu=cortex-m3 -mthumb
 
 OPT =-O0 -g
 
-GCSYMBOLS = \
-__NEWLIB__ \
-BOARD_BLUEBOARD \
-_ENABLE_BUTTONS \
-_ENABLE_SDCARD \
-ENABLE_TFT_DISPLAY \
-_ENABLE_BENCHMARK \
-_ENABLE_DEBUG MSC_CLOCK \
-
 GCFLAGS =$(CPU) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
 GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
+
+#######################################
+# Libraries
+#######################################
 
 SPECS=--specs=nosys.specs --specs=nano.specs #-u _printf_float 
 LIBS =-lstdc++
@@ -109,7 +146,24 @@ LIBS =-lstdc++
 LIBSPATH +=
 LDFLAGS =$(CPU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(EXEC).map,--cref
 
-#########################################################
+#######################################
+# Objects
+#######################################
+
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.obj)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+CHECKSUM =$(LIB_PATH)/tools/checksum
+
+#######################################
+# Tool binaries
+#######################################
 GCC_EXEC_PREFIX = arm-none-eabi
 GCC = $(GCC_EXEC_PREFIX)-gcc
 GPP = $(GCC_EXEC_PREFIX)-g++
@@ -121,22 +175,11 @@ OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
 DBG = $(GCC_EXEC_PREFIX)-insight
 REMOVE = rm -fR
 
-
 ifeq ($(shell uname -s), Linux)
 JLINK ="/opt/SEGGER/JLink/JLinkExe"
 else
 JLINK =jlink
 endif
-OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-
-OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.obj)))
-vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
-
-OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-CHECKSUM =$(LIB_PATH)/tools/checksum
 ##########################################################
 # RULES
 ##########################################################
@@ -200,16 +243,16 @@ $(CHECKSUM):
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
 	
-#########################################################
-# 
-########################################################
+#######################################
+# build rules
+#######################################
 $(BUILD_DIR)/%.o : %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
-	@$(GCC) $(GCFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
+	@$(GCC) $(GCFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
 
 $(BUILD_DIR)/%.obj : %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
-	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(INCSPATH)) $(addprefix -D, $(GCSYMBOLS)) -c $< -o $@
+	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
 	
 $(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
 	@echo "[AS]  $<"
