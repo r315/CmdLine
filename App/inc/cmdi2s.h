@@ -7,6 +7,7 @@ extern "C" {
 #endif
 
 #include "console.h"
+#include "i2s.h"
 
 class CmdI2s : public ConsoleCommand{
     Console *console;
@@ -17,7 +18,10 @@ public:
     char execute(int argc, char **argv);
     void help(void);
 
-    CmdI2s () : ConsoleCommand("i2s") { }    
+    CmdI2s () : ConsoleCommand("i2s") { }
+    
+private:
+    i2sbus_t m_i2s;
 };
 
 

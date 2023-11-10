@@ -7,10 +7,10 @@ TARGET =console-artery
 # Features
 #######################################
 
-FEATURE_TFT_DISPLAY :=yes
-FEATURE_BENCHMAK :=yes
-FEATURE_BENCHMAK_DHYSTONE :=no
-
+FEATURE_TFT_DISPLAY       =yes
+FEATURE_BENCHMAK          =yes
+FEATURE_BENCHMAK_DHYSTONE =no
+FEATURE_DIGITAL_AUDIO     =yes
 #######################################
 # paths
 #######################################
@@ -56,8 +56,7 @@ $(DRIVERS_PATH)/dma/dma_at32f4xx.c \
 $(DRIVERS_PATH)/gpio/gpio_at32f4xx.c \
 $(DRIVERS_PATH)/uart/uart_at32f4xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
-#$(DRIVERS_COMPONENT_PATH)/src/st7735.c \
-#$(DRIVERS_COMPONENT_PATH)/src/ili9341.c \
+$(DRIVERS_PATH)/i2s/i2s_at32f4xx.c \
 
 CSRCS = \
 $(BOARD_SOURCES) \
@@ -75,6 +74,7 @@ $(APP_DIR)/src/app.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 $(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
+$(APP_DIR)/src/cmdi2s.cpp \
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################
@@ -99,6 +99,10 @@ endif
 
 ifeq ($(FEATURE_TFT_DISPLAY),yes)
 C_DEFS +=ENABLE_TFT_DISPLAY
+endif
+
+ifeq ($(FEATURE_DIGITAL_AUDIO),yes)
+C_DEFS +=ENABLE_DIGITAL_AUDIO
 endif
 
 #######################################
@@ -187,7 +191,7 @@ BIN = $(OBJCOPY) -O binary -S
 ifeq ($(shell uname -s), Linux)
 JLK ="/opt/SEGGER/JLink/JLinkExe"
 else
-JLK :=$(JLINK)
+JLK :=JLink
 endif
 
 #######################################
@@ -198,9 +202,10 @@ all: $(BUILD_DIR)/$(TARGET).elf size
 
 bin: $(BUILD_DIR)/$(TARGET).bin
 
-program: $(BUILD_DIR)/$(TARGET).jlink bin
+# Not working for f072 OB due to missing libusb support
+#program: $(BUILD_DIR)/$(TARGET).jlink bin
 #$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
-	openocd -f at32f415.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+#openocd -f at32f415.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 
 $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 	@echo "Creating Jlink configuration file"

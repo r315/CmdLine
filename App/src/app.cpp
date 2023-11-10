@@ -51,13 +51,16 @@ static ConsoleCommand *app_commands[] = {
     new CmdBenchmark(),
 #endif
 
+#if defined (ENABLE_DIGITAL_AUDIO)
+    new CmdI2s(),
+#endif
+
 #if defined (BOARD_BLUEBOARD)
     new CmdSpi(),
     //new CmdAvr(),
     //new CmdSbus(),
     new CmdSd(),
 	new CmdGpio(),
-	new CmdI2s(),
 	//new CmdMSensor(),
 	new CmdPlayer(),
     

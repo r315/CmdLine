@@ -59,8 +59,8 @@ static void audio_init(void){
     s_i2s.bus = I2S_BUS2;
     s_i2s.sample_rate = 32000;
     s_i2s.channels = 2;
-    s_i2s.data_size = 16;
-    s_i2s.mode = I2S_TX_EN_MASTER;
+    s_i2s.data_size = I2S_DT16_SL32;
+    s_i2s.mode = I2S_MASTER_TX | I2S_EN_TX;
     s_i2s.txbuffer = (uint32_t*)s_dma_buf;
     s_i2s.rxbuffer = NULL;
     s_i2s.tx_buf_len = sizeof(s_dma_buf) / 4;

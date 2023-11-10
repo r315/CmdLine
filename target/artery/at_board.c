@@ -78,12 +78,16 @@ void BOARD_Init(void)
 
 	InitTimeBase();
 
-    //spibus.bus = SPI_BUS0;
-    //spibus.freq = SPI_FREQ;
-    //spibus.flags = SPI_HW_CS;
-    //SPI_Init(&spibus);
+    RCC->APB2EN |= RCC_APB2EN_GPIOAEN;
+    RCC->APB2EN |= RCC_APB2EN_GPIOBEN;
 
 	LED1_PIN_INIT;
+
+    #ifdef ENABLE_DIGITAL_AUDIO    
+    GPIO_Config(PA_7, GPIO_SPI1_SD);
+    GPIO_Config(PA_4, GPIO_SPI1_WS);
+    GPIO_Config(PA_5, GPIO_SPI1_CK);
+    #endif
 
     SERIAL_Init();
 }
