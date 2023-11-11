@@ -46,13 +46,14 @@ static ConsoleCommand *app_commands[] = {
 #if defined (ENABLE_TFT_DISPLAY)
 	new CmdTft(),
 #endif
-
 #if defined (ENABLE_BENCHMARK)
     new CmdBenchmark(),
 #endif
-
 #if defined (ENABLE_DIGITAL_AUDIO)
     new CmdI2s(),
+#endif
+#if defined (ENABLE_I2C)
+    new CmdI2c(),
 #endif
 
 #if defined (BOARD_BLUEBOARD)
@@ -72,7 +73,6 @@ static ConsoleCommand *app_commands[] = {
 	new CmdFlashRom(),
 	//new CmdEncoder(),
 #elif defined (BOARD_NUCLEO_L412KB)
-    new CmdI2c(),
 	new CmdBuz(),
 	new CmdKeyFob(),
     new CmdLmcshd(),

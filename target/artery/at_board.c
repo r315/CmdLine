@@ -58,8 +58,8 @@ void BOARD_LCD_Init(void){
 
     // To use PB3 as SPI2 sclk, SPI2 has to be remapped
     RCC->APB2EN |= RCC_APB2EN_AFIOEN;
-    AFIO->MAP = AFIO_MAP_SWJTAG_CONF_JTAGDISABLE;
-    AFIO->MAP5 = AFIO_MAP5_SPI2_GRMP;
+    AFIO->MAP = (AFIO->MAP & ~(7 << 24)) | AFIO_MAP_SWJTAG_CONF_JTAGDISABLE;
+    AFIO->MAP5 = (AFIO->MAP5 & ~(15 << 20)) | AFIO_MAP5_SPI2_GRMP;
 
     GPIO_Config(LCD_SCLK, GPIO_SPI2_SCK);
     GPIO_Config(LCD_DI, GPIO_SPI2_MOSI);
@@ -87,6 +87,14 @@ void BOARD_Init(void)
     GPIO_Config(PA_7, GPIO_SPI1_SD);
     GPIO_Config(PA_4, GPIO_SPI1_WS);
     GPIO_Config(PA_5, GPIO_SPI1_CK);
+    #endif
+
+    #ifdef ENABLE_I2C
+    RCC->APB2EN |= RCC_APB2EN_AFIOEN;
+    AFIO->MAP5 = (AFIO->MAP & ~(7 << 4)) | AFIO_MAP5_I2C1_GRMP_01;
+    
+    GPIO_Config(PB_8, GPIO_I2C1_SCL);
+    GPIO_Config(PB_9, GPIO_I2C1_SDA);
     #endif
 
     SERIAL_Init();

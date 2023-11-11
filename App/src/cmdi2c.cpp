@@ -30,14 +30,15 @@ char CmdI2c::execute(int argc, char **argv){
 		    return CMD_BAD_PARAM;
 	    }
 	    
-        m_i2c.bus_num = val;
+        m_i2c.bus_num = (i2cbusnum_t)val;
+        m_i2c.speed = 100000;
         
         I2C_Init(&m_i2c);
         
         return CMD_OK;
     }
     
-    if(m_i2c.ctrl == NULL){
+    if(m_i2c.peripheral == NULL){
         console->println("I2C not initialized");
 		return CMD_BAD_PARAM;
     }     

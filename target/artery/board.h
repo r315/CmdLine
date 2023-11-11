@@ -75,6 +75,8 @@ extern "C" {
 #define DBG_PIN_INIT    //LED1_PIN_INIT
 #define DBG_PIN_TOGGLE  //LED1_TOGGLE
 
+#define I2C_MAX_ITF     2
+
 //enum {false = 0, true, OFF = false, ON = true};
 extern spibus_t spibus;
 

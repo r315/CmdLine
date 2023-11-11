@@ -11,6 +11,7 @@ FEATURE_TFT_DISPLAY       =yes
 FEATURE_BENCHMAK          =yes
 FEATURE_BENCHMAK_DHYSTONE =no
 FEATURE_DIGITAL_AUDIO     =yes
+FEATURE_I2C               =yes
 #######################################
 # paths
 #######################################
@@ -51,12 +52,15 @@ $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
 $(DRIVERS_PER_PATH)/src/at32f4xx_rcc.c \
+$(DRIVERS_PER_PATH)/src/at32f4xx_i2c.c \
+$(DRIVERS_PER_PATH)/src/at32f4xx_i2c_ex.c \
 $(DRIVERS_PATH)/spi/spi_at32f4xx.c \
 $(DRIVERS_PATH)/dma/dma_at32f4xx.c \
 $(DRIVERS_PATH)/gpio/gpio_at32f4xx.c \
 $(DRIVERS_PATH)/uart/uart_at32f4xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
 $(DRIVERS_PATH)/i2s/i2s_at32f4xx.c \
+$(DRIVERS_PATH)/i2c/i2c_at32f415.c \
 
 CSRCS = \
 $(BOARD_SOURCES) \
@@ -75,6 +79,7 @@ $(APP_DIR)/src/cmdmem.cpp \
 $(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/src/cmdi2s.cpp \
+$(APP_DIR)/src/cmdi2c.cpp \
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################
@@ -88,6 +93,7 @@ C_DEFS +=\
 BOARD_415DK \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
+FIFO_INTERRUPT_SAFE \
 
 ifeq ($(FEATURE_BENCHMAK), yes)
 C_DEFS +=ENABLE_BENCHMARK
@@ -103,6 +109,10 @@ endif
 
 ifeq ($(FEATURE_DIGITAL_AUDIO),yes)
 C_DEFS +=ENABLE_DIGITAL_AUDIO
+endif
+
+ifeq ($(FEATURE_I2C),yes)
+C_DEFS +=ENABLE_I2C
 endif
 
 #######################################
