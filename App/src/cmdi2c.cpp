@@ -106,5 +106,10 @@ char CmdI2c::execute(int argc, char **argv){
         return CMD_OK;
     }
 
+    if(!xstrcmp("reset", argv[1])){
+        I2C_Reset(&m_i2c);
+        return CMD_OK;
+    }
+
 	return CMD_NOT_FOUND;
 }
