@@ -66,9 +66,9 @@ static uint32_t piBenchmark(uint32_t iterations, float *calc_pi){
 
 void CmdBenchmark::help(void){
     console->println("Usage: benchmark <option>\n");
-    console->print("\t pi   - PI benchmark");
+    console->print("\t pi   - PI benchmark\n");
     #if defined(ENABLE_BENCHMARK_DHRYSTONE)
-    console->print("\t dhry - Dhrystone benchmark");
+    console->print("\t dhry - Dhrystone benchmark\n");
     #endif
 }
 
@@ -83,7 +83,7 @@ char CmdBenchmark::execute(int argc, char **argv){
     if(xstrcmp("dhry", (const char*)argv[1]) == 0){
         float res = dhry(1000000) / 1757.0f;
         if(res){
-            console->print("%.2f DMIPS/MHz\n",  res / (SystemCoreClock / 1000000));
+            console->printf("%.2f DMIPS/MHz\n",  res / (SystemCoreClock / 1000000));
         }
         return CMD_OK;
     }

@@ -7,11 +7,13 @@ TARGET =console-artery
 # Features
 #######################################
 
-FEATURE_TFT_DISPLAY       =yes
-FEATURE_BENCHMAK          =yes
-FEATURE_BENCHMAK_DHYSTONE =no
-FEATURE_DIGITAL_AUDIO     =yes
-FEATURE_I2C               =yes
+FEATURE_ENABLE = \
+FEATURE_TFT_DISPLAY \
+FEATURE_BENCHMAK \
+FEATURE_BENCHMAK_DHYSTONE \
+FEATURE_DIGITAL_AUDIO \
+FEATURE_I2C \
+
 #######################################
 # paths
 #######################################
@@ -95,25 +97,7 @@ $(DEVICE) \
 USE_STDPERIPH_DRIVER \
 FIFO_INTERRUPT_SAFE \
 
-ifeq ($(FEATURE_BENCHMAK), yes)
-C_DEFS +=ENABLE_BENCHMARK
-endif
-
-ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
-C_DEFS +=ENABLE_BENCHMAK_DHYSTONE
-endif
-
-ifeq ($(FEATURE_TFT_DISPLAY),yes)
-C_DEFS +=ENABLE_TFT_DISPLAY
-endif
-
-ifeq ($(FEATURE_DIGITAL_AUDIO),yes)
-C_DEFS +=ENABLE_DIGITAL_AUDIO
-endif
-
-ifeq ($(FEATURE_I2C),yes)
-C_DEFS +=ENABLE_I2C
-endif
+C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
 
 #######################################
 # CFLAGS

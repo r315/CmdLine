@@ -15,7 +15,15 @@
 ######################################
 TARGET =console-nucleo
 
-FEATURE_TFT_DISPLAY :=yes
+FEATURE_ENABLE = \
+ENABLE_TFT_DISPLAY \
+ENABLE_I2C \
+ENABLE_SI5351 \
+ENABLE_DS1086 \
+ENABLE_BENCHMARK \
+ENABLE_BENCHMARK_DHRYSTONE \
+
+#FEATURE_GIF \
 
 #######################################
 # paths
@@ -23,7 +31,7 @@ FEATURE_TFT_DISPLAY :=yes
 # Build path
 BUILD_DIR :=build
 TARGET_PATH =$(CURDIR)
-
+APP_DIR	?=../../App
 LIB_PATH =$(LIBEMB_PATH)
 DRIVERS_PATH =$(LIB_PATH)/drv
 CMSIS_PATH 	=$(DRIVERS_PATH)/CMSIS
@@ -140,11 +148,10 @@ BOARD_NUCLEO_L412KB \
 STM32L412xx \
 USE_HAL_DRIVER \
 'VERSION_STRING="$(VERSION)"' \
-_FEATURE_GIF \
 MSC_CLOCK \
 FIFO_INTERRUPT_SAFE=1 \
 FIFO_SIZE=128 \
-ENABLE_BENCHMARK \
+
 
 #######################################
 # binaries
@@ -207,9 +214,7 @@ MCU = $(CPU) $(FPU) $(FLOAT-ABI)
 # AS defines
 AS_DEFS = 
 
-ifeq ($(FEATURE_TFT_DISPLAY),yes)
-COMMON_DEFS +=ENABLE_TFT_DISPLAY
-endif
+COMMON_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
 
 # C defines
 C_DEFS =  \
@@ -272,8 +277,10 @@ program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 test:
 #@echo $(VERSION)
 #@echo ""; $(foreach d, $(OBJECTS), echo $(d);)
-	@echo $(sort $(C_INCLUDES))
-#@echo $(C_SOURCES)
+
+#@echo ""; $(foreach d, $(FEATURE_ENABLE), echo $(d);)
+#@echo $(sort $(C_INCLUDES))
+	@echo $(FEATURE_ENABLE)
 
 #######################################
 # build the application

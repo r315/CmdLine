@@ -7,8 +7,12 @@ TARGET =console_bluepill
 # Features
 #######################################
 
-FEATURE_BENCHMAK_DHYSTONE :=no
-FEATURE_TFT_DISPLAY :=no
+FEATURE_ENABLE = \
+ENABLE_TFT_DISPLAY \
+ENABLE_BENCHMARK \
+#ENABLE_BENCHMAK_DHYSTONE \
+#ENABLE_DEBUG MSC_CLOCK \
+
 
 #######################################
 # paths
@@ -128,24 +132,15 @@ C_DEFS =  \
 $(DEVICE) \
 USE_HAL_DRIVER \
 BOARD_BLUEPILL \
-ENABLE_TFT_DISPLAY \
 
 # CPP defines
 CPP_DEFS = \
 $(DEVICE) \
 USE_HAL_DRIVER \
 BOARD_BLUEPILL \
-ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMARK \
-_ENABLE_DEBUG MSC_CLOCK \
 
-ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
-C_DEFS +=ENABLE_BENCHMAK_DHYSTONE
-endif
+C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
 
-ifeq ($(FEATURE_TFT_DISPLAY),yes)
-C_DEFS +=ENABLE_TFT_DISPLAY
-endif
 #######################################
 # Tool binaries
 #######################################

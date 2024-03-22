@@ -55,6 +55,9 @@ static ConsoleCommand *app_commands[] = {
 #if defined (ENABLE_I2C)
     new CmdI2c(),
 #endif
+#if defined (ENABLE_SI5351)
+    new CmdSi5351(),
+#endif
 
 #if defined (BOARD_BLUEBOARD)
     new CmdSpi(),
@@ -76,7 +79,6 @@ static ConsoleCommand *app_commands[] = {
 	new CmdBuz(),
 	new CmdKeyFob(),
     new CmdLmcshd(),
-    new CmdSi5351(),
 #endif
 };
 

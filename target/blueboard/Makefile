@@ -9,9 +9,12 @@ EXEC		=$(BUILD_DIR)/$(TARGET)
 # Features
 #######################################
 
-FEATURE_TFT_DISPLAY :=no
-FEATURE_BENCHMAK :=yes
-FEATURE_BENCHMAK_DHYSTONE :=no
+FEATURE_ENABLE = \
+#ENABLE_BENCHMAK \
+ENABLE_TFT_DISPLAY \
+ENABLE_BENCHMAK_DHYSTONE \
+ENABLE_BENCHMAK_DHYSTONE \
+ENABLE_DEBUG MSC_CLOCK \
 
 #######################################
 # paths
@@ -111,19 +114,8 @@ BOARD_BLUEBOARD \
 _ENABLE_BUTTONS \
 _ENABLE_SDCARD \
 
-ifeq ($(FEATURE_BENCHMAK), yes)
-C_DEFS +=ENABLE_BENCHMARK
-endif
+C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
 
-ifeq ($(FEATURE_BENCHMAK_DHYSTONE),yes)
-C_DEFS +=\
-ENABLE_BENCHMAK_DHYSTONE \
-ENABLE_DEBUG MSC_CLOCK
-endif
-
-ifeq ($(FEATURE_TFT_DISPLAY),yes)
-C_DEFS +=ENABLE_TFT_DISPLAY
-endif
 #######################################
 # CFLAGS
 #######################################

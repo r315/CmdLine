@@ -43,9 +43,7 @@ extern "C" {
 #define LCD_BKL_PIN         PB_4
 
 #define I2C_MAX_ITF         3
-#define I2C_IF0 	        0
-#define I2C_IF1 	        1
-#define I2C_IF2 	        2
+#define I2C_IF0 	        0 //PB6->SCL, PB7<->SDA
 
 /**
  * SPI Header
