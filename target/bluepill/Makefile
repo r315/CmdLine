@@ -46,7 +46,8 @@ $(LIB_PATH)/inc \
 $(DRIVERS_PATH)/inc \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/agif \
-$(APP_DIR)/libs/si5351
+$(APP_DIR)/libs/si5351 \
+$(APP_DIR)/libs/ds1086 \
 
 AS_INCLUDES = 
 

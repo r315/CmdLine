@@ -39,6 +39,7 @@ $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/si5351 \
+$(APP_DIR)/libs/ds1086 \
 
 AS_INCLUDES =\
 

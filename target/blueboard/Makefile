@@ -39,6 +39,7 @@ $(APP_DIR)/libs/minimp3 \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/si5351 \
+$(APP_DIR)/libs/ds1086 \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(DRIVERS_PATH)/inc \
