@@ -8,11 +8,11 @@ TARGET =console-artery
 #######################################
 
 FEATURE_ENABLE = \
-FEATURE_TFT_DISPLAY \
-FEATURE_BENCHMAK \
-FEATURE_BENCHMAK_DHYSTONE \
-FEATURE_DIGITAL_AUDIO \
-FEATURE_I2C \
+ENABLE_TFT_DISPLAY \
+ENABLE_BENCHMAK \
+ENABLE_BENCHMAK_DHYSTONE \
+_ENABLE_DIGITAL_AUDIO \
+ENABLE_I2C \
 
 #######################################
 # paths
@@ -185,6 +185,9 @@ BIN = $(OBJCOPY) -O binary -S
 
 ifeq ($(shell uname -s), Linux)
 JLK ="/opt/SEGGER/JLink/JLinkExe"
+PRG_CFG =$(TARGET).elf
+PRG_CMD =openocd -f $(OCD_CONFIG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+ERASE_CMD =openocd -f $(OCD_CONFIG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
 else
 JLK :=JLink
 endif
@@ -197,10 +200,8 @@ all: $(BUILD_DIR)/$(TARGET).elf size
 
 bin: $(BUILD_DIR)/$(TARGET).bin
 
-# Not working for f072 OB due to missing libusb support
-#program: $(BUILD_DIR)/$(TARGET).jlink bin
-#$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
-#openocd -f at32f415.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+program: bin
+	$(PRG_CMD)
 
 $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 	@echo "Creating Jlink configuration file"

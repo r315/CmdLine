@@ -3,6 +3,18 @@
 #include "i2c.h"
 
 
+void CmdI2c::printAsc(uint8_t *buf, int count)
+{
+	while(count--){
+		if(*buf > 0x1f && *buf < 0x80) {
+			console->printf("%c", *((char*)buf));
+		} else {
+			console->print(".");
+		}
+		buf++;
+	}
+}
+
 void CmdI2c::help(void){
     console->print("Usage: i2c <read|write|init|scan> [option] \n\n");  
     console->print("\tinit <bus>, \n");
@@ -51,17 +63,30 @@ char CmdI2c::execute(int argc, char **argv){
                 if(I2C_Read(&m_i2c, i2c_buf, count) == 0){
                     console->print("Failed to read");
                 }else{
-                    for(int i = 0; i < count; i ++){
-                        if( (i & 15) == 0) 
-                            console->printf("\n%02X: ", i & 0xF0);                
+                    uint8_t asc = !xstrcmp("ascii", argv[4]);
+                    int i,k;
+                    for(i = 0, k = 0; i < count; i ++){
+                        if( (i & 15) == 0) {
+                            if(asc) {
+                                printAsc(&i2c_buf[k], i - k);
+                                k = i;
+                            }
+                            if(i == (count - 1)){
+                                console->printchar('\n');
+                            }else{
+                                console->printf("\n%02X: ", i & 0xF0);
+                            }
+                        }
                         console->printf("%02X ", i2c_buf[i]);
-                    }        
+                    }
+                    if(asc) {
+                        printAsc(&i2c_buf[k], i - k);
+                    }
                 }
-                console->printchar('\n');
             }else{
-                console->println("Invalid read count");
+                console->print("Invalid read count");
             }
-            return CMD_OK;
+            return CMD_OK_LF;
         }       
     }
     

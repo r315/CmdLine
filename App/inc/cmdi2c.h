@@ -12,6 +12,7 @@ extern "C" {
 class CmdI2c : public ConsoleCommand{
     Console *console;
     i2cbus_t m_i2c;
+    void printAsc(uint8_t *buf, int count);
 public:
     void init(void *params) { console = static_cast<Console*>(params); m_i2c = {0};}
 
