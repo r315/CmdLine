@@ -1,5 +1,5 @@
 #include "board.h"
-#include "cmdSi5351.h"
+#include "cmdsi5351.h"
 #include "si5351.h"
 
 static uint8_t parseFreq(char *number, uint64_t *out)
