@@ -72,9 +72,6 @@ extern "C" {
 #define LED1_ON         GPIO_Write(LED_PIN, GPIO_PIN_LOW)
 #define LED1_TOGGLE     GPIO_Toggle(LED_PIN)
 
-#define DBG_PIN_INIT    //LED1_PIN_INIT
-#define DBG_PIN_TOGGLE  //LED1_TOGGLE
-
 #define I2C_MAX_ITF     2
 
 //enum {false = 0, true, OFF = false, ON = true};

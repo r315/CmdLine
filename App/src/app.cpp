@@ -31,6 +31,7 @@
 #include "cmdplayer.h"
 #include "cmdsi5351.h"
 #include "cmdds1086.h"
+#include "cmdrgbled.h"
 
 #if defined (BOARD_BLUEBOARD)
 #include "cmdsd.h"
@@ -61,6 +62,9 @@ static ConsoleCommand *app_commands[] = {
 #endif
 #if defined (ENABLE_DS1086)
     new CmdDS1086(),
+#endif
+#if defined (ENABLE_RGBLED)
+    new CmdRgbled(),
 #endif
 
 #if defined (BOARD_BLUEBOARD)

@@ -22,7 +22,7 @@ ENABLE_SI5351 \
 ENABLE_DS1086 \
 ENABLE_BENCHMARK \
 ENABLE_BENCHMARK_DHRYSTONE \
-
+#ENABLE_RGBLED \
 #FEATURE_GIF \
 
 #######################################
@@ -59,6 +59,7 @@ $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/dhrystone \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
+$(APP_DIR)/libs/ws2812b \
 ######################################
 # source
 ######################################
@@ -107,6 +108,7 @@ $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c \
+$(APP_DIR)/libs/ws2812b/ws2812b.c \
 #$(APP_DIR)/agif/agif.c \
 
 CPP_SOURCES = \

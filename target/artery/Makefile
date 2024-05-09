@@ -13,6 +13,7 @@ ENABLE_BENCHMAK \
 ENABLE_BENCHMAK_DHYSTONE \
 _ENABLE_DIGITAL_AUDIO \
 ENABLE_I2C \
+ENABLE_RGBLED \
 
 #######################################
 # paths
@@ -40,6 +41,7 @@ $(LIB_PATH)/inc \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
+$(APP_DIR)/libs/ws2812b \
 
 AS_INCLUDES =\
 
@@ -73,6 +75,7 @@ $(DRIVERS_PATH)/rng/rng_software.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
+$(APP_DIR)/libs/ws2812b/ws2812b.c \
 
 
 CPP_SOURCES = \
@@ -83,13 +86,14 @@ $(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/src/cmdi2s.cpp \
 $(APP_DIR)/src/cmdi2c.cpp \
+$(APP_DIR)/src/cmdrgbled.cpp \
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################
 # Misc
 #######################################
 
-OCD_CONFIG =$(TARGET_PATH)/at32f415.cfg
+
 
 # C defines
 C_DEFS +=\
@@ -184,12 +188,16 @@ HEX = $(OBJCOPY) -O ihex
 BIN = $(OBJCOPY) -O binary -S
 
 ifeq ($(shell uname -s), Linux)
-JLK ="/opt/SEGGER/JLink/JLinkExe"
-PRG_CFG =$(TARGET).elf
-PRG_CMD =openocd -f $(OCD_CONFIG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
-ERASE_CMD =openocd -f $(OCD_CONFIG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
+#JLK ="/opt/SEGGER/JLink/JLinkExe"
+PRG_DEP =bin
+PRG_CFG =$(TARGET_PATH)/at32f415.cfg
+PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+ERASE_CMD =openocd -f $(PRG_CFG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
 else
 JLK :=JLink
+PRG_DEP =bin $(PRG_CFG)
+PRG_CFG =$(BUILD_DIR)/$(TARGET).jlink
+PRG_CMD =$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 endif
 
 #######################################
@@ -200,12 +208,12 @@ all: $(BUILD_DIR)/$(TARGET).elf size
 
 bin: $(BUILD_DIR)/$(TARGET).bin
 
-program: bin
+program: $(PRG_DEP)
 	$(PRG_CMD)
 
 $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 	@echo "Creating Jlink configuration file"
-	@echo "loadfile $< 0x00000000" > $@
+	@echo "loadfile $< 0x08000000" > $@
 	@echo "r" >> $@
 	@echo "q" >> $@
 #######################################
