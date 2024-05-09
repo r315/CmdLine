@@ -1,11 +1,6 @@
 #include "cmd%CLASSNAME%.h"
 
 
-Cmd%CLASSNAME%::init(void *params)
-{
-
-}
-
 void Cmd%CLASSNAME%::help(void)
 {
 
