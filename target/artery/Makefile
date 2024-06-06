@@ -188,7 +188,6 @@ HEX = $(OBJCOPY) -O ihex
 BIN = $(OBJCOPY) -O binary -S
 
 ifeq ($(shell uname -s), Linux)
-#JLK ="/opt/SEGGER/JLink/JLinkExe"
 PRG_DEP =bin
 PRG_CFG =$(TARGET_PATH)/at32f415.cfg
 PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
