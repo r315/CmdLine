@@ -82,6 +82,7 @@ $(TARGET_PATH)/usbdrv/usbcontrol.c \
 $(TARGET_PATH)/usbdrv/usbstdreq.c \
 $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
+$(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \
 #$(LIBEMB_PATH)/drv/lib2d.c \
 

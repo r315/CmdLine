@@ -5,58 +5,73 @@
 ** Last update Tue Nov 17 19:36:26 2009 texane
 */
 
-#include "types.h"
-#include "spi_avr.h"
+#include <string.h>
+#include "avr_if.h"
 #include "stk500.h"
 #include "stk500_proto.h"
-#include <string.h>
+#include "board.h"
 
-/* persistent state */
-
-struct state
-{
+#define SPI_SIGNATURE_BYTE_COUNT    3
+#define SPI_CALIBRATION_BYTE_COUNT  4
 #define STATE_FLAG_HAS_DEV_SETTINGS (1 << 0)
 
 #define STATE_HAS_FLAG(S, F) ((S)->flags & (1 << STATE_FLAG_##F))
 #define STATE_CLEAR_FLAG(S, F) ((S)->flags &= ~(1 << STATE_FLAG_##F))
 #define STATE_SET_FLAG(S, F) ((S)->flags |= 1 << STATE_FLAG_##F)
 
-    unsigned int flags;
+#define PROGRAM_PAGE_SIZE 0x100
 
+typedef struct state{
+    uint32_t flags;
     uint16_t addr;
-};
+}state_t;
 
-static struct state state;
-
-static void init_state(struct state *st)
+typedef struct _Service
 {
-    st->flags = 0;
-    st->addr = 0;
+    uint8_t state;
+    stk500_error_t error;
+    uint32_t isize;
+    uint32_t osize;
+    uint8_t do_timeout;
+    uint8_t buf[STK500_BUF_MAX_SIZE];
+} Service;
+
+static state_t state;
+static Service stkService;
+static serialops_t *serial;
+
+void write_uint8(uint8_t *data, uint32_t len)
+{
+    serial->writeBytes(data, len);
 }
 
-/* helpers */
-#if 0
-static void memcpy(unsigned char* to, unsigned char* from, unsigned int size)
+int read_uint8(uint8_t *c, uint8_t do_timeout)
 {
-  for (; size; --size, ++to, ++from)
-    *to = *from;
-}
+#ifdef NO_SERVICE
+    if (!serial->available()){
+        return -1;
+    }
+    *c = (uint8_t)serial->readchar();
+    return 0;
+#else
+    if (do_timeout){
+        uint32_t ticks = GetTick();
+        while (ElapsedTicks(ticks) < 1000){
+            if(serial->available()){
+                *c = serial->read();
+                return 0;
+            }
+        }
+    }else{
+        *c = serial->read();
+        return 0;
+    }
+    return -1;
 #endif
+}
 
-/* param accessors */
-
-static int get_param(unsigned char k, unsigned char *v)
+static int get_param(uint8_t k, uint8_t *v)
 {
-#if 0 /* missing */
-
-#define Parm_STK_DEVICE 0x92    // ' ' - R/W, Range {0..255}
-#define Parm_STK_PROGMODE 0x93  // ' ' - 'P' or 'S'
-#define Parm_STK_PARAMODE 0x94  // ' ' - TRUE or FALSE
-#define Parm_STK_POLLING 0x95   // ' ' - TRUE or FALSE
-#define Parm_STK_SELFTIMED 0x96 // ' ' - TRUE or FALSE
-
-#endif /* missing */
-
     switch (k)
     {
     case Parm_STK_HW_VER:
@@ -129,21 +144,21 @@ static int get_param(unsigned char k, unsigned char *v)
     return 0;
 }
 
-static int set_param(unsigned char k, unsigned char v)
+static int set_param(uint8_t k, uint8_t v)
 {
     return 0;
 }
 
 /* device settings */
 
-static void set_dev_settings(unsigned char *buf)
+static void set_dev_settings(uint8_t *buf)
 {
     /* buf points on the first setting */
 
     STATE_SET_FLAG(&state, HAS_DEV_SETTINGS);
 }
 
-static void set_ext_settings(unsigned char *buf, unsigned int n)
+static void set_ext_settings(uint8_t *buf, uint32_t n)
 {
 
     STATE_SET_FLAG(&state, HAS_DEV_SETTINGS);
@@ -151,10 +166,7 @@ static void set_ext_settings(unsigned char *buf, unsigned int n)
 
 /* memory programming routines */
 
-static void write_flash_page(
-    uint16_t page_addr,
-    unsigned char *buf,
-    unsigned int size)
+static void write_flash_page(uint16_t page_addr, uint8_t *buf, uint32_t size)
 {
     /* sequence for writing a page
        foreach page word, LOAD_PROGRAM_MEM_PAGE(lsb7(addr), data)
@@ -164,11 +176,9 @@ static void write_flash_page(
 
     /* assume size < PROGRAM_PAGE_SIZE */
 
-    unsigned int count;
+    uint32_t count;
     uint8_t page_off = 0;
     uint16_t value;
-
-#define PROGRAM_PAGE_SIZE 0x100
 
     /* note: page_addr is a byte address
        while spi work on flash with word
@@ -183,7 +193,7 @@ static void write_flash_page(
 
         value = ((uint16_t)buf[1] << 8) | ((uint16_t)buf[0]);
 
-        spi_load_program_page(page_off, value);
+        avrLoadProgramPage(page_off, value);
     }
 
     if (size & 1)
@@ -193,53 +203,53 @@ static void write_flash_page(
         tmp[0] = *buf;
         tmp[1] = 0;
 
-        spi_load_program_page(page_off, *(uint16_t *)tmp);
+        avrLoadProgramPage(page_off, *(uint16_t *)tmp);
     }
 
     /* commit the page */
-    spi_write_program_page(page_addr);
+    avrWriteProgramPage(page_addr);
 }
 
 static void write_flash_word(uint16_t addr, uint16_t value)
 {
-    spi_load_program_page((uint8_t)((addr / 2) & 0xff), value);
-    spi_write_program_page(addr);
+    avrLoadProgramPage((uint8_t)((addr / 2) & 0xff), value);
+    avrWriteProgramPage(addr);
 }
 
 static void read_flash_page(
     uint16_t page_addr,
-    unsigned char *buf,
-    unsigned int size)
+    uint8_t *buf,
+    uint32_t size)
 {
-    unsigned int count;
+    uint32_t count;
     uint16_t value;
 
     // page_addr /= 2;  // BUG ?????
 
     for (count = size / 2; count; --count, ++page_addr, buf += 2)
     {
-        value = spi_read_program(page_addr);
+        value = avrReadProgram(page_addr);
 
-        buf[0] = (unsigned char)(value & 0xff);
-        buf[1] = (unsigned char)((value >> 8) & 0xff);
+        buf[0] = (uint8_t)(value & 0xff);
+        buf[1] = (uint8_t)((value >> 8) & 0xff);
     }
 
     if (size & 1)
     {
-        value = spi_read_program(page_addr);
-        buf[0] = (unsigned char)(value & 0xff);
+        value = avrReadProgram(page_addr);
+        buf[0] = (uint8_t)(value & 0xff);
     }
 }
 
 static uint16_t read_flash_word(uint16_t addr)
 {
-    return spi_read_program(addr / 2);
+    return avrReadProgram(addr / 2);
 }
 
 static void write_eeprom_page(
     uint16_t page_addr,
-    unsigned char *buf,
-    unsigned int size)
+    uint8_t *buf,
+    uint32_t size)
 {
     for (; size; --size, ++buf, ++page_addr)
         spi_write_eeprom(page_addr, *buf);
@@ -247,14 +257,14 @@ static void write_eeprom_page(
 
 static void read_eeprom_page(
     uint16_t page_addr,
-    unsigned char *buf,
-    unsigned int size)
+    uint8_t *buf,
+    uint32_t size)
 {
     for (; size; --size, ++buf, ++page_addr)
         *buf = spi_read_eeprom(page_addr);
 }
 
-static void read_fuse_bits(uint8_t *bits, unsigned int n)
+static void read_fuse_bits(uint8_t *bits, uint32_t n)
 {
     bits[0] = spi_read_fuse_bits();
     bits[1] = spi_read_fuse_high_bits();
@@ -272,17 +282,93 @@ static uint8_t read_osccal_at(uint8_t i)
 
 /* exported */
 
-void stk500_setup(void)
+void stk500_timeout(uint8_t *buf, uint32_t isize, uint32_t *osize)
 {
-    init_state(&state);
-
-    spi_setup();
+    *osize = 0;
 }
 
-stk500_error_t stk500_process(
-    unsigned char *buf,
-    unsigned int isize,
-    unsigned int *osize)
+void stk500_setup(serialops_t *sp)
+{
+    state.flags = 0;
+    state.addr = 0;
+
+    stkService.state = STK500_ERROR_SUCCESS;
+    stkService.isize = 0;
+    stkService.osize = 0;
+
+    serial = sp;
+}
+
+void stk500_loop(void)
+{
+
+#ifdef NO_SERVICE
+    switch (stkService.state)
+    {
+
+    case STK500_ERROR_MORE_DATA:
+        if (read_uint8(stkService.buf + stkService.isize, 0) == -1)
+        {
+            stk500_timeout(stkService.buf, stkService.isize, &stkService.osize);
+            stkService.state = STK500_ERROR_SUCCESS;
+            break;
+        }
+        ++stkService.isize;
+        stkService.state = stk500_process(stkService.buf, stkService.isize, &stkService.osize);
+        break;
+
+    case STK500_ERROR_SUCCESS:
+    default:
+        stkService.state = STK500_ERROR_MORE_DATA;
+        stkService.isize = 0;
+        stkService.osize = 0;
+        break;
+    }
+
+    if ((stkService.state == STK500_ERROR_SUCCESS) && (stkService.osize))
+    {
+        serial_write(stkService.buf, stkService.osize);
+    }
+#else
+    stk500_error_t error;
+    uint32_t isize;
+    uint32_t osize;
+    uint8_t do_timeout;
+    unsigned char buf[STK500_BUF_MAX_SIZE];
+
+    while (1)
+    {
+        error = STK500_ERROR_MORE_DATA;
+
+        do_timeout = 0;
+
+        isize = 0;
+        osize = 0;
+
+        while (error == STK500_ERROR_MORE_DATA)
+        {
+            if (read_uint8(buf + isize, do_timeout) == -1)
+            {
+                /* has timeouted */
+                stk500_timeout(buf, isize, &osize);
+                error = STK500_ERROR_SUCCESS;
+                break;
+            }
+
+            do_timeout = 1;
+
+            ++isize;
+
+            error = stk500_process(buf, isize, &osize);
+        }
+
+        if ((error == STK500_ERROR_SUCCESS) && (osize))
+            write_uint8(buf, osize);
+    }
+#endif
+}
+
+stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
 {
     /* assume isize >= 1 */
 
@@ -366,7 +452,7 @@ stk500_error_t stk500_process(
     {
         /* get a param value */
 
-        unsigned char v;
+        uint8_t v;
 
         if (isize < 3)
             goto on_more_data;
@@ -425,7 +511,7 @@ stk500_error_t stk500_process(
             break;
         }
 
-        if (spi_start() != -1)
+        if (avrProgrammingEnable(1, 0) != -1)
             goto on_insync_ok;
 
         error = STK500_ERROR_FAILURE;
@@ -440,7 +526,7 @@ stk500_error_t stk500_process(
         if (isize < 2)
             goto on_more_data;
 
-        spi_stop();
+        avrProgrammingEnable(0, 0);
 
         goto on_insync_ok;
         break;
@@ -451,7 +537,7 @@ stk500_error_t stk500_process(
         if (isize < 2)
             goto on_more_data;
 
-        spi_chip_erase();
+        avrChipErase();
 
         goto on_insync_ok;
         break;
@@ -543,7 +629,7 @@ stk500_error_t stk500_process(
         if (isize < 3)
             goto on_more_data;
 
-        spi_write_lock_bits(buf[1]);
+        avrWriteLockBits(buf[1]);
 
         goto on_insync_ok;
         break;
@@ -551,18 +637,18 @@ stk500_error_t stk500_process(
 
     case Cmnd_STK_PROG_PAGE:
     {
-        unsigned int block_size;
+        uint32_t block_size;
 
         if (isize < 5)
             goto on_more_data;
 
-        block_size = ((unsigned int)buf[1] << 8) | (unsigned int)buf[2];
+        block_size = ((uint32_t)buf[1] << 8) | (uint32_t)buf[2];
 
         if ((isize - 5) < block_size)
             goto on_more_data;
 
-#define EEPROM_MEM_TYPE (unsigned char)'E'
-#define FLASH_MEM_TYPE (unsigned char)'F'
+#define EEPROM_MEM_TYPE (uint8_t)'E'
+#define FLASH_MEM_TYPE (uint8_t)'F'
 
         if (buf[3] == FLASH_MEM_TYPE)
             write_flash_page(state.addr, buf + 4, block_size);
@@ -662,12 +748,12 @@ stk500_error_t stk500_process(
 
     case Cmnd_STK_READ_PAGE:
     {
-        unsigned int block_size;
+        uint32_t block_size;
 
         if (isize < 5)
             goto on_more_data;
 
-        block_size = ((unsigned int)buf[1] << 8) | (unsigned int)buf[2];
+        block_size = ((uint32_t)buf[1] << 8) | (uint32_t)buf[2];
 
         PUSH_BYTE(buf, *osize, Resp_STK_INSYNC);
 
@@ -691,7 +777,7 @@ stk500_error_t stk500_process(
 
         PUSH_BYTE(buf, *osize, Resp_STK_INSYNC);
 
-        spi_read_signature(buf);
+        avrDeviceCode(buf);
         SKIP_DATA(buf, *osize, SPI_SIGNATURE_BYTE_COUNT);
 
         PUSH_BYTE(buf, *osize, Resp_STK_OK);
@@ -773,10 +859,3 @@ on_return:
     return error;
 }
 
-void stk500_timeout(
-    unsigned char *buf,
-    unsigned int isize,
-    unsigned int *osize)
-{
-    *osize = 0;
-}

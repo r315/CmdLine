@@ -18,28 +18,31 @@ extern "C"
 #endif
 
 #include <stdint.h>
+#include "spi.h"
 
-    /* atmega128 device signature */
+enum avresp{
+    AVR_RESPONSE_OK = 0,
+    AVR_RESPONSE_FAIL = -1,
+    AVR_RESPONSE_TIMEOUT
+};
 
-#define SPI_SIGNATURE_ATMEGA128 "\x1e\x97\x02"
-#define SPI_SIGNATURE_BYTE_COUNT 3
-#define SPI_CALIBRATION_BYTE_COUNT 4
 
-    /* exported */
+uint8_t avrProgrammingEnable(uint8_t en, uint8_t trydw);
+void avrLoadProgramPage(uint8_t addr, uint16_t value);
+uint16_t avrReadProgram(uint16_t addr);
+void avrWriteProgramPage(uint16_t addr);
+void avrDeviceCode(uint8_t *buf);
+void avrWriteLockBits(uint8_t);
+void avrChipErase(void);
+void avrWriteFuses(uint8_t lh, uint8_t fuses);
+uint32_t avrReadFuses(void);
+void avr_if_Init(spibus_t *spi, uint32_t pin);
+const char *avrDeviceName(uint32_t sig);
 
-    void spi_setup(void);
-    int spi_start(void);
-    void spi_stop(void);
 
-    void spi_chip_erase(void);
-    uint16_t spi_read_program(uint16_t);
-    void spi_load_program_page(uint8_t, uint16_t);
-    void spi_write_program_page(uint16_t);
     uint8_t spi_read_eeprom(uint16_t);
     void spi_write_eeprom(uint16_t, uint8_t);
     uint8_t spi_read_lock_bits(void);
-    void spi_write_lock_bits(uint8_t);
-    void spi_read_signature(uint8_t *);
     void spi_write_fuse_bits(uint8_t);
     void spi_write_fuse_high_bits(uint8_t);
     void spi_write_extended_fuse_bits(uint8_t);

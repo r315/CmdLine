@@ -13,7 +13,8 @@ extern "C"
 {
 #endif
 
-#include "stdout.h"
+#include <stdint.h>
+#include "serial.h"
 
 #define STK500_BUF_MAX_SIZE 512
 
@@ -26,12 +27,10 @@ extern "C"
         STK500_ERROR_MAX,
     } stk500_error_t;
 
-    void stk500_setup(void);
-    stk500_error_t stk500_process(unsigned char *, unsigned int, unsigned int *);
-    void stk500_timeout(unsigned char *, unsigned int, unsigned int *);
-    void stk500_ServiceInit(stdout_t *sp);
-    void stk500_Service(void);
-    void lpcBus_Service(void);
+    void stk500_setup(serialops_t *sp);
+    void stk500_loop(void);
+    stk500_error_t stk500_process(uint8_t *, uint32_t, uint32_t *);
+    void stk500_timeout(uint8_t *, uint32_t, uint32_t *);
 
 #ifdef __cplusplus
 }

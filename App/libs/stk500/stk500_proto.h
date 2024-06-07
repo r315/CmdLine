@@ -98,6 +98,17 @@
 #define Parm_STK_SELFTIMED 0x96          // ' ' - TRUE or FALSE
 #define Param_STK500_TOPCARD_DETECT 0x98 // ' ' - Detect top-card attached
 
+#if 0 /* missing */
+
+#define Parm_STK_DEVICE 0x92    // ' ' - R/W, Range {0..255}
+#define Parm_STK_PROGMODE 0x93  // ' ' - 'P' or 'S'
+#define Parm_STK_PARAMODE 0x94  // ' ' - TRUE or FALSE
+#define Parm_STK_POLLING 0x95   // ' ' - TRUE or FALSE
+#define Parm_STK_SELFTIMED 0x96 // ' ' - TRUE or FALSE
+
+#endif /* missing */
+
+
 // *****************[ STK status bit definitions ]***************************
 
 #define Stat_STK_INSYNC 0x01     // INSYNC status bit, '1' - INSYNC
