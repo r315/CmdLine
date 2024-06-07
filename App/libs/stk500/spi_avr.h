@@ -17,7 +17,7 @@ extern "C"
 {
 #endif
 
-#include "types.h"
+#include <stdint.h>
 
     /* atmega128 device signature */
 

@@ -120,6 +120,9 @@ extern "C" {
 #define RAM_CODE        RAM_FUNC
 
 //enum {false = 0, true, OFF = false, ON = true};
+#define BOARD_SD_GET_SPI        (&spibus_sd)
+
+extern spibus_t spibus_1, spibus_sd;
 
 //-----------------------------------------------------
 void BB_Init(void);
@@ -128,7 +131,6 @@ void BB_ConfigClockOut(uint8_t en);
 void BB_RitTimeBase_Init(void);
 void BB_RitDelay(uint32_t ms);
 uint32_t BB_RitTicks(void);
-spibus_t *BB_SPI_GetMain(void);
 
 void BB_SPI_Write(uint8_t *data, uint32_t count);
 void BB_SPI_WriteDMA(uint8_t *data, uint32_t count);

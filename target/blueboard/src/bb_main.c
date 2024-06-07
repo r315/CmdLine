@@ -7,20 +7,6 @@
 void App(void);
 
 
-static spibus_t spi_aux = {
-    .bus = BOARD_SPI_AUX_BUS,
-    .freq = 500000,
-    .flags  = SPI_MODE0
-};
-
-spibus_t *BOARD_GetSpiMain(void){
-    return BB_SPI_GetMain();
-}
-
-spibus_t *BOARD_GetSpiAux(void){
-    return &spi_aux;
-}
-
 void BOARD_LCD_Init(){
     
 }

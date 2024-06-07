@@ -88,6 +88,10 @@ static ConsoleCommand *app_commands[] = {
 	new CmdKeyFob(),
     new CmdLmcshd(),
 #endif
+
+#if defined(ENABLE_AVR_PROGRAMMING)
+    new CmdAvr(),
+#endif
 };
 
 extern "C" void App(void)

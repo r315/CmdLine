@@ -10,21 +10,20 @@
 extern "C" {
 #endif
 
-#define BB_MAIN_SPI (&s_spi1)
-#define SPI_DEFAULT_SPEED	8000000		// Speed for SD card
 
-static spibus_t s_spi1;
+spibus_t spibus_1, spibus_sd;
+
 
 #ifdef ENABLE_SDCARD
 static void sdcardInit()
 {
-//GPIO_Init(BOARD_SDCARD_CS_PIN, PIN_OUT_PP);
-// SPI configuration for memory card
-	BB_MAIN_SPI->bus = SPI_BUS0;
-    BB_MAIN_SPI->freq = SPI_DEFAULT_SPEED;
-    BB_MAIN_SPI->flags  = SPI_MODE0;
-    SPI_Init(BB_MAIN_SPI);
-//BOARD_SDCARD_DESELECT;
+    BOARD_SDCARD_DESELECT;
+    GPIO_Config(P0_16, GPO_PP);
+
+	spibus_sd.bus = SPI_BUS0;
+    spibus_sd.freq = 8000UL;
+    spibus_sd.flags  = SPI_MODE0;
+    SPI_Init(&spibus_sd);
 }
 #endif
 
@@ -127,29 +126,25 @@ void BB_ConfigClockOut(uint8_t en){
 //
 //--------------------------------------------------
 void BB_SPI_Write(uint8_t *data, uint32_t count){
-	SPI_Transfer(BB_MAIN_SPI, data, count);
+	SPI_Transfer(&spibus_1, data, count);
 }
 
 void BB_SPI_WriteDMA(uint8_t *data, uint32_t count){
-	SPI_TransferDMA(BB_MAIN_SPI, data, count);
+	SPI_TransferDMA(&spibus_1, data, count);
 }
 
 uint16_t BB_SPI_Send(uint8_t data){
-	return SPI_Xchg(BB_MAIN_SPI, &data);
+	return SPI_Xchg(&spibus_1, &data);
 }
 
 void BB_SPI_WaitEOT(){
-	SPI_WaitEOT(BB_MAIN_SPI);
+	SPI_WaitEOT(&spibus_1);
 }
 
 void BB_SPI_SetFrequency(uint32_t freq){
-    BB_MAIN_SPI->flags &= ~SPI_ENABLED;	 
-    BB_MAIN_SPI->freq = freq;    
-    SPI_Init(BB_MAIN_SPI);
-}
-
-spibus_t *BB_SPI_GetMain(void){
-    return BB_MAIN_SPI;
+    spibus_1.flags &= ~SPI_ENABLED;	 
+    spibus_1.freq = freq;    
+    SPI_Init(&spibus_1);
 }
 
 #ifdef __cplusplus

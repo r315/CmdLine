@@ -7,49 +7,30 @@ extern "C" {
 #endif
 
 #include "console.h"
+#include "board.h"
 
-
-#define AVR_DW_SYNC_TIMEOUT     10
-#define AVR_INSTRUCTION_SIZE    4
-
-#define AVR_RST_PIN_PORT       LPC_GPIO0
-#define AVR_RST_PIN            (1<<24)
-
-#define AVR_RST0 AVR_RST_PIN_PORT->FIOCLR = AVR_RST_PIN
-#define AVR_RST1 AVR_RST_PIN_PORT->FIOSET = AVR_RST_PIN
-#define AVR_RSTZ AVR_RST_PIN_PORT->FIODIR &= ~AVR_RST_PIN       // Set RST Pin input
-#define AVR_RSTY AVR_RST_PIN_PORT->FIODIR |= AVR_RST_PIN        // Set RST Pin output 
-
-#define AVR_DISABLE_RESET               \
-            DelayMs(100);               \
-            AVR_RST1;
-
-
-#define LOW_BYTE(W) (uint8_t)(((W) >> 0) & 0xff)
-#define HIGH_BYTE(W) (uint8_t)(((W) >> 8) & 0xff)
-
-#define DEFAULT_AVR_SPI_FREQ        100000UL
-
-class CmdAvr : public ConsoleCommand{
-    Console *console;
+class CmdAvr : public ConsoleCommand{ 
 public:
-    void init(void *params) {
-		console = static_cast<Console*>(params);		
-	}
+    void init(void *params) {console = static_cast<Console*>(params);}
     CmdAvr () : ConsoleCommand("avr") { }
     char execute(int argc, char **argv);
     void help(void);
-    char avrFuses(void *ptr);
+
+private:
+    Console *console;
+    spibus_t avrspibus;
+    uint32_t rst_pin;
+
+    uint32_t avrReadFuses(void);
+    void avrWriteFuses(uint8_t lh, uint8_t fuses);
+    void avrDeviceCode(uint8_t *buf);
+    void avrChipErase(void);
+    uint8_t avrProgrammingEnable(uint8_t en, uint8_t trydw);
+    uint16_t avrReadProgram(uint16_t addr);
+    void avrLoadProgramPage(uint8_t addr, uint16_t value);
+    void avrWriteProgramPage(uint16_t addr);
+    int avrWaitReady(void);
 };
-
-void avrDeviceCode(uint8_t *buf);
-void avrChipErase(void);
-char avrProgrammingEnable(uint8_t);
-void avrProgrammingDisable(void);
-
-uint16_t avrReadProgram(uint16_t addr);
-void avrLoadProgramPage(uint8_t addr, uint16_t value);
-void avrWriteProgramPage(uint16_t addr);
 
 #ifdef __cplusplus
 }

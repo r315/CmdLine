@@ -14,6 +14,7 @@ ENABLE_BENCHMAK_DHYSTONE \
 _ENABLE_DIGITAL_AUDIO \
 ENABLE_I2C \
 ENABLE_RGBLED \
+ENABLE_AVR_PROGRAMMING \
 
 #######################################
 # paths
@@ -87,6 +88,7 @@ $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/src/cmdi2s.cpp \
 $(APP_DIR)/src/cmdi2c.cpp \
 $(APP_DIR)/src/cmdrgbled.cpp \
+$(APP_DIR)/src/cmdavr.cpp \
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################

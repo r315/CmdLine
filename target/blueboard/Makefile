@@ -10,6 +10,7 @@ EXEC		=$(BUILD_DIR)/$(TARGET)
 #######################################
 
 FEATURE_ENABLE = \
+ENABLE_AVR_PROGRAMMING \
 #ENABLE_BENCHMAK \
 ENABLE_TFT_DISPLAY \
 ENABLE_BENCHMAK_DHYSTONE \
@@ -99,8 +100,8 @@ $(TARGET_PATH)/src/cmdpwm.cpp \
 $(TARGET_PATH)/src/cmdawg.cpp \
 $(TARGET_PATH)/src/cmdadc.cpp \
 $(TARGET_PATH)/src/cmdi2c.cpp \
-#$(APP_DIR)/src/cmdsbus.cpp \
 $(TARGET_PATH)/src/cmdavr.cpp \
+#$(APP_DIR)/src/cmdsbus.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/libs/stk500/stk500_service.cpp \
 $(APP_DIR)/src/cmdmsensor.cpp \
@@ -169,10 +170,23 @@ DBG = $(GCC_EXEC_PREFIX)-insight
 REMOVE = rm -fR
 
 ifeq ($(shell uname -s), Linux)
-JLINK ="/opt/SEGGER/JLink/JLinkExe"
+#PRG_DEP =bin
+#PRG_CFG =$(TARGET_PATH)/at32f415.cfg
+#PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
+#ERASE_CMD =openocd -f $(PRG_CFG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
 else
-JLINK =jlink
+# openocd works but requires changing jlink probe driver to libusb
+# works fine for st-link probe
+PRG_DEP =$(EXEC).bin $(PRG_CFG)
+PRG_CFG =$(BUILD_DIR)/blueboard_st-link.cfg
+PRG_CMD =openocd -f $(PRG_CFG) -c "program $(EXEC).bin 0x00000000 verify reset exit"
+
+#JLK :=JLink
+#PRG_DEP =$(PRG_CFG)
+#PRG_CFG =$(EXEC).jlink
+#PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 endif
+
 ##########################################################
 # RULES
 ##########################################################
@@ -185,7 +199,7 @@ $(EXEC).elf: $(OBJECTS)
 $(EXEC).hex: $(EXEC).elf
 	@$(OBJCOPY) -O ihex -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 
-$(EXEC).bin: $(EXEC).elf $(CHECKSUM)
+$(EXEC).bin: $(EXEC).elf #$(CHECKSUM)
 	@echo "Generating bin file" $@
 	$(OBJCOPY) -O binary -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 #hd -n 128 $@
@@ -209,29 +223,36 @@ clean:
 rebuild: clean all
 
 
-$(EXEC).jlink: $(EXEC).hex
+$(BUILD_DIR)/blueboard.jlink: $(EXEC).hex
 	@echo "Creating Jlink configuration file"
 	@echo "loadfile $<" >> $@
 	@echo "r" >> $@
 	@echo "q" >> $@
 	#@echo "erase" > $@
 	
-$(EXEC).cfg:
+$(BUILD_DIR)/blueboard.cfg:
 	@echo "Creating opencod configuration file"
 	@echo "adapter driver jlink" > $(EXEC).cfg
 	@echo "transport select swd" >> $(EXEC).cfg
 	@echo "source [find target/lpc17xx.cfg]" >> $(EXEC).cfg
 	@echo "adapter speed 4000" >> $(EXEC).cfg
 
-program: $(EXEC).jlink
-#openocd -f $(TARGET).cfg -c "program $(TARGET).bin 0x00000000 verify reset exit"
-	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
+$(BUILD_DIR)/blueboard_st-link.cfg:
+	@echo "Creating opencod configuration file"
+	@echo "source [find interface/stlink.cfg]" >> $@
+	@echo "transport select hla_swd" >> $@
+	@echo "source [find target/lpc17xx.cfg]" >> $@
+	@echo "adapter speed 4000" >> $@
+	#@echo "adapter driver st-link" > $@
+
+program: $(PRG_DEP)
+	$(VERBOSE)$(PRG_CMD)
 
 $(BUILD_DIR):
 	mkdir -p $@
 
-$(CHECKSUM):
-	$(MAKE) -C $(LIB_PATH)/tools
+#$(CHECKSUM):
+#	$(MAKE) -C $(LIB_PATH)/tools checksum
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
