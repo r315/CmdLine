@@ -66,7 +66,7 @@ char CmdAvr::execute(int argc, char **argv){
         return CMD_OK;
     }
 
-    if (!xstrcmp("-s", argv[1])){
+    if (!xstrcmp("-e", argv[1])){
         avrChipErase();
         return CMD_OK;
     }

@@ -1,7 +1,7 @@
 ######################################
 # target
 ######################################
-TARGET =console-artery
+TARGET =console-415dk
 
 #######################################
 # Features
@@ -192,16 +192,17 @@ OBJDUMP =$(PREFIX)objdump
 HEX = $(OBJCOPY) -O ihex
 BIN = $(OBJCOPY) -O binary -S
 
-ifeq ($(shell uname -s), Linux)
+
+ifeq ($(ST_LINK_PROBE),1)
 PRG_DEP =bin
 PRG_CFG =$(TARGET_PATH)/at32f415.cfg
 PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 ERASE_CMD =openocd -f $(PRG_CFG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
 else
-JLK :=JLink
+JLK :=JLinkExe
 PRG_DEP =bin $(PRG_CFG)
 PRG_CFG =$(BUILD_DIR)/$(TARGET).jlink
-PRG_CMD =$(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
+PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 endif
 
 #######################################
@@ -213,7 +214,7 @@ all: $(BUILD_DIR)/$(TARGET).elf size
 bin: $(BUILD_DIR)/$(TARGET).bin
 
 program: $(PRG_DEP)
-	$(PRG_CMD)
+	$(VERBOSE)$(PRG_CMD)
 
 $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 	@echo "Creating Jlink configuration file"
