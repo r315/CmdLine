@@ -79,12 +79,10 @@ char CmdAvr::execute(int argc, char **argv){
     }
     #endif
 
-     if(!strcmp("stk", argv[1])){
-        if(ha2i(argv[2], (uint32_t*)&param1)){
-            stk500_setup(SERIAL_GetSerialOps(-1));
-            stk500_loop();
-            return CMD_OK;
-        }
+    if(!strcmp("stk", argv[1])){        
+        stk500_setup(SERIAL_GetSerialOps(-1));
+        stk500_loop();
+        return CMD_OK;
     }
 
     return CMD_BAD_PARAM;

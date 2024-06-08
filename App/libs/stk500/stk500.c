@@ -399,6 +399,15 @@ void stk500_loop(void)
 #endif
 }
 
+/**
+ * @brief stk500v1 message process
+ * see avr061.pdf
+ * 
+ * @param buf 
+ * @param isize 
+ * @param osize 
+ * @return
+ */
 stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
 {
     /* assume isize >= 1 */

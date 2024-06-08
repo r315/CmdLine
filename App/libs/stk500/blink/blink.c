@@ -62,7 +62,7 @@ int main(void)
 // =============================================================================
 ISR(TIM0_COMPA_vect)
 {
-    DBG_LED_TOGGLE;
+    DBG_LED_TOGGLE; // pin PB3
 }
 
 

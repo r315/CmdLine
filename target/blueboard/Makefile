@@ -170,22 +170,18 @@ OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
 DBG = $(GCC_EXEC_PREFIX)-insight
 REMOVE = rm -fR
 
-ifeq ($(shell uname -s), Linux)
-#PRG_DEP =bin
-#PRG_CFG =$(TARGET_PATH)/at32f415.cfg
-#PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
-#ERASE_CMD =openocd -f $(PRG_CFG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
+ifeq ($(JLINK_PROBE),1)
+# jlink works on valid Jlink probes
+PRG_DEP =$(PRG_CFG)
+PRG_CFG =$(BUILD_DIR)/blueboard.jlink
+PRG_CMD =JLinkExe -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 else
-# openocd works but requires changing jlink probe driver to libusb
+# openocd works but requires checksum
+# jlink probe driver has to be change to libusb
 # works fine for st-link probe
 PRG_DEP =$(EXEC).bin $(PRG_CFG)
 PRG_CFG =$(BUILD_DIR)/blueboard_st-link.cfg
 PRG_CMD =openocd -f $(PRG_CFG) -c "program $(EXEC).bin 0x00000000 verify reset exit"
-
-#JLK :=JLink
-#PRG_DEP =$(PRG_CFG)
-#PRG_CFG =$(EXEC).jlink
-#PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 endif
 
 ##########################################################
@@ -244,7 +240,6 @@ $(BUILD_DIR)/blueboard_st-link.cfg:
 	@echo "transport select hla_swd" >> $@
 	@echo "source [find target/lpc17xx.cfg]" >> $@
 	@echo "adapter speed 4000" >> $@
-	#@echo "adapter driver st-link" > $@
 
 program: $(PRG_DEP)
 	$(VERBOSE)$(PRG_CMD)

@@ -43,6 +43,7 @@ $(APP_DIR)/inc \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
+$(APP_DIR)/libs/stk500 \
 
 AS_INCLUDES =\
 
@@ -77,6 +78,8 @@ $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \
+$(APP_DIR)/libs/stk500/avr_if.c \
+$(APP_DIR)/libs/stk500/stk500.c \
 
 
 CPP_SOURCES = \
