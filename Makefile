@@ -1,35 +1,61 @@
-BUILD_DIR  	:=$(PWD)/build
-APP_DIR 	:=$(PWD)/App
+BUILD_DIR  	:=$(CURDIR)/build
+APP_DIR 	:=$(CURDIR)/App
+
+all: nc bp bb at
 
 norule:
 	@echo "specify board"
 	@echo "Available boards:"
 	@echo "	bb - blueboard"
 	@echo "	bp - bluepill"
-	@echo "	nuc - Nucleo"
+	@echo "	nc - Nucleo"
+	@echo "	at - at32f415"
 
 clean: 
 	@${RM} -rf build
-	@"$(MAKE)" -C blueboard clean
-	@"$(MAKE)" -C Nucleo clean
-	@"$(MAKE)" -C bluepill clean
+	@"$(MAKE)" -C target/blueboard clean
+	@"$(MAKE)" -C target/Nucleo clean
+	@"$(MAKE)" -C target/bluepill clean
 
-nuc:
-	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo
+nc:
+	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR)
 
-bluepill:
-	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill
+bp:
+	@"$(MAKE)" -C target/bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR)
 
 bb:
-	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard
+	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR)
+
+at:
+	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR)
 	
-program-bb:
-	@"$(MAKE)" -C blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/blueboard program
+bb-program:
+	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) program
 
-program-bp:
-	@"$(MAKE)" -C bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/bluepill program
+bp-program:
+	@"$(MAKE)" -C target/bluepill BUILD_DIR=$(BUILD_DIR)/bluepill APP_DIR=$(APP_DIR) program
 
-program-nuc:
-	@"$(MAKE)" -C Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo-l412 APP_DIR=$(APP_DIR) PRJ_DIR=$(PWD)/Nucleo program
+nc-program:
+	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR) program
 
-.PHONY: bluepill
+at-program:
+	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR) program
+
+
+
+CMDTEMPLATEHEADER =CmdTemplateHeader.in
+CMDTEMPLATEMODULE =CmdTemplateModule.in
+L1 =en
+SHELL := /bin/bash
+command:
+ifeq ($(CMDNAME),)
+	@echo "usage: make command CMDNAME=<name>"
+else
+	@cat  $(CMDTEMPLATEHEADER) > App/inc/cmd$(CMDNAME).h
+	@sed -i -- "s/%NAME%/$(CMDNAME)/g" App/inc/cmd$(CMDNAME).h
+	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" App/inc/cmd$(CMDNAME).h
+	@cat  $(CMDTEMPLATEMODULE) > App/src/cmd$(CMDNAME).cpp
+	@sed -i -- "s/%CLASSNAME%/$(shell L1=$(CMDNAME); echo $${L1^})/g" App/src/cmd$(CMDNAME).cpp
+endif
+
+.PHONY:

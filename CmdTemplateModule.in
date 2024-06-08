@@ -1,0 +1,15 @@
+#include "cmd%CLASSNAME%.h"
+
+
+void Cmd%CLASSNAME%::help(void)
+{
+
+}
+
+char Cmd%CLASSNAME%::execute(int argc, char **argv)
+{
+
+}
+
+
+
