@@ -32,7 +32,6 @@ void avrLoadProgramPage(uint8_t addr, uint16_t value);
 uint16_t avrReadProgram(uint16_t addr);
 void avrWriteProgramPage(uint16_t addr);
 void avrDeviceCode(uint8_t *buf);
-void avrWriteLockBits(uint8_t);
 void avrChipErase(void);
 void avrWriteFuses(uint8_t lh, uint8_t fuses);
 uint32_t avrReadFuses(void);
@@ -42,6 +41,7 @@ const char *avrDeviceName(uint32_t sig);
 
     uint8_t spi_read_eeprom(uint16_t);
     void spi_write_eeprom(uint16_t, uint8_t);
+    void spi_write_lock_bits(uint8_t value);
     uint8_t spi_read_lock_bits(void);
     void spi_write_fuse_bits(uint8_t);
     void spi_write_fuse_high_bits(uint8_t);

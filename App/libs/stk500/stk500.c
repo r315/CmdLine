@@ -11,13 +11,39 @@
 #include "stk500_proto.h"
 #include "board.h"
 
+#define SKIP_DATA(BUF, BUF_SIZE, DATA_SIZE) \
+    do                                      \
+    {                                       \
+        BUF += DATA_SIZE;                   \
+        BUF_SIZE += DATA_SIZE;              \
+    } while (0)
+
+#define PUSH_DATA(BUF, BUF_SIZE, DATA, DATA_SIZE) \
+    do                                            \
+    {                                             \
+        memcpy(BUF, DATA, DATA_SIZE);             \
+        BUF += DATA_SIZE;                         \
+        BUF_SIZE += DATA_SIZE;                    \
+    } while (0)
+
+#define PUSH_BYTE(BUF, BUF_SIZE, DATA) \
+    do                                 \
+    {                                  \
+        *(BUF) = DATA;                 \
+        ++(BUF);                       \
+        ++(BUF_SIZE);                  \
+    } while (0)
+
+#define EEPROM_MEM_TYPE (uint8_t)'E'
+#define FLASH_MEM_TYPE (uint8_t)'F'
+
 #define SPI_SIGNATURE_BYTE_COUNT    3
 #define SPI_CALIBRATION_BYTE_COUNT  4
 #define STATE_FLAG_HAS_DEV_SETTINGS (1 << 0)
 
-#define STATE_HAS_FLAG(S, F) ((S)->flags & (1 << STATE_FLAG_##F))
-#define STATE_CLEAR_FLAG(S, F) ((S)->flags &= ~(1 << STATE_FLAG_##F))
-#define STATE_SET_FLAG(S, F) ((S)->flags |= 1 << STATE_FLAG_##F)
+#define STATE_HAS_FLAG(S, F)    ((S)->flags & (1 << STATE_FLAG_##F))
+#define STATE_CLEAR_FLAG(S, F)  ((S)->flags &= ~(1 << STATE_FLAG_##F))
+#define STATE_SET_FLAG(S, F)    ((S)->flags |= 1 << STATE_FLAG_##F)
 
 #define PROGRAM_PAGE_SIZE 0x100
 
@@ -26,6 +52,7 @@ typedef struct state{
     uint16_t addr;
 }state_t;
 
+#ifdef NO_SERVICE
 typedef struct _Service
 {
     uint8_t state;
@@ -36,8 +63,10 @@ typedef struct _Service
     uint8_t buf[STK500_BUF_MAX_SIZE];
 } Service;
 
-static state_t state;
 static Service stkService;
+#endif
+
+static state_t state;
 static serialops_t *serial;
 
 void write_uint8(uint8_t *data, uint32_t len)
@@ -291,12 +320,13 @@ void stk500_setup(serialops_t *sp)
 {
     state.flags = 0;
     state.addr = 0;
+    serial = sp;
 
+#ifdef NO_SERVICE
     stkService.state = STK500_ERROR_SUCCESS;
     stkService.isize = 0;
     stkService.osize = 0;
-
-    serial = sp;
+#endif
 }
 
 void stk500_loop(void)
@@ -362,8 +392,9 @@ void stk500_loop(void)
             error = stk500_process(buf, isize, &osize);
         }
 
-        if ((error == STK500_ERROR_SUCCESS) && (osize))
+        if ((error == STK500_ERROR_SUCCESS) && (osize)){
             write_uint8(buf, osize);
+        }
     }
 #endif
 }
@@ -371,29 +402,6 @@ void stk500_loop(void)
 stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
 {
     /* assume isize >= 1 */
-
-#define SKIP_DATA(BUF, BUF_SIZE, DATA_SIZE) \
-    do                                      \
-    {                                       \
-        BUF += DATA_SIZE;                   \
-        BUF_SIZE += DATA_SIZE;              \
-    } while (0)
-
-#define PUSH_DATA(BUF, BUF_SIZE, DATA, DATA_SIZE) \
-    do                                            \
-    {                                             \
-        memcpy(BUF, DATA, DATA_SIZE);             \
-        BUF += DATA_SIZE;                         \
-        BUF_SIZE += DATA_SIZE;                    \
-    } while (0)
-
-#define PUSH_BYTE(BUF, BUF_SIZE, DATA) \
-    do                                 \
-    {                                  \
-        *(BUF) = DATA;                 \
-        ++(BUF);                       \
-        ++(BUF_SIZE);                  \
-    } while (0)
 
     stk500_error_t error = STK500_ERROR_SUCCESS;
 
@@ -629,7 +637,7 @@ stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
         if (isize < 3)
             goto on_more_data;
 
-        avrWriteLockBits(buf[1]);
+        spi_write_lock_bits(buf[1]);
 
         goto on_insync_ok;
         break;
@@ -646,9 +654,6 @@ stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
 
         if ((isize - 5) < block_size)
             goto on_more_data;
-
-#define EEPROM_MEM_TYPE (uint8_t)'E'
-#define FLASH_MEM_TYPE (uint8_t)'F'
 
         if (buf[3] == FLASH_MEM_TYPE)
             write_flash_page(state.addr, buf + 4, block_size);
