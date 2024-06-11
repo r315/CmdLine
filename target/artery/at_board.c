@@ -48,7 +48,7 @@ clock_t clock(void){
 }
 
 void BOARD_LCD_Init(void){
-    lcd0.spidev.bus = SPI_BUS1;
+    lcd0.spidev.bus = SPI_BUS3;
     lcd0.w = 128;
     lcd0.h = 160;
     lcd0.cs = LCD_CS;
@@ -56,13 +56,7 @@ void BOARD_LCD_Init(void){
     lcd0.bkl = LCD_BKL;
     lcd0.rst = 255;
 
-    // To use PB3 as SPI2 sclk, SPI2 has to be remapped
-    RCC->APB2EN |= RCC_APB2EN_AFIOEN;
-    AFIO->MAP = (AFIO->MAP & ~(7 << 24)) | AFIO_MAP_SWJTAG_CONF_JTAGDISABLE;
-    AFIO->MAP5 = (AFIO->MAP5 & ~(15 << 20)) | AFIO_MAP5_SPI2_GRMP;
-
-    GPIO_Config(LCD_SCLK, GPIO_SPI2_SCK);
-    GPIO_Config(LCD_DI, GPIO_SPI2_MOSI);
+    LCD_Bkl(0);
     GPIO_Config(LCD_BKL, GPO_MS);
     GPIO_Config(LCD_CD, GPO_MS);
     GPIO_Config(LCD_CS, GPO_MS);
