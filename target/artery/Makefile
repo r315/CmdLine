@@ -199,7 +199,11 @@ PRG_CFG =$(TARGET_PATH)/at32f415.cfg
 PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 ERASE_CMD =openocd -f $(PRG_CFG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
 else
-JLK :=JLinkExe
+ifeq ($(shell uname -s), Linux)
+JLK =JLinkExe
+else
+JLK =JLink
+endif
 PRG_DEP =bin $(PRG_CFG)
 PRG_CFG =$(BUILD_DIR)/$(TARGET).jlink
 PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
