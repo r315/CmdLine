@@ -101,6 +101,7 @@ $(DRIVERS_PATH)/i2c/i2c_stm32l4xx.c \
 $(DRIVERS_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
 $(DRIVERS_PATH)/gpio/gpio_stm32l4xx.c \
+$(DRIVERS_PATH)/wdt/wdt_dummy.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \

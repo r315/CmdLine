@@ -1,6 +1,7 @@
 
 #include "board.h"
 #include "buzzer.h"
+#include "wdt.h"
 
 #include "console.h"
 #include "cmdecho.h"
@@ -32,6 +33,8 @@
 #include "cmdsi5351.h"
 #include "cmdds1086.h"
 #include "cmdrgbled.h"
+
+#define WDT_TIMEOUT     3000
 
 #if defined (BOARD_BLUEBOARD)
 #include "cmdsd.h"
@@ -100,6 +103,8 @@ extern "C" void App(void)
     // stdout_t and serialops_t must be compatible for this to work
     stdout_t *userio = (stdout_t*)SERIAL_GetSerialOps(-1);
 
+    WDT_Init(WDT_TIMEOUT);
+
 #if defined (BOARD_BLUEBOARD)
     console.init(userio, "Blueboard>");    
 #elif defined (BOARD_BLUEPILL)
@@ -127,6 +132,7 @@ extern "C" void App(void)
 
 	while(1){
 		console.process();
+        WDT_Reset();
 	}
 }
 

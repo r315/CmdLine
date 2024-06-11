@@ -68,6 +68,7 @@ $(DRIVERS_PATH)/uart/uart_at32f4xx.c \
 $(DRIVERS_PATH)/tft/st7735.c \
 $(DRIVERS_PATH)/i2s/i2s_at32f4xx.c \
 $(DRIVERS_PATH)/i2c/i2c_at32f415.c \
+$(DRIVERS_PATH)/wdt/wdt_at32f4xx.c \
 
 CSRCS = \
 $(BOARD_SOURCES) \

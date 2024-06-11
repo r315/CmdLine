@@ -95,6 +95,7 @@ $(DRIVERS_PATH)/tft/st7735.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
 $(DRIVERS_PATH)/gpio/gpio_stm32f1xx.c \
 $(DRIVERS_PATH)/dma/dma_stm32f1xx.c \
+$(DRIVERS_PATH)/wdt/wdt_dummy.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/liblcd.c \

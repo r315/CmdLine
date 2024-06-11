@@ -69,6 +69,7 @@ $(DRIVERS_PATH)/uart/uart_lpc17xx.c \
 $(DRIVERS_PATH)/dma/dma_lpc17xx.c \
 $(DRIVERS_PATH)/adc/adc_lpc17xx.c \
 $(DRIVERS_PATH)/rng/rng_software.c \
+$(DRIVERS_PATH)/wdt/wdt_dummy.c \
 $(DRIVERS_PATH)/storage/memcard.c \
 $(LIB_PATH)/src/font.c \
 $(LIB_PATH)/src/fifo.c \
