@@ -11,8 +11,8 @@ EXEC		=$(BUILD_DIR)/$(TARGET)
 
 FEATURE_ENABLE = \
 ENABLE_AVR_PROGRAMMING \
-#ENABLE_BENCHMAK \
 ENABLE_TFT_DISPLAY \
+#ENABLE_BENCHMAK \
 ENABLE_BENCHMAK_DHYSTONE \
 ENABLE_BENCHMAK_DHYSTONE \
 ENABLE_DEBUG MSC_CLOCK \
@@ -28,7 +28,7 @@ LIB_PATH 	 =$(LIBEMB_PATH)/lib
 DRIVER_PATH  =$(LIBEMB_PATH)/drv
 CMSIS_PATH   =$(LIBEMB_PATH)/CMSIS
 DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
-
+BSP_PATH     =$(LIBEMB_PATH)/bsp/blueboard
 #######################################
 # Includes
 #######################################
@@ -47,6 +47,7 @@ $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/NXP/LPC17xx/inc \
 $(CMSIS_PATH)/Core/Include \
 $(DRIVER_COMPONENT_PATH)/tft \
+$(BSP_PATH) \
 
 ######################################
 # Sources
@@ -54,7 +55,7 @@ $(DRIVER_COMPONENT_PATH)/tft \
 C_SOURCES =\
 $(CMSIS_PATH)/Device/NXP/LPC17xx/src/startup_LPC17xx.c \
 $(CMSIS_PATH)/Device/NXP/LPC17xx/src/system_LPC17xx.c \
-$(TARGET_PATH)/src/blueboard.c \
+$(BSP_PATH)/blueboard.c \
 $(TARGET_PATH)/src/sysmem.c \
 $(TARGET_PATH)/src/syscalls.c \
 $(DRIVER_PATH)/clock/clock_lpc17xx.c \
