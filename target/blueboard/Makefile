@@ -156,7 +156,7 @@ vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-CHECKSUM =$(LIB_PATH)/tools/checksum
+CHECKSUM =$(LIBEMB_PATH)/tools/checksum
 
 #######################################
 # Tool binaries
