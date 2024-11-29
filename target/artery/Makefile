@@ -9,8 +9,8 @@ TARGET =console-415dk
 
 FEATURE_ENABLE = \
 ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMAK \
-ENABLE_BENCHMAK_DHYSTONE \
+ENABLE_BENCHMARK \
+ENABLE_BENCHMARK_DHRYSTONE \
 _ENABLE_DIGITAL_AUDIO \
 ENABLE_I2C \
 ENABLE_RGBLED \
@@ -40,11 +40,13 @@ $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
+$(LIB_PATH)/pff \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
 $(APP_DIR)/libs/stk500 \
+$(APP_DIR)/libs/dhrystone \
 $(DRIVER_COMPONENT_PATH)/tft \
 
 AS_INCLUDES =\
@@ -83,6 +85,8 @@ $(LIB_PATH)/src/font.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c \
 
 
 CPP_SOURCES = \

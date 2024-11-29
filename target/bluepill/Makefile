@@ -10,7 +10,7 @@ TARGET =console_bluepill
 FEATURE_ENABLE = \
 ENABLE_TFT_DISPLAY \
 ENABLE_BENCHMARK \
-#ENABLE_BENCHMAK_DHYSTONE \
+#ENABLE_BENCHMARK_DHRYSTONE \
 #ENABLE_DEBUG MSC_CLOCK \
 
 
@@ -46,6 +46,8 @@ $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 $(DRIVER_PATH)/inc \
 $(DRIVER_COMPONENT_PATH)/tft \
 $(LIB_PATH)/inc \
+$(LIB_PATH)/pff \
+$(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/si5351 \

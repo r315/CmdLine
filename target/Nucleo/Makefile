@@ -54,8 +54,10 @@ $(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
 $(DRIVER_COMPONENT_PATH)/tft \
-$(LIB_PATH)/inc \
 $(LIBEMB_PATH)/drv/inc \
+$(LIB_PATH)/inc \
+$(LIB_PATH)/pff \
+$(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/dhrystone \

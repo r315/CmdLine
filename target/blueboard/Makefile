@@ -10,12 +10,10 @@ EXEC		=$(BUILD_DIR)/$(TARGET)
 #######################################
 
 FEATURE_ENABLE = \
-ENABLE_AVR_PROGRAMMING \
+_ENABLE_AVR_PROGRAMMING \
 ENABLE_TFT_DISPLAY \
-#ENABLE_BENCHMAK \
-ENABLE_BENCHMAK_DHYSTONE \
-ENABLE_BENCHMAK_DHYSTONE \
-ENABLE_DEBUG MSC_CLOCK \
+ENABLE_BENCHMARK \
+ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK \
 
 #######################################
 # paths
@@ -41,6 +39,7 @@ $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
+$(APP_DIR)/libs/dhrystone \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(DRIVER_PATH)/inc \
@@ -79,6 +78,7 @@ $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/debug.c \
 $(LIB_PATH)/src/button.c \
 $(LIB_PATH)/pff/pff.c \
+$(LIB_PATH)/src/lib2d.c \
 $(TARGET_PATH)/usbdrv/usbserial.c \
 $(TARGET_PATH)/usbdrv/usbhw_lpc.c \
 $(TARGET_PATH)/usbdrv/usbcontrol.c \
@@ -87,7 +87,8 @@ $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \
-#$(LIBEMB_PATH)/drv/lib2d.c \
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
