@@ -24,18 +24,19 @@ BUILD_DIR 		:=build
 TARGET_PATH 	=$(CURDIR)
 
 APP_DIR			?=../../App
-LIB_PATH        =$(LIBEMB_PATH)
-DRIVERS_PATH 	=$(LIB_PATH)/drv
-CMSIS_PATH 		=$(DRIVERS_PATH)/CMSIS
-DRIVERS_PER_PATH =$(DRIVERS_PATH)/StdPeriph_Driver
+LIB_PATH        =$(LIBEMB_PATH)/lib
+DRIVER_PATH 	=$(LIBEMB_PATH)/drv
+DRIVER_OMD_PATH =$(DRIVER_PATH)/omd/at32f4xx
+DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
+CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
 
 #######################################
 # Includes
 #######################################
 C_INCLUDES = \
 $(TARGET_PATH) \
-$(DRIVERS_PER_PATH)/inc \
-$(DRIVERS_PATH)/inc \
+$(DRIVER_OMD_PATH)/inc \
+$(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
@@ -44,6 +45,7 @@ $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
 $(APP_DIR)/libs/stk500 \
+$(DRIVER_COMPONENT_PATH)/tft \
 
 AS_INCLUDES =\
 
@@ -58,23 +60,23 @@ $(TARGET_PATH)/at_main.c \
 $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
-$(DRIVERS_PER_PATH)/src/at32f4xx_rcc.c \
-$(DRIVERS_PER_PATH)/src/at32f4xx_i2c.c \
-$(DRIVERS_PER_PATH)/src/at32f4xx_i2c_ex.c \
-$(DRIVERS_PATH)/spi/spi_at32f4xx.c \
-$(DRIVERS_PATH)/dma/dma_at32f4xx.c \
-$(DRIVERS_PATH)/gpio/gpio_at32f4xx.c \
-$(DRIVERS_PATH)/uart/uart_at32f4xx.c \
-$(DRIVERS_PATH)/tft/st7735.c \
-$(DRIVERS_PATH)/i2s/i2s_at32f4xx.c \
-$(DRIVERS_PATH)/i2c/i2c_at32f415.c \
-$(DRIVERS_PATH)/wdt/wdt_at32f4xx.c \
+$(DRIVER_OMD_PATH)/src/at32f4xx_rcc.c \
+$(DRIVER_OMD_PATH)/src/at32f4xx_i2c.c \
+$(DRIVER_OMD_PATH)/src/at32f4xx_i2c_ex.c \
+$(DRIVER_PATH)/spi/spi_at32f4xx.c \
+$(DRIVER_PATH)/dma/dma_at32f4xx.c \
+$(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
+$(DRIVER_PATH)/uart/uart_at32f4xx.c \
+$(DRIVER_PATH)/i2s/i2s_at32f4xx.c \
+$(DRIVER_PATH)/i2c/i2c_at32f415.c \
+$(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
+$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
 
 CSRCS = \
 $(BOARD_SOURCES) \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
-$(DRIVERS_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/rng/rng_software.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
@@ -119,7 +121,7 @@ CPU =-mcpu=cortex-m4 -mthumb
 
 # fpu
 #at43f415 does not have FPU
-#FPU =-mfloat-abi=hard -mfpu=fpv4-sp-d16 
+#FPU =-mfloat-abi=hard -mfpu=fpv4-sp-d16
 #FPU =-mfloat-abi=soft
 
 # float-abi
@@ -147,7 +149,7 @@ endif
 
 ASFLAGS  =$(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
 CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -std=gnu11 -fdata-sections -ffunction-sections #-fstack-usage
-CPPFLAGS =$(CPU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti 
+CPPFLAGS =$(CPU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti
 LDFLAGS  =$(MCU) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
@@ -160,7 +162,7 @@ SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
 else
 SPECS=--specs=nosys.specs --specs=nano.specs
-#-nostdlib -lstd++ -lnosys -lm 
+#-nostdlib -lstd++ -lnosys -lm
 LIBS =-lstdc++
 endif
 
@@ -247,12 +249,12 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(VERBOSE)$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(VERBOSE)$(BIN) $< $@	
-	
+	$(VERBOSE)$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir -p $@		
+	mkdir -p $@
 
 size: $(BUILD_DIR)/$(TARGET).elf
 	@echo "--- Size ---"
