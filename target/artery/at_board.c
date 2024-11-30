@@ -66,9 +66,9 @@ void BOARD_LCD_Init(void){
 
 
 void BOARD_Init(void)
-{	
+{
 	SystemInit();
-	SystemCoreClockUpdate(); 
+	SystemCoreClockUpdate();
 
 	InitTimeBase();
 
@@ -77,18 +77,10 @@ void BOARD_Init(void)
 
 	LED1_PIN_INIT;
 
-    #ifdef ENABLE_DIGITAL_AUDIO    
+    #ifdef ENABLE_DIGITAL_AUDIO
     GPIO_Config(PA_7, GPIO_SPI1_SD);
     GPIO_Config(PA_4, GPIO_SPI1_WS);
     GPIO_Config(PA_5, GPIO_SPI1_CK);
-    #endif
-
-    #ifdef ENABLE_I2C
-    RCC->APB2EN |= RCC_APB2EN_AFIOEN;
-    AFIO->MAP5 = (AFIO->MAP & ~(7 << 4)) | AFIO_MAP5_I2C1_GRMP_01;
-    
-    GPIO_Config(PB_8, GPIO_I2C1_SCL);
-    GPIO_Config(PB_9, GPIO_I2C1_SDA);
     #endif
 
     SERIAL_Init();

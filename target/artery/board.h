@@ -66,13 +66,13 @@ extern "C" {
 #define BUTTON_MASK     (BUTTON_LEFT | BUTTON_RIGHT | BUTTON_A | BUTTON_LEFT2 | BUTTON_RIGHT2)
 
 #define LED_PIN         PA_8
-#define LED1_PIN_INIT   GPIO_Config(LED_PIN, GPO_LS); 
+#define LED1_PIN_INIT   GPIO_Config(LED_PIN, GPO_LS);
 
 #define LED1_OFF        GPIO_Write(LED_PIN, GPIO_PIN_HIGH)
 #define LED1_ON         GPIO_Write(LED_PIN, GPIO_PIN_LOW)
 #define LED1_TOGGLE     GPIO_Toggle(LED_PIN)
 
-#define I2C_MAX_ITF     2
+#define I2C_MAX_ITF     4
 
 //enum {false = 0, true, OFF = false, ON = true};
 extern spibus_t spibus;
