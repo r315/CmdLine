@@ -49,7 +49,7 @@ static uint32_t piBenchmark(uint32_t iterations, float *calc_pi){
     uint32_t progress = 1;
     #endif
 
-    start = GetTick();  
+    start = GetTick();
     for (uint32_t i = 2; i < iterations; i++) {
         x *= -1.0;
         pi += x / (2.0f * (float)i - 1.0f);
@@ -58,10 +58,10 @@ static uint32_t piBenchmark(uint32_t iterations, float *calc_pi){
         #endif
     }
     time = GetTick() - start;
- 
+
     *calc_pi = pi * 4.0;
 
-    return time;   
+    return time;
 }
 
 void CmdBenchmark::help(void){
@@ -74,11 +74,11 @@ void CmdBenchmark::help(void){
 
 char CmdBenchmark::execute(int argc, char **argv){
 
-    if(argc < 2){
+    if(argc < 2 || !xstrcmp("help", (const char*)argv[1])){
         help();
-        return CMD_BAD_PARAM;
+        return CMD_OK;
     }
-    
+
 #if defined(ENABLE_BENCHMARK_DHRYSTONE)
     if(xstrcmp("dhry", (const char*)argv[1]) == 0){
         float res = dhry(1000000) / 1757.0f;
@@ -108,7 +108,8 @@ char CmdBenchmark::execute(int argc, char **argv){
         LIB2D_Printf("Iter: %u\n", PI_ITERATIONS);
         LIB2D_Printf("Time: %ums\n", time);
         #endif
+        return CMD_OK;
     }
 
-    return CMD_OK;
+    return CMD_BAD_PARAM;
 }

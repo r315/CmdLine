@@ -15,7 +15,6 @@ extern "C" {
 #include "rng.h"
 #include "serial.h"
 #include "uart.h"
-#include "st7735.h"
 #include "gpio.h"
 #include "gpio_stm32f1xx.h"
 
@@ -29,7 +28,7 @@ extern "C" {
 #define LED_TOGGLE              DBG_LED_TOGGLE
 #define LED1_TOGGLE             LED_TOGGLE
 
-/* 
+/*
  *
  * */
 void BOARD_Init(void);
@@ -37,7 +36,7 @@ uint32_t GetTick(void);
 uint32_t ElapsedTicks(uint32_t start_ticks);
 void DelayMs(uint32_t ms);
 
-/** 
+/**
  * Global variables
  * */
 extern I2C_HandleTypeDef hi2c2;
@@ -45,7 +44,7 @@ extern TIM_HandleTypeDef htim4;
 
 /**
  * Function prototypes
- * 
+ *
  * PB10 SCL
  * PB11 SDA
  * */
@@ -68,7 +67,7 @@ static inline void reenumerate_usb(void){
 
 /**
  * PWM
- * 
+ *
  * PB0 PWM_VOUT
  * PB1 PWM_IOUT
  * PWM_ILOAD
@@ -84,14 +83,14 @@ static inline void reenumerate_usb(void){
  *
  * Analog Pins
  * VOUT PA0
- * IOUT PA1 
+ * IOUT PA1
  * VLOAD PA2
  * ILOAD PA3
  * */
 
 /* ***********************************************************
  * Configure callback for end of transfer of ADC convertions
- * 
+ *
  * \param  cb    call back function void cb(uin16_t *adc_convertions);
  * \return none
  ************************************************************ */
@@ -101,7 +100,7 @@ void ADC_SetCallBack(void (*)(uint16_t*));
  * Get the last performed convertions
  * Not thread safe
  * \param  none
- * \return uint16_t *last_adc_convertions 
+ * \return uint16_t *last_adc_convertions
  ************************************************************ */
 uint16_t *ADC_LastConvertion(void);
 
@@ -120,11 +119,11 @@ void SERVO_Init(void);
  * @param pulse : pulse width, 900 - 2100
  * */
 void SERVO_SetPulse(uint16_t pulse);
- 
+
 /* ************************************************************
  * SPI API
  *
- * 
+ *
  * ************************************************************ */
 #define SPI_XFER_TIMEOUT        1000
 
@@ -140,7 +139,7 @@ void SERVO_SetPulse(uint16_t pulse);
 #define BOARD_SPI_CK_PIN        PB_13
 #define BOARD_SPI_CS_PIN        PB_12
 
-#define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12) 
+#define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12)
 #define BOARD_SPI_CS_HIGH       GPIOB->BSRR = (1 << 12)
 
 #define BOARD_SPIDEV_HANDLER    spi2
@@ -203,8 +202,6 @@ extern serialport_t BOARD_SERIAL_HANDLERS;
 #define TFT_SPIDEV      BOARD_SPIDEV
 
 void BOARD_LCD_Init(void);
-void BOARD_LCD_WriteArea(uint16_t x, uint16_t y, uint16_t w, uint16_t h, uint16_t *data);
-void BOARD_LCD_Scroll(uint16_t sc);
 void SW_Reset(void);
 
 #ifdef __cplusplus

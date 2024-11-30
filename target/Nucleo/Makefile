@@ -32,9 +32,10 @@ ENABLE_BENCHMARK_DHRYSTONE \
 BUILD_DIR :=build
 TARGET_PATH =$(CURDIR)
 APP_DIR	?=../../App
-LIB_PATH =$(LIBEMB_PATH)
-DRIVERS_PATH =$(LIB_PATH)/drv
-CMSIS_PATH 	=$(DRIVERS_PATH)/CMSIS
+LIB_PATH    =$(LIBEMB_PATH)/lib
+DRIVER_PATH =$(LIBEMB_PATH)/drv
+CMSIS_PATH 	=$(LIBEMB_PATH)/CMSIS
+DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 
 ifeq ($(shell uname -s), Linux)
 REPOSITORY :=$(HOME)/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
@@ -43,7 +44,7 @@ REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 endif
 
 # AS includes
-AS_INCLUDES = 
+AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
@@ -52,8 +53,11 @@ $(CMSIS_PATH)/Core/Include \
 $(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
-$(LIB_PATH)/inc \
+$(DRIVER_COMPONENT_PATH)/tft \
 $(LIBEMB_PATH)/drv/inc \
+$(LIB_PATH)/inc \
+$(LIB_PATH)/pff \
+$(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/dhrystone \
@@ -92,16 +96,16 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(DRIVERS_PATH)/buzzer/buzzer_stm32l4.c \
-$(DRIVERS_PATH)/pwm/pwm_stm32l4xx.c \
-$(DRIVERS_PATH)/tft/st7735.c \
-$(DRIVERS_PATH)/rng/rng_software.c \
-$(DRIVERS_PATH)/spi/spi_stm32l4xx.c \
-$(DRIVERS_PATH)/i2c/i2c_stm32l4xx.c \
-$(DRIVERS_PATH)/uart/uart_stm32l4xx.c \
-$(DRIVERS_PATH)/dma/dma_stm32l4xx.c \
-$(DRIVERS_PATH)/gpio/gpio_stm32l4xx.c \
-$(DRIVERS_PATH)/wdt/wdt_dummy.c \
+$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+$(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/spi/spi_stm32l4xx.c \
+$(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
+$(DRIVER_PATH)/uart/uart_stm32l4xx.c \
+$(DRIVER_PATH)/dma/dma_stm32l4xx.c \
+$(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(LIB_PATH)/src/buzzer.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
@@ -218,7 +222,7 @@ FLOAT-ABI =-mfloat-abi=hard
 MCU = $(CPU) $(FPU) $(FLOAT-ABI)
 
 # AS defines
-AS_DEFS = 
+AS_DEFS =
 
 COMMON_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
 
@@ -252,7 +256,7 @@ CPPFLAGS =$(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_F
 #######################################
 
 # libraries
-SPECS =--specs=nosys.specs --specs=nano.specs 
+SPECS =--specs=nosys.specs --specs=nano.specs
 LIBS =-lm -lstdc++
 LIBDIR =
 LDFLAGS = $(MCU) $(SPECS) -u _printf_float -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
@@ -275,7 +279,7 @@ $(TARGET).cfg:
 	@echo "transport select "hla_swd"" >> $@
 	@echo "source [find target/stm32l4x.cfg]" >> $@
 	@echo "adapter speed 4000" >> $@
-	
+
 
 program: $(BUILD_DIR)/$(TARGET).elf $(TARGET).cfg
 	openocd -f $(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
@@ -309,7 +313,7 @@ $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "[AS]  " $<
 	@$(AS) -c $(ASFLAGS) $< -o $@
 
-$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CC]  " $<
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
@@ -320,20 +324,20 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Building hex file:" $@
 	@$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Building bin file:" $@
-	@$(BIN) $< $@	
-	
+	@$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir -p $@		
+	mkdir -p $@
 
 #######################################
 # clean up
 #######################################
 clean:
 	-rm -fR $(BUILD_DIR)
-  
+
 #######################################
 # dependencies
 #######################################

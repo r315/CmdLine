@@ -5,7 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
 #include "console.h"
 #include "pff.h"
 #include "diskio.h"

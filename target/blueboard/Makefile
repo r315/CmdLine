@@ -10,12 +10,10 @@ EXEC		=$(BUILD_DIR)/$(TARGET)
 #######################################
 
 FEATURE_ENABLE = \
-ENABLE_AVR_PROGRAMMING \
-#ENABLE_BENCHMAK \
+_ENABLE_AVR_PROGRAMMING \
 ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMAK_DHYSTONE \
-ENABLE_BENCHMAK_DHYSTONE \
-ENABLE_DEBUG MSC_CLOCK \
+ENABLE_BENCHMARK \
+ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK \
 
 #######################################
 # paths
@@ -24,11 +22,11 @@ ENABLE_DEBUG MSC_CLOCK \
 TARGET_PATH  =$(CURDIR)
 BUILD_DIR 	 :=build
 
-LIB_PATH 	 =$(LIBEMB_PATH)
-DRIVERS_PATH =$(LIBEMB_PATH)/drv
-CMSIS_PATH   =$(DRIVERS_PATH)/CMSIS
-CMSIS_DEVICE =$(CMSIS_PATH)/Device/NXP/LPC17xx
-
+LIB_PATH 	 =$(LIBEMB_PATH)/lib
+DRIVER_PATH  =$(LIBEMB_PATH)/drv
+CMSIS_PATH   =$(LIBEMB_PATH)/CMSIS
+DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
+BSP_PATH     =$(LIBEMB_PATH)/bsp/blueboard
 #######################################
 # Includes
 #######################################
@@ -41,42 +39,46 @@ $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
+$(APP_DIR)/libs/dhrystone \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
-$(DRIVERS_PATH)/inc \
-$(CMSIS_DEVICE)/inc \
+$(DRIVER_PATH)/inc \
+$(CMSIS_PATH)/Device/NXP/LPC17xx/inc \
 $(CMSIS_PATH)/Core/Include \
+$(DRIVER_COMPONENT_PATH)/tft \
+$(BSP_PATH) \
 
 ######################################
 # Sources
 ######################################
 C_SOURCES =\
-$(CMSIS_DEVICE)/src/startup_LPC17xx.c \
-$(CMSIS_DEVICE)/src/system_LPC17xx.c \
-$(TARGET_PATH)/src/blueboard.c \
+$(CMSIS_PATH)/Device/NXP/LPC17xx/src/startup_LPC17xx.c \
+$(CMSIS_PATH)/Device/NXP/LPC17xx/src/system_LPC17xx.c \
+$(BSP_PATH)/blueboard.c \
 $(TARGET_PATH)/src/sysmem.c \
 $(TARGET_PATH)/src/syscalls.c \
-$(DRIVERS_PATH)/clock/clock_lpc17xx.c \
-$(DRIVERS_PATH)/timer/tim_lpc17xx.c \
-$(DRIVERS_PATH)/tft/ili9328.c \
-$(DRIVERS_PATH)/pwm/pwm_lpc17xx.c \
-$(DRIVERS_PATH)/i2c/i2c_lpc17xx.c \
-$(DRIVERS_PATH)/i2s/i2s_lpc17xx.c \
-$(DRIVERS_PATH)/spi/spi_lpc17xx.c \
-$(DRIVERS_PATH)/dac/dac_lpc17xx.c \
-$(DRIVERS_PATH)/gpio/gpio_lpc17xx.c \
-$(DRIVERS_PATH)/uart/uart_lpc17xx.c \
-$(DRIVERS_PATH)/dma/dma_lpc17xx.c \
-$(DRIVERS_PATH)/adc/adc_lpc17xx.c \
-$(DRIVERS_PATH)/rng/rng_software.c \
-$(DRIVERS_PATH)/wdt/wdt_dummy.c \
-$(DRIVERS_PATH)/storage/memcard.c \
+$(DRIVER_PATH)/clock/clock_lpc17xx.c \
+$(DRIVER_PATH)/timer/tim_lpc17xx.c \
+$(DRIVER_COMPONENT_PATH)/tft/ili9328.c \
+$(DRIVER_PATH)/pwm/pwm_lpc17xx.c \
+$(DRIVER_PATH)/i2c/i2c_lpc17xx.c \
+$(DRIVER_PATH)/i2s/i2s_lpc17xx.c \
+$(DRIVER_PATH)/spi/spi_lpc17xx.c \
+$(DRIVER_PATH)/dac/dac_lpc17xx.c \
+$(DRIVER_PATH)/gpio/gpio_lpc17xx.c \
+$(DRIVER_PATH)/uart/uart_lpc17xx.c \
+$(DRIVER_PATH)/dma/dma_lpc17xx.c \
+$(DRIVER_PATH)/adc/adc_lpc17xx.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(DRIVER_PATH)/storage/memcard.c \
 $(LIB_PATH)/src/font.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/debug.c \
 $(LIB_PATH)/src/button.c \
 $(LIB_PATH)/pff/pff.c \
+$(LIB_PATH)/src/lib2d.c \
 $(TARGET_PATH)/usbdrv/usbserial.c \
 $(TARGET_PATH)/usbdrv/usbhw_lpc.c \
 $(TARGET_PATH)/usbdrv/usbcontrol.c \
@@ -85,7 +87,8 @@ $(TARGET_PATH)/src/bb_serial.c \
 $(TARGET_PATH)/src/bb_main.c \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \
-#$(LIBEMB_PATH)/drv/lib2d.c \
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -136,7 +139,7 @@ GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
 # Libraries
 #######################################
 
-SPECS=--specs=nosys.specs --specs=nano.specs #-u _printf_float 
+SPECS=--specs=nosys.specs --specs=nano.specs #-u _printf_float
 LIBS =-lstdc++
 #LIBS +=-nostdlib
 LIBSPATH +=
@@ -155,7 +158,7 @@ vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
 OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-CHECKSUM =$(LIB_PATH)/tools/checksum
+CHECKSUM =$(LIBEMB_PATH)/tools/checksum
 
 #######################################
 # Tool binaries
@@ -215,8 +218,8 @@ aslist: $(EXEC).elf
 	@$(OBJDUMP) -D $< > $(EXEC).lst
 
 clean:
-#$(REMOVE) $(BUILD_DIR)/*.obj $(BUILD_DIR)/*.o *.hex *.elf *.bin	
-	$(REMOVE) $(BUILD_DIR)  
+#$(REMOVE) $(BUILD_DIR)/*.obj $(BUILD_DIR)/*.o *.hex *.elf *.bin
+	$(REMOVE) $(BUILD_DIR)
 
 rebuild: clean all
 
@@ -227,7 +230,7 @@ $(BUILD_DIR)/blueboard.jlink: $(EXEC).hex
 	@echo "r" >> $@
 	@echo "q" >> $@
 	#@echo "erase" > $@
-	
+
 $(BUILD_DIR)/blueboard.cfg:
 	@echo "Creating opencod configuration file"
 	@echo "adapter driver jlink" > $(EXEC).cfg
@@ -253,7 +256,7 @@ $(BUILD_DIR):
 
 minicom:
 	minicom -b 115200 -D /dev/ttyACM0
-	
+
 #######################################
 # build rules
 #######################################
@@ -264,7 +267,7 @@ $(BUILD_DIR)/%.o : %.c Makefile | $(BUILD_DIR)
 $(BUILD_DIR)/%.obj : %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
 	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
-	
+
 $(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
 	@echo "[AS]  $<"
 	@$(AS) $(ASFLAGS) $< -o $@

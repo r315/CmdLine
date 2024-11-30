@@ -10,7 +10,7 @@ TARGET =console_bluepill
 FEATURE_ENABLE = \
 ENABLE_TFT_DISPLAY \
 ENABLE_BENCHMARK \
-#ENABLE_BENCHMAK_DHYSTONE \
+#ENABLE_BENCHMARK_DHRYSTONE \
 #ENABLE_DEBUG MSC_CLOCK \
 
 
@@ -20,8 +20,9 @@ ENABLE_BENCHMARK \
 BUILD_DIR 		:=build
 TARGET_PATH 	=$(CURDIR)
 
-LIB_PATH 		=$(LIBEMB_PATH)
-DRIVERS_PATH 	=$(LIB_PATH)/drv
+LIB_PATH 		=$(LIBEMB_PATH)/lib
+DRIVER_PATH 	=$(LIBEMB_PATH)/drv
+DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 
 ifeq ($(STM32REPO), )
 $(error Missing STM32REPO environment variable)
@@ -42,14 +43,17 @@ $(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
 $(REPOSITORY)/Drivers/CMSIS/Include \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
+$(DRIVER_PATH)/inc \
+$(DRIVER_COMPONENT_PATH)/tft \
 $(LIB_PATH)/inc \
-$(DRIVERS_PATH)/inc \
+$(LIB_PATH)/pff \
+$(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 
-AS_INCLUDES = 
+AS_INCLUDES =
 
 ######################################
 # Sources
@@ -89,13 +93,13 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
-$(DRIVERS_PATH)/uart/uart_stm32f10x.c \
-$(DRIVERS_PATH)/spi/spi_stm32f1xx.c \
-$(DRIVERS_PATH)/tft/st7735.c \
-$(DRIVERS_PATH)/rng/rng_software.c \
-$(DRIVERS_PATH)/gpio/gpio_stm32f1xx.c \
-$(DRIVERS_PATH)/dma/dma_stm32f1xx.c \
-$(DRIVERS_PATH)/wdt/wdt_dummy.c \
+$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+$(DRIVER_PATH)/uart/uart_stm32f10x.c \
+$(DRIVER_PATH)/spi/spi_stm32f1xx.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
+$(DRIVER_PATH)/dma/dma_stm32f1xx.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/liblcd.c \
@@ -127,7 +131,7 @@ $(TARGET_PATH)/startup/startup_stm32f103xb.s
 
 LDSCRIPT =$(TARGET_PATH)/startup/STM32F103C8Tx_FLASH.ld
 
-AS_DEFS = 
+AS_DEFS =
 
 # C defines
 C_DEFS =  \
@@ -183,7 +187,7 @@ CPU =-mcpu=cortex-m3 -mthumb
 #FLOAT-ABI =
 
 # mcu
-MCU =$(CPU) $(FPU) $(FLOAT-ABI) 
+MCU =$(CPU) $(FPU) $(FLOAT-ABI)
 
 ifdef RELEASE
 DEBUG =0
@@ -215,7 +219,7 @@ CPPFLAGS =$(MCU) $(OPT) $(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDE
 
 SPECS =-specs=nosys.specs -specs=nano.specs
 LIBS =-lstdc++
-LIBDIR = 
+LIBDIR =
 LDFLAGS = $(MCU) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
 
 #######################################
@@ -269,7 +273,7 @@ $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "[AS] " $<
 	@$(AS) -c $(ASFLAGS) $< -o $@
 
-$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CC] " $<
 	@$(CPP) -c $(CPPFLAGS) $< -o $@
 
@@ -280,20 +284,20 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
 $(BUILD_DIR)/$(TARGET).hex: $(TARGET).elf | $(BUILD_DIR)
 	@echo "Building hex file:" $@
 	@$(HEX) $< $@
-	
+
 $(BUILD_DIR)/$(TARGET).bin: $(TARGET).elf | $(BUILD_DIR)
 	@echo "Building bin file:" $@
-	@$(BIN) $< $@	
-	
+	@$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir -p $@		
+	mkdir -p $@
 
 #######################################
 # clean up
 #######################################
 clean:
 	-rm -fR $(BUILD_DIR)
-  
+
 #######################################
 # dependencies
 #######################################
