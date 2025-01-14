@@ -15,6 +15,7 @@ _ENABLE_DIGITAL_AUDIO \
 ENABLE_I2C \
 ENABLE_RGBLED \
 ENABLE_AVR_PROGRAMMING \
+ENABLE_BUZZER \
 
 #######################################
 # paths
@@ -47,6 +48,7 @@ $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/dhrystone \
+$(APP_DIR)/libs/tone \
 $(DRIVER_COMPONENT_PATH)/tft \
 
 AS_INCLUDES =\
@@ -72,22 +74,23 @@ $(DRIVER_PATH)/uart/uart_at32f4xx.c \
 $(DRIVER_PATH)/i2s/i2s_at32f4xx.c \
 $(DRIVER_PATH)/i2c/i2c_at32f415.c \
 $(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
+$(DRIVER_PATH)/tone/tone_at32f4xx.c \
+$(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_COMPONENT_PATH)/tft/st7735.c \
 
 CSRCS = \
 $(BOARD_SOURCES) \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
-$(DRIVER_PATH)/rng/rng_software.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
+$(LIB_PATH)/src/rtttl.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c \
-
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -99,6 +102,7 @@ $(APP_DIR)/src/cmdi2s.cpp \
 $(APP_DIR)/src/cmdi2c.cpp \
 $(APP_DIR)/src/cmdrgbled.cpp \
 $(APP_DIR)/src/cmdavr.cpp \
+$(APP_DIR)/src/cmdbuz.cpp \
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################

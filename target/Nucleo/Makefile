@@ -22,6 +22,7 @@ ENABLE_SI5351 \
 ENABLE_DS1086 \
 ENABLE_BENCHMARK \
 ENABLE_BENCHMARK_DHRYSTONE \
+ENABLE_BUZZER \
 #ENABLE_RGBLED \
 #FEATURE_GIF \
 
@@ -105,12 +106,13 @@ $(DRIVER_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 $(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
-$(LIB_PATH)/src/buzzer.c \
+$(DRIVER_PATH)/tone/tone_stm32l4xx.c \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/rtttl.c \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \

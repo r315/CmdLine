@@ -1,6 +1,5 @@
 
 #include "board.h"
-#include "buzzer.h"
 #include "wdt.h"
 
 #include "console.h"
@@ -35,6 +34,8 @@
 #include "cmdrgbled.h"
 #include "cmdsd.h"
 #include "stk500.h"
+#include "rtttl.h"
+#include "tone.h"
 
 #define WDT_TIMEOUT     3000
 
@@ -145,11 +146,11 @@ extern "C" void App(void)
 
 	console.printf("CPU Clock: %dMHz\n", SystemCoreClock / 1000000);
 
-#if defined (BOARD_NUCLEO_L412KB)
+#if defined (ENABLE_BUZZER)
 	LED1_OFF;
-	buzInit();
-	buzSetLevel(50);
-	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");
+	TONE_Init();
+	TONE_Volume(50);
+	RTTTL_Play("rtttl_14:d=16,o=6,b=180:c,e,g");
 #endif
 
 	while(1){
