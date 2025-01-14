@@ -146,7 +146,7 @@ extern "C" void App(void)
 	console.printf("CPU Clock: %dMHz\n", SystemCoreClock / 1000000);
 
 #if defined (BOARD_NUCLEO_L412KB)
-	LED_OFF;
+	LED1_OFF;
 	buzInit();
 	buzSetLevel(50);
 	buzPlayRtttl("rtttl_14:d=16,o=6,b=180:c,e,g");

@@ -28,8 +28,8 @@ extern "C" {
  * LED and GPIO's
  *  LED Pin PB3 (Arduino D13)
  * */
-#define LED_ON          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET)
-#define LED_OFF         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET)
+#define LED1_ON          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET)
+#define LED1_OFF         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET)
 #define LED1_TOGGLE     HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin)
 
 /**

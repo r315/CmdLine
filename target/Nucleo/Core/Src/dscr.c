@@ -43,7 +43,7 @@ void DSCR_Init(void){
 
     dsc.tim = CAP_TIM;
     dsr.tim = CAP_TIM;
-    
+
     dsc.tim->PSC = (SystemCoreClock / 1000000) - 1;     // Count us
     dsc.tim->ARR = 65535;                               // Max count 65535us
     dsc.tim->CR2 = TIM_CR2_MMS_COMPARE_PULSE;           // Configure master mode, valid for TIM1 and TIM15
@@ -75,13 +75,13 @@ void DSCR_Init(void){
     dsc.dma.dsize = DMA_CCR_MSIZE_16;
     dsc.dma.dir = DMA_DIR_P2M;
     DMA_Config(&dsc.dma, DMA1_REQ_TIM1_CH1);
-    
+
     dsr.dma.dst = (void*)&CAP_TIM->CCR4;
     dsr.dma.dsize = DMA_CCR_PSIZE_16;
     dsr.dma.ssize = DMA_CCR_MSIZE_16;
     dsr.dma.dir = DMA_DIR_M2P;
     DMA_Config(&dsr.dma, DMA1_REQ_TIM1_CH4);
-        
+
     HAL_NVIC_EnableIRQ(CAP_DMA_IRQn);
     HAL_NVIC_EnableIRQ(REP_DMA_IRQn);
     HAL_NVIC_EnableIRQ(TIMEOUT_TIM_IRQn);
@@ -90,7 +90,7 @@ void DSCR_Init(void){
 
 /**
  * @brief Starts a capture
- * 
+ *
  * \param dst       : Pointer for destination of captured values
  * \param size      : Maximum buffer size
  * \param duration  : Timeout of capture in ms, capture will end after this time from 1st capture
@@ -103,14 +103,14 @@ void DSCR_StartCapture(uint16_t *dst, uint32_t size, uint32_t duration, void(*cb
     dma_channel->CMAR = (uint32_t)dst;
     dma_channel->CNDTR = size;
     dma_channel->CCR |= DMA_CCR_EN;         // Enable DMA Channel
-    
+
     TIMEOUT_TIM->ARR = duration - 1;        // Configure max count as timeout
     TIMEOUT_TIM->EGR = TIM_EGR_UG;          // Reset timer and update registers
     TIMEOUT_TIM->SR &= ~TIM_SR_UIF;         // Ignore initial update event
     TIMEOUT_TIM->SMCR = TIM_SMCR_SMS_TRIGGER_MODE;      // Configure slave mode, valid for TIM1 and TIM15
 
     dsc.cb = cb;
-    
+
     dsc.tim->EGR = TIM_EGR_UG;              // Reset timer and update registers
     //dsc.tim->DIER |= TIM_DIER_CC1IE;        // Enable capture interrupt, when not in master/slave timers
     dsc.tim->CR1 |= TIM_CR1_CEN;            // Start capture timer
@@ -119,7 +119,7 @@ void DSCR_StartCapture(uint16_t *dst, uint32_t size, uint32_t duration, void(*cb
 
 /**
  * @brief Waits for a capture to end
- * 
+ *
  * \retval : number of remaining capture values
  *  */
 uint32_t DSCR_WaitCapture(void){
@@ -129,7 +129,7 @@ uint32_t DSCR_WaitCapture(void){
 
 /**
  * @brief Stop current capture by disabling timer and dma
- * 
+ *
  *  */
 void DSCR_StopCapture(void){
     dsc.tim->CCER &= ~TIM_CCER_CC1E;        // Disable channel 1
@@ -140,16 +140,16 @@ void DSCR_StopCapture(void){
 
 /**
  * @brief Reproduces a signal from buffer
- * 
+ *
  * \param src : Pointer to source buffer
  * \param size : size of buffer
  * */
 void DSCR_Replay(uint16_t *src, uint32_t size){
     DMA_Channel_TypeDef *dma_channel = (DMA_Channel_TypeDef*)dsr.dma.stream;
-    
+
     if(size == 0){
         return;
-    }    
+    }
 
     dsr.tim->CCER &= ~TIM_CCER_CC4E;        // Disable channel 4 capture
     dsr.tim->CR1 &= ~TIM_CR1_CEN;           // Stop capture timer
@@ -158,13 +158,13 @@ void DSCR_Replay(uint16_t *src, uint32_t size){
     dma_channel->CMAR = (uint32_t)src;
     dma_channel->CNDTR = size;
     dma_channel->CCR |= DMA_CCR_EN;         // Enable DMA Channel
-    
+
     TIMEOUT_TIM->SMCR = 0;                  // Disable slave mode, valid for TIM1 and TIM15
 
     dsr.tim->EGR = TIM_EGR_UG | TIM_EGR_CC4G;// Reset timer and update registers
     dsr.tim->CCER |= TIM_CCER_CC4E;         // Enable channel 4
     dsr.tim->CR1 |= TIM_CR1_CEN;            // Start capture timer
-    LED_ON;
+    LED1_ON;
 }
 
 /**
@@ -176,11 +176,11 @@ static void DSCR_CallBack(void){
         dsc.cb(((DMA_Channel_TypeDef*)dsc.dma.stream)->CNDTR);
     }
 }
-/** 
+/**
  * Interrupt Handlers
  * */
 
-// Required for TIM2 and TIM15, this handler is called to on first 
+// Required for TIM2 and TIM15, this handler is called to on first
 // capture to enable TIM15 (Timeout).
 // When using TIM1, TIM15 is started by master/slave mode.
 void DSCR_TimHandler(void){
@@ -190,7 +190,7 @@ void DSCR_TimHandler(void){
     if(st & TIM_SR_UIF){
         CAP_TIM->DIER &= ~TIM_DIER_CC1IE;   // Disable update interrupt
         TIMEOUT_TIM->CR1 |= TIM_CR1_CEN;    // Start timeout timer
-        LED_ON;
+        LED1_ON;
     }
     CAP_TIM->SR ^= st;
 }
@@ -211,7 +211,7 @@ void DSCR_ReplayHandler(void){
     CLEAR_BIT(dsc.tim->CCER,TIM_CCER_CC4E);    // Disable channel 4
     ((DMA_Channel_TypeDef*)
     dsr.dma.stream)->CCR &= ~DMA_CCR_EN;      // Disable DMA
-    LED_OFF;
+    LED1_OFF;
 }
 
 /**
@@ -221,7 +221,7 @@ void DSCR_TimeoutHandler(void){
     if((TIMEOUT_TIM->SR & TIM_SR_UIF) != 0){
         DSCR_StopCapture();
         TIMEOUT_TIM->SR &= ~TIM_SR_UIF;     // Clear update event flag
-        LED_OFF;
+        LED1_OFF;
         DSCR_CallBack();
     }
 }
