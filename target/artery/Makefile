@@ -16,6 +16,7 @@ ENABLE_I2C \
 ENABLE_RGBLED \
 ENABLE_AVR_PROGRAMMING \
 ENABLE_BUZZER \
+ENABLE_DS1086 \
 
 #######################################
 # paths
@@ -103,6 +104,9 @@ $(APP_DIR)/src/cmdi2c.cpp \
 $(APP_DIR)/src/cmdrgbled.cpp \
 $(APP_DIR)/src/cmdavr.cpp \
 $(APP_DIR)/src/cmdbuz.cpp \
+$(APP_DIR)/src/cmdds1086.cpp \
+$(APP_DIR)/libs/ds1086/ds1086.cpp \
+
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################
