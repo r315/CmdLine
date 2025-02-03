@@ -9,10 +9,8 @@ int main(void)
     BOARD_Init();
 
     App();
-    
-    while (1)
-    {
-        LED1_TOGGLE;
+
+    while (1) {
         DelayMs(200);
     }
 

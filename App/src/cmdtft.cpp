@@ -73,7 +73,7 @@ uint16_t generateRandomColor(int32_t mix) {
         green = (green + ((mix & 63) >> 5)) >> 1;
         blue = (blue + ((mix & 31) >> 0)) >> 1;
     }
-    
+
     return (red << 11) | (green << 5) | (blue << 0);
 }
 
@@ -81,7 +81,7 @@ uint32_t Tiles_Loop(){
     uint16_t *buf = tile;
     for(uint8_t i = 0; i < LCD_GetHeight()/16; i++){
         for(uint8_t j = 0; j < LCD_GetWidth()/16; j++){
-            memset(buf, generateRandomColor(seed), 15 * 15 * 2);            
+            memset(buf, generateRandomColor(seed), 15 * 15 * 2);
             LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
             buf = tile + (256 * (j & 1));
         }
@@ -101,7 +101,7 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
     }else{
 
         region = h / 43;
-        remainder = (h - (region * 43)) * 6; 
+        remainder = (h - (region * 43)) * 6;
 
         p = (v * (255 - s)) >> 8;
         q = (v * (255 - ((s * remainder) >> 8))) >> 8;
@@ -141,7 +141,7 @@ uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
  * Public API
  * */
 void CmdTft::help(void){
-    console->println("Usage: tft <option> [params] \n");    
+    console->println("Usage: tft <option> [params] \n");
     console->println("options:");
     console->println("  init <orientation>,  orientation 0-3");
     console->println("  clear <color>,       Fill display with color");
@@ -190,7 +190,7 @@ char CmdTft::execute(int argc, char **argv){
     }
 
     if(xstrcmp("orientation", (const char*)argv[1]) == 0){
-        if(ia2i(argv[2], (int32_t*)&val1)){            
+        if(ia2i(argv[2], (int32_t*)&val1)){
 		    LCD_SetOrientation((drvlcdorientation_t)(val1 & 3));
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
             LCD_WriteArea(0, 0, 8, 8, (uint16_t*)f_data);
@@ -225,7 +225,7 @@ char CmdTft::execute(int argc, char **argv){
             LCD_Scroll(val1);
         }else{
             Scroll_Setup();
-            do{           
+            do{
                 console->printf("\r%d  ", scroll);
                 Scroll_Loop();
                 console->getchNonBlocking(&c);
@@ -238,7 +238,7 @@ char CmdTft::execute(int argc, char **argv){
     if(xstrcmp("rc", (const char*)argv[1]) == 0){
         uint16_t f = 0;
 
-        if((const char*)argv[2] == NULL){            
+        if((const char*)argv[2] == NULL){
             RandomColors_Loop();
             return CMD_OK;
         }
@@ -250,7 +250,7 @@ char CmdTft::execute(int argc, char **argv){
             fps();
 
             if(f == 0){
-                scroll = (scroll + 1) % 160;                
+                scroll = (scroll + 1) % 160;
                 LCD_Scroll(scroll);
                 f = 2; // scroll speed
             }
@@ -269,10 +269,10 @@ char CmdTft::execute(int argc, char **argv){
         uint8_t h = 0, s, v;
         uint16_t *buf = tile;
         if(ia2i(argv[2], (int32_t*)&s)){
-            if(ia2i(argv[3], (int32_t*)&v)){                
+            if(ia2i(argv[3], (int32_t*)&v)){
                 for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
                     for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
-                        memset16(buf, HsvToRgb(h++, s, v), 64);                        
+                        memset16(buf, HsvToRgb(h++, s, v), 64);
                         LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
                         buf = tile + (256 * (j & 1));
                     }
@@ -282,7 +282,7 @@ char CmdTft::execute(int argc, char **argv){
         }
     }
 
-    if(xstrcmp("demo", (const char*)argv[1]) == 0){        
+    if(xstrcmp("demo", (const char*)argv[1]) == 0){
         char c, limit_fps = 1;
         uint32_t time = 0;
         uint8_t state = 0, demo = 0;
@@ -301,7 +301,7 @@ char CmdTft::execute(int argc, char **argv){
                     time = GetTick();
 
                     if(demos[demo].loop() == 0){
-                        state = 2;                        
+                        state = 2;
                     }
 
                     fps();
@@ -317,14 +317,14 @@ char CmdTft::execute(int argc, char **argv){
                     state = 0;
                     break;
 
-                default:                   
+                default:
                     break;
             }
 
             if(limit_fps && time < 16){
                 DelayMs(16 - time);
             }
-            
+
             if(console->getchNonBlocking(&c)){
                 limit_fps ^= 1;
             }
@@ -336,8 +336,8 @@ char CmdTft::execute(int argc, char **argv){
 #ifdef FEATURE_GIF
     if(xstrcmp("gif", (const char*)argv[1]) == 0){
         long lTime;
-        int iFrames = 0;        
-        
+        int iFrames = 0;
+
         gif.begin(BIG_ENDIAN_PIXELS);
 
         console->print("GIF CPU speed benchmark\n");
@@ -352,7 +352,7 @@ char CmdTft::execute(int argc, char **argv){
             gif.close();
             lTime = HAL_GetTick() - lTime;
             console->print("Decoded %d frames in %d miliseconds", iFrames, lTime);
-        }  
+        }
         return CMD_OK_LF;
     }
 #endif
@@ -362,12 +362,11 @@ char CmdTft::execute(int argc, char **argv){
 void CmdTft::fps(void){
     static uint32_t expire = 0;
     static uint16_t fps = 0;
- 
+
     if(GetTick() > expire){
         console->printf("\rfps %d ", fps);
         fps = 0;
         expire = GetTick() + 1000;
-        LED1_TOGGLE;
     }
     fps++;
 }
@@ -412,14 +411,14 @@ void drawBall(int x, int y)
 {
     static uint8_t bf = 0;
     uint16_t linebuffer[SCR_WD  * 2];
-    int i, j, ii;    
+    int i, j, ii;
 
     for (j = 0; j < BALL_HT; j++)
     {
         uint16_t *line = linebuffer + (SCR_WD * ((bf++) & 1)); // swap buffer
 
         uint8_t v, *img = (uint8_t *)ball + 16 * 2 + 6 + j * BALL_WD / 2 + BALL_WD / 2;
-        
+
         int yy = y + j;
         if (yy == LINE_YS || yy == LINE_YS + 1 * 10 || yy == LINE_YS + 2 * 10 || yy == LINE_YS + 3 * 10 || yy == LINE_YS + 4 * 10 || yy == LINE_YS + 5 * 10 || yy == LINE_YS + 6 * 10 ||
             yy == LINE_YS + 7 * 10 || yy == LINE_YS + 8 * 10 || yy == LINE_YS + 9 * 10 || yy == LINE_YS + 10 * 10 || yy == LINE_YS + 11 * 10 || yy == LINE_YS + 12 * 10)
@@ -483,7 +482,7 @@ static void AmigaBall_Setup(void)
     bgCol    = RGB565(200,200,200);
     bgColS   = RGB565(90,90,90);
     lineCol  = RGB565(150,40,150);
-    lineColS = RGB565(80,10,80);    
+    lineColS = RGB565(80,10,80);
 
     if(LCD_GetWidth() == 128){
         grid_sx1 = 19;
@@ -514,7 +513,7 @@ static void AmigaBall_Setup(void)
 
     int dy = SCR_HT - LINE_YS - (LINE_YS + vline_h1);
     int dx = grid_sx1 - LINE_XS2;
-    
+
     int o = 7 * dx / dy;
     LCD_FillRect(LINE_XS2 + o, LINE_YS + vline_h1 + 6 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, 1, lineCol);
     o = (7 + 6) * dx / dy;
@@ -538,7 +537,7 @@ static uint32_t AmigaBall_Loop(void)
     static int16_t anim=0, animd=1;
     static int16_t x=0, y=0;
     static int16_t xd=2, yd=1;
-    
+
     for (int i = 0; i < 14; i++)
     {
         palette[i + 1] = ((i + anim) % 14) < 7 ? LCD_WHITE : LCD_RED;
@@ -548,34 +547,34 @@ static uint32_t AmigaBall_Loop(void)
 
     drawBall(x, y);
     anim += animd;
-    
+
     if (anim < 0){
         anim += 14;
     }
 
     x += xd;
     y += yd;
-    
+
     if (x < 0)
     {
         x = 0;
         xd = -xd;
         animd = -animd;
     }
-    
+
     if (x >= SCR_WD - BALL_WD)
     {
         x = SCR_WD - BALL_WD;
         xd = -xd;
         animd = -animd;
     }
-    
+
     if (y < 0)
     {
         y = 0;
         yd = -yd;
     }
-    
+
     if (y >= LINE_YS + vline_h1 + 1 - BALL_HT)
     {
         y = LINE_YS + vline_h1 + 1- BALL_HT;
@@ -607,7 +606,7 @@ void GIFDraw(GIFDRAW *pDraw)
     iWidth = pDraw->iWidth;
     if (iWidth > LCD_GetWidth())
        iWidth = LCD_GetWidth();
-    
+
     s = pDraw->pPixels;
 
     if (pDraw->ucDisposalMethod == 2) // restore to background color
@@ -692,7 +691,7 @@ static void Gif_Setup(void){
 }
 
 static uint32_t Gif_Loop(void){
-    
+
     if(gif.playFrame(true, NULL) == 0){
         gif.reset();
         gif.playFrame(true, NULL);
@@ -703,7 +702,7 @@ static uint32_t Gif_Loop(void){
 }
 
 static void Gif_End(void){
-    gif.close();   
+    gif.close();
 }
 #endif
 
@@ -781,8 +780,8 @@ static uint32_t Scroll_Loop(void){
     y = (LCD_GetHeight() - 1) - scroll;
     scroll = (scroll + 1) % LCD_GetHeight();
 
-    LCD_FillRect(0, y, LCD_GetWidth(), 1,  HsvToRgb(hue++, 255, 255));      
-    
+    LCD_FillRect(0, y, LCD_GetWidth(), 1,  HsvToRgb(hue++, 255, 255));
+
     LCD_Scroll(scroll);
 
     return (++demo_frames) < 300;
@@ -796,8 +795,8 @@ static uint32_t RandomColors_Loop(void){
     for(size_t i = 0; i < LCD_GetHeight(); i++){
         uint16_t *buf = tile + (LCD_GetWidth() * (i & 1));
         for (size_t j = 0; j < LCD_GetWidth(); j++){
-            buf[j] = RNG_Get();                    
-        }                
+            buf[j] = RNG_Get();
+        }
         LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
     }
     return (++demo_frames) < 50;

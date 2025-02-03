@@ -6,15 +6,14 @@
 
 #ifdef STM32L412xx
 #include "stm32l4xx_hal.h"
-#define DBG_PIN_TOGGLE
 #elif defined(AT32F415CBT7)
 #include "at32f4xx.h"
 #include "gpio_at32f4xx.h"
 #include "dma_at32f4xx.h"
 
-#define DBG_PIN_TOGGLE     LED1_TOGGLE
 #endif
-//#include "write.h"
+
+#define DBG_PIN_TOGGLE
 
 #define WS2812_BIT_FREQ     800000UL  // 800kHz
 #define WS2812_T0H          2500000UL // 1/400ns => 2.5Mhz
@@ -40,8 +39,8 @@ static uint8_t nleds;
  * @brief Prepare single led data by converting 24bit
  *        color pulse width time. data is converted
  *        into GRB frame format
- * 
- * @param dst output pulse width buffer 
+ *
+ * @param dst output pulse width buffer
  * @param src 24bit color in format RGB888
  */
 static void ws2812_prepare_data(uint16_t *dst, uint8_t *src)
@@ -50,21 +49,21 @@ static void ws2812_prepare_data(uint16_t *dst, uint8_t *src)
     uint32_t grbdata = (src[1] << 16) | (src[2] << 8) | src[0];
 
     uint32_t mask = 1 << (RGBLED_FRAME_SIZE - 1);
-    
+
     for(uint32_t j=0; j < RGBLED_FRAME_SIZE; j++, mask >>= 1)
     {
-        dst[j] = (grbdata & mask) ? t1h : t0h; 
+        dst[j] = (grbdata & mask) ? t1h : t0h;
     }
 }
 
 /**
  * @brief Callback for half-transfer and end of transfer of DMA
- * 
+ *
  */
 static void ws2812_eot(void)
 {
     DBG_PIN_TOGGLE;
-    
+
     if(--nleds == 0){
         #if defined(AT32F415CBT7)
         DMA_Cancel(&dma);                      // last led has received all bits, stop DMA
@@ -85,7 +84,7 @@ void ws2812_init() {
 
     #elif defined(AT32F415CBT7)
     GPIO_Config(PA_1, GPO_MS_AF);
-    #endif  
+    #endif
 
     #if defined(AT32F415CBT7)
     RCC_APB1PeriphClockCmd(RCC_APB1PERIPH_TMR5, ENABLE);
@@ -110,7 +109,7 @@ void ws2812_init() {
     dma.dir = DMA_DIR_M2P;
     dma.single = 0;                 // Circular transfer
     dma.eot = ws2812_eot;           // ht/eof callback
-    
+
     DMA_Config(&dma, DMA2_REQ_TIM5_UP); // Configure DMA for update event
 
     #elif defined(STM32L412xx)
@@ -121,7 +120,7 @@ void ws2812_init() {
 
 /**
  * @brief Write led data into leds
- * 
+ *
  * @param count Number of led's to be updated
  * @param data  RGB888 data buffer for led's
  */
@@ -131,19 +130,19 @@ void ws2812_write(uint32_t count,  uint8_t *data)
         return;
 
     leddata = data;
-    
+
     ws2812_prepare_data(ledframe, data);     // prepare data of first led
     leddata += 3;                            // set pointer to second led data
 
     if(count > 1){
-        ws2812_prepare_data(ledframe + RGBLED_FRAME_SIZE, 
+        ws2812_prepare_data(ledframe + RGBLED_FRAME_SIZE,
                             leddata);        // prepare data of second led
         leddata += 3;                        // set pointer to 3rd led data
     }
 
     nleds = count;                           // save number of led's to update
 
-    pledframe = ledframe;                    // set pointer for first half, this half should be written 
+    pledframe = ledframe;                    // set pointer for first half, this half should be written
                                              // on first interrupt (half-transfer)
 
     DBG_PIN_TOGGLE;
