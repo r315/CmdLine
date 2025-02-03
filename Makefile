@@ -1,7 +1,7 @@
 BUILD_DIR  	:=$(CURDIR)/build
 APP_DIR 	:=$(CURDIR)/App
 
-all: nc bp bb at
+all: nc bp bb at dk230
 
 norule:
 	@echo "specify board"
@@ -10,12 +10,10 @@ norule:
 	@echo "	bp - bluepill"
 	@echo "	nc - Nucleo"
 	@echo "	at - at32f415"
+	@echo "	dk230 - gd32e230"
 
-clean: 
+clean:
 	@${RM} -rf build
-	@"$(MAKE)" -C target/blueboard clean
-	@"$(MAKE)" -C target/Nucleo clean
-	@"$(MAKE)" -C target/bluepill clean
 
 nc:
 	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR)
@@ -28,7 +26,10 @@ bb:
 
 at:
 	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR)
-	
+
+dk230:
+	@"$(MAKE)" -C target/230dk BUILD_DIR=$(BUILD_DIR)/230dk APP_DIR=$(APP_DIR)
+
 bb-program:
 	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) program
 
@@ -41,6 +42,8 @@ nc-program:
 at-program:
 	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR) program
 
+dk230-program:
+	@"$(MAKE)" -C target/230dk BUILD_DIR=$(BUILD_DIR)/230dk APP_DIR=$(APP_DIR) program
 
 
 CMDTEMPLATEHEADER =CmdTemplateHeader.in

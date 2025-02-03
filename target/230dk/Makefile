@@ -1,22 +1,14 @@
 ######################################
 # target
 ######################################
-TARGET =console-415dk
+TARGET =console-230dk
 
 #######################################
 # Features
 #######################################
 
-FEATURE_ENABLE = \
-ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMARK \
-ENABLE_BENCHMARK_DHRYSTONE \
-_ENABLE_DIGITAL_AUDIO \
-ENABLE_I2C \
-ENABLE_RGBLED \
-ENABLE_AVR_PROGRAMMING \
-ENABLE_BUZZER \
-ENABLE_DS1086 \
+FEATURE_TFT_DISPLAY =yes
+FEATURE_CLI			=yes
 
 #######################################
 # paths
@@ -25,25 +17,24 @@ ENABLE_DS1086 \
 BUILD_DIR 		:=build
 TARGET_PATH 	=$(CURDIR)
 
-APP_DIR			?=../../App
+APP_PATH        ?=../../App
 LIB_PATH        =$(LIBEMB_PATH)/lib
-DRIVER_PATH 	=$(LIBEMB_PATH)/drv
-DRIVER_OMD_PATH =$(DRIVER_PATH)/omd/at32f4xx
-DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
+DRIVER_PATH 	=$(LIBEMB_PATH)/drv
+DRIVER_OMD_PATH =$(DRIVER_PATH)/omd/gd32e23x
+DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 
 #######################################
 # Includes
 #######################################
 C_INCLUDES = \
-$(TARGET_PATH) \
+$(TARGET_PATH)/inc \
 $(DRIVER_OMD_PATH)/inc \
-$(DRIVER_PATH)/inc \
-$(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
+$(CMSIS_PATH)/Device/GIGADEVICE/GD32E23x/inc \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
-$(APP_DIR)/inc \
+$(APP_PATH)/inc \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
@@ -57,78 +48,60 @@ AS_INCLUDES =\
 ######################################
 # Sources
 ######################################
-BOARD_SOURCES = \
-$(CMSIS_PATH)/Device/ARTERY/AT32F4xx/src/startup_at32f415cbt7.c\
-$(CMSIS_PATH)/Device/ARTERY/AT32F4xx/src/system_at32f4xx.c\
-$(TARGET_PATH)/at_board.c \
-$(TARGET_PATH)/at_main.c \
-$(TARGET_PATH)/at_serial.c \
-$(TARGET_PATH)/syscalls.c \
-$(TARGET_PATH)/sysmem.c \
-$(DRIVER_OMD_PATH)/src/at32f4xx_rcc.c \
-$(DRIVER_OMD_PATH)/src/at32f4xx_i2c.c \
-$(DRIVER_OMD_PATH)/src/at32f4xx_i2c_ex.c \
-$(DRIVER_PATH)/spi/spi_at32f4xx.c \
-$(DRIVER_PATH)/dma/dma_at32f4xx.c \
-$(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
-$(DRIVER_PATH)/uart/uart_at32f4xx.c \
-$(DRIVER_PATH)/i2s/i2s_at32f4xx.c \
-$(DRIVER_PATH)/i2c/i2c_at32f415.c \
-$(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
-$(DRIVER_PATH)/tone/tone_at32f4xx.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+DRIVER_SOURCES = \
+$(CMSIS_PATH)/Device/Gigadevice/GD32E23x/src/startup_gd32e23x.c\
+$(CMSIS_PATH)/Device/Gigadevice/GD32E23x/src/system_gd32e23x.c\
+$(DRIVER_OMD_PATH)/src/gd32e23x_rcu.c \
+$(DRIVER_OMD_PATH)/src/gd32e23x_gpio.c \
+$(DRIVER_OMD_PATH)/src/gd32e23x_misc.c \
+$(DRIVER_OMD_PATH)/src/gd32e23x_usart.c \
+$(DRIVER_OMD_PATH)/src/gd32e23x_dma.c \
+$(DRIVER_OMD_PATH)/src/gd32e23x_i2c.c \
+$(DRIVER_OMD_PATH)/src/gd32e23x_timer.c \
+$(DRIVER_PATH)/uart/uart_gd32e23x.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
+#$(DRIVERS_PATH)/i2c/i2c_230dk.c \
 
-CSRCS = \
-$(BOARD_SOURCES) \
-$(LIB_PATH)/src/fifo.c \
+C_SOURCES = \
+$(DRIVER_SOURCES) \
+$(TARGET_PATH)/src/board_230dk.c \
+$(TARGET_PATH)/src/serial_230dk.c \
+$(TARGET_PATH)/src/main.c \
+$(TARGET_PATH)/src/syscalls.c \
 $(LIB_PATH)/src/strfunc.c \
-$(LIB_PATH)/src/liblcd.c \
-$(LIB_PATH)/src/lib2d.c \
-$(LIB_PATH)/src/font.c \
-$(LIB_PATH)/src/rtttl.c \
-$(LIB_PATH)/src/stimer.c \
-$(APP_DIR)/libs/ws2812b/ws2812b.c \
-$(APP_DIR)/libs/stk500/avr_if.c \
-$(APP_DIR)/libs/stk500/stk500.c \
-$(APP_DIR)/libs/dhrystone/dhry_1.c \
-$(APP_DIR)/libs/dhrystone/dhry_2.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdmem.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
-$(APP_DIR)/src/cmdi2s.cpp \
 $(APP_DIR)/src/cmdi2c.cpp \
-$(APP_DIR)/src/cmdrgbled.cpp \
-$(APP_DIR)/src/cmdavr.cpp \
-$(APP_DIR)/src/cmdbuz.cpp \
 $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/ds1086/ds1086.cpp \
 
+ASM_SOURCES = \
 
-LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
+LDSCRIPT :=$(TARGET_PATH)/GD32E230_FLASH.ld
 #######################################
 # Misc
 #######################################
 
+OCD_CONFIG =$(TARGET_PATH)/gigadevice.cfg
+
 # C defines
 C_DEFS +=\
-BOARD_415DK \
 $(DEVICE) \
-USE_STDPERIPH_DRIVER \
-FIFO_INTERRUPT_SAFE \
 
-C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
+C_DEFS += \
+BOARD_230DK \
+
 
 #######################################
 # CFLAGS
 #######################################
 
-DEVICE =AT32F415CBT7
-CPU =-mcpu=cortex-m4 -mthumb
+#DEVICE =ARMCM23
+DEVICE =GD32E230C8T6
+CPU =-mcpu=cortex-m23 -mthumb
 
 # fpu
 #at43f415 does not have FPU
@@ -142,11 +115,9 @@ FLOAT_ABI =#-u_printf_float
 MCU = $(CPU) $(FPU) $(FLOAT_ABI)
 
 ifdef RELEASE
-DEBUG =0
 OPT   =-O2
 else
-DEBUG =1
-OPT   =-O0 -g -gdwarf-2 -Wall #-Wextra
+OPT   =-Og -g -gdwarf-2 -Wall #-Wextra
 endif
 
 ifndef V
@@ -181,15 +152,16 @@ endif
 # Objects
 #######################################
 
-OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(CSRCS:.c=.o)))
-vpath %.c $(sort $(dir $(CSRCS)))
+OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
 
 OBJECTS += $(addprefix $(BUILD_DIR)/, $(notdir $(CPP_SOURCES:.cpp=.obj)))
 vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
-#OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-#vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
-#VPATH +=$(sort $(dir $(CSRCS)))
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+#VPATH +=$(sort $(dir $(C_SOURCES)))
 
 #######################################
 # Tool binaries
@@ -206,33 +178,29 @@ OBJDUMP =$(PREFIX)objdump
 HEX = $(OBJCOPY) -O ihex
 BIN = $(OBJCOPY) -O binary -S
 
-
-ifeq ($(ST_LINK_PROBE),1)
-PRG_DEP =bin
-PRG_CFG =$(TARGET_PATH)/at32f415.cfg
-PRG_CMD =openocd -f $(PRG_CFG) -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
-ERASE_CMD =openocd -f $(PRG_CFG) -c "init" -c "halt" -c "stm32f1x unlock 0" -c "stm32f1x mass_erase 0" -c "exit"
-else
 ifeq ($(shell uname -s), Linux)
-JLK =JLinkExe
+JLK ="/opt/SEGGER/JLink/JLinkExe"
+PRG_CFG = $(TARGET).elf
+PRG_CMD = openocd -f at32f415.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 else
-JLK =JLink
-endif
-PRG_DEP =bin $(PRG_CFG)
-PRG_CFG =$(BUILD_DIR)/$(TARGET).jlink
-PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
+#JLK =jlink
+#PRG_CFG = $(TARGET).jlink
+#PRG_CMD = $(VERBOSE)$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(BUILD_DIR)/$(PRG_CFG)
+#-device CORTEX-M4
+PRG_CFG = $(TARGET).elf
+PRG_CMD = openocd -f gigadevice.cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
 endif
 
 #######################################
 # Rules
 #######################################
-all: $(BUILD_DIR)/$(TARGET).elf size
+all: $(BUILD_DIR) $(BUILD_DIR)/$(TARGET).elf size
 #@echo $(CMSIS_PATH)
 
 bin: $(BUILD_DIR)/$(TARGET).bin
 
-program: $(PRG_DEP)
-	$(VERBOSE)$(PRG_CMD)
+program: all $(BUILD_DIR)/$(PRG_CFG)
+	$(PRG_CMD)
 
 $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 	@echo "Creating Jlink configuration file"
@@ -242,26 +210,29 @@ $(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).bin
 #######################################
 # build rules
 #######################################
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/%.d: %.c
+	$(VERBOSE)$(CC) $(CFLAGS) -MF"$@" -MG -MM -MP -MT"$@" -MT"$(<:.c=.o)" "$<"
+
+$(BUILD_DIR)/%.o: %.c
 	@echo "[CC]  $<"
 	$(VERBOSE)$(CC) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/%.obj: %.cpp Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/%.obj: %.cpp
 	@echo "[CP]  $<"
 	$(VERBOSE)$(CPP) -c $(CPPFLAGS)  $< -o $@
 
-$(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
+$(BUILD_DIR)/%.o: %.s
 	@echo "[AS]  $<"
 	$(VERBOSE)$(AS) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS)
 	@echo "[LD]  $@"
 	$(VERBOSE)$(LD) $(LIBDIR) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
 
-$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+$(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf
 	$(VERBOSE)$(HEX) $< $@
 
-$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
+$(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf
 	$(VERBOSE)$(BIN) $< $@
 
 $(BUILD_DIR):

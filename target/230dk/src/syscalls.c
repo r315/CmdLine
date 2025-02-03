@@ -52,22 +52,20 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
+#include "syscalls.h"
 #include "serial.h"
-
-#define UNUSED(X)   (void)X
 
 /* Variables */
 //#undef errno
 extern int errno;
-extern int __io_getchar(void) __attribute__((weak));
-
 register char * stack_ptr asm("sp");
-
 char *__env[1] = { 0 };
 char **environ = __env;
 
-extern serialops_t *default_sops;
+extern int __io_putchar(int ch) __attribute__((weak));
+extern int __io_getchar(void) __attribute__((weak));
 
+extern serialops_t *default_sops;
 
 /* Functions */
 void initialise_monitor_handles()
@@ -81,8 +79,6 @@ int _getpid(void)
 
 int _kill(int pid, int sig)
 {
-    UNUSED(pid);
-    UNUSED(sig);
 	errno = EINVAL;
 	return -1;
 }
@@ -95,7 +91,7 @@ void _exit (int status)
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
-	if(file == 0){
+    if(file == 0){
         *ptr = default_sops->read();
         return 1;
     }
@@ -103,6 +99,7 @@ __attribute__((weak)) int _read(int file, char *ptr, int len)
     return default_sops->readBytes((uint8_t *)ptr, len);
 }
 
+// setvbuf(stdout, NULL, _IONBF, 0); // make stdio non-buffered, so that printf always calls __io_putchar
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
     if(file == 1){
@@ -112,73 +109,60 @@ __attribute__((weak)) int _write(int file, char *ptr, int len)
 	return 0;
 }
 
+
 int _close(int file)
 {
-    UNUSED(file);
 	return -1;
 }
 
 
 int _fstat(int file, struct stat *st)
 {
-    UNUSED(file);
 	st->st_mode = S_IFCHR;
 	return 0;
 }
 
 int _isatty(int file)
 {
-    UNUSED(file);
 	return 1;
 }
 
 int _lseek(int file, int ptr, int dir)
 {
-    UNUSED(file);
-    UNUSED(ptr);
-    UNUSED(dir);
 	return 0;
 }
 
 int _open(char *path, int flags, ...)
 {
-    UNUSED(path);
-    UNUSED(flags);
 	/* Pretend like we always fail */
 	return -1;
 }
 
 int _wait(int *status)
 {
-    UNUSED(status);
 	errno = ECHILD;
 	return -1;
 }
 
 int _unlink(char *name)
 {
-    UNUSED(name);
 	errno = ENOENT;
 	return -1;
 }
 
 int _times(struct tms *buf)
 {
-    UNUSED(buf);
 	return -1;
 }
 
 int _stat(char *file, struct stat *st)
 {
-    UNUSED(file);
 	st->st_mode = S_IFCHR;
 	return 0;
 }
 
 int _link(char *old, char *new)
 {
-    UNUSED(old);
-    UNUSED(new);
 	errno = EMLINK;
 	return -1;
 }
@@ -191,10 +175,32 @@ int _fork(void)
 
 int _execve(char *name, char **argv, char **env)
 {
-    UNUSED(name);
-    UNUSED(argv);
-    UNUSED(env);
-
 	errno = ENOMEM;
 	return -1;
 }
+
+/**
+ _sbrk
+ Increase program data space. Malloc and related functions depend on this
+**/
+caddr_t _sbrk(int incr)
+{
+	extern char end asm("end");
+	static char *heap_end;
+	char *prev_heap_end;
+
+	if (heap_end == 0)
+		heap_end = &end;
+
+	prev_heap_end = heap_end;
+	if (heap_end + incr > stack_ptr)
+	{
+		errno = ENOMEM;
+		return (caddr_t) -1;
+	}
+
+	heap_end += incr;
+
+	return (caddr_t) prev_heap_end;
+}
+

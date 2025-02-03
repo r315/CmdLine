@@ -134,8 +134,12 @@ extern "C" void App(void)
     console.init(userio, "bluepill>");
 #elif defined (BOARD_NUCLEO_L412KB)
     console.init(userio, "nucleo>");
-#else
+#elif defined (BOARD_415DK)
     console.init(userio, "415dk>");
+#elif defined (BOARD_230DK)
+    console.init(userio, "230dk>");
+#else
+    console.init(userio, "some board>");
 #endif
 
     for(unsigned int i = 0; i < sizeof(app_commands)/sizeof(ConsoleCommand*); i++){
