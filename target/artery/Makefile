@@ -87,6 +87,7 @@ $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 $(LIB_PATH)/src/rtttl.c \
+$(LIB_PATH)/src/stimer.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \

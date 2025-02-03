@@ -3,21 +3,51 @@
 #include "spi.h"
 #include "serial.h"
 #include "drvlcd.h"
+#include "stimer.h"
 
 drvlcdspi_t lcd0;
+#if 0
+// Dedicated timer for stimer
+static void appTimerInit(TMR_Type *tmr)
+{
+    IRQn_Type irq;
+    RCC_ClockType clock;
 
-static void InitTimeBase(void){
-#if (USE_TIMER_SYSTICK == 1)
-	LPC_SC->PCONP |= SC_PCONP_PCTIM3;
-	LPC_SC->PCLKSEL1 &= ~(3 << 14);
-    LPC_SC->PCLKSEL1 |= (PCLK_1 << 14);
-	LPC_TIM3->TCR = TIM_TCR_CRST;
-	LPC_TIM3->CCR = 0;				// Timer mode
-	LPC_TIM3->PR = (SystemCoreClock / 1000 - 1);
-	LPC_TIM3->TCR = TIM_TCR_CEN;
-#else
-	SysTick_Config((SystemCoreClock / 1000) - 1); // config 1000us
+    switch((uint32_t)tmr){
+        case (uint32_t)TMR10:
+            RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_TMR10, ENABLE);
+            irq = TMR1_OV_TMR10_IRQn;
+            break;
+        case (uint32_t)TMR11:
+            RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_TMR11, ENABLE);
+            irq = TMR1_TRG_COM_TMR11_IRQn;
+            break;
+    }
+
+    RCC_GetClocksFreq(&clock);
+
+    tmr->CTRL1 = 0;
+    // When DIV > 1, APB clock doubles
+    tmr->DIV = (clock.APB2CLK_Freq/500000) - 1;
+    tmr->AR = 1000;
+    tmr->CNT = 0;
+    tmr->DIE = TMR_DIE_UEVIE;
+    NVIC_EnableIRQ(irq);
+    tmr->CTRL1 = TMR_CTRL1_CNTEN;
+}
+//void TMR1_TRG_COM_TMR11_IRQHandler(void)
+void TMR1_OV_TMR10_IRQHandler(void)
+{
+    uint16_t st = TMR10->STS;
+    TMR10->STS = ~st;
+    STIMER_Handler();
+}
 #endif
+
+static void InitTimeBase(void)
+{
+	SysTick_Config((SystemCoreClock / 1000) - 1);
+    //appTimerInit(TMR10);
 }
 
 #if (USE_TIMER_SYSTICK == 1)
@@ -25,6 +55,7 @@ static void InitTimeBase(void){
 static volatile uint32_t ticms;
 void SysTick_Handler(void){
     ticms++;
+    STIMER_Handler();
 }
 
 void DelayMs(uint32_t ms){
