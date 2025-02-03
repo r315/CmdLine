@@ -1,12 +1,33 @@
 #include "cmdds1086.h"
 #include "board.h"
 
+static uint32_t timer_callback(simpletimer_t *timer)
+{
+    sweep_t *sweep = (sweep_t*)timer->data;
+
+    sweep->freq += sweep->step;
+
+    if(sweep->freq > sweep->end){
+        sweep->freq = sweep->start;
+    }
+
+    sweep->ds1086->frequency_set(sweep->freq);
+
+    return timer->interval;
+}
+
 void CmdDS1086::help(void)
 {
-    console->println("Usage: ds1086 <init|regs|rr|wr|freq> [option] \n");
-    console->println("\tinit <bus>, i2c bus 0-3 \n");
+    console->println("Usage: ds1086 <init|regs|rr|wr|freq> [option]\n");
+    console->println("\tinit <bus>, i2c bus 0-3");
     console->printf("\tfreq <%d to %d>\n", ds1086.min_freq_get(), ds1086.max_freq_get());
-    //console->println("\tsweep <start> <end> <step> \n");
+    console->println("\tsweep [start|end|step|time|run|stop]");
+    console->println("\t\tstart <freq>, start frequency");
+    console->println("\t\tend <freq>, end frequency");
+    console->println("\t\tstep <freq>, step frequency");
+    console->println("\t\ttime <ms>, step duration");
+    console->println("\t\trun, start sweep");
+    console->println("\t\tstop, stop sweep");
 }
 
 char CmdDS1086::execute(int argc, char **argv)
@@ -72,6 +93,45 @@ char CmdDS1086::execute(int argc, char **argv)
                 return CMD_OK;
             }
         }
+    }
+
+    if(!xstrcmp("sweep", argv[1])){
+
+        if(!xstrcmp("run", argv[2])){
+            m_sweep.ds1086 = &ds1086;
+            m_sweep.freq = m_sweep.start;
+            STIMER_Config(&m_timer, m_timer.interval, timer_callback);
+            STIMER_Start(&m_timer);
+        }
+
+        if(!xstrcmp("stop", argv[2])){
+            STIMER_Stop(&m_timer);
+        }
+
+        if(!xstrcmp("start", argv[2])){
+            ia2i(argv[3], &m_sweep.start);
+        }
+
+        if(!xstrcmp("end", argv[2])){
+            ia2i(argv[3], &m_sweep.end);
+        }
+
+        if(!xstrcmp("step", argv[2])){
+            ia2i(argv[3], &m_sweep.step);
+        }
+
+        if(!xstrcmp("time", argv[2])){
+            ia2i(argv[3], (int32_t*)&m_timer.interval);
+        }
+
+        if(argc < 3){
+            console->printf("start: %dHz\n", m_sweep.start);
+            console->printf("end:   %dHz\n", m_sweep.end);
+            console->printf("step:  %dHz\n", m_sweep.step);
+            console->printf("step time: %dms\n", m_timer.interval);
+        }
+
+        return CMD_OK;
     }
 
     return CMD_BAD_PARAM;
