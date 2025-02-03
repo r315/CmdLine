@@ -225,34 +225,35 @@ int8_t DS1086::findOffset(uint32_t master_oscillator, uint32_t *min)
 
 uint8_t DS1086::frequency_set(uint32_t freq)
 {
-    if(freq > DS1086L_FREQUENCY_MIN && freq < DS1086L_FREQUENCY_MAX){
-        uint32_t master_oscillator, dac;
-        uint8_t exp, offset;
+    uint32_t master_oscillator, dac;
+    uint8_t exp, offset;
 
-        // Find exponent
-        for(exp = 0; exp < 9; exp++){
-            master_oscillator = freq << exp;
-            if(master_oscillator > DS1086L_OSCILLATOR_MIN && master_oscillator < DS1086L_OSCILLATOR_MAX){
-                break;
-            }
-        }
-
-        uint32_t min;
-
-        // get new offset value and minimum frequency of new offset
-        offset = m_os + findOffset(master_oscillator, &min);
-
-        // DAC value is the difference between desired
-        // main oscillator frequency and range set by offset
-        dac = (master_oscillator - min) / DS1086L_DAC_STEP;
-
-        prescaller_write(DS1086L_PRESCALLER_MASK, exp); // Divide main oscillator to get desired frequency
-        dac_write(dac);                                 // Fine tune main oscillator frequency
-        offset_write(offset);                           // Set main oscillator frequency range
-        return true;
+    if(freq < DS1086L_FREQUENCY_MIN || freq > DS1086L_FREQUENCY_MAX){
+        return false;
     }
 
-    return false;
+    // Find exponent
+    for(exp = 0; exp < 9; exp++){
+        master_oscillator = freq << exp;
+        if(master_oscillator > DS1086L_OSCILLATOR_MIN && master_oscillator < DS1086L_OSCILLATOR_MAX){
+            break;
+        }
+    }
+
+    uint32_t min;
+
+    // get new offset value and minimum frequency of new offset
+    offset = m_os + findOffset(master_oscillator, &min);
+
+    // DAC value is the difference between desired
+    // main oscillator frequency and range set by offset
+    dac = (master_oscillator - min) / DS1086L_DAC_STEP;
+
+    prescaller_write(DS1086L_PRESCALLER_MASK, exp); // Divide main oscillator to get desired frequency
+    dac_write(dac);                                 // Fine tune main oscillator frequency
+    offset_write(offset);                           // Set main oscillator frequency range
+
+    return true;
 }
 
 
