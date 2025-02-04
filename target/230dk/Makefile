@@ -31,7 +31,7 @@ C_INCLUDES = \
 $(TARGET_PATH)/inc \
 $(DRIVER_OMD_PATH)/inc \
 $(CMSIS_PATH)/Core/Include \
-$(CMSIS_PATH)/Device/GIGADEVICE/GD32E23x/inc \
+$(CMSIS_PATH)/Device/Gigadevice/GD32E23x/inc \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(APP_PATH)/inc \

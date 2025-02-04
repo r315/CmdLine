@@ -113,6 +113,7 @@ $(LIB_PATH)/src/font.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/rtttl.c \
+$(LIB_PATH)/src/stimer.c \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \
