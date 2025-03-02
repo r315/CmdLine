@@ -21,7 +21,7 @@ APP_PATH        ?=../../App
 LIB_PATH        =$(LIBEMB_PATH)/lib
 CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
 DRIVER_PATH 	=$(LIBEMB_PATH)/drv
-DRIVER_OMD_PATH =$(DRIVER_PATH)/omd/gd32e23x
+DRIVER_SOC_PATH =$(DRIVER_PATH)/SOC/gd32e23x
 DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 
 #######################################
@@ -29,7 +29,8 @@ DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 #######################################
 C_INCLUDES = \
 $(TARGET_PATH)/inc \
-$(DRIVER_OMD_PATH)/inc \
+$(DRIVER_PATH)/inc \
+$(DRIVER_SOC_PATH)/inc \
 $(CMSIS_PATH)/Core/Include \
 $(CMSIS_PATH)/Device/Gigadevice/GD32E23x/inc \
 $(LIB_PATH)/inc \
@@ -51,13 +52,13 @@ AS_INCLUDES =\
 DRIVER_SOURCES = \
 $(CMSIS_PATH)/Device/Gigadevice/GD32E23x/src/startup_gd32e23x.c\
 $(CMSIS_PATH)/Device/Gigadevice/GD32E23x/src/system_gd32e23x.c\
-$(DRIVER_OMD_PATH)/src/gd32e23x_rcu.c \
-$(DRIVER_OMD_PATH)/src/gd32e23x_gpio.c \
-$(DRIVER_OMD_PATH)/src/gd32e23x_misc.c \
-$(DRIVER_OMD_PATH)/src/gd32e23x_usart.c \
-$(DRIVER_OMD_PATH)/src/gd32e23x_dma.c \
-$(DRIVER_OMD_PATH)/src/gd32e23x_i2c.c \
-$(DRIVER_OMD_PATH)/src/gd32e23x_timer.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_rcu.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_gpio.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_misc.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_usart.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_dma.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_i2c.c \
+$(DRIVER_SOC_PATH)/src/gd32e23x_timer.c \
 $(DRIVER_PATH)/uart/uart_gd32e23x.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
 #$(DRIVERS_PATH)/i2c/i2c_230dk.c \

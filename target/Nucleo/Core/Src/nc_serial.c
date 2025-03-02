@@ -6,17 +6,17 @@
 
 #define UART_FUNCTIONS(N) \
 static inline int UART_FUNCTION_NAME(N, Available)(void){ return UART_Available(&HANDLER_NAME(N).port); } \
-static inline int UART_FUNCTION_NAME(N, read)(void){ uint8_t c; UART_Read(&HANDLER_NAME(N).port, &c, 1); return c; } \
-static inline int UART_FUNCTION_NAME(N, readBytes)(uint8_t *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, buf, len); } \
-static inline int UART_FUNCTION_NAME(N, write)(uint8_t c){ return UART_Write(&HANDLER_NAME(N).port, &c, 1);  } \
-static inline int UART_FUNCTION_NAME(N, writeBytes)(const uint8_t *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, buf, len);  }
+static inline int UART_FUNCTION_NAME(N, readchar)(void){ char c; UART_Read(&HANDLER_NAME(N).port, (uint8_t*)&c, 1); return c; } \
+static inline int UART_FUNCTION_NAME(N, read)(char *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, (uint8_t*)buf, len); } \
+static inline int UART_FUNCTION_NAME(N, writechar)(char c){ return UART_Write(&HANDLER_NAME(N).port, (uint8_t*)&c, 1);  } \
+static inline int UART_FUNCTION_NAME(N, write)(const char *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, (const uint8_t*)buf, len);  }
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
 I->serial.available = UART_FUNCTION_NAME(N, Available); \
+I->serial.readchar = UART_FUNCTION_NAME(N, readchar); \
 I->serial.read = UART_FUNCTION_NAME(N, read); \
-I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
-I->serial.write = UART_FUNCTION_NAME(N, write); \
-I->serial.writeBytes = UART_FUNCTION_NAME(N, writeBytes);
+I->serial.writechar = UART_FUNCTION_NAME(N, writechar); \
+I->serial.write = UART_FUNCTION_NAME(N, write);
 
 static serialport_t serial0_handler, serial1_handler;
 
@@ -51,12 +51,12 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
     }
 
     serialbus_t *port = &hserial->port;
-    
+
     port->speed = SERIAL_CONFIG_GET_SPEED(config);
     port->parity = SERIAL_CONFIG_GET_PARITY(config);
     port->stopbit = SERIAL_CONFIG_GET_STOP(config);
     port->datalength = SERIAL_CONFIG_GET_DATA(config);
-    
+
     UART_Init(&hserial->port);
 }
 
@@ -82,11 +82,11 @@ int kbhit (void)
 
 int __io_putchar(int ch)
 {
-    serial0_handler.serial.write(ch);
+    serial0_handler.serial.writechar(ch);
     return 0;
 }
 
 int __io_getchar(void)
 {
-    return serial0_handler.serial.read();
+    return serial0_handler.serial.readchar();
 }

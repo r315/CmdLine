@@ -1,5 +1,4 @@
 
-#include <stdout.h>
 #include "board.h"
 #include "usbd_cdc_if.h"
 #include "adc.h"
@@ -14,7 +13,7 @@ static drvlcdspi_t lcd0;
 static void displayInit()
 {
     //LPC_GPIO1->FIODIR |= LCD_CS|LCD_RS|LCD_WR|LCD_RD|LCD_LED|LCD_RST;
-    
+
     lcd0.spidev.bus = SPI_BUS1;
     lcd0.w = 128;
     lcd0.h = 160;
@@ -25,7 +24,7 @@ static void displayInit()
 
     GPIO_Config(lcd0.cs, GPO_MS);
     GPIO_Config(lcd0.cd, GPO_MS);
-    GPIO_Config(lcd0.rst, GPO_MS);   
+    GPIO_Config(lcd0.rst, GPO_MS);
     GPIO_Config(lcd0.bkl, GPO_MS);
     GPIO_Config(LCD_DI_PIN, GPO_HS_AF);
     GPIO_Config(LCD_SCK_PIN, GPO_HS_AF);
@@ -58,14 +57,14 @@ void setInterval(void(*cb)(), uint32_t ms){
 
 /**
  * PWM Driver
- * 
+ *
  * PWM1 - PA6
  * PWM2 - PA7
  * PWM3 - PB0
  * PWM4 - PB1
- * 
+ *
  * \param initial - startup duty for each channel
- * 
+ *
  * */
 void PWM_Init(uint32_t period){
 
@@ -76,11 +75,11 @@ void PWM_Init(uint32_t period){
 
     TIM3->CR1 = TIM_CR1_ARPE;
     TIM3->CCMR1 = (6<<TIM_CCMR1_OC2M_Pos) | (6<<TIM_CCMR1_OC1M_Pos) | (TIM_CCMR1_OC2PE) | (TIM_CCMR1_OC1PE);  // PWM Mode 1
-    TIM3->CCMR2 = (6<<TIM_CCMR2_OC4M_Pos) | (6<<TIM_CCMR2_OC3M_Pos) | (TIM_CCMR2_OC4PE) | (TIM_CCMR2_OC3PE); 
+    TIM3->CCMR2 = (6<<TIM_CCMR2_OC4M_Pos) | (6<<TIM_CCMR2_OC3M_Pos) | (TIM_CCMR2_OC4PE) | (TIM_CCMR2_OC3PE);
     TIM3->PSC = 1; // Timer3 freq = SystemClock / 2
 
     TIM3->ARR = (1<<PWM_RESOLUTION) - 1;
-    
+
     TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
 
     GPIOA->CRL &= ~(0xFF << 24);
@@ -91,7 +90,7 @@ void PWM_Init(uint32_t period){
 
 /**
  * @brief Set new pwm value for the given channel
- * 
+ *
  * \param ch [in] :      Channel to be configured
  *                       PWM_1 ... PWM_6
  * \param duty [in] :    Duty cycle 0 - 100
@@ -110,12 +109,12 @@ void PWM_Set(uint8_t ch, uint8_t duty){
 
     uint32_t *ccr = (uint32_t*)&TIM3->CCR1;
 
-    ccr[ch - 1] = cmp;    
+    ccr[ch - 1] = cmp;
 }
 
 /**
  * @brief Get pwm duty from channel
- * 
+ *
  * \param ch [in] :  Channel to be configured
  *                      PWM_1 ... PWM_6
  * \retval duty :    Duty cycle 0 - 100
@@ -124,11 +123,11 @@ uint8_t PWM_Get(uint8_t ch){
 
     if(ch > PWM_MAX_CH)
         return 0;
-    
+
     uint32_t *ccr = (uint32_t*)&TIM3->CCR1;
 
-    uint32_t cmp = ccr[ch - 1] * 100;    
-    
+    uint32_t cmp = ccr[ch - 1] * 100;
+
     return cmp / TIM3->ARR;
 }
 
@@ -165,12 +164,12 @@ static void PWM_CfgGpio(uint8_t ch, uint8_t enable){
 
 /**
  * @brief Enables PWM channel and configure GPIO pin to PWM function
- * 
+ *
  * \param ch [in] Channel to be configured
  *                  PWM_1
  *                  ---
  *                  PWM_6
- * 
+ *
  * PWM pins start on PA8
  * */
 void PWM_Enable(uint8_t channel){
@@ -185,7 +184,7 @@ void PWM_Enable(uint8_t channel){
 
 /**
  * @brief Disables PWM channel and configure GPIO pin to default
- * 
+ *
  * \param ch [in] Channel to be configured
  *                 PWM_1 ... PWM_6
  * */
@@ -210,20 +209,20 @@ void SERVO_Init(void){
 
     TIM3->CR1 = TIM_CR1_ARPE;       // Enable auto-reload preload
     //TIM3->CCMR1 = (6<<TIM_CCMR1_OC2M_Pos) | (6<<TIM_CCMR1_OC1M_Pos) | (TIM_CCMR1_OC2PE) | (TIM_CCMR1_OC1PE);  // PWM Mode 1
-    
+
     TIM3->CCER = TIM_CCER_CC1E; // Enable channel 1
     TIM3->PSC = (SystemCoreClock/1000000) - 1;
 
     TIM3->ARR = 20000 - 1;
     TIM3->CCR1 = 1500;
-    
+
     TIM3->DIER |= TIM_DIER_CC1IE | TIM_DIER_UIE;
 
     NVIC_EnableIRQ(TIM3_IRQn);
 
     TIM3->CR1 |= TIM_CR1_CEN;     // Start pwm before enable outputs
 
-    GPIO_Config(PB_9, GPO_LS);    
+    GPIO_Config(PB_9, GPO_LS);
 }
 
 /**
@@ -243,7 +242,7 @@ void SERVO_Stop(void){
     TIM3->CR1 = 0;
 
     NVIC_DisableIRQ(TIM3_IRQn);
-    
+
     GPIO_Config(PB_9, GPI_FLOAT);
 }
 
@@ -255,24 +254,24 @@ void TIM3_IRQHandler(void){
 
     if(TIM3->SR & TIM_SR_CC1IF){
         SERVO_PORT->BRR = (1 << SERVO_PIN);
-        TIM3->SR &= ~(TIM_SR_CC1IF); 
+        TIM3->SR &= ~(TIM_SR_CC1IF);
     }
 
     if(TIM3->SR & TIM_SR_UIF){
         SERVO_PORT->BSRR = (1 << SERVO_PIN);
-        TIM3->SR &= ~(TIM_SR_UIF); 
+        TIM3->SR &= ~(TIM_SR_UIF);
     }
 }
 
 /**
  * I2C DMA driver
- * 
+ *
  * This driver was implemented in a way that reduce the most setup steps much as possible,
  * for that the dma is configured once and then all transfers start by the I2C
  * */
 void i2cCfgDMA(uint8_t *src, uint16_t size){
     // Configure DMA1 CH4 to handle i2c transmission
-    RCC->AHBENR |= RCC_AHBENR_DMA1EN;    
+    RCC->AHBENR |= RCC_AHBENR_DMA1EN;
     DMA1_Channel4->CCR =    DMA_CCR_TCIE | // Transfer complete interrupt
                             DMA_CCR_DIR  | // Read From memory
                             DMA_CCR_CIRC |
@@ -281,16 +280,16 @@ void i2cCfgDMA(uint8_t *src, uint16_t size){
     DMA1_Channel4->CPAR = (uint32_t)&I2C2->DR;
     DMA1_Channel4->CMAR = (uint32_t)src;
     DMA1_Channel4->CCR |= DMA_CCR_EN;
-    
+
     // Configure I2C2 transfer
-    RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;    
+    RCC->APB1ENR |= RCC_APB1ENR_I2C2EN;
     I2C2->CCR = 45;           // Freq 400Khz
     I2C2->CR1 = I2C_CR1_PE | I2C_CR1_ACK;
     I2C2->CR2 = 0x24;
     I2C2->CR2 |= I2C_CR2_DMAEN;
     HAL_NVIC_SetPriority(DMA1_Channel1_IRQn, 5, 0); // Highest priority
     HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
-} 
+}
 
 /**
  * Due to the implementation of the driver, the parameters
@@ -307,22 +306,22 @@ uint32_t n;
     while(!(I2C2->SR1 & I2C_SR1_SB)){ // wait for master mode
         if(--n == 0)
             return;
-    }    
-    
+    }
+
     I2C2->CR2 |= I2C_CR2_DMAEN;         // enable DMA
-    I2C2->DR = address;                 
-    while(!(I2C2->SR1 & I2C_SR1_ADDR)){ // wait for slave acknowledge       
-        if(--n == 0)            
+    I2C2->DR = address;
+    while(!(I2C2->SR1 & I2C_SR1_ADDR)){ // wait for slave acknowledge
+        if(--n == 0)
             return;
 
         if(I2C2->SR1 & I2C_SR1_AF){
             I2C2->SR1 &= ~(I2C_SR1_AF);
-            I2C2->CR1 |= I2C_CR1_STOP;  
-            return;      
+            I2C2->CR1 |= I2C_CR1_STOP;
+            return;
         }
     }
     n = I2C2->SR2; // Dummy read for crearing flags
-    //while(I2C2->SR2 & I2C_SR2_BUSY);   
+    //while(I2C2->SR2 & I2C_SR2_BUSY);
 }
 
 /**
@@ -347,13 +346,13 @@ static void (*eotcb)(uint16_t*);
 static uint16_t adcres[ADC_SAMPLES];
 
 /* ***********************************************************
- * ADC is triggered by TIM2 TRGO and performs dual 
- * simultaneous convertion on regular simultaneous mode. 
- * It performs the conversion of 4 channels and transfers 
+ * ADC is triggered by TIM2 TRGO and performs dual
+ * simultaneous convertion on regular simultaneous mode.
+ * It performs the conversion of 4 channels and transfers
  * the result to memory using DMA
- * At the end of convertion, optionaly a callback function 
+ * At the end of convertion, optionaly a callback function
  * may be invoked
- * 
+ *
  * \param ms    Time between convertions
  * TODO: FIX
  ************************************************************ */
@@ -371,7 +370,7 @@ uint32_t ms = 1000;
                             DMA_CCR_PSIZE_1 |   // 32bit src size
                             DMA_CCR_MINC |      // increment memory pointer after transference
                             DMA_CCR_CIRC |      // Circular mode
-                            DMA_CCR_TCIE;       // Enable end of transfer interrupt    
+                            DMA_CCR_TCIE;       // Enable end of transfer interrupt
     DMA1_Channel1->CCR |=   DMA_CCR_EN;
 
      /* Configure Timer 2 */
@@ -402,19 +401,19 @@ uint32_t ms = 1000;
             ADC_CR2_EXTTRIG  |              // Only the rising edge of external signal can start the conversion
             //ADC_CR2_EXTSEL_2 |              // 0b100 Select TIM3_TRGO as Trigger source
             ADC_CR2_EXTSEL_1 |              // 0b011 Select TIM2_CC2 Event
-            ADC_CR2_EXTSEL_0 |              // 
+            ADC_CR2_EXTSEL_0 |              //
             ADC_CR2_DMA;                    // Enable DMA Request
 
     ADC1->CR1 = ADC_CR1_DUALMOD_SIMULTANEOUS |
                 ADC_CR1_SCAN;               // Scan throu all channels on sequence
 
     ADC1->SQR1 = ADC_SQR1_L_(1);            // Two channels on sequence
-    ADC1->SQR3 = ADC_SQR3_SQ1_(0) |         // First convertion CH0, second CH2 
+    ADC1->SQR3 = ADC_SQR3_SQ1_(0) |         // First convertion CH0, second CH2
                  ADC_SQR3_SQ2_(2);
 
     ADC1->SMPR2 = ADC_SMPR2_SMP0_(4) |      // CH0 and CH2 sample time, 41.5 cycles
                   ADC_SMPR2_SMP2_(4);
-                
+
     /* Configure ADC 2 */
     RCC->APB2ENR  |= RCC_APB2ENR_ADC2EN;    // Enable Adc2
     RCC->APB2RSTR |= RCC_APB2ENR_ADC2EN;
@@ -427,7 +426,7 @@ uint32_t ms = 1000;
 				ADC_CR2_ADON;
 
     ADC2->SQR1 = ADC_SQR1_L_(1);            // Two channels on sequence
-    ADC2->SQR3 = ADC_SQR3_SQ1_(1) |         // first convertion CH1, second CH3 
+    ADC2->SQR3 = ADC_SQR3_SQ1_(1) |         // first convertion CH1, second CH3
                  ADC_SQR3_SQ2_(3);
 
     ADC2->SMPR2 = ADC_SMPR2_SMP1_(4) |      // CH1 and CH3 sample time, 41.5 cycles
@@ -436,7 +435,7 @@ uint32_t ms = 1000;
     ADC2->CR1 = ADC_CR1_SCAN;
 
     /* Configure GPIOA Pins */
-    GPIOA->CRL &= ~0xFFFF;                
+    GPIOA->CRL &= ~0xFFFF;
 
     NVIC_SetPriority(DMA1_Channel1_IRQn, 0); // Highest priority
     NVIC_EnableIRQ(DMA1_Channel1_IRQn);
@@ -451,7 +450,7 @@ uint16_t *ADC_LastConvertion(void){
 }
 
 void ADC_Stop(adctype_t *adc){
-  TIM2->CR1 &= ~TIM_CR1_CEN;  
+  TIM2->CR1 &= ~TIM_CR1_CEN;
 }
 
 /**
@@ -481,13 +480,13 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 /**
  * SPI API
  * This board uses SPI2
- * 
+ *
  * Pins:
  * PB12 -> CS
  * PB13 -> SCLK
  * PB14 <- MISO
  * PB15 -> MOSI
- * 
+ *
  * */
 #define DMA_CCR_PL_Medium   (1<<12)
 #define DMA_CCR_MSIZE_8     (0<<10)
@@ -498,7 +497,7 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 
 /**
  * @brief Configures SPI2 to be used by flashrom command
- * 
+ *
  */
 void BOARD_SPI_Init(void)
 {
@@ -519,7 +518,7 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
     if(size == 0 || dst == NULL){
         return 0;
     }
-    
+
     dummy = 0xFF;
     for (uint32_t i = 0; i < size; i++, dst++){
         *dst = SPI_Xchg(BOARD_SPIDEV, &dummy);

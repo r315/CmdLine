@@ -4,7 +4,7 @@
 
 
 void startRanging(void){
-	SERIAL_GetSerialOps(SERIAL0)->write(START_RANGING);
+	SERIAL_GetSerialOps(SERIAL0)->writechar(START_RANGING);
 }
 
 uint8_t readFrame(void){
@@ -33,7 +33,7 @@ uint8_t m = 0;
 
 	help();
 	console->print("!!!!Broken command!!!!\n");
-	
+
 	return CMD_OK;
 	//BOARD_SERIAL1.user_ctx = &arr;
 	//BOARD_SERIAL1.init();

@@ -6,17 +6,17 @@
 
 #define UART_FUNCTIONS(N) \
 static inline int UART_FUNCTION_NAME(N, Available)(void){ return UART_Available(&HANDLER_NAME(N).port); } \
-static inline int UART_FUNCTION_NAME(N, read)(void){ uint8_t c; UART_Read(&HANDLER_NAME(N).port, &c, 1); return c; } \
-static inline int UART_FUNCTION_NAME(N, readBytes)(uint8_t *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, buf, len); } \
-static inline int UART_FUNCTION_NAME(N, write)(uint8_t c){ return UART_Write(&HANDLER_NAME(N).port, &c, 1);  } \
-static inline int UART_FUNCTION_NAME(N, writeBytes)(const uint8_t *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, buf, len);  }
+static inline int UART_FUNCTION_NAME(N, readchar)(void){ char c; UART_Read(&HANDLER_NAME(N).port, (uint8_t*)&c, 1); return c; } \
+static inline int UART_FUNCTION_NAME(N, read)(char *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, (uint8_t*)buf, len); } \
+static inline int UART_FUNCTION_NAME(N, writechar)(char c){ return UART_Write(&HANDLER_NAME(N).port, (uint8_t*)&c, 1);  } \
+static inline int UART_FUNCTION_NAME(N, write)(const char *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, (const uint8_t*)buf, len);  }
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
 I->serial.available = UART_FUNCTION_NAME(N, Available); \
+I->serial.readchar = UART_FUNCTION_NAME(N, readchar); \
 I->serial.read = UART_FUNCTION_NAME(N, read); \
-I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
-I->serial.write = UART_FUNCTION_NAME(N, write); \
-I->serial.writeBytes = UART_FUNCTION_NAME(N, writeBytes);
+I->serial.writechar = UART_FUNCTION_NAME(N, writechar); \
+I->serial.write = UART_FUNCTION_NAME(N, write);
 
 static serialport_t serial0_handler;
 serialops_t *default_sops;

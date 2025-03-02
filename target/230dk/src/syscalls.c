@@ -92,18 +92,18 @@ void _exit (int status)
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
     if(file == 0){
-        *ptr = default_sops->read();
+        *ptr = default_sops->readchar();
         return 1;
     }
 
-    return default_sops->readBytes((uint8_t *)ptr, len);
+    return default_sops->read(ptr, len);
 }
 
 // setvbuf(stdout, NULL, _IONBF, 0); // make stdio non-buffered, so that printf always calls __io_putchar
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
     if(file == 1){
-        return default_sops->writeBytes((uint8_t *)ptr, len);
+        return default_sops->write(ptr, len);
     }
 
 	return 0;

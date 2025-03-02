@@ -6,7 +6,6 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <stdout.h>
 #include "main.h"
 #include "pwm.h"
 #include "drvlcd.h"

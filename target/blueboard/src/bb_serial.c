@@ -8,17 +8,17 @@
 
 #define UART_FUNCTIONS(N) \
 static inline int UART_FUNCTION_NAME(N, Available)(void){ return UART_Available(&HANDLER_NAME(N).port); } \
-static inline int UART_FUNCTION_NAME(N, read)(void){ uint8_t c; UART_Read(&HANDLER_NAME(N).port, &c, 1); return c; } \
-static inline int UART_FUNCTION_NAME(N, readBytes)(uint8_t *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, buf, len); } \
-static inline int UART_FUNCTION_NAME(N, write)(uint8_t c){ return UART_Write(&HANDLER_NAME(N).port, &c, 1);  } \
-static inline int UART_FUNCTION_NAME(N, writeBytes)(const uint8_t *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, buf, len);  }
+static inline int UART_FUNCTION_NAME(N, readchar)(void){ char c; UART_Read(&HANDLER_NAME(N).port, (uint8_t*)&c, 1); return c; } \
+static inline int UART_FUNCTION_NAME(N, read)(char *buf, int len){ return UART_Read(&HANDLER_NAME(N).port, (uint8_t*)buf, len); } \
+static inline int UART_FUNCTION_NAME(N, writechar)(char c){ return UART_Write(&HANDLER_NAME(N).port, (uint8_t*)&c, 1);  } \
+static inline int UART_FUNCTION_NAME(N, write)(const char *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, (const uint8_t*)buf, len);  }
 
 #define ASSIGN_UART_FUNCTIONS(I, N) \
 I->serial.available = UART_FUNCTION_NAME(N, Available); \
+I->serial.readchar = UART_FUNCTION_NAME(N, readchar); \
 I->serial.read = UART_FUNCTION_NAME(N, read); \
-I->serial.readBytes = UART_FUNCTION_NAME(N, readBytes); \
-I->serial.write = UART_FUNCTION_NAME(N, write); \
-I->serial.writeBytes = UART_FUNCTION_NAME(N, writeBytes);
+I->serial.writechar = UART_FUNCTION_NAME(N, writechar); \
+I->serial.write = UART_FUNCTION_NAME(N, write);
 
 #define BOARD_SERIAL0                   (&hs0.out)
 #define BOARD_SERIAL1                   (&hs1.out)
@@ -39,24 +39,24 @@ UART_FUNCTIONS(3)
  * */
 static void SERIAL4_Init(void){
     serialbus_t *serial = &hs4.port;
-    
+
 	fifo_init(&serial->txfifo);
 	fifo_init(&serial->rxfifo);
 
 	USBSERIAL_Init(&serial->txfifo, &serial->rxfifo);
-    
+
     DelayMs(1500);
     fifo_flush(&serial->txfifo);
 	fifo_flush(&serial->rxfifo);
 }
 
-static int SERIAL4_Write(uint8_t c){
+static int SERIAL4_WriteChar(char c){
     serialbus_t *serial = &hs4.port;
     while(!fifo_put(&serial->txfifo, c));
     return c;
 }
 
-static int SERIAL4_WriteBytes(const uint8_t *str, int len){
+static int SERIAL4_Write(const char *str, int len){
     serialbus_t *serial = &hs4.port;
     int count = len;
 
@@ -64,25 +64,25 @@ static int SERIAL4_WriteBytes(const uint8_t *str, int len){
         while(!fifo_put(&serial->txfifo, *str));
         str++;
     }
-    
+
     return len;
 }
 
-static int SERIAL4_Read(void){
+static int SERIAL4_ReadChar(void){
     serialbus_t *serial = &hs4.port;
     uint8_t c;
     while(!fifo_get(&serial->rxfifo, &c));
     return c;
 }
 
-static int SERIAL4_ReadBytes(uint8_t *dst, int len)
+static int SERIAL4_Read(char *dst, int len)
 {
     serialbus_t *serial = &hs4.port;
     int count = len;
 
     while(count--) {
-        while(!fifo_get(&serial->rxfifo, dst)); 
-        dst++; 
+        while(!fifo_get(&serial->rxfifo, (uint8_t*)dst));
+        dst++;
     }
 
     return len;
@@ -121,25 +121,25 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
             hserial->port.bus = UART_BUS3;
             break;
 
-        case SERIAL4:            
+        case SERIAL4:
             hserial->serial.available = SERIAL4_Available;
+            hserial->serial.writechar = SERIAL4_WriteChar;
             hserial->serial.write = SERIAL4_Write;
-            hserial->serial.writeBytes = SERIAL4_WriteBytes;
+            hserial->serial.readchar = SERIAL4_ReadChar;
             hserial->serial.read = SERIAL4_Read;
-            hserial->serial.readBytes = SERIAL4_ReadBytes;
-            SERIAL4_Init();          
+            SERIAL4_Init();
 
         default:
             return;
     }
 
     serialbus_t *port = &hserial->port;
-    
+
     port->speed = SERIAL_CONFIG_GET_SPEED(config);
     port->parity = SERIAL_CONFIG_GET_PARITY(config);
     port->stopbit = SERIAL_CONFIG_GET_STOP(config);
     port->datalength = SERIAL_CONFIG_GET_DATA(config);
-    
+
     UART_Init(&hserial->port);
 }
 
@@ -151,17 +151,17 @@ void SERIAL_Init(void){
 }
 
 serialops_t *SERIAL_GetSerialOps(int32_t nr){
-   
+
     switch(nr){
         case SERIAL1:
             return &hs1.serial;
         case SERIAL3:
-            return &hs3.serial; 
+            return &hs3.serial;
         default:
-            break;    
+            break;
     }
-    
-    return &hs4.serial; 
+
+    return &hs4.serial;
 }
 
 serialbus_t *SERIAL_GetSerialBus(int32_t nr){
@@ -171,8 +171,8 @@ serialbus_t *SERIAL_GetSerialBus(int32_t nr){
 int _write(int file, char *ptr, int len)
 {
     (void)file;
-    
+
 	UART_Write(&hs1.port, (uint8_t*)ptr, len);
-		
+
 	return len;
 }

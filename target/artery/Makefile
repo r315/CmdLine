@@ -28,7 +28,7 @@ TARGET_PATH 	=$(CURDIR)
 APP_DIR			?=../../App
 LIB_PATH        =$(LIBEMB_PATH)/lib
 DRIVER_PATH 	=$(LIBEMB_PATH)/drv
-DRIVER_OMD_PATH =$(DRIVER_PATH)/omd/at32f4xx
+DRIVER_SOC_PATH =$(DRIVER_PATH)/SOC/at32f4xx
 DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
 
@@ -37,7 +37,7 @@ CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
 #######################################
 C_INCLUDES = \
 $(TARGET_PATH) \
-$(DRIVER_OMD_PATH)/inc \
+$(DRIVER_SOC_PATH)/inc \
 $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
@@ -65,15 +65,15 @@ $(TARGET_PATH)/at_main.c \
 $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
-$(DRIVER_OMD_PATH)/src/at32f4xx_rcc.c \
-$(DRIVER_OMD_PATH)/src/at32f4xx_i2c.c \
-$(DRIVER_OMD_PATH)/src/at32f4xx_i2c_ex.c \
+$(DRIVER_SOC_PATH)/src/at32f4xx_rcc.c \
+$(DRIVER_SOC_PATH)/src/at32f4xx_i2c.c \
+$(DRIVER_SOC_PATH)/src/at32f4xx_i2c_ex.c \
 $(DRIVER_PATH)/spi/spi_at32f4xx.c \
 $(DRIVER_PATH)/dma/dma_at32f4xx.c \
 $(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
 $(DRIVER_PATH)/uart/uart_at32f4xx.c \
 $(DRIVER_PATH)/i2s/i2s_at32f4xx.c \
-$(DRIVER_PATH)/i2c/i2c_at32f415.c \
+$(DRIVER_PATH)/i2c/i2c_at32f4xx.c \
 $(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
 $(DRIVER_PATH)/tone/tone_at32f4xx.c \
 $(DRIVER_PATH)/rng/rng_software.c \

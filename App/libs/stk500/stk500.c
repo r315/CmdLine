@@ -71,7 +71,7 @@ static serialops_t *serial;
 
 void write_uint8(uint8_t *data, uint32_t len)
 {
-    serial->writeBytes(data, len);
+    serial->write((const char*)data, len);
 }
 
 int read_uint8(uint8_t *c, uint8_t do_timeout)
@@ -87,12 +87,12 @@ int read_uint8(uint8_t *c, uint8_t do_timeout)
         uint32_t ticks = GetTick();
         while (ElapsedTicks(ticks) < 1000){
             if(serial->available()){
-                *c = serial->read();
+                *c = serial->readchar();
                 return 0;
             }
         }
     }else{
-        *c = serial->read();
+        *c = serial->readchar();
         return 0;
     }
     return -1;
@@ -402,10 +402,10 @@ void stk500_loop(void)
 /**
  * @brief stk500v1 message process
  * see avr061.pdf
- * 
- * @param buf 
- * @param isize 
- * @param osize 
+ *
+ * @param buf
+ * @param isize
+ * @param osize
  * @return
  */
 stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)

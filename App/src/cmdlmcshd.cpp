@@ -4,8 +4,8 @@
 
 #define MATRIX_SIZE 1
 
-void CmdLmcshd::init(void *params) 
-{ 
+void CmdLmcshd::init(void *params)
+{
     console = static_cast<Console*>(params);
     m_matrix_w = LCD_GetWidth() / MATRIX_SIZE;
     m_matrix_h = LCD_GetHeight() / MATRIX_SIZE;
@@ -52,22 +52,22 @@ char CmdLmcshd::execute(int argc, char **argv)
                 case 'B': //16bpp frame data
                     for(int i = 0; i < m_matrix_h; i++){
                         uint16_t *line = (uint16_t*)m_matrix_buffer + ((i&1) * m_matrix_w);
-                        m_serial->readBytes((uint8_t*)line, m_matrix_w * 2);                        
+                        m_serial->read((char*)line, m_matrix_w * 2);
                         LCD_WriteArea(0, i, m_matrix_w, 1, line);
                     }
-                    m_serial->write(ack); //acknowledge
+                    m_serial->writechar(ack); //acknowledge
                     //update = true;
                 break;
 
-                case 'C': //8bpp frame data                    
-                    m_serial->readBytes(m_matrix_buffer,  m_matrix_w * m_matrix_h);
-                    //*buffer++ = rgb24{map(((pix[0] & B11100000) >> 5), 0, 7, BLK, 255), map(((pix[0] & B00011100) >> 2), 0, 7, BLK, 255), map(pix[0] & B00000011, 0, 3, BLK, 255)}; //,                    
-                    m_serial->write(ack); //acknowledge
+                case 'C': //8bpp frame data
+                    m_serial->read((char*)m_matrix_buffer,  m_matrix_w * m_matrix_h);
+                    //*buffer++ = rgb24{map(((pix[0] & B11100000) >> 5), 0, 7, BLK, 255), map(((pix[0] & B00011100) >> 2), 0, 7, BLK, 255), map(pix[0] & B00000011, 0, 3, BLK, 255)}; //,
+                    m_serial->writechar(ack); //acknowledge
                     break;
 
                 case 'D': //8bpp monochrome frame data
-                    m_serial->readBytes(m_matrix_buffer,  m_matrix_w * m_matrix_h);                              
-                    m_serial->write(ack); //acknowledge
+                    m_serial->read((char*)m_matrix_buffer,  m_matrix_w * m_matrix_h);
+                    m_serial->writechar(ack); //acknowledge
                     break;
 
                 case 'E': //1bpp monochrome frame data
@@ -101,15 +101,15 @@ char CmdLmcshd::execute(int argc, char **argv)
                 for(uint16_t i = 0; i < m_matrix_w * m_matrix_h; i++){
                     uint16_t color = (rgb_buf[i] << 8) | (rgb_buf[i] >> 8);
                     LCD_FillRect(
-                        (i % m_matrix_w) * MATRIX_SIZE, 
+                        (i % m_matrix_w) * MATRIX_SIZE,
                         (i / m_matrix_w) * MATRIX_SIZE,
                         MATRIX_SIZE, MATRIX_SIZE, color);
                 }
-                update = false; 
+                update = false;
             }*/
 
         }while(c != 'q');
-      
+
     }else{
         help();
     }
