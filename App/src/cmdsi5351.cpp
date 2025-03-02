@@ -13,7 +13,7 @@ static uint8_t parseFreq(char *number, uint64_t *out)
         if(*ptr == '.'){
             // Found decimal point, split it in two numbers
             *(ptr++) = '\0';
-            // and truncate decimal part into two digits, assuming 
+            // and truncate decimal part into two digits, assuming
             // that buffer has at least three more bytes after '.'
             ptr[2] = '\0';
             // ensure two digits
@@ -31,13 +31,13 @@ static uint8_t parseFreq(char *number, uint64_t *out)
     // Parse decimal part
     value = 0;
     ia2i(number, &value);
-    freq += value;   
-    
+    freq += value;
+
 
     if(freq > SI5351_MULTISYNTH_DIVBY4_FREQ * SI5351_FREQ_MULT){
         return 0;
     }
-    
+
     *out = freq;
     return 1;
 
@@ -72,14 +72,14 @@ char CmdSi5351::execute(int argc, char **argv)
                 return CMD_OK;
             }
         }
-        
+
         if(ia2i(argv[2], &val1)){
             uint64_t freq;
             if(parseFreq(argv[3], &freq)){
                 si5351.set_freq((si5351_clock)val1, freq);
 
                 if(si5351.get_device_status().status.LOL_A == 1){
-                    si5351.set_clock_pwr((si5351_clock)val1, 1);            
+                    si5351.set_clock_pwr((si5351_clock)val1, 1);
                     si5351.set_output_enable((si5351_clock)val1, 1);
                 }
                 return CMD_OK;
@@ -113,22 +113,22 @@ char CmdSi5351::execute(int argc, char **argv)
     if( !xstrcmp("regs", argv[1])){
         uint8_t count = 192;
         uint8_t i2c_buf[count];
-        i2c_buf[0] = 0;       
-        
-        I2C_Write(&m_i2c, i2c_buf, 1);
+        i2c_buf[0] = 0;
 
-        if(I2C_Read(&m_i2c, i2c_buf, count) == 0){
+        I2C_Write(&m_i2c, SI5351_BUS_BASE_ADDR, i2c_buf, 1);
+
+        if(I2C_Read(&m_i2c, SI5351_BUS_BASE_ADDR, i2c_buf, count) == 0){
             console->print("Failed to read");
         }else{
             for(int i = 0; i < count; i ++){
-                if( (i & 15) == 0) 
-                    console->printf("\n%02X: ", i & 0xF0);                
+                if( (i & 15) == 0)
+                    console->printf("\n%02X: ", i & 0xF0);
                 console->printf("%02X ", i2c_buf[i]);
-            }        
+            }
         }
 
         console->print("\n");
-        
+
         return CMD_OK_LF;
     }
 
@@ -147,7 +147,7 @@ char CmdSi5351::execute(int argc, char **argv)
     if( !xstrcmp("enable", argv[1])){
         uint32_t val;
         if(ha2i(argv[2], &val)){
-            si5351.set_clock_pwr((si5351_clock)val, 1);            
+            si5351.set_clock_pwr((si5351_clock)val, 1);
             si5351.set_output_enable((si5351_clock)val, 1);
             return CMD_OK;
         }

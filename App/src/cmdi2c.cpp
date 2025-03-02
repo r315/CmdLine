@@ -68,7 +68,7 @@ char CmdI2c::execute(int argc, char **argv){
     if( !xstrcmp("read", argv[1])){
         if(ia2i(argv[2], &val)){// count
             count = val;
-            if(I2C_Read(&m_i2c, i2c_buf, count) == 0){
+            if(I2C_Read(&m_i2c, m_i2c.addr, i2c_buf, count) == 0){
                 console->print("Failed to read");
             }else{
                 uint8_t asc = !xstrcmp("ascii", argv[3]);
@@ -105,7 +105,7 @@ char CmdI2c::execute(int argc, char **argv){
             i2c_buf[count++] = (uint8_t)val;
         }
 
-        if(I2C_Write(&m_i2c, i2c_buf, count) == 0){
+        if(I2C_Write(&m_i2c, m_i2c.addr, i2c_buf, count) == 0){
             console->println("Failed to write");
         }
         return CMD_OK;
@@ -115,8 +115,8 @@ char CmdI2c::execute(int argc, char **argv){
         if(ha2i(argv[2], (uint32_t*)&val)){
             uint8_t reg = val;
             count = ia2i(argv[3], &val) ? val : 1;
-            I2C_Write(&m_i2c, (uint8_t*)&reg, 1);
-            if(I2C_Read(&m_i2c, i2c_buf, count) > 0){
+            I2C_Write(&m_i2c, m_i2c.addr, (uint8_t*)&reg, 1);
+            if(I2C_Read(&m_i2c, m_i2c.addr, i2c_buf, count) > 0){
                 for(uint8_t i = 0; i < count; i ++){
                     if( (i & 15) == 0) {
                         if(i == (count - 1)){
@@ -138,7 +138,7 @@ char CmdI2c::execute(int argc, char **argv){
             i2c_buf[0] = val;
             if(ha2i(argv[3], &val)){
                 i2c_buf[1] = val;
-                I2C_Write(&m_i2c, i2c_buf, 2);
+                I2C_Write(&m_i2c, m_i2c.addr, i2c_buf, 2);
             }
         }
         return CMD_OK;
@@ -157,7 +157,7 @@ char CmdI2c::execute(int argc, char **argv){
 
             m_i2c.addr = (i << 1);
 
-            if(I2C_Read(&m_i2c, &count, 1) == 0){
+            if(I2C_Read(&m_i2c, m_i2c.addr, &count, 1) == 0){
                 console->print("-- ");
             }else{
                 console->printf("%02X ", i);

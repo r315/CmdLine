@@ -26,10 +26,10 @@ const range_t os_table [] = {
 
 static bool reg_read(i2cbus_t *i2c, uint8_t addr, uint8_t *dst, uint8_t len)
 {
-    if(I2C_Write(i2c, (uint8_t*)&addr, 1) != 1)
+    if(I2C_Write(i2c, DS1086_DEVICE_ADDR, (uint8_t*)&addr, 1) != 1)
         return false;
 
-    if(I2C_Read(i2c, dst, len) != len)
+    if(I2C_Read(i2c, DS1086_DEVICE_ADDR, dst, len) != len)
         return false;
 
     return true;
@@ -43,7 +43,7 @@ static bool reg_write(i2cbus_t *i2c, uint8_t addr, uint8_t *src, uint8_t len)
 
     memcpy(buf + 1, src, len - 1);
 
-    return I2C_Write(i2c, buf, len) == len;
+    return I2C_Write(i2c, DS1086_DEVICE_ADDR, buf, len) == len;
 }
 
 DS1086::DS1086()
@@ -56,7 +56,6 @@ int8_t DS1086::init(i2cbus_t *i2c)
     uint8_t addr;
 
     m_i2c = i2c;
-    m_i2c->addr = DS1086_DEVICE_ADDR << 1;
 
     if(m_i2c->peripheral == NULL){
         I2C_Init(m_i2c);
@@ -264,16 +263,16 @@ bool DS1086::read_reg(uint8_t reg, uint16_t *value)
     switch(reg){
         case DS1086_PRES:
         case DS1086_DAC:
-            if(I2C_Write(m_i2c, &reg, 1) != 1) break;
-            if(I2C_Read(m_i2c, buf, 2) != 2) break;
+            if(I2C_Write(m_i2c, DS1086_DEVICE_ADDR, &reg, 1) != 1) break;
+            if(I2C_Read(m_i2c, DS1086_DEVICE_ADDR, buf, 2) != 2) break;
             *value = buf[0] << 8 | buf[1];
             return true;
 
         case DS1086_OFFSET:
         case DS1086_ADDR:
         case DS1086_RANGE:
-            if(I2C_Write(m_i2c, &reg, 1) != 1) break;
-            if(I2C_Read(m_i2c, (uint8_t*)value, 1) != 1) break;
+            if(I2C_Write(m_i2c, DS1086_DEVICE_ADDR, &reg, 1) != 1) break;
+            if(I2C_Read(m_i2c, DS1086_DEVICE_ADDR, (uint8_t*)value, 1) != 1) break;
             return true;
 
         default: break;
@@ -291,14 +290,14 @@ bool DS1086::write_reg(uint8_t reg, uint16_t value)
             buf[0] = reg;
             buf[1] = value >> 8;
             buf[2] = value;
-            if(I2C_Write(m_i2c, (uint8_t*)&buf, 3) != 3) break;
+            if(I2C_Write(m_i2c, DS1086_DEVICE_ADDR, (uint8_t*)&buf, 3) != 3) break;
             return true;
 
         case DS1086_OFFSET:
         case DS1086_ADDR:
         case DS1086_RANGE:
             value = (value << 8) | reg;
-            if(I2C_Write(m_i2c, (uint8_t*)&value, 2) != 2) break;
+            if(I2C_Write(m_i2c, DS1086_DEVICE_ADDR, (uint8_t*)&value, 2) != 2) break;
             return true;
 
         default: break;

@@ -63,7 +63,6 @@ bool Si5351::init(i2cbus_t *i2c, uint32_t xo_freq, int32_t corr)
 {
 	uint8_t reg_val;
     m_i2c = i2c;
-    m_i2c->addr = SI5351_BUS_BASE_ADDR << 1;
 
     if(m_i2c->peripheral == NULL){
         I2C_Init(m_i2c);
@@ -71,11 +70,11 @@ bool Si5351::init(i2cbus_t *i2c, uint32_t xo_freq, int32_t corr)
     }
 
 	// Check for a device on the bus, bail out if it is not there
-	if(I2C_Read(m_i2c, &reg_val, 1) != 0)
+	if(I2C_Read(m_i2c, SI5351_BUS_BASE_ADDR, &reg_val, 1) != 0)
 	{
-		// Wait for SYS_INIT flag to be clear, indicating that device is ready		
+		// Wait for SYS_INIT flag to be clear, indicating that device is ready
 		while (read_reg(SI5351_DEVICE_STATUS_REG) & 0x80);
-	
+
     	reset();
 
 		// Set up the XO reference frequency
@@ -95,7 +94,7 @@ bool Si5351::init(i2cbus_t *i2c, uint32_t xo_freq, int32_t corr)
 
 /**
  * @brief Resets registers to a default known state
- * 
+ *
  * All outputs are disabled and in Hi-Z state.
  * Clocks are powered down and xtal load set to 10pF
  * All interrupts are masked
@@ -111,7 +110,7 @@ void Si5351::reset(void)
 
     // Mask interrupts
     write_reg(SI5351_INTERRUPT_MASK_REG, 0xF8);
-    
+
     // Turn off all CLK outputs
     for(uint8_t i = 0; i < 8; i++){
 	    write_reg(SI5351_CLK0_CTRL + i, SI5351_CLK_POWERDOWN | SI5351_CLK_INPUT_MULTISYNTH_N);
@@ -137,7 +136,7 @@ void Si5351::reset(void)
     for(uint8_t i = 0; i < 8; i++){
 	    set_ms_source((enum si5351_clock)(SI5351_CLK0 + i), pll_assignment[i]);
     }
-	
+
 	// Reset the VCXO param
 	write_reg(SI5351_VXCO_PARAMETERS_LOW, 0);
 	write_reg(SI5351_VXCO_PARAMETERS_MID, 0);
@@ -157,7 +156,7 @@ void Si5351::reset(void)
  * set_freq(uint64_t freq, enum si5351_clock clk)
  *
  * Sets the clock frequency of the specified CLK output.
- * Frequency range of 8 kHz to 150 MHz, output must be enable 
+ * Frequency range of 8 kHz to 150 MHz, output must be enable
  * separately.
  *
  * freq - Output frequency in Hz
@@ -179,7 +178,7 @@ uint8_t Si5351::set_freq(enum si5351_clock clk, uint64_t freq)
 		// ---------------------
 
 		// Bounds check
-		if(freq < SI5351_CLKOUT_MIN_FREQ * SI5351_FREQ_MULT || 
+		if(freq < SI5351_CLKOUT_MIN_FREQ * SI5351_FREQ_MULT ||
            freq > SI5351_MULTISYNTH_MAX_FREQ * SI5351_FREQ_MULT){
             return 1;
 		}
@@ -250,7 +249,7 @@ uint8_t Si5351::set_freq(enum si5351_clock clk, uint64_t freq)
 		}
 		else
 		{
-			clk_freq[(uint8_t)clk] = freq;			
+			clk_freq[(uint8_t)clk] = freq;
 
 			// Select the proper R div value
 			r_div = select_r_div(&freq);
@@ -673,7 +672,7 @@ void Si5351::set_fanout(enum si5351_fanout fanout, uint8_t enable)
 
 /**
  * @brief Set the xtal load capacitance
- * 
+ *
  */
 void Si5351::set_xtal_cl(enum si5351_xtal_cl cl)
 {
@@ -1197,18 +1196,18 @@ void Si5351::set_ref_freq(uint32_t ref_freq, enum si5351_pll_input ref_osc)
 
 /**
  * @brief Write bulk data into register
- * Important index [0] of data must not contain data 
+ * Important index [0] of data must not contain data
  * since is used for register address
- * 
+ *
  * @param addr  register address
  * @param data  data to be written
  * @param bytes data size
- * @return uint8_t 
+ * @return uint8_t
  */
 uint8_t Si5351::write_reg_bulk(uint8_t addr, uint8_t *data, uint8_t bytes)
 {
     data[0] = addr;
-    return I2C_Write(m_i2c, data, bytes + 1);
+    return I2C_Write(m_i2c, SI5351_BUS_BASE_ADDR, data, bytes + 1);
 }
 
 uint8_t Si5351::write_reg(uint8_t addr, uint8_t data)
@@ -1217,15 +1216,15 @@ uint8_t Si5351::write_reg(uint8_t addr, uint8_t data)
     _data[0] = addr;
     _data[1] = data;
 
-	return I2C_Write(m_i2c, _data, 2);
+	return I2C_Write(m_i2c, SI5351_BUS_BASE_ADDR, _data, 2);
 }
 
 uint8_t Si5351::read_reg(uint8_t addr)
 {
 	uint8_t reg_val = 0;
 
-    I2C_Write(m_i2c, &addr, 1);
-    I2C_Read(m_i2c, &reg_val, 1);
+    I2C_Write(m_i2c, SI5351_BUS_BASE_ADDR, &addr, 1);
+    I2C_Read(m_i2c, SI5351_BUS_BASE_ADDR, &reg_val, 1);
 
 	return reg_val;
 }
