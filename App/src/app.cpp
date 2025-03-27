@@ -2,6 +2,7 @@
 #include "board.h"
 #include "wdt.h"
 
+#include "stdinout.h"
 #include "console.h"
 #include "cmdecho.h"
 #include "cmdhelp.h"
@@ -124,7 +125,7 @@ extern "C" void App(void)
 {
     Console console;
     // stdout_t and serialops_t must be compatible for this to work
-    stdout_t *userio = (stdout_t*)SERIAL_GetSerialOps(-1);
+    stdinout_t *userio = (stdinout_t*)SERIAL_GetSerialOps(-1);
 
     WDT_Init(WDT_TIMEOUT);
 
