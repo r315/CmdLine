@@ -2,6 +2,7 @@
 #include "cmdtft.h"
 #include "rng.h"
 #include "drvlcd.h"
+#include "wdt.h"
 
 #ifdef FEATURE_GIF
 #include "AnimatedGIF.h"
@@ -23,7 +24,7 @@ typedef struct demo_s {
 
 static uint16_t tile[512];
 static uint16_t seed, scroll;
-static int16_t x, y, px,py;
+static int16_t x, y, px, py;
 static uint16_t state, step, stepSize, numSteps, tcount, color;
 static uint8_t hue = 0;
 static uint32_t demo_frames;
@@ -89,15 +90,21 @@ uint32_t Tiles_Loop(){
     return (++demo_frames) < 300;
 }
 
+/**
+ * @brief HSV color space
+ *
+ * @param h     hue 0-255
+ * @param s     saturation 0-255
+ * @param v     value 0-255
+ * @return      RGB565
+ */
 uint16_t HsvToRgb(uint8_t h, uint8_t s, uint8_t v)
 {
     uint8_t region, remainder, p, q, t;
     uint8_t r, g, b;
 
     if (s == 0){
-        r = v;
-        g = v;
-        b = v;
+        r = g = b = v;
     }else{
 
         region = h / 43;
@@ -147,11 +154,11 @@ void CmdTft::help(void){
     console->println("  clear <color>,       Fill display with color");
     console->println("  rc [scroll],         Random colors");
     console->println("  scroll [lines],      Scroll screen");
-    console->println("  hsv <s> <v>,         HSV color");
-    console->println("  block,               Color squares");
+    console->println("  hsv <s> <v>,         HSV color squares, s/h 0-255");
+    console->println("  squares,             Colored squares");
     console->println("  scroll,              Color scroll");
     console->println("  demo,                Demo sequence");
-    console->println("  cmd <reg> <param>    Send command");
+    //console->println("  cmd <reg> <param>    Send command");
     console->printchar('\n');
 }
 
@@ -208,10 +215,10 @@ char CmdTft::execute(int argc, char **argv){
         }
     }
 
-    if(xstrcmp("block", (const char*)argv[1]) == 0){
+    if(xstrcmp("squares", (const char*)argv[1]) == 0){
         uint16_t *buf = tile;
-        for(uint8_t i = 0; i < 128/16; i++){
-            for(uint8_t j = 0; j < 160/16; j++){
+        for(uint16_t i = 0; i < LCD_GetHeight()/16; i++){
+            for(uint16_t j = 0; j < LCD_GetWidth()/16; j++){
                 memset(buf, RNG_Get(), 15 * 15 * 2);
                 LCD_WriteArea(j * 16, i * 16, 15, 15, buf);
                 buf = tile + (256 * (j & 1));
@@ -250,7 +257,7 @@ char CmdTft::execute(int argc, char **argv){
             fps();
 
             if(f == 0){
-                scroll = (scroll + 1) % 160;
+                scroll = (scroll + 1) % LCD_GetHeight();
                 LCD_Scroll(scroll);
                 f = 2; // scroll speed
             }
@@ -268,10 +275,12 @@ char CmdTft::execute(int argc, char **argv){
     if(xstrcmp("hsv", (const char*)argv[1]) == 0){
         uint8_t h = 0, s, v;
         uint16_t *buf = tile;
-        if(ia2i(argv[2], (int32_t*)&s)){
-            if(ia2i(argv[3], (int32_t*)&v)){
-                for(uint8_t i = 0; i < LCD_GetHeight()/8; i++){
-                    for(uint8_t j = 0; j < LCD_GetWidth()/8; j++){
+        if(ia2i(argv[2], &val1)){
+            s = val1;
+            if(ia2i(argv[3], &val1)){
+                v = val1;
+                for(uint16_t i = 0; i < LCD_GetHeight()/8; i++){
+                    for(uint16_t j = 0; j < LCD_GetWidth()/8; j++){
                         memset16(buf, HsvToRgb(h++, s, v), 64);
                         LCD_WriteArea(j * 8, i * 8, 7, 7, buf);
                         buf = tile + (256 * (j & 1));
@@ -328,7 +337,7 @@ char CmdTft::execute(int argc, char **argv){
             if(console->getchNonBlocking(&c)){
                 limit_fps ^= 1;
             }
-
+            WDT_Reset();
         }while(c != '\n' && c != '\r');
 
         return CMD_OK_LF;

@@ -5,7 +5,10 @@
 #include "drvlcd.h"
 #include "stimer.h"
 
-drvlcdspi_t lcd0;
+#ifdef ENABLE_TFT_DISPLAY
+static drvlcdspi_t lcd0;
+#endif
+
 #if 0
 // Dedicated timer for stimer
 static void appTimerInit(TMR_Type *tmr)
@@ -78,14 +81,19 @@ clock_t clock(void){
     return (clock_t)GetTick();
 }
 
-void BOARD_LCD_Init(void){
-    lcd0.spidev.bus = SPI_BUS3;
-    lcd0.w = 128;
-    lcd0.h = 160;
+#ifdef ENABLE_TFT_DISPLAY
+void BOARD_LCD_Init(void)
+{
+    lcd0.spidev.bus = SPI_BUS0;
+    lcd0.spidev.freq = SPI_FREQ;
+    lcd0.w = TFT_W;
+    lcd0.h = TFT_H;
     lcd0.cs = LCD_CS;
     lcd0.cd = LCD_CD;
     lcd0.bkl = LCD_BKL;
     lcd0.rst = 255;
+
+    SPI_Init(&lcd0.spidev);
 
     LCD_Bkl(0);
     GPIO_Config(LCD_BKL, GPO_MS);
@@ -94,7 +102,7 @@ void BOARD_LCD_Init(void){
 
     LCD_Init(&lcd0);
 }
-
+#endif
 
 void BOARD_Init(void)
 {
@@ -115,6 +123,9 @@ void BOARD_Init(void)
     #endif
 
     SERIAL_Init();
+    #ifdef ENABLE_TFT_DISPLAY
+    BOARD_LCD_Init();
+    #endif
 }
 
 void SW_Reset(void){

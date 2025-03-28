@@ -77,7 +77,8 @@ $(DRIVER_PATH)/i2c/i2c_at32f4xx.c \
 $(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
 $(DRIVER_PATH)/tone/tone_at32f4xx.c \
 $(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+$(DRIVER_COMPONENT_PATH)/tft/ili9341.c \
+#$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
 
 CSRCS = \
 $(BOARD_SOURCES) \
