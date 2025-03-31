@@ -4,7 +4,7 @@
 #include "drvlcd.h"
 #include "wdt.h"
 
-#define ENABLE_DEMO_AMIGA   0
+#define ENABLE_DEMO_AMIGA   1
 #define ENABLE_DEMO_SPIRAL  1
 #define ENABLE_DEMO_RCOLOR  1
 #define ENABLE_DEMO_SCROLL  1
@@ -34,11 +34,14 @@ typedef struct democtx_s{
     uint8_t state, stepSize;
     uint8_t numSteps, tcount;
     uint16_t step, color;
-    uint16_t bgCol, bgColS, lineCol, lineColS;
-    uint16_t grid_sx1, vline_h1;
+    uint16_t bgColor, gridLineColor;
+    uint16_t ballShadowColor, gridLineShadowColor;
+    uint16_t grid_sx, grid_w;   // 2d part
+    uint16_t grid_sy, grid_h;   // 2d part
+    uint16_t grid_spacing;
+    uint8_t nvlines, nhlines, bidx;
     uint16_t palette[16];
-    uint8_t nvlines, nhlines;
-    uint16_t buf[512];
+    uint16_t buf[512];          // ideally 2 * display width
 }democtx_t;
 
 typedef struct demo_ops_s {
@@ -103,6 +106,65 @@ static const uint16_t f_data [] = {
 0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
 0xffff,0xf800,0xffff,0xffff,0xffff,0xffff,0xffff,0xffff,
 };
+
+void LCD_Line(uint16_t x1, uint16_t y1,  uint16_t x2, uint16_t y2, uint16_t color)
+{
+	signed int dy = y2 - y1;
+    signed int dx = x2 - x1;
+    signed int stepx, stepy;
+    signed int fraction;
+
+    if (dy < 0) { dy = -dy;  stepy = -1; } else { stepy = 1; }
+    if (dx < 0) { dx = -dx;  stepx = -1; } else { stepx = 1; }
+
+    if ( x1 == x2 ){
+    	//LIB2D_VLine(x1, (y1 < y2)? y1 : y2, dy);
+        LCD_FillRect(x1, (y1 < y2)? y1 : y2, 1, dy, color);
+    	return;
+    }
+
+    if ( y1 == y2 ){
+		//LIB2D_HLine((x1 < x2)? x1 : x2, y1, dx);
+        LCD_FillRect((x1 < x2)? x1 : x2, y1, dx, 1, color);
+		return;
+    }
+
+    dy <<= 1;
+    dx <<= 1;
+
+    LCD_Pixel(x1, y1, color);
+
+    if (dx > dy)
+    {
+        fraction = dy - (dx >> 1);
+        while (x1 != x2)
+        {
+            if (fraction >= 0)
+            {
+                y1 += stepy;
+                fraction -= dx;
+            }
+            x1 += stepx;
+            fraction += dy;
+            LCD_Pixel(x1, y1, color);
+        }
+    }
+    else
+    {
+        fraction = dx - (dy >> 1);
+        while (y1 != y2)
+        {
+            if (fraction >= 0)
+            {
+                x1 += stepx;
+                fraction -= dy;
+            }
+            y1 += stepy;
+            fraction += dx;
+            LCD_Pixel(x1, y1, color);
+        }
+    }
+}
 
 static uint8_t isPrime(uint16_t n){
     if (n == 1) return false;
@@ -459,92 +521,79 @@ static uint32_t Tiles_Loop(democtx_t *ctx)
 
 #include "ball.h"
 
-#define SCR_WD      LCD_GetWidth() //128
-#define SCR_HT      LCD_GetHeight() //160
+#define SCR_WD          LCD_GetWidth()
+#define SCR_HT          LCD_GetHeight()
 
-#define LINE_YS     10
-#define LINE_XS2    2
-#define BALL_WD     64
-#define BALL_HT     64
+#define BALL_WD         64
+#define BALL_HT         64
 
-#define SHADOW      20
+#define SHADOW          20
+#define GRID_SPACING    10 // pixel
 
-// AVR stats:
-// with shadow        - 42-43ms/24fps
-// without shadow     - 37-38ms/27fps
-// without background - 31-32ms/32fps
-// SPI transfer only  - 22-23ms/45fps (128x64x16bit)
-// STM32 stats:
-// with shadow        - 7-8ms/125fps
-// without shadow     - 6-7ms/166fps
-// without background - 5-6ms/200fps
-// SPI transfer only  - 4-5ms/250fps (128x64x16bit)
-
-
-static void drawBall(int x, int y)
+static void drawBall(democtx_t *ctx)
 {
-    static uint8_t bf = 0;
-    uint16_t linebuffer[SCR_WD  * 2];
     int i, j, ii;
 
     for (j = 0; j < BALL_HT; j++)
     {
-        uint16_t *line = linebuffer + (SCR_WD * ((bf++) & 1)); // swap buffer
+        uint16_t *line = ctx->buf + (SCR_WD * ((ctx->bidx++) & 1)); // swap buffer
 
         uint8_t v, *img = (uint8_t *)ball + 16 * 2 + 6 + j * BALL_WD / 2 + BALL_WD / 2;
 
-        int yy = y + j;
-        if (yy == LINE_YS || yy == LINE_YS + 1 * 10 || yy == LINE_YS + 2 * 10 || yy == LINE_YS + 3 * 10 || yy == LINE_YS + 4 * 10 || yy == LINE_YS + 5 * 10 || yy == LINE_YS + 6 * 10 ||
-            yy == LINE_YS + 7 * 10 || yy == LINE_YS + 8 * 10 || yy == LINE_YS + 9 * 10 || yy == LINE_YS + 10 * 10 || yy == LINE_YS + 11 * 10 || yy == LINE_YS + 12 * 10)
-        { // ugly but fast
-            for (i = 0; i < ctx->grid_sx1; i++)
-                line[i] = line[SCR_WD - 1 - i] = bgCol; // erase ball outside grid
+        int yy = ctx->y + j;
+        if (!((yy - ctx->grid_sy)%ctx->grid_spacing))
+        {
+            for (i = 0; i < ctx->grid_sx; i++)
+                line[i] = line[SCR_WD - 1 - i] = ctx->bgColor; // erase ball outside grid
 
-            for (i = 0; i <= SCR_WD - grid_sx1 * 2; i++)
-                line[i + grid_sx1] = lineCol;  // draw grid hline
+            for (i = 0; i <= SCR_WD - ctx->grid_sx * 2; i++)
+                line[i + ctx->grid_sx] = ctx->gridLineColor;   // draw grid hline
         }
         else
         {
             for (i = 0; i < SCR_WD; i++)
-                line[i] = bgCol; // erase ball on grid
+                line[i] = ctx->bgColor; // erase ball on grid
 
-            if (yy > LINE_YS)
-                for (i = 0; i < nvlines; i++)
-                    line[grid_sx1 + i * 10] = lineCol; // draw vline pixel
+            if (yy > ctx->grid_sy)
+                for (i = 0; i < ctx->nvlines; i++)
+                    line[ctx->grid_sx + i * ctx->grid_spacing] = ctx->gridLineColor; // draw vline pixel
         }
 
         for (i = BALL_WD - 2; i >= 0; i -= 2)
         {
             v = *(--img);
+
             if (v >> 4)
             {
-                line[x + i + 0] = palette[v >> 4];
+                line[ctx->x + i + 0] = ctx->palette[v >> 4];
 #if SHADOW
-                ii = x + i + 0 + SHADOW;
+                ii = ctx->x + i + 0 + SHADOW;
                 if (ii < SCR_WD)
                 {
-                    if (line[ii] == bgCol)
-                        line[ii] = bgColS;
-                    else if (line[ii] == lineCol)
-                        line[ii] = lineColS;
+                    if (line[ii] == ctx->bgColor)
+                        line[ii] = ctx->ballShadowColor;
+                    else if (line[ii] == ctx->gridLineColor)
+                        line[ii] = ctx->gridLineShadowColor;
                 }
 #endif
             }
+
             if (v & 0xf)
             {
-                line[x + i + 1] = palette[v & 0xf];
+                line[ctx->x + i + 1] = ctx->palette[v & 0xf];
 #if SHADOW
-                ii = x + i + 1 + SHADOW;
+                ii = ctx->x + i + 1 + SHADOW;
                 if (ii < SCR_WD)
                 {
-                    if (line[ii] == bgCol)
-                        line[ii] = bgColS;
-                    else if (line[ii] == lineCol)
-                        line[ii] = lineColS;
+                    if (line[ii] == ctx->bgColor)
+                        line[ii] = ctx->ballShadowColor;
+                    else if (line[ii] == ctx->gridLineColor)
+                        line[ii] = ctx->gridLineShadowColor;
                 }
 #endif
             }
         }
+
         LCD_WriteArea(0, yy, SCR_WD, 1, line);
     }
 }
@@ -553,63 +602,79 @@ static void AmigaBall_Setup(democtx_t *ctx)
 {
     uint16_t *pal = (uint16_t *)ball + 3;
 
-    ctx->bgCol    = RGB565(200,200,200);
-    ctx->bgColS   = RGB565(90,90,90);
-    ctx->lineCol  = RGB565(150,40,150);
-    ctx->lineColS = RGB565(80,10,80);
+    ctx->xd = 2;
+    ctx->yd = 1;
 
-    if(LCD_GetWidth() == 128){
-        ctx->grid_sx1 = 19;
-        ctx->vline_h1 = 120;
-        ctx->nvlines = 10;
-        ctx->nhlines = 13;
-    }else{
-        ctx->grid_sx1 = 20;
-        ctx->vline_h1 = 160;
-        ctx->nvlines = 13;
-        ctx->nhlines = 10;
+    ctx->bgColor = RGB565(200,200,200);
+    ctx->ballShadowColor = RGB565(90,90,90);
+    ctx->gridLineColor = RGB565(150,40,150);
+    ctx->gridLineShadowColor = RGB565(80,10,80);
+
+    ctx->grid_w = SCR_WD - (SCR_WD * 30 / 100); // 70% of screen width
+    ctx->grid_sx = (SCR_WD - ctx->grid_w) / 2;  // centered
+    ctx->grid_h = SCR_HT - (SCR_HT * 25 / 100); // 75% of screen high
+    ctx->grid_sy = (SCR_HT - ctx->grid_h) / 4;  // 1/4 on top
+
+    ctx->grid_spacing = GRID_SPACING;
+    while (ctx->grid_w % ctx->grid_spacing){
+        ctx->grid_spacing++;
     }
 
-    ctx->scroll = 0;
-    LCD_Scroll(ctx->scroll);
-    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), ctx->bgCol);
+    ctx->nvlines = (ctx->grid_w / ctx->grid_spacing) + 1;
+    ctx->nhlines = (ctx->grid_h / ctx->grid_spacing) + 1;
 
+    // Load palette
     for (uint8_t i = 0; i < 16; i++)
         ctx->palette[i] = *pal++;
 
+    // Background color
+    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
+    LCD_FillRect(0, 0, SCR_WD, SCR_HT, ctx->bgColor);
+
+    // Grid Vlines
     for (uint8_t i = 0; i < ctx->nvlines; i++){
-        LCD_FillRect(ctx->grid_sx1 + i * 10, LINE_YS, 1, ctx->vline_h1, ctx->lineCol);
+        LCD_FillRect(ctx->grid_sx + i * ctx->grid_spacing, ctx->grid_sy, 1, ctx->grid_h, ctx->gridLineColor);
     }
 
+    // Grid Hlines
     for (uint8_t i = 0; i < ctx->nhlines; i++){
-        LCD_FillRect(ctx->grid_sx1, LINE_YS + i * 10, SCR_WD - ctx->grid_sx1 * 2, 1, ctx->lineCol);
+        LCD_FillRect(ctx->grid_sx, ctx->grid_sy + i * ctx->grid_spacing, ctx->grid_w, 1, ctx->gridLineColor);
     }
 
-    int dy = SCR_HT - LINE_YS - (LINE_YS + ctx->vline_h1);
-    int dx = ctx->grid_sx1 - LINE_XS2;
+    // Oblique continuation of vertical lines
+    uint16_t ex = SCR_WD * 10 / (ctx->nvlines - 1); // keep a decimal place to reduce error
+    for (uint8_t i = 0; i < ctx->nvlines; i++){
+        LCD_Line(ctx->grid_sx + i * ctx->grid_spacing,
+                 ctx->grid_sy + ctx->grid_h,
+                 (i * ex) / 10,
+                 SCR_HT - ctx->grid_spacing,
+                 ctx->gridLineColor
+        );
+    }
+    // Decrementing horizontal lines for depth illusion
+    // m = (y + b) / x
+    // y = ctx->grid_sy + ctx->grid_h
+    // x = ctx->grid_sx
+    // b = SCR_HT - GRID_SPACING
+    uint16_t m = ((SCR_HT - ctx->grid_spacing) - (ctx->grid_sy + ctx->grid_h)) / ctx->grid_sx;
 
-    int o = 7 * dx / dy;
-    LCD_FillRect(LINE_XS2 + o, LINE_YS + ctx->vline_h1 + 6 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, 1, ctx->lineCol);
-    o = (7 + 6) * dx / dy;
-    LCD_FillRect(LINE_XS2 + o, LINE_YS + ctx->vline_h1 + 4, SCR_WD - LINE_XS2 * 2 - o * 2, 1, ctx->lineCol);
-    o = (7 + 6 + 4) * dx / dy;
-    LCD_FillRect(LINE_XS2 + o,LINE_YS + ctx->vline_h1, SCR_WD - LINE_XS2 * 2 - o * 2, 1, ctx->lineCol);
-
-    uint16_t last_w = SCR_WD - (LINE_XS2 * 2);
-    LCD_FillRect(LINE_XS2, SCR_HT - LINE_YS, last_w, 1, ctx->lineCol);
-
-    //last_w = last_w / (ctx->nvlines - 1);
-
-    //for (uint8_t i = 0; i < ctx->nvlines; i++){
-    //    LCD_Line(grid_sx1 + i * 10, LINE_YS + vline_h1, LINE_XS2 + i * last_w, SCR_HT - LINE_YS, lineCol);
-    //}
+    for (uint16_t y = SCR_HT - ctx->grid_spacing, i = ctx->grid_spacing; y > ctx->grid_sy + ctx->grid_h; ){
+        uint16_t x = ((SCR_HT - ctx->grid_spacing) - y) / m;
+        LCD_Line(x,
+                 y,
+                 SCR_WD - x,
+                 y,
+                 ctx->gridLineColor
+        );
+        i -= (i * 2) / 10;
+        y -= i;
+    }
 }
 
 static uint32_t AmigaBall_Loop(democtx_t *ctx)
 {
-    static int16_t anim=0, animd=1;
-    static int16_t x=0, y=0;
-    static int16_t xd=2, yd=1;
+
+    static int16_t anim = 0, animd = 1;
 
     for (int i = 0; i < 14; i++)
     {
@@ -618,40 +683,40 @@ static uint32_t AmigaBall_Loop(democtx_t *ctx)
         //if(c<6) palette[i+1]=WHITE; else if(c==6 || c==13) palette[i+1]=RGB565(255,128,128); else palette[i+1]=RED;
     }
 
-    drawBall(x, y);
+    drawBall(ctx);
     anim += animd;
 
     if (anim < 0){
         anim += 14;
     }
 
-    x += xd;
-    y += yd;
+    ctx->x += ctx->xd;
+    ctx->y += ctx->yd;
 
-    if (x < 0)
+    if (ctx->x < 0)
     {
-        x = 0;
-        xd = -xd;
+        ctx->x = 0;
+        ctx->xd = -ctx->xd;
         animd = -animd;
     }
 
-    if (x >= SCR_WD - BALL_WD)
+    if (ctx->x >= SCR_WD - BALL_WD)
     {
-        x = SCR_WD - BALL_WD;
-        xd = -xd;
+        ctx->x = SCR_WD - BALL_WD;
+        ctx->xd = -ctx->xd;
         animd = -animd;
     }
 
-    if (y < 0)
+    if (ctx->y < 0)
     {
-        y = 0;
-        yd = -yd;
+        ctx->y = 0;
+        ctx->yd = -ctx->yd;
     }
 
-    if (y >= LINE_YS + ctx->vline_h1 + 1 - BALL_HT)
+    if (ctx->y >= ctx->grid_sy + ctx->grid_h + 1 - BALL_HT)
     {
-        y = LINE_YS + ctx->vline_h1 + 1- BALL_HT;
-        yd = -yd;
+        ctx->y = ctx->grid_sy + ctx->grid_h + 1- BALL_HT;
+        ctx->yd = -ctx->yd;
     }
 
     return ++ctx->frames;
