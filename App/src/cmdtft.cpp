@@ -425,7 +425,10 @@ void CmdTft::fps(void){
     fps++;
 }
 
-static void Tiles_Setup(democtx_t *ctx) { }
+static void Tiles_Setup(democtx_t *ctx)
+{
+    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
+}
 /**
  * @brief
  *
