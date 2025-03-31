@@ -20,6 +20,12 @@ void GIFDraw(GIFDRAW *pDraw);
 void gifPlayFrame(void);
 #endif
 
+enum {
+    DEMO_SETUP = 0,
+    DEMO_RUN,
+    DEMO_END
+};
+
 typedef struct democtx_s{
     uint16_t seed, scroll;
     int16_t x, y, px, py;
@@ -318,23 +324,19 @@ char CmdTft::execute(int argc, char **argv){
     if(xstrcmp("demo", (const char*)argv[1]) == 0){
         char c, limit_fps = 1;
         uint32_t time = 0;
-        uint8_t state = 0, demo = 0;
+        uint8_t demo = 0, demo_state = DEMO_SETUP;
 
         LCD_Scroll(0);
 
         do{
-            switch(state){
-                case 0:
+            switch(demo_state){
+                case DEMO_SETUP:
                     demo_ctx.frames = 0;
-                    state = 1;
+                    demo_state = DEMO_RUN;
                     demos[demo].setup(&demo_ctx);
                     break;
 
-                case 1:
-                    time = GetTick();
-
-                    if(demos[demo].loop(&demo_ctx) == 0){
-                        state = 2;
+                case DEMO_RUN:
                     }
 
                     fps();
@@ -342,12 +344,12 @@ char CmdTft::execute(int argc, char **argv){
                     time = GetTick() - time;
                     break;
 
-                case 2:
+                case DEMO_END:
                     //if(demos[demo].end != NULL){
                     //    demos[demo].end();
                     //}
                     demo = (demo + 1) % (sizeof(demos) / sizeof(demoops_t));
-                    state = 0;
+                    demo_state = DEMO_SETUP;
                     break;
 
                 default:
@@ -630,7 +632,7 @@ static uint32_t AmigaBall_Loop(democtx_t *ctx)
         yd = -yd;
     }
 
-    return (++ctx->frames) < 300;
+    return ++ctx->frames;
 }
 #endif /* ENABLE_DEMO_AMIGA */
 
@@ -705,7 +707,7 @@ static uint32_t Spiral_Loop(democtx_t *ctx){
 
     ctx->step++;
 
-    return (++ctx->frames) < 300;
+    return ++ctx->frames;
 }
 #endif
 
@@ -724,7 +726,7 @@ static uint32_t Scroll_Loop(democtx_t *ctx){
 
     LCD_Scroll(ctx->scroll);
 
-    return (++ctx->frames) < 300;
+    return ++ctx->frames;
 }
 #endif
 
@@ -740,7 +742,7 @@ static uint32_t RandomColors_Loop(democtx_t *ctx)
         }
         LCD_WriteArea(0, i, LCD_GetWidth(), 1, buf);
     }
-    return (++ctx->frames) < 50;
+    return ++ctx->frames;
 }
 #endif
 
