@@ -42,6 +42,7 @@ typedef struct democtx_s{
 typedef struct demo_ops_s {
     void (*setup)(democtx_t *);
     uint32_t (*loop)(democtx_t *);
+    void (*cleanup)(democtx_t *);
 }demoops_t;
 
 static void Tiles_Setup(democtx_t *);
@@ -57,6 +58,7 @@ static uint32_t Spiral_Loop(democtx_t *);
 #if ENABLE_DEMO_SCROLL
 static void Scroll_Setup(democtx_t *);
 static uint32_t Scroll_Loop(democtx_t *);
+static void Scroll_Cleanup(democtx_t *);
 #endif
 #if ENABLE_DEMO_RCOLOR
 static void RandomColors_Setup(democtx_t *);
@@ -65,6 +67,7 @@ static uint32_t RandomColors_Loop(democtx_t *d);
 #ifdef FEATURE_GIF
 static void Gif_Setup(democtx_t *);
 static uint32_t Gif_Loop(democtx_t *);
+static void Gif_Cleanup(democtx_t *);
 #endif
 
 static democtx_t demo_ctx;
@@ -72,19 +75,19 @@ static democtx_t demo_ctx;
 const demoops_t demos[] = {
     {Tiles_Setup, Tiles_Loop},
 #if ENABLE_DEMO_AMIGA
-    {AmigaBall_Setup, AmigaBall_Loop},
+    {AmigaBall_Setup, AmigaBall_Loop, NULL},
 #endif
 #if ENABLE_DEMO_SPIRAL
-    {Spiral_Setup, Spiral_Loop},
+    {Spiral_Setup, Spiral_Loop, NULL},
 #endif
 #if ENABLE_DEMO_RCOLOR
-    {RandomColors_Setup, RandomColors_Loop},
+    {RandomColors_Setup, RandomColors_Loop, NULL},
 #endif
 #if ENABLE_DEMO_SCROLL
-    {Scroll_Setup, Scroll_Loop}
+    {Scroll_Setup, Scroll_Loop, Scroll_Cleanup}
 #endif
 #ifdef FEATURE_GIF
-    {Gif_Setup, Gif_Loop}
+    {Gif_Setup, Gif_Loop, Gif_Cleanup}
 #endif
 };
 
@@ -341,13 +344,12 @@ char CmdTft::execute(int argc, char **argv){
 
                     fps();
 
-                    time = GetTick() - time;
                     break;
 
                 case DEMO_END:
-                    //if(demos[demo].end != NULL){
-                    //    demos[demo].end();
-                    //}
+                    if(demos[demo].cleanup != NULL){
+                        demos[demo].cleanup(&demo_ctx);
+                    }
                     demo = (demo + 1) % (sizeof(demos) / sizeof(demoops_t));
                     demo_state = DEMO_SETUP;
                     break;
@@ -363,7 +365,9 @@ char CmdTft::execute(int argc, char **argv){
             if(console->getchNonBlocking(&c)){
                 limit_fps ^= 1;
             }
+
             WDT_Reset();
+
         }while(c != '\n' && c != '\r');
 
         return CMD_OK_LF;
@@ -717,6 +721,10 @@ static void Scroll_Setup(democtx_t *ctx){
     ctx->hue = RNG_Get();
 }
 
+static void Scroll_Cleanup(democtx_t *ctx){
+    LCD_Scroll(0);
+}
+
 static uint32_t Scroll_Loop(democtx_t *ctx){
     ctx->y = (LCD_GetHeight() - 1) - ctx->scroll;
     ctx->scroll = (ctx->scroll + 1) % LCD_GetHeight();
@@ -863,7 +871,7 @@ static uint32_t Gif_Loop(void){
     return demo_frames;
 }
 
-static void Gif_End(void){
+static void Gif_Cleanup(void){
     gif.close();
 }
 #endif
