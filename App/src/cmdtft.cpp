@@ -661,27 +661,34 @@ static void Spiral_Setup(democtx_t *ctx){
 static uint32_t Spiral_Loop(democtx_t *ctx){
 
     if(isPrime(ctx->step)){
-        LCD_FillRect(ctx->x - (ctx->stepSize >> 1), ctx->y - (ctx->stepSize >> 1), ctx->stepSize - 1, ctx->stepSize - 1, ctx->color);
+        // Draw square
+        LCD_FillRect(ctx->x - (ctx->stepSize >> 1),
+                     ctx->y - (ctx->stepSize >> 1),
+                     ctx->stepSize - 1, ctx->stepSize - 1, ctx->color);
     }
 
-    //LCD_Line(px, py, x, y, color);
-    uint16_t w, h;
+    uint16_t w, h, sx, sy;
     if(ctx->x > ctx->px){
         w = ctx->x - ctx->px;
+        sx = ctx->px;
     }else{
         w = ctx->px - ctx->x;
+        sx = ctx->x;
     }
 
     if(ctx->y > ctx->py){
         h = ctx->y - ctx->py;
+        sy = ctx->py;
     }else{
         h = ctx->py - ctx->y;
+        sy = ctx->y;
     }
 
     if(w == 0 && h > 0){ w = 1; }
     if(h == 0 && w > 0){ h = 1; }
 
-    LCD_FillRect(ctx->px, ctx->py, w, h, ctx->color);
+    // Draw line connecting previous square to next one
+    LCD_FillRect(sx, sy, w, h, ctx->color);
 
     ctx->px = ctx->x;
     ctx->py = ctx->y;
