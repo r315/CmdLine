@@ -27,15 +27,17 @@ enum {
 };
 
 typedef struct democtx_s{
-    uint16_t seed, scroll;
-    int16_t x, y, px, py;
-    uint16_t state, step, stepSize, numSteps, tcount, color;
+    int16_t x, y, xd, yd;
     uint32_t frames;
-    uint16_t palette[16];
+    uint16_t seed;
+    uint16_t scroll;
+    uint8_t state, stepSize;
+    uint8_t numSteps, tcount;
+    uint16_t step, color;
     uint16_t bgCol, bgColS, lineCol, lineColS;
     uint16_t grid_sx1, vline_h1;
+    uint16_t palette[16];
     uint8_t nvlines, nhlines;
-    uint8_t hue = 0;
     uint16_t buf[512];
 }democtx_t;
 
@@ -659,8 +661,8 @@ static void Spiral_Setup(democtx_t *ctx){
     ctx->x = LCD_GetWidth() / 2;
     ctx->y = LCD_GetHeight() / 2;
 
-    ctx->px = ctx->x;
-    ctx->py = ctx->y;
+    ctx->xd = ctx->x;
+    ctx->yd = ctx->y;
 
     ctx->state = 0;
     ctx->step = 1;
@@ -681,19 +683,19 @@ static uint32_t Spiral_Loop(democtx_t *ctx){
     }
 
     uint16_t w, h, sx, sy;
-    if(ctx->x > ctx->px){
-        w = ctx->x - ctx->px;
-        sx = ctx->px;
+    if(ctx->x > ctx->xd){
+        w = ctx->x - ctx->xd;
+        sx = ctx->xd;
     }else{
-        w = ctx->px - ctx->x;
+        w = ctx->xd - ctx->x;
         sx = ctx->x;
     }
 
-    if(ctx->y > ctx->py){
-        h = ctx->y - ctx->py;
-        sy = ctx->py;
+    if(ctx->y > ctx->yd){
+        h = ctx->y - ctx->yd;
+        sy = ctx->yd;
     }else{
-        h = ctx->py - ctx->y;
+        h = ctx->yd - ctx->y;
         sy = ctx->y;
     }
 
@@ -703,8 +705,8 @@ static uint32_t Spiral_Loop(democtx_t *ctx){
     // Draw line connecting previous square to next one
     LCD_FillRect(sx, sy, w, h, ctx->color);
 
-    ctx->px = ctx->x;
-    ctx->py = ctx->y;
+    ctx->xd = ctx->x;
+    ctx->yd = ctx->y;
 
     switch (ctx->state){
         case 0:
@@ -738,7 +740,7 @@ static uint32_t Spiral_Loop(democtx_t *ctx){
 #if ENABLE_DEMO_SCROLL
 static void Scroll_Setup(democtx_t *ctx){
     ctx->scroll = 0;
-    ctx->hue = RNG_Get();
+    ctx->state = RNG_Get();
 }
 
 static void Scroll_Cleanup(democtx_t *ctx){
@@ -750,7 +752,7 @@ static uint32_t Scroll_Loop(democtx_t *ctx){
     ctx->scroll = (ctx->scroll + 1) % LCD_GetHeight();
 
     LCD_FillRect(0,ctx->y, LCD_GetWidth(), 1,
-                HsvToRgb(ctx->hue++, 255, 255));
+                HsvToRgb(ctx->state++, 255, 255));
 
     LCD_Scroll(ctx->scroll);
 
