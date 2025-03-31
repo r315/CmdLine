@@ -326,7 +326,7 @@ char CmdTft::execute(int argc, char **argv){
 
     if(xstrcmp("demo", (const char*)argv[1]) == 0){
         char c, limit_fps = 1;
-        uint32_t time = 0;
+        uint32_t frame_duration, demo_time, stime;
         uint8_t demo = 0, demo_state = DEMO_SETUP;
 
         LCD_Scroll(0);
@@ -337,9 +337,22 @@ char CmdTft::execute(int argc, char **argv){
                     demo_ctx.frames = 0;
                     demo_state = DEMO_RUN;
                     demos[demo].setup(&demo_ctx);
+                    demo_time = 0;
+                    stime = GetTick();
                     break;
 
                 case DEMO_RUN:
+
+                    demo_time += GetTick() - stime;
+                    stime = GetTick();
+
+                    demos[demo].loop(&demo_ctx);
+
+                    frame_duration = GetTick() - stime;
+
+                    if(demo_time > 3000){
+                        console->printf("\rdemo[%d] %d frames   ", demo, demo_ctx.frames);
+                        demo_state = DEMO_END;
                     }
 
                     fps();
@@ -358,8 +371,8 @@ char CmdTft::execute(int argc, char **argv){
                     break;
             }
 
-            if(limit_fps && time < 16){
-                DelayMs(16 - time);
+            if(limit_fps && frame_duration < 16){
+                DelayMs(16 - frame_duration);
             }
 
             if(console->getchNonBlocking(&c)){
