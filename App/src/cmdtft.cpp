@@ -4,10 +4,7 @@
 #include "drvlcd.h"
 #include "wdt.h"
 
-#define ENABLE_DEMO_AMIGA   1
-#define ENABLE_DEMO_SPIRAL  1
-#define ENABLE_DEMO_RCOLOR  1
-#define ENABLE_DEMO_SCROLL  1
+#define ENABLE_DEMO_TILES   0
 
 #ifdef FEATURE_GIF
 #include "AnimatedGIF.h"
@@ -28,18 +25,16 @@ enum {
 
 typedef struct democtx_s{
     int16_t x, y, xd, yd;
+    uint16_t sx, w;
+    uint16_t sy, h;
     uint32_t frames;
-    uint16_t seed;
-    uint16_t scroll;
     uint8_t state, stepSize;
     uint8_t numSteps, tcount;
     uint16_t step, color;
     uint16_t bgColor, gridLineColor;
     uint16_t ballShadowColor, gridLineShadowColor;
-    uint16_t grid_sx, grid_w;   // 2d part
-    uint16_t grid_sy, grid_h;   // 2d part
-    uint16_t grid_spacing;
-    uint8_t nvlines, nhlines, bidx;
+    uint16_t value, bidx;
+    uint8_t spacing, nvlines, nhlines;
     uint16_t palette[16];
     uint16_t buf[512];          // ideally 2 * display width
 }democtx_t;
@@ -78,7 +73,9 @@ static void Gif_Cleanup(democtx_t *);
 static democtx_t demo_ctx;
 
 const demoops_t demos[] = {
+#if ENABLE_DEMO_TILES
     {Tiles_Setup, Tiles_Loop},
+#endif
 #if ENABLE_DEMO_AMIGA
     {AmigaBall_Setup, AmigaBall_Loop, NULL},
 #endif
@@ -89,10 +86,13 @@ const demoops_t demos[] = {
     {RandomColors_Setup, RandomColors_Loop, NULL},
 #endif
 #if ENABLE_DEMO_SCROLL
-    {Scroll_Setup, Scroll_Loop, Scroll_Cleanup}
+    {Scroll_Setup, Scroll_Loop, Scroll_Cleanup},
 #endif
 #ifdef FEATURE_GIF
-    {Gif_Setup, Gif_Loop, Gif_Cleanup}
+    {Gif_Setup, Gif_Loop, Gif_Cleanup},
+#endif
+#if ENABLE_DEMO_GRAPH
+    {Graph_Setup, Graph_Loop, Graph_Cleanup},
 #endif
 };
 
@@ -503,8 +503,8 @@ static uint32_t Tiles_Loop(democtx_t *ctx)
     for(uint8_t i = 0; i < LCD_GetHeight()/16; i++){
         for(uint8_t j = 0; j < LCD_GetWidth()/16; j++){
             dbuf = ctx->buf + (256 * (j & 1));
-            ctx->seed = RandomColor(ctx->seed);
-            memset(dbuf, ctx->seed, 15 * 15 * 2);
+            ctx->value = RandomColor(ctx->value);
+            memset(dbuf, ctx->value, 15 * 15 * 2);
             LCD_WriteArea(j * 16, i * 16, 15, 15, dbuf);
         }
     }
@@ -528,7 +528,7 @@ static uint32_t Tiles_Loop(democtx_t *ctx)
 #define BALL_HT         64
 
 #define SHADOW          20
-#define GRID_SPACING    10 // pixel
+#define GRID_SPACING    10 // default value in pixel
 
 static void drawBall(democtx_t *ctx)
 {
@@ -541,22 +541,22 @@ static void drawBall(democtx_t *ctx)
         uint8_t v, *img = (uint8_t *)ball + 16 * 2 + 6 + j * BALL_WD / 2 + BALL_WD / 2;
 
         int yy = ctx->y + j;
-        if (!((yy - ctx->grid_sy)%ctx->grid_spacing))
+        if (!((yy - ctx->sy)%ctx->spacing))
         {
-            for (i = 0; i < ctx->grid_sx; i++)
+            for (i = 0; i < ctx->sx; i++)
                 line[i] = line[SCR_WD - 1 - i] = ctx->bgColor; // erase ball outside grid
 
-            for (i = 0; i <= SCR_WD - ctx->grid_sx * 2; i++)
-                line[i + ctx->grid_sx] = ctx->gridLineColor;   // draw grid hline
+            for (i = 0; i <= SCR_WD - ctx->sx * 2; i++)
+                line[i + ctx->sx] = ctx->gridLineColor;   // draw grid hline
         }
         else
         {
             for (i = 0; i < SCR_WD; i++)
                 line[i] = ctx->bgColor; // erase ball on grid
 
-            if (yy > ctx->grid_sy)
+            if (yy > ctx->sy)
                 for (i = 0; i < ctx->nvlines; i++)
-                    line[ctx->grid_sx + i * ctx->grid_spacing] = ctx->gridLineColor; // draw vline pixel
+                    line[ctx->sx + i * ctx->spacing] = ctx->gridLineColor; // draw vline pixel
         }
 
         for (i = BALL_WD - 2; i >= 0; i -= 2)
@@ -610,18 +610,18 @@ static void AmigaBall_Setup(democtx_t *ctx)
     ctx->gridLineColor = RGB565(150,40,150);
     ctx->gridLineShadowColor = RGB565(80,10,80);
 
-    ctx->grid_w = SCR_WD - (SCR_WD * 30 / 100); // 70% of screen width
-    ctx->grid_sx = (SCR_WD - ctx->grid_w) / 2;  // centered
-    ctx->grid_h = SCR_HT - (SCR_HT * 25 / 100); // 75% of screen high
-    ctx->grid_sy = (SCR_HT - ctx->grid_h) / 4;  // 1/4 on top
+    ctx->w = SCR_WD - (SCR_WD * 30 / 100); // 70% of screen width
+    ctx->sx = (SCR_WD - ctx->w) / 2;  // centered
+    ctx->h = SCR_HT - (SCR_HT * 25 / 100); // 75% of screen high
+    ctx->sy = (SCR_HT - ctx->h) / 4;  // 1/4 on top
 
-    ctx->grid_spacing = GRID_SPACING;
-    while (ctx->grid_w % ctx->grid_spacing){
-        ctx->grid_spacing++;
+    ctx->spacing = GRID_SPACING;
+    while (ctx->w % ctx->spacing){
+        ctx->spacing++;
     }
 
-    ctx->nvlines = (ctx->grid_w / ctx->grid_spacing) + 1;
-    ctx->nhlines = (ctx->grid_h / ctx->grid_spacing) + 1;
+    ctx->nvlines = (ctx->w / ctx->spacing) + 1;
+    ctx->nhlines = (ctx->h / ctx->spacing) + 1;
 
     // Load palette
     for (uint8_t i = 0; i < 16; i++)
@@ -633,33 +633,33 @@ static void AmigaBall_Setup(democtx_t *ctx)
 
     // Grid Vlines
     for (uint8_t i = 0; i < ctx->nvlines; i++){
-        LCD_FillRect(ctx->grid_sx + i * ctx->grid_spacing, ctx->grid_sy, 1, ctx->grid_h, ctx->gridLineColor);
+        LCD_FillRect(ctx->sx + i * ctx->spacing, ctx->sy, 1, ctx->h, ctx->gridLineColor);
     }
 
     // Grid Hlines
     for (uint8_t i = 0; i < ctx->nhlines; i++){
-        LCD_FillRect(ctx->grid_sx, ctx->grid_sy + i * ctx->grid_spacing, ctx->grid_w, 1, ctx->gridLineColor);
+        LCD_FillRect(ctx->sx, ctx->sy + i * ctx->spacing, ctx->w, 1, ctx->gridLineColor);
     }
 
     // Oblique continuation of vertical lines
     uint16_t ex = SCR_WD * 10 / (ctx->nvlines - 1); // keep a decimal place to reduce error
     for (uint8_t i = 0; i < ctx->nvlines; i++){
-        LCD_Line(ctx->grid_sx + i * ctx->grid_spacing,
-                 ctx->grid_sy + ctx->grid_h,
+        LCD_Line(ctx->sx + i * ctx->spacing,
+                 ctx->sy + ctx->h,
                  (i * ex) / 10,
-                 SCR_HT - ctx->grid_spacing,
+                 SCR_HT - ctx->spacing,
                  ctx->gridLineColor
         );
     }
     // Decrementing horizontal lines for depth illusion
     // m = (y + b) / x
-    // y = ctx->grid_sy + ctx->grid_h
-    // x = ctx->grid_sx
+    // y = ctx->sy + ctx->h
+    // x = ctx->sx
     // b = SCR_HT - GRID_SPACING
-    uint16_t m = ((SCR_HT - ctx->grid_spacing) - (ctx->grid_sy + ctx->grid_h)) / ctx->grid_sx;
+    uint16_t m = ((SCR_HT - ctx->spacing) - (ctx->sy + ctx->h)) / ctx->sx;
 
-    for (uint16_t y = SCR_HT - ctx->grid_spacing, i = ctx->grid_spacing; y > ctx->grid_sy + ctx->grid_h; ){
-        uint16_t x = ((SCR_HT - ctx->grid_spacing) - y) / m;
+    for (uint16_t y = SCR_HT - ctx->spacing, i = ctx->spacing; y > ctx->sy + ctx->h; ){
+        uint16_t x = ((SCR_HT - ctx->spacing) - y) / m;
         LCD_Line(x,
                  y,
                  SCR_WD - x,
@@ -713,9 +713,9 @@ static uint32_t AmigaBall_Loop(democtx_t *ctx)
         ctx->yd = -ctx->yd;
     }
 
-    if (ctx->y >= ctx->grid_sy + ctx->grid_h + 1 - BALL_HT)
+    if (ctx->y >= ctx->sy + ctx->h + 1 - BALL_HT)
     {
-        ctx->y = ctx->grid_sy + ctx->grid_h + 1- BALL_HT;
+        ctx->y = ctx->sy + ctx->h + 1- BALL_HT;
         ctx->yd = -ctx->yd;
     }
 
@@ -807,7 +807,7 @@ static uint32_t Spiral_Loop(democtx_t *ctx){
 
 #if ENABLE_DEMO_SCROLL
 static void Scroll_Setup(democtx_t *ctx){
-    ctx->scroll = 0;
+    ctx->value = 0;
     ctx->state = RNG_Get();
 }
 
@@ -816,13 +816,13 @@ static void Scroll_Cleanup(democtx_t *ctx){
 }
 
 static uint32_t Scroll_Loop(democtx_t *ctx){
-    ctx->y = (LCD_GetHeight() - 1) - ctx->scroll;
-    ctx->scroll = (ctx->scroll + 1) % LCD_GetHeight();
+    ctx->y = (LCD_GetHeight() - 1) - ctx->value;
+    ctx->value = (ctx->value + 1) % LCD_GetHeight();
 
     LCD_FillRect(0,ctx->y, LCD_GetWidth(), 1,
                 HsvToRgb(ctx->state++, 255, 255));
 
-    LCD_Scroll(ctx->scroll);
+    LCD_Scroll(ctx->value);
 
     return ++ctx->frames;
 }
