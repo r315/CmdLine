@@ -124,7 +124,6 @@ void SERVO_SetPulse(uint16_t pulse);
  *
  *
  * ************************************************************ */
-#define SPI_XFER_TIMEOUT        1000
 
 #define LCD_DI_PIN              PB_15
 #define LCD_SCK_PIN             PB_13

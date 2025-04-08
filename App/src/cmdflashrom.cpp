@@ -1,6 +1,7 @@
 #include "board.h"
 #include "cmdflashrom.h"
 #include "spi_flash.h"
+#include "spi.h"
 
 typedef enum {
     IDLE = 0,
@@ -10,8 +11,9 @@ typedef enum {
 
 #define LOW     0
 #define HIGH    1
+#define SPI_XFER_TIMEOUT        1000
 
-void CmdFlashRom::help(void){ 
+void CmdFlashRom::help(void){
     console->print("flashrom\n");
     console->print("q  exits flashrom mode\n");
     console->print("Usage: flashrom -p bluepill_spi:dev=/dev/ttyACM0 --flash-size");
@@ -24,7 +26,7 @@ char CmdFlashRom::execute(int argc, char **argv){
     uint8_t buf[16];
     uint16_t idx = 0;
 
-    BOARD_SPI_Init();   
+    BOARD_SPI_Init();
 
     console->print("FLASHROM OK");
 
@@ -32,18 +34,18 @@ char CmdFlashRom::execute(int argc, char **argv){
         char c = console->getChar();
 
         switch (state){
-            case IDLE:            
+            case IDLE:
                 switch(c){
-                    case 'q': 
+                    case 'q':
                         done = TRUE;
                         break;
-                    case ':':                        
+                    case ':':
                         state = HDR;
                         break;
                     default:
                         break;
                 }
-                break;            
+                break;
 
             case HDR:
                 xfer_count = c;
@@ -65,10 +67,10 @@ char CmdFlashRom::execute(int argc, char **argv){
                 BOARD_SPI_CS_HIGH;
 
                 for(idx = 0; idx < xfer_count; idx++){
-                    //BOARD_STDIO->xputchar(buf[idx]);  
+                    //BOARD_STDIO->xputchar(buf[idx]);
                     console->printchar(buf[idx]);
                 }
-                
+
                 state = IDLE;
                 break;
 
