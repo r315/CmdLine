@@ -8,7 +8,7 @@ TARGET =console_bluepill
 #######################################
 
 FEATURE_ENABLE = \
-ENABLE_BUZZER \
+ENABLE_TONE \
 #ENABLE_BENCHMARK \
 #ENABLE_TFT_DISPLAY \
 #ENABLE_BENCHMARK_DHRYSTONE \

@@ -16,6 +16,8 @@ extern "C" {
 #include "uart.h"
 #include "gpio.h"
 #include "gpio_stm32f1xx.h"
+#include "tone_stm32f1xx.h"
+#include "dma_stm32f1xx.h"
 
 /**
  * HW symbols

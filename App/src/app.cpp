@@ -110,7 +110,7 @@ static ConsoleCommand *app_commands[] = {
 #if defined (ENABLE_ENCODER)
 	new CmdEncoder(),
 #endif
-#if defined (ENABLE_BUZZER)
+#if defined (ENABLE_TONE)
 	new CmdBuz(),
 #endif
 #if defined (ENABLE_KEYFOB)
@@ -151,7 +151,7 @@ extern "C" void App(void)
 
 	console.printf("CPU Clock: %dMHz\n", SystemCoreClock / 1000000);
 
-#if defined (ENABLE_BUZZER)
+#if defined (ENABLE_TONE)
 	LED1_OFF;
 	TONE_Init();
 	TONE_Volume(50);
