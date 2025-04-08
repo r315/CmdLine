@@ -8,12 +8,16 @@ TARGET =console_bluepill
 #######################################
 
 FEATURE_ENABLE = \
-ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMARK \
+#ENABLE_BENCHMARK \
+#ENABLE_TFT_DISPLAY \
 #ENABLE_BENCHMARK_DHRYSTONE \
 #ENABLE_DEBUG MSC_CLOCK \
+#ENABLE_SERVO
+#ENABLE_I2C
+#ENABLE_SPI
+#ENABLE_ADC
 
-
+$(info FEATURES: $(FEATURE_ENABLE))
 #######################################
 # paths
 #######################################
@@ -30,8 +34,7 @@ endif
 
 REPOSITORY :=$(STM32REPO)/STM32Cube_FW_F1_V1.8.2
 
-$(info $(REPOSITORY))
-
+$(info REPOSITORY: $(REPOSITORY))
 ######################################
 # Includes
 ######################################
@@ -59,7 +62,24 @@ AS_INCLUDES =
 # Sources
 ######################################
 C_SOURCES =  \
-$(APP_DIR)/libs/spiflash/spi_flash.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd_ex.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.c \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
+$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
+$(DRIVER_PATH)/uart/uart_stm32f10x.c \
+$(DRIVER_PATH)/spi/spi_stm32f1xx.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
+$(DRIVER_PATH)/dma/dma_stm32f1xx.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(TARGET_PATH)/Src/bp_main.c \
 $(TARGET_PATH)/Src/usbd_desc.c \
 $(TARGET_PATH)/Src/usbd_conf.c \
@@ -68,44 +88,21 @@ $(TARGET_PATH)/Src/stm32f1xx_it.c \
 $(TARGET_PATH)/Src/usbd_cdc_if.c \
 $(TARGET_PATH)/Src/system_stm32f1xx.c \
 $(TARGET_PATH)/Src/stm32f1xx_hal_msp.c \
-$(TARGET_PATH)/Src/stm32f1xx_hal_timebase_tim.c \
 $(TARGET_PATH)/Src/board.c \
 $(TARGET_PATH)/Src/bp_serial.c \
-$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
-$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
-$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
-$(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd_ex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_adc_ex.c \
-$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
-$(DRIVER_PATH)/uart/uart_stm32f10x.c \
-$(DRIVER_PATH)/spi/spi_stm32f1xx.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
-$(DRIVER_PATH)/dma/dma_stm32f1xx.c \
-$(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(TARGET_PATH)/Src/syscalls.c \
+$(TARGET_PATH)/Src/sysmem.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
-$(LIB_PATH)/src/liblcd.c \
-$(LIB_PATH)/src/lib2d.c \
-$(LIB_PATH)/src/font.c \
-#$(LIBEMB_PATH)/bsp/bluepill/bluepill.c \
+
+
+#$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
+
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -118,12 +115,25 @@ $(APP_DIR)/src/cmdservo.cpp \
 $(APP_DIR)/src/cmdspiflash.cpp \
 $(APP_DIR)/src/cmdflashrom.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
-#$(APP_DIR)/src/cmdsbus.cpp \
-$(APP_DIR)/src/cmdencoder.cpp \
+
 
 # ASM sources
 ASM_SOURCES =  \
 $(TARGET_PATH)/startup/startup_stm32f103xb.s
+
+
+ifneq (,$(filter ENABLE_TFT_DISPLAY,$(FEATURES_ENABLE)))
+C_SOURCES += \
+$(LIB_PATH)/src/liblcd.c \
+$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/font.c \
+$(DRIVER_COMPONENT_PATH)/tft/st7735.c
+endif
+
+ifneq (,$(filter ENABLE_FLASH ENABLE_FLASH_ROM,$(FEATURES_ENABLE)))
+C_SOURCES += \
+$(APP_DIR)/libs/spiflash/spi_flash.c
+endif
 
 #######################################
 # Misc
@@ -139,13 +149,7 @@ $(DEVICE) \
 USE_HAL_DRIVER \
 BOARD_BLUEPILL \
 
-# CPP defines
-CPP_DEFS = \
-$(DEVICE) \
-USE_HAL_DRIVER \
-BOARD_BLUEPILL \
-
-C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
+C_DEFS +=$(FEATURE_ENABLE)
 
 #######################################
 # Tool binaries
@@ -206,7 +210,7 @@ endif
 # compile gcc flags
 ASFLAGS  =$(MCU) $(OPT) $(AS_DEFS) $(addprefix -I, $(AS_INCLUDES)) -Wall -fdata-sections -ffunction-sections
 CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -Wall -fdata-sections -ffunction-sections
-CPPFLAGS =$(MCU) $(OPT) $(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) -Wall -fdata-sections -ffunction-sections -fno-exceptions -fmessage-length=0 -fno-rtti
+CPPFLAGS =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -Wall -fdata-sections -ffunction-sections -fno-exceptions -fmessage-length=0 -fno-rtti
 
 # Generate dependency information
 #CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
@@ -243,10 +247,10 @@ all: $(BUILD_DIR)/$(TARGET).elf
 
 bin: $(BUILD_DIR)/$(TARGET).bin
 
-program: $(TARGET).jlink
+program: $(BUILD_DIR)/$(TARGET).jlink
 	@echo "Programing device"
+	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $<
 #	openocd -f  $(BUILD_DIR)/$(TARGET).cfg -c "program $(BUILD_DIR)/$(TARGET).elf verify reset exit"
-	$(VERBOSE)$(JLINK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(TARGET).jlink
 
 $(BUILD_DIR)/$(TARGET).cfg:
 	@echo "Creating opencod configuration file"
@@ -255,10 +259,10 @@ $(BUILD_DIR)/$(TARGET).cfg:
 	echo "source [find target/stm32f1x.cfg]" >> $@
 	echo "adapter speed 4000" >> $@
 
-$(BUILD_DIR)/$(TARGET).jlink: $(TARGET).hex
+$(BUILD_DIR)/$(TARGET).jlink: $(BUILD_DIR)/$(TARGET).hex
 	@echo "Creating Jlink configuration file..."
 	@echo "erase" > $@
-	@echo "loadfile  $(TARGET).hex" >> $@
+	@echo "loadfile  $<" >> $@
 	@echo "r" >> $@
 	@echo "q" >> $@
 
@@ -281,11 +285,11 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
 	@echo "[LD] " $@
 	@$(CC) $(LIBDIR) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
 
-$(BUILD_DIR)/$(TARGET).hex: $(TARGET).elf | $(BUILD_DIR)
+$(BUILD_DIR)/$(TARGET).hex: $(BUILD_DIR)/$(TARGET).elf | $(BUILD_DIR)
 	@echo "Building hex file:" $@
 	@$(HEX) $< $@
 
-$(BUILD_DIR)/$(TARGET).bin: $(TARGET).elf | $(BUILD_DIR)
+$(BUILD_DIR)/$(TARGET).bin: $(BUILD_DIR)/$(TARGET).elf | $(BUILD_DIR)
 	@echo "Building bin file:" $@
 	@$(BIN) $< $@
 

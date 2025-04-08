@@ -7,6 +7,23 @@
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
+void BOARD_Init(void){
+
+    SERIAL_Init();
+ #ifdef ENABLE_SERVO
+    SERVO_Init();
+#endif
+
+#ifdef ENABLE_TFT_DISPLAY_
+    displayInit();
+#endif
+}
+
+void SW_Reset(void)
+{
+    NVIC_SystemReset();
+}
+
 #ifdef ENABLE_TFT_DISPLAY
 static drvlcdspi_t lcd0;
 
@@ -35,18 +52,9 @@ static void displayInit()
 
     LCD_FillRect(0, 0, lcd0.w, lcd0.h, 0);
 }
-#endif
+#endif /* ENABLE_TFT_DISPLAY */
 
-void BOARD_Init(void){
-    SERVO_Init();
-
-    SERIAL_Init();
-
-    #ifdef ENABLE_TFT_DISPLAY
-    displayInit();
-    #endif
-}
-
+#ifdef ENABLE_PWM
 /**
  * PWM Driver
  *
@@ -189,7 +197,9 @@ void PWM_Disable(uint8_t channel){
 
     PWM_CfgGpio(channel, 0);
 }
+#endif /* ENABLE_PWM */
 
+#ifdef ENABLE_SERVO
 /**
  * @brief Generate RC Servo signal on pin PB9
  * */
@@ -238,10 +248,6 @@ void SERVO_Stop(void){
     GPIO_Config(PB_9, GPI_FLOAT);
 }
 
-uint16_t SERVO_Get(void){
-    return 0;
-}
-
 void TIM3_IRQHandler(void){
 
     if(TIM3->SR & TIM_SR_CC1IF){
@@ -254,7 +260,9 @@ void TIM3_IRQHandler(void){
         TIM3->SR &= ~(TIM_SR_UIF);
     }
 }
+#endif /* ENABLE_SERVO */
 
+#ifdef ENABLE_I2C
 /**
  * I2C DMA driver
  *
@@ -315,7 +323,9 @@ uint32_t n;
     n = I2C2->SR2; // Dummy read for crearing flags
     //while(I2C2->SR2 & I2C_SR2_BUSY);
 }
+#endif /* ENABLE_I2C */
 
+#ifdef ENABLE_ADC
 /**
  * ADC Driver
  * */
@@ -468,7 +478,9 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
     eotcb = cb;
 }
 
+#endif /* ENABLE_ADC */
 
+#ifdef ENABLE_SPI
 /**
  * SPI API
  * This board uses SPI2
@@ -533,8 +545,5 @@ void BOARD_LCD_Init(void)
     displayInit();
     #endif
 }
+#endif /* ENABLE_SPI */
 
-void SW_Reset(void)
-{
-    NVIC_SystemReset();
-}
