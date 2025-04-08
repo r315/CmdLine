@@ -51,8 +51,7 @@
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
-void SystemClock_Config(void);
-static void MX_GPIO_Init(void);
+static void SystemClock_Config(void);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -61,19 +60,19 @@ static void MX_GPIO_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void DelayMs(uint32_t ms) 
-{ 
-    HAL_Delay(ms); 
+void DelayMs(uint32_t ms)
+{
+    HAL_Delay(ms);
 }
 
 uint32_t GetTick(void)
-{ 
-    return HAL_GetTick(); 
+{
+    return HAL_GetTick();
 }
 
 uint32_t ElapsedTicks(uint32_t start_ticks)
-{ 
-    uint32_t current = GetTick(); 
+{
+    uint32_t current = GetTick();
     return (current > start_ticks) ? current - start_ticks : 0xFFFFFFFF - start_ticks + current;
 }
 
@@ -86,15 +85,15 @@ uint32_t ElapsedTicks(uint32_t start_ticks)
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-	/* 
+	/*
 		PB10 -> SCL (LCD_CD)
 		PB11 -> SDA (LCD_LED)
-    */ 
-  
+    */
+
   /* Vector Table Relocation to startup vector table  */
   reenumerate_usb();
   /* USER CODE END 1 */
-  
+
 
   /* MCU Configuration--------------------------------------------------------*/
 
@@ -112,9 +111,11 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+  __HAL_RCC_GPIOA_CLK_ENABLE();
+  __HAL_RCC_GPIOB_CLK_ENABLE();
   /* USER CODE BEGIN 2 */
-  
+
   /* USER CODE END 2 */
 
   /* USER CODE BEGIN RTOS_MUTEX */
@@ -142,16 +143,16 @@ int main(void)
   MX_USB_DEVICE_Init();
 
   BOARD_Init();
-  
+
   App();
   /* Start scheduler */
-  
+
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
-  {   
+  {
 
     /* USER CODE END WHILE */
 
@@ -164,13 +165,13 @@ int main(void)
   * @brief System Clock Configuration
   * @retval None
   */
-void SystemClock_Config(void)
+static void SystemClock_Config(void)
 {
   RCC_OscInitTypeDef RCC_OscInitStruct = {0};
   RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
   RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -183,7 +184,7 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-  /** Initializes the CPU, AHB and APB busses clocks 
+  /** Initializes the CPU, AHB and APB busses clocks
   */
   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
@@ -203,38 +204,6 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
-}
-
-/**
-  * @brief GPIO Initialization Function
-  * @param None
-  * @retval None
-  */
-static void MX_GPIO_Init(void)
-{
-  GPIO_InitTypeDef GPIO_InitStruct = {0};
-
-  /* GPIO Ports Clock Enable */
-  __HAL_RCC_GPIOD_CLK_ENABLE();
-  __HAL_RCC_GPIOA_CLK_ENABLE();
-  __HAL_RCC_GPIOB_CLK_ENABLE();
-
-  /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(DBG_GPIO_Port, DBG_Pin, GPIO_PIN_RESET);
-
-  /*Configure GPIO pin : DBG_Pin */
-  GPIO_InitStruct.Pin = DBG_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
-  GPIO_InitStruct.Pull = GPIO_NOPULL;
-  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
-  HAL_GPIO_Init(DBG_GPIO_Port, &GPIO_InitStruct);
-
-  /*Configure GPIO pins : T2_Pin TT_Pin T1_Pin */
-  GPIO_InitStruct.Pin = T2_Pin|TT_Pin|T1_Pin;
-  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
-  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
-
 }
 
 /**
@@ -281,7 +250,7 @@ void Error_Handler(void)
   * @retval None
   */
 void assert_failed(uint8_t *file, uint32_t line)
-{ 
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
