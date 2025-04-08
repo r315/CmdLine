@@ -8,6 +8,7 @@ TARGET =console_bluepill
 #######################################
 
 FEATURE_ENABLE = \
+ENABLE_BUZZER \
 #ENABLE_BENCHMARK \
 #ENABLE_TFT_DISPLAY \
 #ENABLE_BENCHMARK_DHRYSTONE \
@@ -79,6 +80,7 @@ $(DRIVER_PATH)/spi/spi_stm32f1xx.c \
 $(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
 $(DRIVER_PATH)/dma/dma_stm32f1xx.c \
+$(DRIVER_PATH)/tone/tone_stm32f1xx.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(TARGET_PATH)/Src/bp_main.c \
 $(TARGET_PATH)/Src/usbd_desc.c \
@@ -94,7 +96,7 @@ $(TARGET_PATH)/Src/syscalls.c \
 $(TARGET_PATH)/Src/sysmem.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
-
+$(LIB_PATH)/src/rtttl.c \
 
 #$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
@@ -115,6 +117,7 @@ $(APP_DIR)/src/cmdservo.cpp \
 $(APP_DIR)/src/cmdspiflash.cpp \
 $(APP_DIR)/src/cmdflashrom.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
+$(APP_DIR)/src/cmdbuz.cpp \
 
 
 # ASM sources
