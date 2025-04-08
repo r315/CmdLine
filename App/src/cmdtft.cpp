@@ -4,7 +4,7 @@
 #include "drvlcd.h"
 #include "wdt.h"
 
-#define ENABLE_DEMO_TILES   0
+#define ENABLE_DEMO_TILES   1
 
 #ifdef FEATURE_GIF
 #include "AnimatedGIF.h"
@@ -166,6 +166,7 @@ void LCD_Line(uint16_t x1, uint16_t y1,  uint16_t x2, uint16_t y2, uint16_t colo
     }
 }
 
+#if ENABLE_DEMO_SPIRAL
 static uint8_t isPrime(uint16_t n){
     if (n == 1) return false;
     for (uint16_t i = 2; i < n >> 1; i++){
@@ -175,6 +176,7 @@ static uint8_t isPrime(uint16_t n){
     }
     return true;
 }
+#endif
 
 static uint16_t RandomColor(int32_t mix)
 {

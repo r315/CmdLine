@@ -20,12 +20,11 @@ extern "C" {
 /**
  * HW symbols
  * */
-
-#define DBG_LED_TOGGLE          GPIO_Toggle(PC_13)
-#define DBG_LED_ON              GPIO_Write(PC_13, GPIO_PIN_SET)
-#define DBG_LED_OFF             GPIO_Write(PC_13, GPIO_PIN_RESET)
-#define LED_TOGGLE              DBG_LED_TOGGLE
-#define LED1_TOGGLE             LED_TOGGLE
+#define LED1_PIN                PC_13
+#define LED1_INIT               GPIO_Config(LED1_PIN, GPO_LS);
+#define LED1_TOGGLE             GPIO_Toggle(LED1_PIN)
+#define LED1_ON                 GPIO_Write(LED1_PIN, GPIO_PIN_SET)
+#define LED1_OFF                GPIO_Write(LED1_PIN, GPIO_PIN_RESET)
 
 /*
  *
@@ -39,7 +38,6 @@ void DelayMs(uint32_t ms);
  * Global variables
  * */
 extern I2C_HandleTypeDef hi2c2;
-extern TIM_HandleTypeDef htim4;
 
 /**
  * Function prototypes
@@ -47,7 +45,6 @@ extern TIM_HandleTypeDef htim4;
  * PB10 SCL
  * PB11 SDA
  * */
-void setInterval(void(*cb)(), uint32_t ms);
 void i2cCfgDMA(uint8_t *src, uint16_t size);
 void i2cSendDMA(uint8_t address, uint8_t *data, uint16_t size);
 
@@ -125,8 +122,6 @@ void SERVO_SetPulse(uint16_t pulse);
  *
  * ************************************************************ */
 
-#define LCD_DI_PIN              PB_15
-#define LCD_SCK_PIN             PB_13
 #define LCD_CS_PIN              PB_12
 #define LCD_CD_PIN              PB_14
 #define LCD_RST_PIN             -1
@@ -137,19 +132,12 @@ void SERVO_SetPulse(uint16_t pulse);
 #define BOARD_SPI_CK_PIN        PB_13
 #define BOARD_SPI_CS_PIN        PB_12
 
+
 #define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12)
 #define BOARD_SPI_CS_HIGH       GPIOB->BSRR = (1 << 12)
 
 #define BOARD_SPIDEV_HANDLER    spi2
 #define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
-
-extern spibus_t BOARD_SPIDEV_HANDLER;
-
-void BOARD_SPI_Init(void);
-void BOARD_SPI_SetCS(uint8_t cs);
-uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
-uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
-uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
 
 /**
  * UART
@@ -162,45 +150,13 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
 
 extern serialport_t BOARD_SERIAL_HANDLERS;
 
-/**
- * TFT stuff
- */
-#if 0
-#define TFT_W 80
-#define TFT_H 160  // 162 on GRAM
-
-#define TFT_OFFSET_SOURCE	26
-#define TFT_OFFSET_GATE		1
-#define TFT_BGR_FILTER
-#else
-#define TFT_W 128
-#define TFT_H 160
-#endif
-
-#define LCD_CK_Pin          GPIO_PIN_13
-#define LCD_CK_GPIO_Port    GPIOB
-#define LCD_CD_Pin          GPIO_PIN_14
-#define LCD_CD_GPIO_Port    GPIOB
-#define LCD_DI_Pin          GPIO_PIN_15
-#define LCD_DI_GPIO_Port    GPIOB
-#define LCD_RST_Pin
-#define LCD_RST_GPIO_Port
-#define LCD_BKL_Pin         10
-#define LCD_BKL_GPIO_Port   GPIOB
-
-#define LCD_CS0             BOARD_SPI_CS_LOW
-#define LCD_CS1             BOARD_SPI_CS_HIGH
-#define LCD_CD0             LCD_CD_GPIO_Port->BRR = LCD_CD_Pin
-#define LCD_CD1             LCD_CD_GPIO_Port->BSRR = LCD_CD_Pin
-#define LCD_BKL0            LCD_BKL_GPIO_Port->BRR = (1 << LCD_BKL_Pin)
-#define LCD_BKL1            LCD_BKL_GPIO_Port->BSRR = (1 << LCD_BKL_Pin)
-#define LCD_RST0            //LCD_RST_GPIO_Port->BRR = LCD_RST_Pin
-#define LCD_RST1            //LCD_RST_GPIO_Port->BSRR = LCD_RST_Pin
-
-#define TFT_SPIDEV      BOARD_SPIDEV
-
 void BOARD_LCD_Init(void);
 void SW_Reset(void);
+
+void BOARD_SPI_Init(void);
+uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
+uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
+uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
 
 #ifdef __cplusplus
 }

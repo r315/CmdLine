@@ -26,8 +26,8 @@ static void displayInit()
     GPIO_Config(lcd0.cd, GPO_MS);
     GPIO_Config(lcd0.rst, GPO_MS);
     GPIO_Config(lcd0.bkl, GPO_MS);
-    GPIO_Config(LCD_DI_PIN, GPO_HS_AF);
-    GPIO_Config(LCD_SCK_PIN, GPO_HS_AF);
+    //GPIO_Config(LCD_DI_PIN, GPO_HS_AF);
+    //GPIO_Config(LCD_SCK_PIN, GPO_HS_AF);
 
     LCD_Init(&lcd0);
 
@@ -501,11 +501,13 @@ void BOARD_SPI_Init(void)
     GPIO_Config(BOARD_SPI_CS_PIN, GPO_MS);
 }
 
-uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout){
+uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout)
+{
     return SPI_Xchg(BOARD_SPIDEV, (uint8_t*)&data);
 }
 
-uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
+uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size)
+{
     uint8_t dummy;
     if(size == 0 || dst == NULL){
         return 0;
@@ -519,7 +521,8 @@ uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size){
     return size;
 }
 
-uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size){
+uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size)
+{
     SPI_Transfer(BOARD_SPIDEV, src, size);
     return size;
 }
