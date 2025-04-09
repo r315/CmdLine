@@ -4,6 +4,7 @@
 #include "serial.h"
 #include "drvlcd.h"
 #include "stimer.h"
+#include "tone.h"
 
 #ifdef ENABLE_TFT_DISPLAY
 static drvlcdspi_t lcd0;
@@ -126,6 +127,10 @@ void BOARD_Init(void)
     #ifdef ENABLE_TFT_DISPLAY
     BOARD_LCD_Init();
     #endif
+
+    #ifdef ENABLE_TONE
+    TONE_Init();
+    #endif
 }
 
 void SW_Reset(void){
@@ -138,3 +143,21 @@ void __debugbreak(void){
         "bkpt #01 \n"
     );
 }
+
+#ifdef ENABLE_TONE
+enum tone_e TONE_Init(void)
+{
+
+    tone_pwm_init_t init = {
+        .tmr = TMR1,
+        .ch = 1 - 1,
+        .pin = PA_8,
+        .pin_idle = 0
+    };
+
+    //RCC_APB2PeriphClockCmd(RCC_APB2PERIPH_AFIO, ENABLE);
+    //AFIO->MAP4 = (1 << 8);
+
+    return TONE_PwmInit(&init);
+}
+#endif /* ENABLE_TONE */

@@ -8,15 +8,16 @@ TARGET =console-415dk
 #######################################
 
 FEATURE_ENABLE = \
-ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMARK \
-ENABLE_BENCHMARK_DHRYSTONE \
-_ENABLE_DIGITAL_AUDIO \
-ENABLE_I2C \
-ENABLE_RGBLED \
-ENABLE_AVR_PROGRAMMING \
+_ENABLE_SPI \
+_ENABLE_I2C \
+_ENABLE_I2S \
+_ENABLE_TFT_DISPLAY \
+_ENABLE_BENCHMARK \
+_ENABLE_BENCHMARK_DHRYSTONE \
+_ENABLE_RGBLED \
+_ENABLE_AVR_PROGRAMMING \
+_ENABLE_DS1086 \
 ENABLE_TONE \
-ENABLE_DS1086 \
 
 #######################################
 # paths
@@ -66,49 +67,103 @@ $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
 $(DRIVER_SOC_PATH)/src/at32f4xx_rcc.c \
-$(DRIVER_SOC_PATH)/src/at32f4xx_i2c.c \
-$(DRIVER_SOC_PATH)/src/at32f4xx_i2c_ex.c \
-$(DRIVER_PATH)/spi/spi_at32f4xx.c \
 $(DRIVER_PATH)/dma/dma_at32f4xx.c \
 $(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
 $(DRIVER_PATH)/uart/uart_at32f4xx.c \
-$(DRIVER_PATH)/i2s/i2s_at32f4xx.c \
-$(DRIVER_PATH)/i2c/i2c_at32f4xx.c \
 $(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
-$(DRIVER_PATH)/tone/tone_at32f4xx.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_COMPONENT_PATH)/tft/ili9341.c \
-#$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+
 
 CSRCS = \
 $(BOARD_SOURCES) \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
-$(LIB_PATH)/src/liblcd.c \
-$(LIB_PATH)/src/lib2d.c \
-$(LIB_PATH)/src/font.c \
-$(LIB_PATH)/src/rtttl.c \
 $(LIB_PATH)/src/stimer.c \
-$(APP_DIR)/libs/ws2812b/ws2812b.c \
-$(APP_DIR)/libs/stk500/avr_if.c \
-$(APP_DIR)/libs/stk500/stk500.c \
-$(APP_DIR)/libs/dhrystone/dhry_1.c \
-$(APP_DIR)/libs/dhrystone/dhry_2.c \
+
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
-$(APP_DIR)/src/cmdbenchmark.cpp \
-$(APP_DIR)/src/cmdi2s.cpp \
-$(APP_DIR)/src/cmdi2c.cpp \
-$(APP_DIR)/src/cmdrgbled.cpp \
-$(APP_DIR)/src/cmdavr.cpp \
-$(APP_DIR)/src/cmdbuz.cpp \
-$(APP_DIR)/src/cmdds1086.cpp \
-$(APP_DIR)/libs/ds1086/ds1086.cpp \
 
+
+ifneq ($(filter ENABLE_TFT_DISPLAY, $(FEATURE_ENABLE)),)
+BOARD_SOURCES += \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_COMPONENT_PATH)/tft/ili9341.c \
+#$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+
+CSRCS += \
+$(LIB_PATH)/src/liblcd.c \
+$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/font.c \
+
+CPP_SOURCES += \
+$(APP_DIR)/src/cmdtft.cpp \
+
+endif
+
+
+ifneq ($(filter ENABLE_I2C, $(FEATURE_ENABLE)),)
+BOARD_SOURCES += \
+$(DRIVER_SOC_PATH)/src/at32f4xx_i2c.c \
+$(DRIVER_SOC_PATH)/src/at32f4xx_i2c_ex.c \
+$(DRIVER_PATH)/i2c/i2c_at32f4xx.c \
+
+CPP_SOURCES += \
+$(APP_DIR)/src/cmdi2c.cpp \
+
+endif
+
+ifneq ($(filter ENABLE_I2S, $(FEATURE_ENABLE)),)
+BOARD_SOURCES += $(DRIVER_PATH)/i2s/i2s_at32f4xx.c
+CPP_SOURCES += $(APP_DIR)/src/cmdi2s.cpp
+endif
+
+ifneq ($(filter ENABLE_SPI, $(FEATURE_ENABLE)),)
+BOARD_SOURCES += $(DRIVER_PATH)/spi/spi_at32f4xx.c
+CPP_SOURCES += $(APP_DIR)/src/cmdspi.cpp
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK, $(FEATURE_ENABLE)),)
+CPP_SOURCES += $(APP_DIR)/src/cmdbenchmark.cpp
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK_DHRYSTONE, $(FEATURE_ENABLE)),)
+CSRCS = \
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c
+endif
+
+ifneq ($(filter ENABLE_RGBLED, $(FEATURE_ENABLE)),)
+CSRCS +=$(APP_DIR)/libs/ws2812b/ws2812b.c
+CPP_SOURCES +=$(APP_DIR)/src/cmdrgbled.cpp
+endif
+
+ifneq ($(filter ENABLE_DS1086, $(FEATURE_ENABLE)),)
+CPP_SOURCES += \
+$(APP_DIR)/src/cmdds1086.cpp \
+$(APP_DIR)/libs/ds1086/ds1086.cpp
+endif
+
+ifneq ($(filter ENABLE_AVR_PROGRAMMING, $(FEATURE_ENABLE)),)
+CSRCS += \
+$(APP_DIR)/libs/stk500/avr_if.c \
+$(APP_DIR)/libs/stk500/stk500.c
+
+CPP_SOURCES += $(APP_DIR)/src/cmdavr.cpp
+endif
+
+ifneq ($(filter ENABLE_TONE, $(FEATURE_ENABLE)),)
+BOARD_SOURCES += \
+$(DRIVER_PATH)/tone/tone_at32f4xx.c
+
+CSRCS += \
+$(LIB_PATH)/src/rtttl.c \
+
+CPP_SOURCES += \
+$(APP_DIR)/src/cmdbuz.cpp \
+
+endif
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################

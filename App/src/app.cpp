@@ -151,10 +151,10 @@ extern "C" void App(void)
 
 	console.printf("CPU Clock: %dMHz\n", SystemCoreClock / 1000000);
 
-#if defined (ENABLE_TONE)
 	LED1_OFF;
-	TONE_Init();
-	TONE_Volume(50);
+
+#if defined (ENABLE_TONE)
+	TONE_Volume(30);
 	RTTTL_Play("rtttl_14:d=16,o=6,b=180:c,e,g");
 #endif
 

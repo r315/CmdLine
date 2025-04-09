@@ -4,6 +4,7 @@
 #include "adc.h"
 #include "gpio.h"
 #include "drvlcd.h"
+#include "tone.h"
 
 spibus_t BOARD_SPIDEV_HANDLER;
 
@@ -16,6 +17,10 @@ void BOARD_Init(void){
 
 #ifdef ENABLE_TFT_DISPLAY_
     displayInit();
+#endif
+
+#ifdef ENABLE_TONE
+    TONE_Init();
 #endif
 }
 
@@ -548,16 +553,15 @@ void BOARD_LCD_Init(void)
 #endif /* ENABLE_SPI */
 
 #ifdef ENABLE_TONE
-void TONE_Init(void)
+enum tone_e TONE_Init(void)
 {
     tone_pwm_init_t init = {
-        .tim = TIM3,        // Timer instance
-        .tim_ch = 1,        // Channel nr - 1
-        .pin = PA_7,        // Pin name
-        .pin_idle = 1,      // Idle state
-        .dma_req = DMA1_REQ_TIM3_UP
+        .tim = TIM1,        // Timer instance
+        .ch = 0,            // Channel nr - 1
+        .pin = PA_8,        // Pin name
+        .pin_idle = 0       // Idle state
     };
 
-    TONE_PwmInit(&init);
+    return TONE_PwmInit(&init);
 }
 #endif /* ENABLE_TONE */
