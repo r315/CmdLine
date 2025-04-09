@@ -6,9 +6,11 @@ extern "C" {
 #endif
 
 #include "console.h"
+#include "spi.h"
 
 class CmdSpi : public ConsoleCommand{
     Console *console;
+    spibus_t mspi;
 public:
     CmdSpi () : ConsoleCommand("spi") { }
     void init(void *params){console = static_cast<Console*>(params);}

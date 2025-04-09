@@ -19,7 +19,7 @@ uint8_t datain = 0;
 		DelayMs(1);
 		LPC_GPIO1->FIOCLR = (1<<1);
 		data <<= 1;
-	}	
+	}
 	return datain
 }
 
@@ -62,57 +62,55 @@ char CmdSpi::execute(int argc, char **argv){
  		return CMD_BAD_PARAM;
 	}
 
-	spibus_t *spi = (aux != 0) ? BOARD_GetSpiAux() : BOARD_GetSpiMain();
-
 	if(xstrcmp("send", argv[2]) == 0){
-		if(spi == NULL){
-			SPI_Init(spi);
-		}
-
 		uint8_t n = 0;
 		while(argv[n + 3] != NULL){
-            if(ha2i(argv[n + 3], &aux)){        
+            if(ha2i(argv[n + 3], &aux)){
                 data[n] = aux;
             }
             n++;
         }
-		SPI_Transfer(spi, data, n);
+		SPI_Transfer(&mspi, data, n);
 		return CMD_OK;
 	}else if(xstrcmp("init", argv[2]) == 0){
-		SPI_Init(spi);
-		return CMD_OK;
+        if(ia2i(argv[3], (int32_t*)&aux)){
+            mspi.bus = aux;
+            mspi.freq = 1000;
+            SPI_Init(&mspi);
+            return CMD_OK;
+        }
 	}else if(xstrcmp("speed", argv[2]) == 0){
-		if(ia2i(argv[3], (int32_t*)&aux)){			
-            spi->freq = aux;
-            SPI_Init(spi);
+		if(ia2i(argv[3], (int32_t*)&aux)){
+            mspi.freq = aux;
+            SPI_Init(&mspi);
     		return CMD_OK;
 		}
 	}else if(xstrcmp("status", argv[2]) == 0){
-        console->printf("Bus: %d\n", spi->bus);
-        console->printf("Speed: %d Hz\n", spi->freq);
-        console->printf("Flags: MODE%d", spi->flags >> 6);
-        if(spi->flags & SPI_HW_CS){
+        console->printf("Bus: %d\n", mspi);
+        console->printf("Speed: %d Hz\n", mspi.freq);
+        console->printf("Flags: MODE%d", mspi.flags >> 6);
+        if(mspi.flags & SPI_HW_CS){
             console->print(" | HW_CS");
         }
 
-        if(spi->flags & SPI_ENABLED){
+        if(mspi.flags & SPI_ENABLED){
             console->print(" | ENABLED");
         }
-        
-        console->printf(" (%02x)\n", spi->flags);        
+
+        console->printf(" (%02x)\n", mspi.flags);
         return CMD_OK;
 	}else if(xstrcmp("mode", argv[2]) == 0){
         if(ia2i(argv[3], (int32_t*)&aux)){
             aux = (aux & 3) << 6;
-            spi->flags = (spi->flags & ~SPI_MODE3) | aux;
-		    SPI_Init(spi);
+            mspi.flags = (mspi.flags & ~SPI_MODE3) | aux;
+		    SPI_Init(&mspi);
 		    return CMD_OK;
         }
 	}else if(xstrcmp("cs", argv[2]) == 0){
         if(ia2i(argv[3], (int32_t*)&aux)){
             aux = (aux & 1) << 3;
-            spi->flags = (spi->flags & ~SPI_HW_CS) | aux;
-		    SPI_Init(spi);
+            mspi.flags = (mspi.flags & ~SPI_HW_CS) | aux;
+		    SPI_Init(&mspi);
 		    return CMD_OK;
         }
 	}
