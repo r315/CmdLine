@@ -3,7 +3,7 @@
 #include "gpio.h"
 
 //-------------------------------------------------------
-// 
+//
 //-------------------------------------------------------
 char CmdGpio::setPinState(uint32_t p, uint8_t pin, uint8_t state){
     LPC_GPIO_TypeDef *port = (LPC_GPIO_TypeDef*)p;
@@ -15,7 +15,7 @@ char CmdGpio::setPinState(uint32_t p, uint8_t pin, uint8_t state){
 		port->FIOSET |= (1<<pin);
 	else
 		port->FIOCLR |= (1<<pin);
-	
+
 	return CMD_OK;
 }
 //-------------------------------------------------------
@@ -24,17 +24,17 @@ char CmdGpio::setPinState(uint32_t p, uint8_t pin, uint8_t state){
 char CmdGpio::setPortState(uint32_t p, uint32_t value){
     LPC_GPIO_TypeDef *port = (LPC_GPIO_TypeDef*)p;
 	port->FIODIR = 0xFFFFFFFF; //32bit output
-	port->FIOMASK = 0; 
+	port->FIOMASK = 0;
 	port->FIOPIN = value;
 	return CMD_OK;
 }
 /**
- * 
+ *
  * */
 char CmdGpio::getPortState(uint32_t p){
-    uint32_t value;	
+    uint32_t value;
     LPC_GPIO_TypeDef *port = (LPC_GPIO_TypeDef*)p;
-	//ports[port]->FIOMASK = 0; 
+	//ports[port]->FIOMASK = 0;
 
 	value = port->FIOPIN;
 	console->printf("%08X = 0x%08X\n",port, value);
@@ -65,43 +65,43 @@ void CmdGpio::help(void){
 char CmdGpio::execute(int argc, char **argv){
 	uint32_t aux, pin;
 
-	if( !xstrcmp(argv[1],"init")){		
-		if(ha2i(argv[2], &pin)){
-        	if(ha2i(argv[3], &aux)){
+	if( !xstrcmp(argv[1],"init")){
+		if(ha2u(argv[2], &pin)){
+        	if(ha2u(argv[3], &aux)){
 				GPIO_Config((uint32_t)pin, aux);
 			}
 		}
-        
+
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[1],"mode")){		
-		if(ha2i(argv[2], &pin)){
-        	if(ha2i(argv[3], &aux)){
+	if( !xstrcmp(argv[1],"mode")){
+		if(ha2u(argv[2], &pin)){
+        	if(ha2u(argv[3], &aux)){
 				GPIO_Mode((uint32_t)pin, aux);
 			}
 		}
-        
+
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[1],"func")){		
-		if(ha2i(argv[2], &pin)){
-        	if(ha2i(argv[3], &aux)){
+	if( !xstrcmp(argv[1],"func")){
+		if(ha2u(argv[2], &pin)){
+        	if(ha2u(argv[3], &aux)){
 				GPIO_Function((uint32_t)pin, aux);
 			}
 		}
-        
+
 		return CMD_OK;
 	}
 
-	if( !xstrcmp(argv[1],"dir")){		
-		if(ha2i(argv[2], &pin)){
-        	if(ha2i(argv[3], &aux)){
+	if( !xstrcmp(argv[1],"dir")){
+		if(ha2u(argv[2], &pin)){
+        	if(ha2u(argv[3], &aux)){
 				GPIO_Direction((uint32_t)pin, aux);
 			}
 		}
-        
+
 		return CMD_OK;
 	}
 

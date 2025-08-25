@@ -54,7 +54,7 @@ $(CMSIS_PATH)/Core/Include \
 $(CMSIS_PATH)/Device/ST/STM32L4xx/Include \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
-$(DRIVER_COMPONENT_PATH)/tft \
+$(DRIVER_COMPONENT_PATH)/display \
 $(LIBEMB_PATH)/drv/inc \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
@@ -97,7 +97,7 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+$(DRIVER_COMPONENT_PATH)/display/st7735.c \
 $(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
 $(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_PATH)/spi/spi_stm32l4xx.c \

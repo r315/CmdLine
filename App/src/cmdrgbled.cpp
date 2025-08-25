@@ -37,9 +37,9 @@ char CmdRgbled::execute(int argc, char **argv)
     if (!xstrcmp("color", argv[1]))
     {
         uint32_t idx, val;
-        if (ha2i(argv[2], &idx))
+        if (ha2u(argv[2], &idx))
         {
-            if (ha2i(argv[3], &val))
+            if (ha2u(argv[3], &val))
             {
                 idx *= 3;
                 frameBuffer[idx] = val;
@@ -53,14 +53,14 @@ char CmdRgbled::execute(int argc, char **argv)
 
     if (!xstrcmp("demo", argv[1]))
     {
-        uint32_t timestamp;        
+        uint32_t timestamp;
         do{
             if (GetTick() - timestamp > 50)
             {
-                timestamp = GetTick();                
+                timestamp = GetTick();
                 visRainbow(frameBuffer, sizeof(frameBuffer), 15);
                 //visDots(frameBuffer, sizeof(frameBuffer), 50, 40);
-                ws2812_write(3, frameBuffer);                
+                ws2812_write(3, frameBuffer);
             }
         }while(console->available() == 0);
 

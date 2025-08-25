@@ -59,7 +59,7 @@ char CmdI2c::execute(int argc, char **argv){
     }
 
     if(!xstrcmp("slave", argv[1])){
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             m_i2c.addr = val << 1;
             return CMD_OK;
         }
@@ -101,7 +101,7 @@ char CmdI2c::execute(int argc, char **argv){
 
     if( !xstrcmp("write", argv[1])){
         count = 0;
-        while(ha2i(argv[2 + count], (uint32_t*)&val)){
+        while(ha2u(argv[2 + count], (uint32_t*)&val)){
             i2c_buf[count++] = (uint8_t)val;
         }
 
@@ -112,7 +112,7 @@ char CmdI2c::execute(int argc, char **argv){
     }
 
     if( !strcmp("rr", argv[1])){
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             uint8_t reg = val;
             count = ia2i(argv[3], &val) ? val : 1;
             I2C_Write(&m_i2c, m_i2c.addr, (uint8_t*)&reg, 1);
@@ -134,9 +134,9 @@ char CmdI2c::execute(int argc, char **argv){
 
     if(!xstrcmp("wr", argv[1])){
         uint32_t val;
-        if(ha2i(argv[2], &val)){
+        if(ha2u(argv[2], &val)){
             i2c_buf[0] = val;
-            if(ha2i(argv[3], &val)){
+            if(ha2u(argv[3], &val)){
                 i2c_buf[1] = val;
                 I2C_Write(&m_i2c, m_i2c.addr, i2c_buf, 2);
             }

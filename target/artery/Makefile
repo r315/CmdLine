@@ -51,7 +51,7 @@ $(APP_DIR)/libs/ws2812b \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/dhrystone \
 $(APP_DIR)/libs/tone \
-$(DRIVER_COMPONENT_PATH)/tft \
+$(DRIVER_COMPONENT_PATH)/display \
 
 AS_INCLUDES =\
 
@@ -176,6 +176,8 @@ BOARD_415DK \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
 FIFO_INTERRUPT_SAFE \
+UART_TX_MODE=UART_MODE_FIFO \
+UART_RX_MODE=UART_MODE_FIFO \
 
 C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
 

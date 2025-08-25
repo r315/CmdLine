@@ -6,7 +6,7 @@
 
 FATFS sdcard;
 uint8_t sector_data[SECTOR_SIZE];
-/*  
+/*
   b15-b8     b7 b3   b2-b1    b0
 |   size  | -      | OP    | start | */
 #define SD_OP_DUMP_SECTOR       1
@@ -49,19 +49,19 @@ void CmdSd::f_error(FRESULT res)
             console->printf("error: %x\n", res);
 		case FR_OK: break;
 
-		case FR_DISK_ERR: 
+		case FR_DISK_ERR:
 			console->println("disk error");break;
 		case FR_NOT_READY:
-			console->println("disk not ready");break;		
-		case FR_NO_FILE:  
+			console->println("disk not ready");break;
+		case FR_NO_FILE:
 			console->println("invalid file");break;
-        case FR_NOT_OPENED:  
+        case FR_NOT_OPENED:
 			console->println("file not opened");break;
-        case FR_NOT_ENABLED:  
+        case FR_NOT_ENABLED:
 			console->println("file system not enabled");break;
-        case FR_NO_FILESYSTEM:  
+        case FR_NO_FILESYSTEM:
 			console->println("no file system");break;
-	}	
+	}
 }
 
 void CmdSd::d_error(DRESULT res)
@@ -74,14 +74,14 @@ void CmdSd::d_error(DRESULT res)
 		case RES_OK:
             console->println("disk result ok");
             break;
-			
-		case RES_ERROR: 
+
+		case RES_ERROR:
 			console->println("disk result error");break;
 		case RES_NOTRDY:
 			console->println("disk result not ready");break;
-		case RES_PARERR:  
-			console->println("disk result invalid parameter");break;		
-	}	
+		case RES_PARERR:
+			console->println("disk result invalid parameter");break;
+	}
 }
 
 void CmdSd::d_status(DSTATUS sta)
@@ -91,8 +91,8 @@ void CmdSd::d_status(DSTATUS sta)
         default: console->printf("disk status error: %x\n", sta); break;
 		case STA_OK: console->println("disk status ok"); break;
 		case STA_NOINIT: console->println("disk status not initialised");break;
-		case STA_NODISK: console->println("disk status not present");break;		
-	}	
+		case STA_NODISK: console->println("disk status not present");break;
+	}
 }
 
 FRESULT CmdSd::listDir (const char* path, bool recursive)
@@ -142,7 +142,7 @@ void CmdSd::dumpSector(uint32_t sector){
                     }
                     console->printchar(c);
                 }
-            }           
+            }
             console->printf("\n%08X: ", i);
         }
         console->printf("%02X ", sector_data[i]);
@@ -152,8 +152,8 @@ void CmdSd::dumpSector(uint32_t sector){
 
 void CmdSd::help(void){
     console->println("\nUsage: sd <option>");
-    console->println("Options:"); 
-    console->println(" dump <lba>, dump sector"); 
+    console->println("Options:");
+    console->println(" dump <lba>, dump sector");
     console->println(" list      , List files");
     console->println(" init      , Initialise SD");
     console->println(" info      , SD Info");
@@ -179,12 +179,12 @@ char CmdSd::execute(int argc, char **argv){
         }
         return CMD_OK;
     }else if(xstrcmp("dump", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], &sector)){
+        if(ha2u(argv[2], &sector)){
             dumpSector(sector);
             return CMD_OK;
         }
     }else if(xstrcmp("erase", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], &sector)){
+        if(ha2u(argv[2], &sector)){
             for(int i = 0; i < SECTOR_SIZE; i++){
                 sector_data[i] = 0xFF;
             }
@@ -217,11 +217,11 @@ char CmdSd::execute(int argc, char **argv){
         console->println("--------------------------------------------");
 
         sector = 0;
-        
+
         for(uint8_t i = 0; i < 16; i++){
             console->printf("%02x ", data[i]);
         }
-        
+
         console->printf("\nCSD Structure: %u\n", getBits(data, &sector, 2));
         getBits(data, &sector, 6); // Reserved
         console->printf("TAAC: %u\n", getBits(data, &sector, 8));
@@ -259,11 +259,11 @@ char CmdSd::execute(int argc, char **argv){
         console->printf("TEM_WRITE_PROTECT: %xb\n", getBits(data, &sector, 1));
         console->printf("FILE_FORMAR: %x\n", getBits(data, &sector, 2));
         console->println("--------------------------------------------");
-       
+
         console->printf("Card size %d bytes\n", (c_size + 1) * (1UL << (mult + 2)) * (1UL << block_len));
 
-        
-        
+
+
 
 /*
         SDGetSCR(data);

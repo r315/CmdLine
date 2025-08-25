@@ -75,7 +75,7 @@ char CmdDS1086::execute(int argc, char **argv)
     }
 
     if( !xstrcmp("rr", argv[1])){
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             if(ds1086.read_reg((uint8_t)val, (uint16_t*)&val) == false){
                 return CMD_NOT_FOUND;
             }
@@ -86,9 +86,9 @@ char CmdDS1086::execute(int argc, char **argv)
 
     if( !xstrcmp("wr", argv[1])){
         uint8_t addr;
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             addr = (uint8_t)val;
-            if(ha2i(argv[3], (uint32_t*)&val)){
+            if(ha2u(argv[3], (uint32_t*)&val)){
                 ds1086.write_reg(addr, val);
                 return CMD_OK;
             }

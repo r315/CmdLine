@@ -24,7 +24,7 @@ char CmdAdc::execute(int argc, char **argv){
 
     if(!(adc_flags & ADC_INIT)){
         s_adc.buf = adcvalues;
-        s_adc.len = 4;
+    //s_adc.len = 4;
         //s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
         ADC_Init(&s_adc);
         adc_flags = ADC_INIT;

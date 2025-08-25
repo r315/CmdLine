@@ -34,6 +34,7 @@ UART_FUNCTIONS(0)
 UART_FUNCTIONS(1)
 UART_FUNCTIONS(3)
 
+#if 0 // TODO: Fix
 /**
  * virtual com port
  * */
@@ -92,7 +93,7 @@ static int SERIAL4_Available(void){
     serialbus_t *serial = &hs4.port;
     return fifo_avail(&serial->rxfifo);
 }
-
+#endif
 /**
  * API
  * */
@@ -120,7 +121,7 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
             ASSIGN_UART_FUNCTIONS(hserial, 3);
             hserial->port.bus = UART_BUS3;
             break;
-
+#if 0 // TODO: Fix, create internal data structor for usb
         case SERIAL4:
             hserial->serial.available = SERIAL4_Available;
             hserial->serial.writechar = SERIAL4_WriteChar;
@@ -128,11 +129,10 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
             hserial->serial.readchar = SERIAL4_ReadChar;
             hserial->serial.read = SERIAL4_Read;
             SERIAL4_Init();
-
+#endif
         default:
             return;
     }
-
     serialbus_t *port = &hserial->port;
 
     port->speed = SERIAL_CONFIG_GET_SPEED(config);

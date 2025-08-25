@@ -42,7 +42,7 @@ static void delay_us(uint32_t us){
             us--;
         }
     }
-    
+
     LPC_RIT->RICTRL = 0;
 }
 
@@ -50,20 +50,20 @@ static void sensor_addr(int8_t reg){
     uint8_t mask = 0x80;
 
     SENSOR_SDIO_OUT;
-    
+
     do{
         SENSOR_SCLK_LOW;
         if(reg & mask)SENSOR_SDIO_HIGH;
         else SENSOR_SDIO_LOW;
-        delay_us(4);        
+        delay_us(4);
         SENSOR_SCLK_HIGH;
         delay_us(4);
-    }while((mask = (mask >> 1)));    
+    }while((mask = (mask >> 1)));
 }
 
 static uint8_t sensor_read(uint8_t reg, uint8_t *pdata){
     uint8_t data, bit;
-    sensor_addr(reg & ~SENSOR_WRITE_REG); 
+    sensor_addr(reg & ~SENSOR_WRITE_REG);
 
     SENSOR_SDIO_IN;
     data = 0;
@@ -94,7 +94,7 @@ static uint8_t sensor_write(uint8_t reg, uint8_t *pdata){
         else SENSOR_SDIO_LOW;
         SENSOR_SCLK_HIGH;
         delay_us(4);
-    }while((mask = (mask >> 1))); 
+    }while((mask = (mask >> 1)));
 
     return 1;
 }
@@ -122,19 +122,19 @@ char CmdMSensor::execute(int argc, char **argv){
         sensor_sync(SENSOR_TIMEOUT_NORMAL);
         return CMD_OK;
     }else if(xstrcmp("read", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             if(sensor_read(val, &data)){
                 console->printf("Reg[%x]: %x\n", val, data);
                 return CMD_OK;
             }
         }
     }else if(xstrcmp("write", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             uint8_t reg = val;
-            if(ha2i(argv[3], (uint32_t*)&val)){
+            if(ha2u(argv[3], (uint32_t*)&val)){
                 data = val;
                 sensor_write(reg, &data);
-                return CMD_OK;                
+                return CMD_OK;
             }
         }
     }else if(xstrcmp("sync", (const char*)argv[1]) == 0){
@@ -144,7 +144,7 @@ char CmdMSensor::execute(int argc, char **argv){
         for(uint8_t i = 0; i < 32; i++){
             sensor_read(i, &data);
             DelayMs(1);
-            console->printf("Reg[%x]: %x\n", i, data);            
+            console->printf("Reg[%x]: %x\n", i, data);
         }
         return CMD_OK;
     }else if(xstrcmp("track", (const char*)argv[1]) == 0){
@@ -158,7 +158,7 @@ char CmdMSensor::execute(int argc, char **argv){
         #endif
 
         while(console->getchNonBlocking((char*)&data) == 0){
-            
+
             if(timeout){
                 #if 1
                 int8_t x, y;

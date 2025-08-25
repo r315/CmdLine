@@ -24,7 +24,7 @@ char CmdAvr::execute(int argc, char **argv){
         help();
         return CMD_OK;
     }
-    
+
     if (!xstrcmp("init", argv[1]))
     {
         if (ia2i(argv[2], &param1)){
@@ -45,7 +45,7 @@ char CmdAvr::execute(int argc, char **argv){
         if((int)signature == AVR_RESPONSE_FAIL){
             console->print("fail to enable programming\n");
         }else{
-            console->printf("Signature 0x%X (%s)\n", signature, avrDeviceName(signature));      
+            console->printf("Signature 0x%X (%s)\n", signature, avrDeviceName(signature));
         }
         return CMD_OK;
     }
@@ -55,8 +55,8 @@ char CmdAvr::execute(int argc, char **argv){
 
         // Check low/high fuse
         lh = (argv[2][0] == 'h') ? 1 : 0;
-                
-        if(ha2i(argv[3], (uint32_t*)&param1)){
+
+        if(ha2u(argv[3], (uint32_t*)&param1)){
             avrWriteFuses(lh, param1);
         }
 
@@ -73,13 +73,13 @@ char CmdAvr::execute(int argc, char **argv){
 
     #ifdef ENABLE_AVR_DW
     if(!strcmp("dw", argv[1])){
-        if(ha2i(argv[2], (uint32_t*)&param1)){
+        if(ha2u(argv[2], (uint32_t*)&param1)){
             return CMD_OK;
         }
     }
     #endif
 
-    if(!strcmp("stk", argv[1])){        
+    if(!strcmp("stk", argv[1])){
         stk500_setup(SERIAL_GetSerialOps(-1));
         stk500_loop();
         return CMD_OK;

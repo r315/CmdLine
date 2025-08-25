@@ -275,9 +275,9 @@ char CmdTft::execute(int argc, char **argv){
     }
 #if 0 //TODO: Fix
     if(xstrcmp("cmd", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], (uint32_t*)&val1)){
+        if(ha2u(argv[2], (uint32_t*)&val1)){
             uint32_t param;
-            if(ha2i(argv[3], (uint32_t*)&param)){
+            if(ha2u(argv[3], (uint32_t*)&param)){
                 LCD_CS0;
                 LCD_CD0;
                 SPI_Transfer(BOARD_SPIDEV, (uint8_t*)&val1, 1);
@@ -309,7 +309,7 @@ char CmdTft::execute(int argc, char **argv){
     }
 
     if(xstrcmp("clear", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], (uint32_t*)&val1)){
+        if(ha2u(argv[2], (uint32_t*)&val1)){
             uint32_t ms = GetTick();
             LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), val1);
             ms = GetTick() - ms;

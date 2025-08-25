@@ -35,19 +35,19 @@ int16_t samples[256];
 
 static void setupDac(dactype_t *dac, int16_t *data, uint32_t len){
     dac->buf = samples;
-    dac->len = len;   
+    dac->len = len;
 
     /** Convert to unsigned, and clear bit 0
      * Setting bit 0 has the same effect as
-     * setting BIAS bit 
+     * setting BIAS bit
      * */
     for (uint32_t i = 0; i < len; i++){
         samples[i] = (0x8000 + data[i]) & 0xFFC0; // clear lower 6 bits
-    }        
+    }
 }
 
 void CmdAwg::help(void){
- 	//vcom->printf("Usage: awg [option] \n\n");    
+ 	//vcom->printf("Usage: awg [option] \n\n");
     console->print("usage: awg <option> <param>\n");
     console->print("    start <wave>\n");
     console->print("          wave : sine, square\n");
@@ -58,7 +58,7 @@ void CmdAwg::help(void){
     console->print("    stop : ends signal\n");
     console->print("    rate <value> : 32 - 65535 dac clock divider\n");
 
-    
+
 }
 
 char CmdAwg::execute(int argc, char **argv){
@@ -67,7 +67,7 @@ char CmdAwg::execute(int argc, char **argv){
         dacEnable(true);
         dac.rate = 100 - 1; // one sample/us
         setupDac(&dac, (int16_t*)TEST_SIGNAL, sizeof(TEST_SIGNAL) / sizeof(uint16_t));
-    }    
+    }
 
     if(argc == 0){
         help();
@@ -87,7 +87,7 @@ char CmdAwg::execute(int argc, char **argv){
         }else{
             return CMD_BAD_PARAM;
         }
-       
+
         dac.loop = 1;
         DAC_Config(&dac);
         DAC_Start(&dac);
@@ -98,17 +98,17 @@ char CmdAwg::execute(int argc, char **argv){
     }
 
     if(xstrcmp("write", (const char*)argv[1]) == 0){
-        if(ha2i(argv[2], (uint32_t*)&argc)){ 
+        if(ha2u(argv[2], (uint32_t*)&argc)){
             DAC_Write(&dac, argc);
         }
     }
-    
+
     if(xstrcmp("pclk", (const char*)argv[1]) == 0){
         console->printf("PCLK: %d\n", CLOCK_GetPCLK(PCLK_DAC));
     }
 
     if(xstrcmp("rate", (const char*)argv[1]) == 0){
-        if(ia2i(argv[2], (int32_t*)&argc)){ 
+        if(ia2i(argv[2], (int32_t*)&argc)){
             DAC_UpdateRate(&dac, argc);
         }
     }

@@ -5,8 +5,8 @@
 
 #define ASSERT_EQUAL(a,b) {if ( a != b){printf("Test fail %s:%s",__FILE__, __LINE__); exit(0);}}
 // gcc test.c strfunctions.c -o test && ./test
-// cl /I inc test.c strfunctions.c /link /out:test.exe 
- 
+// cl /I inc test.c strfunctions.c /link /out:test.exe
+
 
 void TEST_strtok_s(void){
 char *res, *save, str[] = "Test String";
@@ -15,7 +15,7 @@ char *res, *save, str[] = "Test String";
 
     ASSERT_EQUAL(res, str);
     ASSERT_EQUAL(save, str + 6);
-    
+
     printf("Pass!");
 }
 
@@ -75,19 +75,19 @@ char *tmp;
     }else{
         if(tmp != str){
            printf("%s != %s\n", tmp,str);
-            return -1; 
+            return -1;
         }
     }
 
 
    tmp = stringSplit((char*)main, ' ',sizeof(str));
-   
+
     if(tmp != NULL){
         printf("Invalid string fail");
         return -1;
     }
 */
-    //printf("0x%s = %d\n", argv[1], ha2i(argv[1]));
+    //printf("0x%s = %d\n", argv[1], ha2u(argv[1]));
 //TEST_strtok_s();
 TEST_pitoa();
     return 0;

@@ -25,7 +25,7 @@ serialport_t BOARD_SERIAL_HANDLERS;
  * Uart0/1/3
  * */
 UART_FUNCTIONS(0)
-
+#if 0 // TODO: Fix, create internal structure for usb
 /**
  * virtual com port
  * */
@@ -80,7 +80,7 @@ static inline int SERIAL4_Available(void){
     serialbus_t *serial = &BOARD_SERIAL4_HANDLER.port;
     return fifo_avail(&serial->rxfifo);
 }
-
+#endif
 /**
  * API
  * */
@@ -95,7 +95,7 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
             ASSIGN_UART_FUNCTIONS(hserial, 0);
             hserial->port.bus = UART_BUS1;
             break;
-
+#if 0 // TODO: Fix
         case SERIAL4:
             hserial->serial.writechar = SERIAL4_WriteChar;
             hserial->serial.write = SERIAL4_Write;
@@ -103,7 +103,7 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
             hserial->serial.read = SERIAL4_Read;
             hserial->serial.available = SERIAL4_Available;
             SERIAL4_Init();
-
+#endif
         default:
             return;
     }

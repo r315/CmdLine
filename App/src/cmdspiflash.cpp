@@ -32,7 +32,7 @@ void CmdSpiFlash::flashDump(uint32_t addr){
 	console->print("|\n");
 }
 
-void CmdSpiFlash::help(void){ 
+void CmdSpiFlash::help(void){
     console->println("Usage: spiflash <read <addr> | id | rs | ws>");
     console->println("\tread,\t read 256 bytes from address");
     console->println("\tid,\t read identification");
@@ -57,7 +57,7 @@ char CmdSpiFlash::execute(int argc, char **argv){
     }
 
     if((idx = strFind("read", argv, argc)) != -1){
-        if(ha2i(argv[idx + 1], &value)){
+        if(ha2u(argv[idx + 1], &value)){
             for(uint16_t i = 0; i < 16; i++){
                 flashDump(value + i);
             }
@@ -71,8 +71,8 @@ char CmdSpiFlash::execute(int argc, char **argv){
     }
 
     if((idx = strFind("ws", argv, argc)) != -1){
-        if(ha2i(argv[idx + 1], &value)){
-            flashWriteStatus(value);            
+        if(ha2u(argv[idx + 1], &value)){
+            flashWriteStatus(value);
             return CMD_OK;
         }
     }

@@ -65,7 +65,7 @@ char CmdSpi::execute(int argc, char **argv){
 	if(xstrcmp("send", argv[2]) == 0){
 		uint8_t n = 0;
 		while(argv[n + 3] != NULL){
-            if(ha2i(argv[n + 3], &aux)){
+            if(ha2u(argv[n + 3], &aux)){
                 data[n] = aux;
             }
             n++;

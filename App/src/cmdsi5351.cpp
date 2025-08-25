@@ -135,9 +135,9 @@ char CmdSi5351::execute(int argc, char **argv)
     if( !xstrcmp("write", argv[1])){
         int32_t val;
         uint8_t addr;
-        if(ha2i(argv[2], (uint32_t*)&val)){
+        if(ha2u(argv[2], (uint32_t*)&val)){
             addr = (uint8_t)val;
-            if(ha2i(argv[3], (uint32_t*)&val)){
+            if(ha2u(argv[3], (uint32_t*)&val)){
                 si5351.write_reg(addr, val);
                 return CMD_OK;
             }
@@ -146,7 +146,7 @@ char CmdSi5351::execute(int argc, char **argv)
 
     if( !xstrcmp("enable", argv[1])){
         uint32_t val;
-        if(ha2i(argv[2], &val)){
+        if(ha2u(argv[2], &val)){
             si5351.set_clock_pwr((si5351_clock)val, 1);
             si5351.set_output_enable((si5351_clock)val, 1);
             return CMD_OK;
@@ -155,7 +155,7 @@ char CmdSi5351::execute(int argc, char **argv)
 
     if( !xstrcmp("disable", argv[1])){
         uint32_t val;
-        if(ha2i(argv[2], &val)){
+        if(ha2u(argv[2], &val)){
             si5351.set_clock_pwr((si5351_clock)val, 0);
             si5351.set_output_enable((si5351_clock)val, 0);
             return CMD_OK;
@@ -164,8 +164,8 @@ char CmdSi5351::execute(int argc, char **argv)
 
     if ( !xstrcmp("drive", argv[1])){
         uint32_t val1, val2;
-        if(ha2i(argv[2], &val1)){
-            if(ha2i(argv[3], &val2)){
+        if(ha2u(argv[2], &val1)){
+            if(ha2u(argv[3], &val2)){
                 val2 &= 3;
                 si5351.set_output_drive_strength((si5351_clock)val1, (si5351_drive)val2);
                 return CMD_OK;

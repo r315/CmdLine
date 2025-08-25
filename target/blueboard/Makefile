@@ -45,7 +45,7 @@ $(LIB_PATH)/pff \
 $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/NXP/LPC17xx/inc \
 $(CMSIS_PATH)/Core/Include \
-$(DRIVER_COMPONENT_PATH)/tft \
+$(DRIVER_COMPONENT_PATH)/display \
 $(BSP_PATH) \
 
 ######################################
@@ -59,7 +59,7 @@ $(TARGET_PATH)/src/sysmem.c \
 $(TARGET_PATH)/src/syscalls.c \
 $(DRIVER_PATH)/clock/clock_lpc17xx.c \
 $(DRIVER_PATH)/timer/tim_lpc17xx.c \
-$(DRIVER_COMPONENT_PATH)/tft/ili9328.c \
+$(DRIVER_COMPONENT_PATH)/display/ili9328.c \
 $(DRIVER_PATH)/pwm/pwm_lpc17xx.c \
 $(DRIVER_PATH)/i2c/i2c_lpc17xx.c \
 $(DRIVER_PATH)/i2s/i2s_lpc17xx.c \
