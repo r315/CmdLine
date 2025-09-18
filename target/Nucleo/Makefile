@@ -16,13 +16,17 @@
 TARGET =console-nucleo
 
 FEATURE_ENABLE = \
-ENABLE_TFT_DISPLAY \
 ENABLE_I2C \
 ENABLE_SI5351 \
 ENABLE_DS1086 \
 ENABLE_BENCHMARK \
 ENABLE_BENCHMARK_DHRYSTONE \
 ENABLE_TONE \
+ENABLE_TFT_DISPLAY \
+ENABLE_DEMO_AMIGA \
+ENABLE_DEMO_SPIRAL \
+ENABLE_DEMO_SCROLL \
+ENABLE_DEMO_RCOLOR \
 #ENABLE_RGBLED \
 #FEATURE_GIF \
 
@@ -97,7 +101,7 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(DRIVER_COMPONENT_PATH)/display/st7735.c \
+$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
 $(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
 $(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_PATH)/spi/spi_stm32l4xx.c \
@@ -164,6 +168,7 @@ USE_HAL_DRIVER \
 MSC_CLOCK \
 FIFO_INTERRUPT_SAFE=1 \
 FIFO_SIZE=128 \
+CONSOLE_WIDTH=64 \
 
 
 #######################################
@@ -278,7 +283,7 @@ endif
 
 $(TARGET).cfg:
 	@echo "Creating opencod configuration file for st-link"
-	@echo "source [find interface/stlink.cfg]" >> $@
+	@echo "source [find interface/stlink.cfg]" > $@
 	@echo "transport select "hla_swd"" >> $@
 	@echo "source [find target/stm32l4x.cfg]" >> $@
 	@echo "adapter speed 4000" >> $@

@@ -34,12 +34,12 @@ extern "C" {
 /**
  * TFT stuff
  */
-#define LCD_SCK_PIN         PA_1
-#define LCD_DI_PIN          PA_7
-#define LCD_CS_PIN          PA_4
-#define LCD_CD_PIN          PA_6
+#define LCD_SCK_PIN         PA_1  // A1
+#define LCD_DI_PIN          PA_7  // A6
+#define LCD_CS_PIN          PA_4  // A3
+#define LCD_CD_PIN          PA_6  // A5
 #define LCD_RST_PIN         -1
-#define LCD_BKL_PIN         PB_4
+#define LCD_BKL_PIN         PB_4  // D12
 
 #define I2C_MAX_ITF         3
 #define I2C_IF0 	        0 //PB6->SCL, PB7<->SDA

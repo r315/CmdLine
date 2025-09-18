@@ -88,28 +88,24 @@ char CmdSpi::execute(int argc, char **argv){
 	}else if(xstrcmp("status", argv[2]) == 0){
         console->printf("Bus: %d\n", mspi);
         console->printf("Speed: %d Hz\n", mspi.freq);
-        console->printf("Flags: MODE%d", mspi.flags >> 6);
-        if(mspi.flags & SPI_HW_CS){
+        console->printf("Flags: MODE%d", mspi.cfg >> 6);
+        if(mspi.cfg & SPI_CFG_CS){
             console->print(" | HW_CS");
         }
 
-        if(mspi.flags & SPI_ENABLED){
-            console->print(" | ENABLED");
-        }
-
-        console->printf(" (%02x)\n", mspi.flags);
+        console->printf(" (%02x)\n", mspi.cfg);
         return CMD_OK;
 	}else if(xstrcmp("mode", argv[2]) == 0){
         if(ia2i(argv[3], (int32_t*)&aux)){
             aux = (aux & 3) << 6;
-            mspi.flags = (mspi.flags & ~SPI_MODE3) | aux;
+            mspi.cfg = (mspi.cfg & ~SPI_MODE3) | aux;
 		    SPI_Init(&mspi);
 		    return CMD_OK;
         }
 	}else if(xstrcmp("cs", argv[2]) == 0){
         if(ia2i(argv[3], (int32_t*)&aux)){
             aux = (aux & 1) << 3;
-            mspi.flags = (mspi.flags & ~SPI_HW_CS) | aux;
+            mspi.cfg = (mspi.cfg & ~SPI_CFG_CS) | aux;
 		    SPI_Init(&mspi);
 		    return CMD_OK;
         }

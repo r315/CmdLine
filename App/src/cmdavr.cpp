@@ -31,8 +31,7 @@ char CmdAvr::execute(int argc, char **argv){
             if (ia2i(argv[3], &param2)){
                 avrspibus.bus = param1;
                 avrspibus.freq = DEFAULT_AVR_SPI_FREQ;
-                avrspibus.eot_cb = NULL;
-                avrspibus.flags = SPI_IDLE;
+                avrspibus.cfg = 0;
                 avr_if_Init(&avrspibus, param2);
                 return CMD_OK;
             }

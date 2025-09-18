@@ -63,20 +63,22 @@ static drvlcdspi_t lcd0;
 
 static void displayInit()
 {
-    //LPC_GPIO1->FIODIR |= LCD_CS|LCD_RS|LCD_WR|LCD_RD|LCD_LED|LCD_RST;
-    
     lcd0.spidev.bus = SPI_BUS0;
-    lcd0.spidev.flags = SPI_HW_CS;
-    lcd0.w = 128;
-    lcd0.h = 160;
+    lcd0.spidev.cfg = SPI_CFG_DMA | SPI_CFG_CS;
+    lcd0.spidev.freq = 20000;
+
+    lcd0.w = 240;
+    lcd0.h = 320;
     lcd0.cs = LCD_CS_PIN;
     lcd0.cd = LCD_CD_PIN;
     lcd0.bkl = LCD_BKL_PIN;
     lcd0.rst = LCD_RST_PIN;
 
+    SPI_Init(&lcd0.spidev);
+
     GPIO_Config(lcd0.cs, GPO_MS);
     GPIO_Config(lcd0.cd, GPO_MS);
-    GPIO_Config(lcd0.rst, GPO_MS);   
+    GPIO_Config(lcd0.rst, GPO_MS);
     GPIO_Config(lcd0.bkl, GPO_MS);
     GPIO_Config(LCD_DI_PIN, GPIO_AF_SPI1_SPI2);
     GPIO_Config(LCD_SCK_PIN, GPIO_AF_SPI1_SPI2);
@@ -109,7 +111,7 @@ int main(void)
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
-	MX_USART2_UART_Init();	
+	MX_USART2_UART_Init();
 	RNG_Init();
 
     SERIAL_Init();
@@ -117,7 +119,7 @@ int main(void)
 	#ifdef ENABLE_TFT_DISPLAY
     displayInit();
     #endif
-	
+
 	App();
 
 	while (1)
@@ -137,13 +139,13 @@ void SystemClock_Config(void)
 		RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 		RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-		/** Configure the main internal regulator output voltage 
+		/** Configure the main internal regulator output voltage
 	*/
 		if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
 		{
 				Error_Handler();
 		}
-		/** Initializes the CPU, AHB and APB busses clocks 
+		/** Initializes the CPU, AHB and APB busses clocks
 	*/
 		RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
 		RCC_OscInitStruct.MSIState = RCC_MSI_ON;
@@ -154,7 +156,7 @@ void SystemClock_Config(void)
 		{
 				Error_Handler();
 		}
-		/** Initializes the CPU, AHB and APB busses clocks 
+		/** Initializes the CPU, AHB and APB busses clocks
 	*/
 		RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
 		RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
@@ -182,13 +184,13 @@ void SystemClock_Config(void)
 		RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
 		RCC_PeriphCLKInitTypeDef PeriphClkInit = {0};
 
-		/** Configure the main internal regulator output voltage 
+		/** Configure the main internal regulator output voltage
 	*/
 		if (HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1) != HAL_OK)
 		{
 				Error_Handler();
 		}
-		/** Initializes the CPU, AHB and APB busses clocks 
+		/** Initializes the CPU, AHB and APB busses clocks
 	*/
 		RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
 		RCC_OscInitStruct.MSIState = RCC_MSI_ON;
@@ -204,7 +206,7 @@ void SystemClock_Config(void)
 		{
 				Error_Handler();
 		}
-		/** Initializes the CPU, AHB and APB busses clocks 
+		/** Initializes the CPU, AHB and APB busses clocks
 	*/
 		RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
 		RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
@@ -293,7 +295,7 @@ static void MX_USART2_UART_Init(void)
 		/* USER CODE END USART2_Init 2 */
 }
 
-/** 
+/**
 	* Enable DMA controller clock
 	*/
 static void MX_DMA_Init(void)

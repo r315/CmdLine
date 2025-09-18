@@ -27,13 +27,13 @@ typedef struct democtx_s{
     int16_t x, y, xd, yd;
     uint16_t sx, w;
     uint16_t sy, h;
-    uint32_t frames;
+    uint32_t frames, seed;
     uint8_t state, stepSize;
     uint8_t numSteps, tcount;
     uint16_t step, color;
     uint16_t bgColor, gridLineColor;
     uint16_t ballShadowColor, gridLineShadowColor;
-    uint16_t value, bidx;
+    uint16_t value, bidx, scroll;
     uint8_t spacing, nvlines, nhlines;
     uint16_t palette[16];
     uint16_t buf[512];          // ideally 2 * display width
@@ -392,7 +392,7 @@ char CmdTft::execute(int argc, char **argv){
 
     if(xstrcmp("demo", (const char*)argv[1]) == 0){
         char c, limit_fps = 1;
-        uint32_t frame_duration, demo_time, stime;
+        uint32_t frame_duration = 0, demo_time, stime;
         uint8_t demo = 0, demo_state = DEMO_SETUP;
 
         LCD_Scroll(0);
@@ -417,8 +417,10 @@ char CmdTft::execute(int argc, char **argv){
                     frame_duration = GetTick() - stime;
 
                     if(demo_time > 3000){
-                        console->printf("\rdemo[%d] %d frames   ", demo, demo_ctx.frames);
+                        uint32_t fps_avg = demo_ctx.frames / (demo_time / 1000);
+                        console->printf("\rdemo[%d]: %d frames, avg fps: %d \n\r", demo, demo_ctx.frames, fps_avg);
                         demo_state = DEMO_END;
+                        break;
                     }
 
                     fps();
@@ -481,12 +483,13 @@ void CmdTft::fps(void){
     static uint32_t expire = 0;
     static uint16_t fps = 0;
 
+    fps++;
+
     if(GetTick() > expire){
         console->printf("\rfps %d ", fps);
         fps = 0;
         expire = GetTick() + 1000;
     }
-    fps++;
 }
 
 static void Tiles_Setup(democtx_t *ctx)

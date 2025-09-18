@@ -89,7 +89,7 @@ $(APP_DIR)/src/cmdmem.cpp \
 ifneq ($(filter ENABLE_TFT_DISPLAY, $(FEATURE_ENABLE)),)
 BOARD_SOURCES += \
 $(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_COMPONENT_PATH)/tft/ili9341.c \
+$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
 #$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
 
 CSRCS += \
