@@ -4,7 +4,12 @@
 #include "drvlcd.h"
 #include "wdt.h"
 
-#define ENABLE_DEMO_TILES   1
+#define ENABLE_DEMO_TILES   0
+#define ENABLE_DEMO_AMIGA   0
+#define ENABLE_DEMO_SPIRAL  0
+#define ENABLE_DEMO_RCOLOR  0
+#define ENABLE_DEMO_SCROLL  0
+#define ENABLE_DEMO_GRAPH   1
 
 #ifdef FEATURE_GIF
 #include "AnimatedGIF.h"
@@ -68,6 +73,11 @@ static uint32_t RandomColors_Loop(democtx_t *d);
 static void Gif_Setup(democtx_t *);
 static uint32_t Gif_Loop(democtx_t *);
 static void Gif_Cleanup(democtx_t *);
+#endif
+#if ENABLE_DEMO_GRAPH
+static void Graph_Setup(democtx_t *);
+static uint32_t Graph_Loop(democtx_t *);
+static void Graph_Cleanup(democtx_t *);
 #endif
 
 static democtx_t demo_ctx;
@@ -971,3 +981,67 @@ static void Gif_Cleanup(void){
 }
 #endif
 
+#ifdef ENABLE_DEMO_GRAPH
+void Graph_Setup(democtx_t *ctx)
+{
+    LCD_SetOrientation(LCD_REVERSE_LANDSCAPE);
+
+    ctx->w = 300;
+    ctx->h = 200;
+    ctx->sx = (LCD_GetWidth() - ctx->w);
+    ctx->sy = (LCD_GetHeight() - ctx->h) >> 1;
+
+    LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
+    LCD_FillRect(ctx->sx, ctx->sy,  ctx->w,  ctx->h, LCD_GRAY);
+}
+
+/*
+static void add_point(democtx_t *ctx, float y)
+{
+    if (ctx->bidx < ctx->w) {
+        //ctx->buf[ctx->bidx].x = ctx->bidx * POINT_SPACING;
+        ctx->buf[ctx->bidx] = y;
+        ctx->bidx++;
+    } else {
+        // Compress points when limit is reached
+        for (int i = 0; i < ctx->w; i++) {
+            points[i].x *= COMPRESSION_FACTOR;
+        }
+        // Add new point at the end
+        //points[ctx->w - 1].x = ctx->w;
+        ctx->buf[ctx->w - 1] = y;
+    }
+}
+    */
+
+uint32_t Graph_Loop(democtx_t *ctx)
+{
+    #if 0
+    // Generate new data point
+    float new_y = ctx->h / 2 + sin(ctx->value * 0.1) * 100;
+    //add_point(ctx, new_y);
+
+    if (ctx->bidx < ctx->w) {
+        //ctx->buf[ctx->bidx].x = ctx->bidx * POINT_SPACING;
+        ctx->buf[ctx->bidx] = y;
+        ctx->bidx++;
+    } else {
+        // Compress points when limit is reached
+        for (int i = 0; i < ctx->w; i++) {
+            points[i].x *= COMPRESSION_FACTOR;
+        }
+        // Add new point at the end
+        //points[ctx->w - 1].x = ctx->w;
+        ctx->buf[ctx->w - 1] = y;
+    }
+    #endif
+    ctx->value += 1;
+
+    return ++ctx->frames;
+}
+
+void Graph_Cleanup(democtx_t *ctx)
+{
+    LCD_SetOrientation(LCD_PORTRAIT);
+}
+#endif
