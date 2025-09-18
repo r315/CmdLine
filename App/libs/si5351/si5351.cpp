@@ -64,7 +64,7 @@ bool Si5351::init(i2cbus_t *i2c, uint32_t xo_freq, int32_t corr)
 	uint8_t reg_val;
     m_i2c = i2c;
 
-    if(m_i2c->peripheral == NULL){
+    if(m_i2c->handle == NULL){
         I2C_Init(m_i2c);
         DelayMs(100);
     }

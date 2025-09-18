@@ -53,7 +53,7 @@ char CmdI2c::execute(int argc, char **argv){
         return CMD_OK;
     }
 
-    if(m_i2c.peripheral == NULL){
+    if(m_i2c.handle == NULL){
         console->println("I2C not initialized");
 		return CMD_BAD_PARAM;
     }

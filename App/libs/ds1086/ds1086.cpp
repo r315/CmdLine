@@ -57,7 +57,7 @@ int8_t DS1086::init(i2cbus_t *i2c)
 
     m_i2c = i2c;
 
-    if(m_i2c->peripheral == NULL){
+    if(m_i2c->handle == NULL){
         I2C_Init(m_i2c);
         DelayMs(100);
     }
