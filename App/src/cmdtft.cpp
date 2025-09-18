@@ -4,20 +4,14 @@
 #include "drvlcd.h"
 #include "wdt.h"
 
-#define ENABLE_DEMO_TILES   0
-#define ENABLE_DEMO_AMIGA   0
-#define ENABLE_DEMO_SPIRAL  0
-#define ENABLE_DEMO_RCOLOR  0
-#define ENABLE_DEMO_SCROLL  0
-#define ENABLE_DEMO_GRAPH   1
-
-#ifdef FEATURE_GIF
+#ifdef ENABLE_DEMO_GIF
 #include "AnimatedGIF.h"
 #include "badgers.h"
 
 #define GIF_DATA        (uint8_t*)ucBadgers
 #define GIF_DATA_SIZE   sizeof(ucBadgers)
-AnimatedGIF gif;
+
+static AnimatedGIF gif;
 void GIFDraw(GIFDRAW *pDraw);
 void gifPlayFrame(void);
 #endif
@@ -69,7 +63,7 @@ static void Scroll_Cleanup(democtx_t *);
 static void RandomColors_Setup(democtx_t *);
 static uint32_t RandomColors_Loop(democtx_t *d);
 #endif
-#ifdef FEATURE_GIF
+#ifdef ENABLE_DEMO_GIF
 static void Gif_Setup(democtx_t *);
 static uint32_t Gif_Loop(democtx_t *);
 static void Gif_Cleanup(democtx_t *);
@@ -83,9 +77,7 @@ static void Graph_Cleanup(democtx_t *);
 static democtx_t demo_ctx;
 
 const demoops_t demos[] = {
-#if ENABLE_DEMO_TILES
     {Tiles_Setup, Tiles_Loop},
-#endif
 #if ENABLE_DEMO_AMIGA
     {AmigaBall_Setup, AmigaBall_Loop, NULL},
 #endif
@@ -98,7 +90,7 @@ const demoops_t demos[] = {
 #if ENABLE_DEMO_SCROLL
     {Scroll_Setup, Scroll_Loop, Scroll_Cleanup},
 #endif
-#ifdef FEATURE_GIF
+#ifdef ENABLE_DEMO_GIF
     {Gif_Setup, Gif_Loop, Gif_Cleanup},
 #endif
 #if ENABLE_DEMO_GRAPH
@@ -463,7 +455,7 @@ char CmdTft::execute(int argc, char **argv){
 
         return CMD_OK_LF;
     }
-#ifdef FEATURE_GIF
+#ifdef ENABLE_DEMO_GIF
     if(xstrcmp("gif", (const char*)argv[1]) == 0){
         long lTime;
         int iFrames = 0;
@@ -481,7 +473,7 @@ char CmdTft::execute(int argc, char **argv){
             }
             gif.close();
             lTime = HAL_GetTick() - lTime;
-            console->print("Decoded %d frames in %d miliseconds", iFrames, lTime);
+            console->printf("Decoded %d frames in %d miliseconds", iFrames, lTime);
         }
         return CMD_OK_LF;
     }
@@ -859,7 +851,7 @@ static uint32_t RandomColors_Loop(democtx_t *ctx)
 }
 #endif
 
-#ifdef FEATURE_GIF
+#ifdef ENABLE_DEMO_GIF
 #define TILE_W  8
 void drawTileLine(uint16_t x, uint16_t y, uint16_t w, uint16_t *line){
     y = y * TILE_W;
@@ -958,25 +950,27 @@ void GIFDraw(GIFDRAW *pDraw)
     }
 }
 
-static void Gif_Setup(void){
+static void Gif_Setup(democtx_t *ctx){
+    (void)ctx;
+
     gif.begin(BIG_ENDIAN_PIXELS);
     if(gif.open(GIF_DATA, GIF_DATA_SIZE, GIFDraw)){
-        demo_frames = gif.getInfo()->iFrameCount * 8;
+        //demo_frames = gif.getInfo()->iFrameCount * 8;
     }
 }
 
-static uint32_t Gif_Loop(void){
+static uint32_t Gif_Loop(democtx_t *ctx){
 
     if(gif.playFrame(true, NULL) == 0){
         gif.reset();
         gif.playFrame(true, NULL);
     }
 
-    demo_frames--;
-    return demo_frames;
+    return ++ctx->frames;
 }
 
-static void Gif_Cleanup(void){
+static void Gif_Cleanup(democtx_t *ctx){
+    (void)ctx;
     gif.close();
 }
 #endif

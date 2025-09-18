@@ -27,8 +27,8 @@ ENABLE_DEMO_AMIGA \
 ENABLE_DEMO_SPIRAL \
 ENABLE_DEMO_SCROLL \
 ENABLE_DEMO_RCOLOR \
-#ENABLE_RGBLED \
-#FEATURE_GIF \
+ENABLE_DEMO_GRAPH \
+ENABLE_DEMO_GIF \
 
 #######################################
 # paths
@@ -121,7 +121,6 @@ $(LIB_PATH)/src/stimer.c \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c \
 $(APP_DIR)/libs/ws2812b/ws2812b.c \
-#$(APP_DIR)/agif/agif.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -139,7 +138,11 @@ $(APP_DIR)/src/cmdsi5351.cpp \
 $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/si5351/si5351.cpp \
 $(APP_DIR)/libs/ds1086/ds1086.cpp \
-#$(APP_DIR)/agif/AnimatedGIF.cpp \
+
+ifneq ($(filter ENABLE_DEMO_GIF,$(FEATURE_ENABLE)),)
+CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
+C_SOURCES += $(APP_DIR)/libs/agif/agif.c
+endif
 
 # ASM sources
 ASM_SOURCES =  \
@@ -298,7 +301,7 @@ test:
 
 #@echo ""; $(foreach d, $(FEATURE_ENABLE), echo $(d);)
 #@echo $(sort $(C_INCLUDES))
-	@echo $(FEATURE_ENABLE)
+#@echo $(FEATURE_ENABLE)
 
 #######################################
 # build the application
