@@ -45,7 +45,7 @@ char CmdI2c::execute(int argc, char **argv){
 		    return CMD_BAD_PARAM;
 	    }
 
-        m_i2c.bus_num = (i2cbusnum_t)val;
+        m_i2c.bus_num = (uint8_t)val;
         m_i2c.speed = 100000;
 
         I2C_Init(&m_i2c);

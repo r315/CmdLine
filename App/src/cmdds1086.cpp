@@ -41,7 +41,7 @@ char CmdDS1086::execute(int argc, char **argv)
 
     if( !xstrcmp("init", argv[1])){
         if(ia2i(argv[2], &val)){
-            m_i2c.bus_num = (i2cbusnum_t)(val & 3);
+            m_i2c.bus_num = (uint8_t)(val & 3);
             m_i2c.speed = 100000;
             val = ds1086.init(&m_i2c);
             if(val < 0){

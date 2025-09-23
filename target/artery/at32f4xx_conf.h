@@ -32,7 +32,7 @@
 //#include "at32f4xx_gpio_ex.h"
 //#endif
 #include "at32f4xx_i2c.h"
-#include "at32f4xx_i2c_ex.h"
+//#include "at32f4xx_i2c_ex.h"
 #include "at32f4xx_iwdg.h"
 #include "at32f4xx_pwr.h"
 #include "at32f4xx_rcc.h"
