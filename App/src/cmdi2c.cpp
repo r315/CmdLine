@@ -60,7 +60,7 @@ char CmdI2c::execute(int argc, char **argv){
 
     if(!xstrcmp("slave", argv[1])){
         if(ha2u(argv[2], (uint32_t*)&val)){
-            m_i2c.addr = val << 1;
+            m_i2c.addr = val;
             return CMD_OK;
         }
     }
@@ -115,20 +115,28 @@ char CmdI2c::execute(int argc, char **argv){
         if(ha2u(argv[2], (uint32_t*)&val)){
             uint8_t reg = val;
             count = ia2i(argv[3], &val) ? val : 1;
-            I2C_Write(&m_i2c, m_i2c.addr, (uint8_t*)&reg, 1);
-            if(I2C_Read(&m_i2c, m_i2c.addr, i2c_buf, count) > 0){
-                for(uint8_t i = 0; i < count; i ++){
-                    if( (i & 15) == 0) {
-                        if(i == (count - 1)){
-                            console->printchar('\n');
-                        }else{
-                            console->printf("\n%02X: ", i & 0xF0);
-                        }
-                    }
-                    console->printf("%02X ", i2c_buf[i]);
-                }
-                return CMD_OK_LF;
+            if(!I2C_Write(&m_i2c, m_i2c.addr, (uint8_t*)&reg, 1)){
+                console->println("Fail i2c write");
+                return CMD_OK;
             }
+
+            if(!I2C_Read(&m_i2c, m_i2c.addr, i2c_buf, count)){
+                console->println("Fail i2c read");
+                return CMD_OK;
+            }
+
+            for(uint8_t i = 0; i < count; i ++){
+                if( (i & 15) == 0) {
+                    if(i == (count - 1)){
+                        console->printchar('\n');
+                    }else{
+                        console->printf("\n%02X: ", i & 0xF0);
+                    }
+                }
+                console->printf("%02X ", i2c_buf[i]);
+            }
+
+            return CMD_OK_LF;
         }
     }
 
@@ -138,7 +146,9 @@ char CmdI2c::execute(int argc, char **argv){
             i2c_buf[0] = val;
             if(ha2u(argv[3], &val)){
                 i2c_buf[1] = val;
-                I2C_Write(&m_i2c, m_i2c.addr, i2c_buf, 2);
+                if(!I2C_Write(&m_i2c, m_i2c.addr, i2c_buf, 2)){
+                    console->println("Fail i2c write");
+                }
             }
         }
         return CMD_OK;
