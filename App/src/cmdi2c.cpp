@@ -155,9 +155,7 @@ char CmdI2c::execute(int argc, char **argv){
             if( (i & 15) == 0)
                 console->printf("\n%02X ", i & 0xF0);
 
-            m_i2c.addr = (i << 1);
-
-            if(I2C_Read(&m_i2c, m_i2c.addr, &count, 1) == 0){
+            if(I2C_Read(&m_i2c, i, &count, 1) == 0){
                 console->print("-- ");
             }else{
                 console->printf("%02X ", i);
