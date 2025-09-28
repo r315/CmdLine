@@ -98,6 +98,18 @@ void BOARD_LCD_Init(void)
     #endif
 }
 
+#ifdef ENABLE_PWM
+void BOARD_PWM_Init(pwmchip_t *pwmchip)
+{
+    #warning "PWM init not implemented for nucleo"
+    /* pwmchip->chip = 3;
+    PWM_Init(pwmchip);
+
+    GPIO_Config(PB_0, GPO_HS_AF);
+    GPIO_Config(PB_1, GPO_HS_AF); */
+}
+#endif
+
 /**
 	* @brief  The application entry point.
 	* @retval int

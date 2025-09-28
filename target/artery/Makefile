@@ -12,6 +12,7 @@ _ENABLE_SPI \
 ENABLE_I2C \
 _ENABLE_I2S \
 _ENABLE_TFT_DISPLAY \
+ENABLE_PWM \
 _ENABLE_BENCHMARK \
 _ENABLE_BENCHMARK_DHRYSTONE \
 _ENABLE_RGBLED \
@@ -165,6 +166,11 @@ $(APP_DIR)/src/cmdbuz.cpp \
 
 endif
 
+ifneq ($(filter ENABLE_PWM, $(FEATURE_ENABLE)),)
+BOARD_SOURCES += $(DRIVER_PATH)/pwm/pwm_at32f4xx.c
+CPP_SOURCES += $(APP_DIR)/src/cmdpwm.cpp
+endif
+
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################
 # Misc
@@ -217,9 +223,9 @@ endif
 #CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst))
 
 ASFLAGS  =$(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fdata-sections -ffunction-sections
-CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -std=gnu11 -fdata-sections -ffunction-sections #-fstack-usage
+CFLAGS   =$(MCU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -std=gnu11 #-fstack-usage
 CPPFLAGS =$(CPU) $(OPT) $(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) -fdata-sections -ffunction-sections -fno-unwind-tables -fno-exceptions -fno-rtti
-LDFLAGS  =$(MCU) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
+LDFLAGS  =$(MCU) $(SPECS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,-gc-sections,-cref
 
 #######################################
 # Libraries
@@ -230,8 +236,7 @@ ifdef SEMIHOSTING
 SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
 else
-SPECS=--specs=nosys.specs --specs=nano.specs
-#-nostdlib -lstd++ -lnosys -lm
+SPECS =--specs=nano.specs --specs=nosys.specs
 LIBS =-lstdc++
 endif
 
@@ -312,9 +317,9 @@ $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "[AS]  $<"
 	$(VERBOSE)$(AS) -c $(CFLAGS) $< -o $@
 
-$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) | Makefile
+$(BUILD_DIR)/$(TARGET).elf: $(OBJECTS)
 	@echo "[LD]  $@"
-	$(VERBOSE)$(LD) $(LIBDIR) -T$(LDSCRIPT) $(LDFLAGS) $^ $(LIBS) -o $@
+	$(VERBOSE)$(LD) $(LIBDIR) -T$(LDSCRIPT) $(LDFLAGS) $(OBJECTS) $(LIBS) -o $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(VERBOSE)$(HEX) $< $@

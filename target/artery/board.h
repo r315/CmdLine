@@ -16,6 +16,7 @@ extern "C" {
 #include "ili9341.h"
 //#include "st7735.h"
 //#include "st7789.h"
+#include "pwm.h"
 
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
@@ -62,6 +63,8 @@ extern spibus_t spibus;
 
 void BOARD_Init(void);
 void BOARD_LCD_Init(void);
+void BOARD_PWM_Init(pwmchip_t *pwmchip);
+
 void DelayMs(uint32_t ms);
 uint32_t ElapsedTicks(uint32_t start_ticks);
 uint32_t GetTick(void);

@@ -161,3 +161,14 @@ enum tone_e TONE_Init(void)
     return TONE_PwmInit(&init);
 }
 #endif /* ENABLE_TONE */
+
+#ifdef ENABLE_PWM
+void BOARD_PWM_Init(pwmchip_t *pwmchip)
+{
+    pwmchip->chip = 3; // Timer3
+    PWM_Init(pwmchip);
+
+    GPIO_Config(PB_0, GPO_HS_AF);
+    GPIO_Config(PB_1, GPO_HS_AF);
+}
+#endif

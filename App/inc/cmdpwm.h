@@ -1,28 +1,17 @@
 #ifndef _cmdpwm_h_
 #define _cmdpwm_h_
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "console.h"
+#include "pwm.h"
 
 class CmdPwm : public ConsoleCommand{
     Console *console;
-    uint8_t ch_en;
+    pwmchip_t pwmchip;
 public:
-    CmdPwm() : ConsoleCommand("pwm") { ch_en = 0; }
-    void init(void *params) { console = static_cast<Console*>(params); }    
-    void enable(uint8_t ch);
-    void disable(uint8_t ch);
-    void start(uint32_t period);
-    char execute(int argc, char **argv);
+    CmdPwm() : ConsoleCommand("pwm") { }
+    void init(void *params);
     void help(void);
+    char execute(int argc, char **argv);
 };
-
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

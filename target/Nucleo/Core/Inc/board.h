@@ -29,7 +29,7 @@ extern "C" {
  * */
 #define LED1_ON          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET)
 #define LED1_OFF         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET)
-#define LED1_TOGGLE     HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin)
+#define LED1_TOGGLE      HAL_GPIO_TogglePin(LD3_GPIO_Port, LD3_Pin)
 
 /**
  * TFT stuff
@@ -53,6 +53,8 @@ extern spibus_t BOARD_SPIDEV_HANDLER;
 
 void BOARD_Init(void);
 void BOARD_LCD_Init(void);
+void BOARD_PWM_Init(pwmchip_t *pwmchip);
+
 void SW_Reset(void);
 void DelayMs(uint32_t ms);
 uint32_t GetTick(void);
