@@ -23,7 +23,7 @@ class CmdDS1086 : public ConsoleCommand{
     Console *console;
     i2cbus_t m_i2c;
     DS1086 ds1086;
-    simpletimer_t m_timer;
+    stimer_t m_timer;
     sweep_t m_sweep;
 public:
     void init(void *params)

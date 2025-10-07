@@ -1,7 +1,7 @@
 #include "cmdds1086.h"
 #include "board.h"
 
-static uint32_t timer_callback(simpletimer_t *timer)
+static uint32_t timer_callback(stimer_t *timer)
 {
     sweep_t *sweep = (sweep_t*)timer->data;
 
