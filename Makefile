@@ -1,7 +1,7 @@
 BUILD_DIR  	:=$(CURDIR)/build
 APP_DIR 	:=$(CURDIR)/App
 
-all: nc bp bb at dk230
+all: nc bp bb dk415 dk230
 
 norule:
 	@echo "specify board"
@@ -9,7 +9,7 @@ norule:
 	@echo "	bb - blueboard"
 	@echo "	bp - bluepill"
 	@echo "	nc - Nucleo"
-	@echo "	at - at32f415"
+	@echo "	dk415 - at32f415"
 	@echo "	dk230 - gd32e230"
 
 clean:
@@ -24,11 +24,11 @@ bp:
 bb:
 	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR)
 
-at:
-	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR)
+dk415:
+	@"$(MAKE)" -C target/dk415 BUILD_DIR=$(BUILD_DIR)/dk415 APP_DIR=$(APP_DIR)
 
 dk230:
-	@"$(MAKE)" -C target/230dk BUILD_DIR=$(BUILD_DIR)/230dk APP_DIR=$(APP_DIR)
+	@"$(MAKE)" -C target/dk230 BUILD_DIR=$(BUILD_DIR)/dk230 APP_DIR=$(APP_DIR)
 
 bb-program:
 	@"$(MAKE)" -C target/blueboard BUILD_DIR=$(BUILD_DIR)/blueboard APP_DIR=$(APP_DIR) program
@@ -39,11 +39,11 @@ bp-program:
 nc-program:
 	@"$(MAKE)" -C target/Nucleo BUILD_DIR=$(BUILD_DIR)/nucleo APP_DIR=$(APP_DIR) program
 
-at-program:
-	@"$(MAKE)" -C target/artery BUILD_DIR=$(BUILD_DIR)/artery APP_DIR=$(APP_DIR) program
+dk415-program:
+	@"$(MAKE)" -C target/dk415 BUILD_DIR=$(BUILD_DIR)/dk415 APP_DIR=$(APP_DIR) program
 
 dk230-program:
-	@"$(MAKE)" -C target/230dk BUILD_DIR=$(BUILD_DIR)/230dk APP_DIR=$(APP_DIR) program
+	@"$(MAKE)" -C target/dk230 BUILD_DIR=$(BUILD_DIR)/dk230 APP_DIR=$(APP_DIR) program
 
 
 CMDTEMPLATEHEADER =CmdTemplateHeader.in
