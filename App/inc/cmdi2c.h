@@ -14,11 +14,20 @@ class CmdI2c : public ConsoleCommand{
     i2cbus_t m_i2c;
     void printAsc(uint8_t *buf, int count);
 public:
-    void init(void *params) { console = static_cast<Console*>(params); m_i2c = {0};}
+    void init(void *params) {
+        console = static_cast<Console*>(params);
+        m_i2c = {
+            .handle = NULL,
+            .addr = 1,
+            .speed = 100,
+            .cfg = I2C_CFG_PINS,
+            .bus_num = 0
+        };
+    }
 
     char execute(int argc, char **argv);
     void help(void);
-    
+
     CmdI2c () : ConsoleCommand("i2c") { }
 };
 
