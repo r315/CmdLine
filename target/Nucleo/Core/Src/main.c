@@ -26,6 +26,7 @@
 #include "board.h"
 #include "app.h"
 #include "gpio.h"
+#include "i2c.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,6 +92,19 @@ static void displayInit()
 }
 #endif
 
+#ifdef ENABLE_I2C
+static i2cbus_t i2c;
+uint32_t i2cWrite(uint8_t device, const uint8_t *data, uint16_t len)
+{
+    return I2C_Write(&i2c, device, data, len);
+}
+
+uint32_t i2cRead(uint8_t device, uint8_t *data, uint16_t len)
+{
+    return I2C_Read(&i2c, device, data, len);
+}
+#endif
+
 void BOARD_LCD_Init(void)
 {
     #ifdef ENABLE_TFT_DISPLAY
@@ -130,6 +144,13 @@ int main(void)
 
 	#ifdef ENABLE_TFT_DISPLAY
     displayInit();
+    #endif
+
+    #ifdef ENABLE_I2C
+    i2c.bus_num = I2C_BUS0;
+    i2c.speed = 100;
+    i2c.cfg = I2C_CFG_PINS; // D4(SDA), D5(SCL)
+    I2C_Init(&i2c);
     #endif
 
 	App();

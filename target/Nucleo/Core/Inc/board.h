@@ -59,6 +59,10 @@ void SW_Reset(void);
 void DelayMs(uint32_t ms);
 uint32_t GetTick(void);
 
+uint32_t i2cWrite(uint8_t device, const uint8_t *data, uint16_t len);
+uint32_t i2cRead(uint8_t device, uint8_t *data, uint16_t len);
+
+
 #ifdef __cplusplus
 }
 #endif

@@ -171,7 +171,7 @@ USE_HAL_DRIVER \
 MSC_CLOCK \
 FIFO_INTERRUPT_SAFE=1 \
 FIFO_SIZE=128 \
-CONSOLE_WIDTH=64 \
+CONSOLE_WIDTH=128 \
 
 
 #######################################
