@@ -6,6 +6,10 @@
 #include "stimer.h"
 #include "tone.h"
 
+#ifdef ENABLE_SPI
+static spibus_t spidev;
+#endif
+
 #ifdef ENABLE_TFT_DISPLAY
 static drvlcdspi_t lcd0;
 #endif
@@ -85,16 +89,13 @@ clock_t clock(void){
 #ifdef ENABLE_TFT_DISPLAY
 void BOARD_LCD_Init(void)
 {
-    lcd0.spidev.bus = SPI_BUS0;
-    lcd0.spidev.freq = SPI_FREQ;
     lcd0.w = TFT_W;
     lcd0.h = TFT_H;
     lcd0.cs = LCD_CS;
     lcd0.cd = LCD_CD;
     lcd0.bkl = LCD_BKL;
-    lcd0.rst = 255;
-
-    SPI_Init(&lcd0.spidev);
+    lcd0.rst = LCD_RST;
+    lcd0.spidev = &spidev;
 
     LCD_Bkl(0);
     GPIO_Config(LCD_BKL, GPO_MS);
@@ -112,8 +113,8 @@ void BOARD_Init(void)
 
 	InitTimeBase();
 
-    RCC->APB2EN |= RCC_APB2EN_GPIOAEN;
-    RCC->APB2EN |= RCC_APB2EN_GPIOBEN;
+    RCC->APB2EN |= RCC_APB2EN_GPIOAEN | RCC_APB2EN_GPIOBEN | RCC_APB2EN_GPIOCEN | RCC_APB2EN_AFIOEN;
+    AFIO->MAP = AFIO_MAP_SWJTAG_CONF_JTAGDISABLE;
 
 	LED1_PIN_INIT;
 
@@ -124,8 +125,16 @@ void BOARD_Init(void)
     #endif
 
     SERIAL_Init();
-    #ifdef ENABLE_TFT_DISPLAY
-    BOARD_LCD_Init();
+
+    #ifdef ENABLE_SPI
+    spidev.bus = SPI_BUSX;
+    spidev.freq = SPI_FREQ;
+    spidev.cfg = SPI_MODE0 | SPI_CFG_DMA;
+
+    GPIO_Write(SPI_CS_PIN, GPIO_PIN_HIGH);
+    GPIO_Config(SPI_CS_PIN, GPO_MS);
+
+    SPI_Init(&spidev);
     #endif
 
     #ifdef ENABLE_TONE
