@@ -1,6 +1,10 @@
 
 #include "board.h"
 #include "wdt.h"
+#include "stk500.h"
+#include "rtttl.h"
+#include "tone.h"
+#include "debug.h"
 
 #include "stdinout.h"
 #include "console.h"
@@ -34,9 +38,19 @@
 #include "cmdds1086.h"
 #include "cmdrgbled.h"
 #include "cmdsd.h"
-#include "stk500.h"
-#include "rtttl.h"
-#include "tone.h"
+
+#ifdef ENABLE_DEBUG
+#define DBG_TAG     "APP : "
+#define DBG_APP_INF(...) DBG_INF(DBG_TAG __VA_ARGS__)
+#define DBG_APP_WRN(...) DBG_WRN(DBG_TAG __VA_ARGS__)
+#define DBG_APP_ERR(...) DBG_ERR(DBG_TAG __VA_ARGS__)
+#define DBG_APP_PRINT(...) DBG_PRINTF(__VA_ARGS__)
+#else
+#define DBG_APP_INF(...)
+#define DBG_APP_WRN(...)
+#define DBG_APP_ERR(...)
+#define DBG_APP_PRINT(...)
+#endif
 
 #define WDT_TIMEOUT     3000
 
@@ -127,6 +141,10 @@ extern "C" void App(void)
     // stdout_t and serialops_t must be compatible for this to work
     stdinout_t *userio = (stdinout_t*)SERIAL_GetSerialOps(-1);
 
+#ifdef ENABLE_DEBUG
+    dbg_init(userio);
+#endif
+
     WDT_Init(WDT_TIMEOUT);
 
 #if defined (BOARD_BLUEBOARD)
@@ -150,8 +168,6 @@ extern "C" void App(void)
 	console.cls();
 
 	console.printf("CPU Clock: %dMHz\n", SystemCoreClock / 1000000);
-
-	LED1_OFF;
 
 #if defined (ENABLE_TONE)
 	TONE_Volume(30);

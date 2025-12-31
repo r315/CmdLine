@@ -1,7 +1,7 @@
 ######################################
 # target
 ######################################
-TARGET =console-415dk
+TARGET =console-dk415
 
 #######################################
 # Features
@@ -18,7 +18,8 @@ _ENABLE_BENCHMARK_DHRYSTONE \
 _ENABLE_RGBLED \
 _ENABLE_AVR_PROGRAMMING \
 _ENABLE_DS1086 \
-ENABLE_TONE \
+_ENABLE_TONE \
+_ENABLE_DEBUG \
 
 #######################################
 # paths
@@ -79,6 +80,7 @@ $(BOARD_SOURCES) \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/stimer.c \
+$(LIB_PATH)/src/debug.c \
 
 
 CPP_SOURCES = \
