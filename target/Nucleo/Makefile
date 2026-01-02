@@ -17,6 +17,7 @@ TARGET =console-nucleo
 
 FEATURE_ENABLE = \
 ENABLE_I2C \
+ENABLE_SPI \
 ENABLE_SI5351 \
 ENABLE_DS1086 \
 ENABLE_BENCHMARK \
@@ -134,6 +135,7 @@ $(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdlmcshd.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/src/cmdi2c.cpp \
+$(APP_DIR)/src/cmdspi.cpp \
 $(APP_DIR)/src/cmdsi5351.cpp \
 $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/si5351/si5351.cpp \

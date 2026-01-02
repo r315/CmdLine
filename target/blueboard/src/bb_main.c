@@ -3,10 +3,11 @@
 #include "tim_lpc17xx.h"
 #include "app.h"
 
-
+#if defined(ENABLE_TFT_DISPLAY)
 void BOARD_LCD_Init(){
     BB_LCD_Init();
 }
+#endif
 
 #ifdef ENABLE_PWM
 void BOARD_PWM_Init(pwmchip_t *pwmchip)

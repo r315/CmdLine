@@ -100,7 +100,8 @@ char CmdDS1086::execute(int argc, char **argv)
         if(!xstrcmp("run", argv[2])){
             m_sweep.ds1086 = &ds1086;
             m_sweep.freq = m_sweep.start;
-            STIMER_Config(&m_timer, m_timer.interval, timer_callback);
+            m_timer.callback = timer_callback;
+            STIMER_Config(&m_timer);
             STIMER_Start(&m_timer);
         }
 

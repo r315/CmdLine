@@ -58,15 +58,18 @@ static void MX_USART2_UART_Init(void);
 void DelayMs(uint32_t ms) { HAL_Delay(ms); }
 uint32_t GetTick(void){ return HAL_GetTick(); }
 
+#ifdef ENABLE_SPI
+static spibus_t spibus;
+#endif
 
 #ifdef ENABLE_TFT_DISPLAY
 static drvlcdspi_t lcd0;
 
 static void displayInit()
 {
-    lcd0.spidev.bus = SPI_BUS0;
-    lcd0.spidev.cfg = SPI_CFG_DMA | SPI_CFG_CS;
-    lcd0.spidev.freq = 20000;
+    spibus.bus = SPI_BUS0;
+    spibus.cfg = SPI_CFG_DMA | SPI_CFG_CS;
+    spibus.freq = 20000;
 
     lcd0.w = 240;
     lcd0.h = 320;
@@ -74,8 +77,9 @@ static void displayInit()
     lcd0.cd = LCD_CD_PIN;
     lcd0.bkl = LCD_BKL_PIN;
     lcd0.rst = LCD_RST_PIN;
+    lcd0.spidev = &spibus;
 
-    SPI_Init(&lcd0.spidev);
+    SPI_Init(&spibus);
 
     GPIO_Config(lcd0.cs, GPO_MS);
     GPIO_Config(lcd0.cd, GPO_MS);

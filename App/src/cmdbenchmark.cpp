@@ -17,7 +17,6 @@
 #if defined(ENABLE_TFT_DISPLAY)
 static void setupDisplay(void){
     BOARD_LCD_Init();
-    LIB2D_Init();
     LIB2D_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight());
     LIB2D_String("PI Benchmark");
     uint16_t x = (LCD_GetWidth() - PBAR_WIDTH) / 2;

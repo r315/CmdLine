@@ -30,8 +30,6 @@ extern "C" {
 
 void BOARD_LCD_Init(void);
 void BOARD_PWM_Init(pwmchip_t *pwmchip);
-inline spibus_t *BOARD_GetSpiAux(void){return &spibus_1;}
-inline spibus_t *BOARD_GetSpiMain(void){return &spibus_sd;}
 
 #ifdef __cplusplus
 }
