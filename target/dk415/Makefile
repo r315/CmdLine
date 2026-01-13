@@ -180,7 +180,8 @@ LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 
 # C defines
 C_DEFS +=\
-BOARD_415DK \
+_BOARD_415DK \
+BOARD_PWRKT \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
 FIFO_INTERRUPT_SAFE \
@@ -233,13 +234,13 @@ LDFLAGS  =$(MCU) $(SPECS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,-gc-sections,-cref
 # Libraries
 #######################################
 
-LIBDIR =
+LIBDIR =-L.
 ifdef SEMIHOSTING
 SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
 else
 SPECS =--specs=nano.specs --specs=nosys.specs
-LIBS =-lstdc++
+LIBS =-lstdc++ -lusbpwrkt
 endif
 
 #######################################

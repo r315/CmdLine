@@ -1,5 +1,6 @@
 #include "board.h"
 #include "serial.h"
+#include "stdinout.h"
 
 #define UART_FUNCTION_NAME(a, b) UART##a##_##b
 #define HANDLER_NAME(a) serial##a##_handler
@@ -11,20 +12,40 @@ static inline int UART_FUNCTION_NAME(N, read)(char *buf, int len){ return UART_R
 static inline int UART_FUNCTION_NAME(N, writechar)(char c){ return UART_Write(&HANDLER_NAME(N).port, (uint8_t*)&c, 1);  } \
 static inline int UART_FUNCTION_NAME(N, write)(const char *buf, int len){ return UART_Write(&HANDLER_NAME(N).port, (const uint8_t*)buf, len);  }
 
-#define ASSIGN_UART_FUNCTIONS(I, N) \
-I->serial.available = UART_FUNCTION_NAME(N, Available); \
-I->serial.readchar = UART_FUNCTION_NAME(N, readchar); \
-I->serial.read = UART_FUNCTION_NAME(N, read); \
-I->serial.writechar = UART_FUNCTION_NAME(N, writechar); \
-I->serial.write = UART_FUNCTION_NAME(N, write);
+#define ASSIGN_SERIAL_OPS(S, N) \
+    S.available = UART_FUNCTION_NAME(N, Available); \
+    S.readchar = UART_FUNCTION_NAME(N, readchar); \
+    S.read = UART_FUNCTION_NAME(N, read); \
+    S.writechar = UART_FUNCTION_NAME(N, writechar); \
+    S.write = UART_FUNCTION_NAME(N, write);
 
 static serialport_t serial0_handler;
-serialops_t *default_sops;
+stdinout_t *stdinout;
+
+
 
 /**
  * Uart0/1/3
  * */
 UART_FUNCTIONS(0)
+
+
+extern void usb_pwrkt_init(void);
+extern void usb_pwrkt_connect(void);
+extern void usb_pwrkt_disconnect(void);
+
+extern int usb_pwrkt_available(void);
+extern char usb_pwrkt_peek(int idx);
+extern int usb_pwrkt_receive(char *buffer, int length);
+extern int usb_pwrkt_send(const char *data, int length);
+
+extern int usb_pwrkt_is_connected(void);
+extern void usb_pwrkt_handler(void);
+
+void USBOTG_IRQHandler(void)
+{
+    usb_pwrkt_handler();
+}
 
 /**
  * API
@@ -35,14 +56,21 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
         return ;
     }
 
+    #ifdef BOARD_PWRKT
+    hserial->serial.available = usb_pwrkt_available;
+    hserial->serial.read = usb_pwrkt_receive;
+    hserial->serial.write = usb_pwrkt_send;
+    usb_pwrkt_init();
+
+    #else
     switch(SERIAL_CONFIG_GET_NUM(config)){
         case SERIAL0:
-            ASSIGN_UART_FUNCTIONS(hserial, 0);
+            ASSIGN_SERIAL_OPS(hserial->serial, 0);
             hserial->port.bus = UART_BUS0;
             break;
 
-        default:
-            return;
+            default:
+        return;
     }
 
     serialbus_t *port = &hserial->port;
@@ -52,17 +80,21 @@ void SERIAL_Config(serialport_t *hserial, uint32_t config){
     port->stopbit = SERIAL_CONFIG_GET_STOP(config);
     port->datalength = SERIAL_CONFIG_GET_DATA(config);
 
-    UART_Init(&hserial->port);;
+    UART_Init(port);
+    #endif
 }
 
 void SERIAL_Init(void)
 {
+#ifdef BOARD_PWRKT
+    SERIAL_Config(&serial0_handler, SERIAL0);
+#else
     SERIAL_Config(&serial0_handler, SERIAL0 | SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
 
     GPIO_Config(PA_9, GPIO_USART1_TX);
     GPIO_Config(PA_10, GPIO_USART1_RX);
-
-    default_sops = SERIAL_GetSerialOps(-1);
+#endif
+    stdinout = (stdinout_t*)&serial0_handler.serial;
 }
 
 serialops_t *SERIAL_GetSerialOps(int32_t nr)

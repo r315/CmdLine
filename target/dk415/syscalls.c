@@ -52,7 +52,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
-#include "serial.h"
+#include "stdinout.h"
 
 #define UNUSED(X)   (void)X
 
@@ -66,7 +66,7 @@ register char * stack_ptr asm("sp");
 char *__env[1] = { 0 };
 char **environ = __env;
 
-extern serialops_t *default_sops;
+extern stdinout_t *stdinout;
 
 
 /* Functions */
@@ -95,18 +95,13 @@ void _exit (int status)
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
-	if(file == 0){
-        *ptr = default_sops->readchar();
-        return 1;
-    }
-
-    return default_sops->read(ptr, len);
+    return stdinout->read(ptr, len);
 }
 
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
     if(file == 1){
-        return default_sops->write(ptr, len);
+        return stdinout->write(ptr, len);
     }
 
 	return 0;

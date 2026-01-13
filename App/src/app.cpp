@@ -153,7 +153,7 @@ extern "C" void App(void)
     console.init(userio, "bluepill>");
 #elif defined (BOARD_NUCLEO_L412KB)
     console.init(userio, "nucleo>");
-#elif defined (BOARD_415DK)
+#elif defined (BOARD_415DK) || defined (BOARD_PWRKT)
     console.init(userio, "415dk>");
 #elif defined (BOARD_230DK)
     console.init(userio, "230dk>");

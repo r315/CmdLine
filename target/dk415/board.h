@@ -13,11 +13,15 @@ extern "C" {
 #include "gpio.h"
 #include "gpio_at32f4xx.h"
 #include "tone_at32f4xx.h"
+#include "pwm.h"
+
 // TODO add ifdef to select proper include
+#ifdef BOARD_PWRKT
 //#include "ili9341.h"
 //#include "st7735.h"
-//#include "st7789.h"
-#include "pwm.h"
+#include "st7789.h"
+#endif
+
 
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))

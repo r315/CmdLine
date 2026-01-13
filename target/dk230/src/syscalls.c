@@ -52,8 +52,7 @@
 #include <time.h>
 #include <sys/time.h>
 #include <sys/times.h>
-#include "syscalls.h"
-#include "serial.h"
+#include "stdinout.h"
 
 /* Variables */
 //#undef errno
@@ -65,7 +64,7 @@ char **environ = __env;
 extern int __io_putchar(int ch) __attribute__((weak));
 extern int __io_getchar(void) __attribute__((weak));
 
-extern serialops_t *default_sops;
+extern stdinout_t *stdinout;
 
 /* Functions */
 void initialise_monitor_handles()
@@ -91,22 +90,13 @@ void _exit (int status)
 
 __attribute__((weak)) int _read(int file, char *ptr, int len)
 {
-    if(file == 0){
-        *ptr = default_sops->readchar();
-        return 1;
-    }
-
-    return default_sops->read(ptr, len);
+    return stdinout->read(ptr, len);
 }
 
 // setvbuf(stdout, NULL, _IONBF, 0); // make stdio non-buffered, so that printf always calls __io_putchar
 __attribute__((weak)) int _write(int file, char *ptr, int len)
 {
-    if(file == 1){
-        return default_sops->write(ptr, len);
-    }
-
-	return 0;
+    return stdinout->write(ptr, len);
 }
 
 
