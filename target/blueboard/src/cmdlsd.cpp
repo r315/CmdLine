@@ -112,7 +112,7 @@ FRESULT CmdSd::listDir (const char* path, bool recursive)
             if (res != FR_OK || fno.fname[0] == 0) break;   /* Break on error or end of dir */
             if (fno.fattrib & AM_DIR && recursive) {                     /* It is a directory */
                 i = strlen(localpath);
-                xsprintf(&localpath[i], "/%s", fno.fname);
+                strsnprintf(&localpath[i], sizeof(localpath), "/%s", fno.fname);
                 res = listDir(localpath, true);                   /* Enter the directory */
                 if (res != FR_OK) break;
                 localpath[i] = 0;

@@ -10,7 +10,9 @@ static uint16_t adcvalues[4];
 static volatile uint8_t adc_flags = 0;
 static adctype_t s_adc;
 
-extern "C" void adcEoc(void) {
+extern "C" void adcEoc(uint16_t *buf, uint16_t len) {
+    (void)buf;
+    (void)len;
     adc_flags |= ADC_DONE;
 }
 
@@ -18,20 +20,17 @@ void CmdAdc::help(void){
 
 }
 
-//TODO: FIX for all cpus
+//TODO: FIX for all targets
 char CmdAdc::execute(int argc, char **argv){
     //uint8_t quit = 0;
 
-    if(!(adc_flags & ADC_INIT)){
-        s_adc.buf = adcvalues;
-    //s_adc.len = 4;
-        //s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
+    if(xstrcmp("init", (const char*)argv[1]) == 0) {
+        s_adc.eoc = adcEoc;
         ADC_Init(&s_adc);
         adc_flags = ADC_INIT;
     }
 
     if(xstrcmp("start", (const char*)argv[1]) == 0) {
-        s_adc.eoc = adcEoc;
         //s_adc.ch = ADC_CH3 | ADC_CH2 | ADC_CH1 | ADC_CH0;
         //ADC_Start(&s_adc);
         DelayMs(10);
