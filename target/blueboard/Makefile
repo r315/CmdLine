@@ -4,16 +4,16 @@
 #########################################################
 TARGET 		=console-blueboard
 EXEC		=$(BUILD_DIR)/$(TARGET)
-
+BOARD       =BOARD_BLUEBOARD
+DBG_PROBE   ="JLINK"
 #######################################
 # Features
 #######################################
 
-FEATURE_ENABLE = \
-_ENABLE_AVR_PROGRAMMING \
-_ENABLE_TFT_DISPLAY \
-ENABLE_BENCHMARK \
-ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK \
+#FEATURE_ENABLE +=ENABLE_AVR_PROGRAMMING
+FEATURE_ENABLE +=ENABLE_DISPLAY
+FEATURE_ENABLE +=ENABLE_BENCHMARK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
 
 #######################################
 # paths
@@ -27,6 +27,7 @@ DRIVER_PATH  =$(LIBEMB_PATH)/drv
 CMSIS_PATH   =$(LIBEMB_PATH)/CMSIS
 DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 BSP_PATH     =$(LIBEMB_PATH)/bsp/blueboard
+
 #######################################
 # Includes
 #######################################
@@ -111,39 +112,12 @@ $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/libs/stk500/stk500_service.cpp \
 $(APP_DIR)/src/cmdmsensor.cpp \
 
+ifneq ($(filter ENABLE_DEMO_GIF, $(FEATURE_ENABLE)),)
+CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
+CSRCS += $(APP_DIR)/libs/agif/agif.c
+endif
+
 LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
-#######################################
-# Misc
-#######################################
-
-C_DEFS = \
-BOARD_BLUEBOARD \
-_ENABLE_BUTTONS \
-_ENABLE_SDCARD \
-
-C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
-
-#######################################
-# CFLAGS
-#######################################
-
-DEVICE =LPC1768
-CPU =-mcpu=cortex-m3 -mthumb
-
-OPT =-O0 -g
-
-GCFLAGS =$(CPU) $(OPT) -Wall -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
-GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
-
-#######################################
-# Libraries
-#######################################
-
-SPECS=--specs=nosys.specs --specs=nano.specs #-u _printf_float
-LIBS =-lstdc++
-#LIBS +=-nostdlib
-LIBSPATH +=
-LDFLAGS =$(CPU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(EXEC).map,--cref
 
 #######################################
 # Objects
@@ -161,6 +135,38 @@ vpath %.s $(sort $(dir $(ASM_SOURCES)))
 CHECKSUM =$(LIBEMB_PATH)/tools/checksum
 
 #######################################
+# Misc
+#######################################
+DEVICE =LPC1768
+CPU =-mcpu=cortex-m3 -mthumb
+OPT =-O0 -g -Wall -Wextra
+
+ifneq ($(V),1)
+VERBOSE =@
+endif
+
+#######################################
+# CFLAGS
+#######################################
+
+C_DEFS = \
+$(BOARD) \
+$(foreach feature, $(FEATURE_ENABLE), $(feature))
+
+GCFLAGS =$(CPU) $(OPT) -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
+GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
+
+#######################################
+# Libraries
+#######################################
+
+SPECS=--specs=nosys.specs --specs=nano.specs
+LIBS =-lstdc++
+#LIBS +=-nostdlib
+LIBSPATH +=
+LDFLAGS =$(CPU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(EXEC).map,--cref
+
+#######################################
 # Tool binaries
 #######################################
 GCC_EXEC_PREFIX = arm-none-eabi
@@ -174,11 +180,16 @@ OBJDUMP = $(GCC_EXEC_PREFIX)-objdump
 DBG = $(GCC_EXEC_PREFIX)-insight
 REMOVE = rm -fR
 
-ifeq ($(JLINK_PROBE),1)
+ifeq ($(DBG_PROBE),"JLINK")
 # jlink works on valid Jlink probes
-PRG_DEP =$(PRG_CFG)
+ifeq ($(shell uname -s),Linux)
+JLK =JLinkExe
+else
+JLK =JLink
+endif
+PRG_DEP =$(EXEC).bin $(PRG_CFG)
 PRG_CFG =$(BUILD_DIR)/blueboard.jlink
-PRG_CMD =JLinkExe -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
+PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 else
 # openocd works but requires checksum
 # jlink probe driver has to be change to libusb
@@ -195,41 +206,41 @@ all: $(EXEC).elf stats
 
 $(EXEC).elf: $(OBJECTS)
 	@echo "Linking" $@
-	@$(GCC) $(LDFLAGS) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LIBS) -o $@
+	$(VERBOSE)$(GCC) $(LDFLAGS) -T$(LDSCRIPT) $(addprefix -L, $(LIBSPATH)) $(OBJECTS) $(LIBS) -o $@
 
 $(EXEC).hex: $(EXEC).elf
-	@$(OBJCOPY) -O ihex -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
+	$(VERBOSE)$(OBJCOPY) -O ihex -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 
 $(EXEC).bin: $(EXEC).elf #$(CHECKSUM)
 	@echo "Generating bin file" $@
-	$(OBJCOPY) -O binary -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
+	$(VERBOSE)$(OBJCOPY) -O binary -j .startup -j .text -j .data -j .ram_code -j .rodata $< $@
 #hd -n 128 $@
-	$(CHECKSUM) $@
+	$(VERBOSE)$(CHECKSUM) $@
 
 bin: $(EXEC).bin
 hex: $(EXEC).hex
 
 stats: $(EXEC).elf
 	@echo "---- Sections Summary ---"
-	@$(SIZE) -A -x $<
-	@$(SIZE) -B $<
+	$(VERBOSE)$(SIZE) -A -x $<
+	$(VERBOSE)$(SIZE) -B $<
 
 aslist: $(EXEC).elf
-	@$(OBJDUMP) -D $< > $(EXEC).lst
+	$(VERBOSE)$(OBJDUMP) -D $< > $(EXEC).lst
 
 clean:
 #$(REMOVE) $(BUILD_DIR)/*.obj $(BUILD_DIR)/*.o *.hex *.elf *.bin
-	$(REMOVE) $(BUILD_DIR)
+	$(VERBOSE)$(REMOVE) $(BUILD_DIR)
 
 rebuild: clean all
 
 
 $(BUILD_DIR)/blueboard.jlink: $(EXEC).hex
 	@echo "Creating Jlink configuration file"
-	@echo "loadfile $<" >> $@
+	@echo "loadfile $<" > $@
 	@echo "r" >> $@
 	@echo "q" >> $@
-	#@echo "erase" > $@
+	@echo "erase" >> $@
 
 $(BUILD_DIR)/blueboard.cfg:
 	@echo "Creating opencod configuration file"
@@ -262,15 +273,15 @@ minicom:
 #######################################
 $(BUILD_DIR)/%.o : %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  $<"
-	@$(GCC) $(GCFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
+	$(VERBOSE)$(GCC) $(GCFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
 
 $(BUILD_DIR)/%.obj : %.cpp Makefile | $(BUILD_DIR)
-	@echo "[CC]  $<"
-	@$(GPP) $(GPPFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
+	@echo "[CXX]  $<"
+	$(VERBOSE)$(GPP) $(GPPFLAGS) $(addprefix -I, $(C_INCLUDES)) $(addprefix -D, $(C_DEFS)) -c $< -o $@
 
 $(BUILD_DIR)/%.o : %.S | $(BUILD_DIR)
 	@echo "[AS]  $<"
-	@$(AS) $(ASFLAGS) $< -o $@
+	$(VERBOSE)$(AS) $(ASFLAGS) $< -o $@
 
 ifeq ($(GCC_COLORS),)
 export GCC_COLORS='error=01;31:warning=01;35:note=01;36:locus=01:quote=01'

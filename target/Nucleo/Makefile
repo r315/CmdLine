@@ -14,22 +14,25 @@
 # target
 ######################################
 TARGET =console-nucleo
+BOARD=BOARD_NUCLEO_L412KB
+#######################################
+# Features
+#######################################
 
-FEATURE_ENABLE = \
-ENABLE_I2C \
-ENABLE_SPI \
-ENABLE_SI5351 \
-ENABLE_DS1086 \
-ENABLE_BENCHMARK \
-ENABLE_BENCHMARK_DHRYSTONE \
-ENABLE_TONE \
-ENABLE_TFT_DISPLAY \
-ENABLE_DEMO_AMIGA \
-ENABLE_DEMO_SPIRAL \
-ENABLE_DEMO_SCROLL \
-ENABLE_DEMO_RCOLOR \
-ENABLE_DEMO_GRAPH \
-ENABLE_DEMO_GIF \
+FEATURE_ENABLE +=ENABLE_I2C
+FEATURE_ENABLE +=ENABLE_SPI
+FEATURE_ENABLE +=ENABLE_SI5351
+FEATURE_ENABLE +=ENABLE_DS1086
+FEATURE_ENABLE +=ENABLE_BENCHMARK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+FEATURE_ENABLE +=ENABLE_TONE
+FEATURE_ENABLE +=ENABLE_DISPLAY
+FEATURE_ENABLE +=ENABLE_DEMO_AMIGA
+FEATURE_ENABLE +=ENABLE_DEMO_SPIRAL
+FEATURE_ENABLE +=ENABLE_DEMO_SCROLL
+FEATURE_ENABLE +=ENABLE_DEMO_RCOLOR
+FEATURE_ENABLE +=ENABLE_DEMO_GRAPH
+#FEATURE_ENABLE +=ENABLE_DEMO_GIF
 
 #######################################
 # paths
@@ -49,10 +52,9 @@ else
 REPOSITORY :=C:/Users/hmr/STM32Cube/Repository/STM32Cube_FW_L4_V1.15.1
 endif
 
-# AS includes
-AS_INCLUDES =
-
-# C includes
+#######################################
+# Includes
+#######################################
 C_INCLUDES =  \
 $(TARGET_PATH)/Core/Inc \
 $(CMSIS_PATH)/Core/Include \
@@ -70,6 +72,10 @@ $(APP_DIR)/libs/dhrystone \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
+
+# AS includes
+AS_INCLUDES =
+
 ######################################
 # source
 ######################################
@@ -153,31 +159,97 @@ $(TARGET_PATH)/Core/Startup/startup_stm32l412kbux.s
 # link script
 LDSCRIPT =$(TARGET_PATH)/STM32L412KBUx_FLASH.ld
 
-######################################
-# building variables
-######################################
+#######################################
+# Objects
+#######################################
+# list of objects
+OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+# list of ASM program objects
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+vpath %.s $(sort $(dir $(ASM_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.o)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
+#######################################
+# Misc
+#######################################
+DEVICE =STM32L412xx
+
+CORE =cortex-m4 -mthumb
+# cpu
+CPU =-mcpu=$(CORE)
+# fpu
+FPU =-mfpu=fpv4-sp-d16
+# float-abi
+FLOAT-ABI =-mfloat-abi=hard -u_printf_float
+
 ifeq ($(RELEASE), 1)
 OPT =-Os
 else
 OPT =-Og -g -gdwarf-2
 endif
 
+ifneq ($(V),1)
+VERBOSE =@
+endif
+
+#######################################
+# CFLAGS
+#######################################
+MCU = $(CPU) $(FPU) $(FLOAT-ABI)
 
 # macros for gcc
 COMMON_DEFS = \
 __NUCLEO_L412KB__\
-BOARD_NUCLEO_L412KB \
-STM32L412xx \
+$(BOARD) \
+$(DEVICE) \
 USE_HAL_DRIVER \
 'VERSION_STRING="$(VERSION)"' \
+$(FEATURE_ENABLE) \
+
+# C defines
+C_DEFS =  \
+$(COMMON_DEFS) \
 MSC_CLOCK \
 FIFO_INTERRUPT_SAFE=1 \
 FIFO_SIZE=128 \
 CONSOLE_WIDTH=128 \
 
+# CPP defines
+CPP_DEFS = \
+$(COMMON_DEFS) \
+'__weak=__attribute__((weak))' \
+'__packed=__attribute__((__packed__))' \
+
+# AS defines
+AS_DEFS =
+
+COMMON_FLAGS =$(MCU) $(OPT) -Wall -Wextra -fdata-sections -ffunction-sections -u _printf_float
+
+# compile gcc flags
+ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)
+CFLAGS =$(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_FLAGS)
+CPPFLAGS =$(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
+
+# Generate dependency information
+#CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
+# Assembly options
+#CFLAGS += -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst))
 
 #######################################
-# binaries
+# Libraries
+#######################################
+
+
+SPECS =--specs=nosys.specs --specs=nano.specs
+LIBS =-lstdc++
+LIBDIR =
+LDFLAGS =$(MCU) $(OPT) $(SPECS) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
+
+#######################################
+# Tool binaries
 #######################################
 PREFIX =arm-none-eabi-
 # The gcc compiler bin path can be either defined in make command via GCC_PATH variable (> make GCC_PATH=xxx)
@@ -220,70 +292,15 @@ ifneq ($(shell git status --porcelain | grep -v '^??'),)
 endif
 
 #######################################
-# CFLAGS
-#######################################
-# cpu
-CPU =-mcpu=cortex-m4 -mthumb
-
-# fpu
-FPU =-mfpu=fpv4-sp-d16
-
-# float-abi
-FLOAT-ABI =-mfloat-abi=hard
-
-# mcu
-MCU = $(CPU) $(FPU) $(FLOAT-ABI)
-
-# AS defines
-AS_DEFS =
-
-COMMON_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
-
-# C defines
-C_DEFS =  \
-$(COMMON_DEFS) \
-
-# CPP defines
-CPP_DEFS = \
-$(COMMON_DEFS) \
-'__weak=__attribute__((weak))' \
-'__packed=__attribute__((__packed__))' \
-
-COMMON_FLAGS =$(MCU) $(OPT) -Wall -fdata-sections -ffunction-sections -u _printf_float
-
-# compile gcc flags
-ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)
-
-CFLAGS =$(addprefix -D, $(C_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_FLAGS)
-
-CPPFLAGS =$(addprefix -D, $(CPP_DEFS)) $(addprefix -I, $(C_INCLUDES)) $(COMMON_FLAGS) -fno-exceptions -fno-rtti
-
-# Generate dependency information
-#CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
-# Assembly options
-#CFLAGS += -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst))
-
-
-#######################################
-# LDFLAGS
-#######################################
-
-# libraries
-SPECS =--specs=nosys.specs --specs=nano.specs
-LIBS =-lm -lstdc++
-LIBDIR =
-LDFLAGS = $(MCU) $(SPECS) -u _printf_float -T$(LDSCRIPT) $(LIBDIR) -Wl,--gc-sections,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
-
-#######################################
 # Rules
 #######################################
 # default action: build all
 all: $(BUILD_DIR)/$(TARGET).elf $(BUILD_DIR)/$(TARGET).hex $(BUILD_DIR)/$(TARGET).bin
 	@echo
 ifeq ($(DEBUG), 1)
-	@$(SZ) -A -x $(BUILD_DIR)/$(TARGET).elf
+	$(VERBOSE)$(SZ) -A -x $(BUILD_DIR)/$(TARGET).elf
 else
-	@$(SZ) -B -x $(BUILD_DIR)/$(TARGET).elf
+	$(VERBOSE)$(SZ) -B -x $(BUILD_DIR)/$(TARGET).elf
 endif
 
 $(TARGET).cfg:
@@ -308,39 +325,29 @@ test:
 #######################################
 # build the application
 #######################################
-# list of objects
-OBJECTS = $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-# list of ASM program objects
-OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(CPP_SOURCES:.cpp=.o)))
-vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
-
 $(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	@echo "[CC]  " $<
-	@$(CC) -c $(CFLAGS) $< -o $@
+	$(VERBOSE)$(CC) -c $(CFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
 	@echo "[AS]  " $<
-	@$(AS) -c $(ASFLAGS) $< -o $@
+	$(VERBOSE)$(AS) -c $(ASFLAGS) $< -o $@
 
 $(BUILD_DIR)/%.o: %.cpp Makefile | $(BUILD_DIR)
 	@echo "[CC]  " $<
-	@$(CPP) -c $(CPPFLAGS) $< -o $@
+	$(VERBOSE)$(CPP) -c $(CPPFLAGS) $< -o $@
 
 $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 	@echo "[LD]  " $@
-	@$(LD) $(OBJECTS) $(LDFLAGS) -o $@ $(LIBS)
+	$(VERBOSE)$(LD) $(LDFLAGS) -T$(LDSCRIPT) $(OBJECTS) $(LIBS) -o $@
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Building hex file:" $@
-	@$(HEX) $< $@
+	$(VERBOSE)$(HEX) $< $@
 
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	@echo "Building bin file:" $@
-	@$(BIN) $< $@
+	$(VERBOSE)$(BIN) $< $@
 
 $(BUILD_DIR):
 	mkdir -p $@

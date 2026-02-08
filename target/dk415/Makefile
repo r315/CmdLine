@@ -8,11 +8,11 @@ TARGET =console-dk415
 #######################################
 
 FEATURE_ENABLE = \
-_ENABLE_SPI \
-ENABLE_I2C \
+ENABLE_SPI \
+_ENABLE_I2C \
 _ENABLE_I2S \
-_ENABLE_TFT_DISPLAY \
-ENABLE_PWM \
+ENABLE_DISPLAY \
+_ENABLE_PWM \
 _ENABLE_BENCHMARK \
 _ENABLE_BENCHMARK_DHRYSTONE \
 _ENABLE_RGBLED \
@@ -20,6 +20,7 @@ _ENABLE_AVR_PROGRAMMING \
 _ENABLE_DS1086 \
 _ENABLE_TONE \
 _ENABLE_DEBUG \
+ENABLE_DEMO_GIF
 
 #######################################
 # paths
@@ -53,6 +54,7 @@ $(APP_DIR)/libs/ws2812b \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/dhrystone \
 $(APP_DIR)/libs/tone \
+$(APP_DIR)/libs/agif \
 $(DRIVER_COMPONENT_PATH)/display \
 
 AS_INCLUDES =\
@@ -89,11 +91,13 @@ $(APP_DIR)/src/app.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 
 
-ifneq ($(filter ENABLE_TFT_DISPLAY, $(FEATURE_ENABLE)),)
+ifneq ($(filter ENABLE_DISPLAY, $(FEATURE_ENABLE)),)
 BOARD_SOURCES += \
 $(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_COMPONENT_PATH)/display/st7789.c \
+# \
 $(DRIVER_COMPONENT_PATH)/display/ili9341.c \
-#$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
+$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
 
 CSRCS += \
 $(LIB_PATH)/src/liblcd.c \
@@ -171,6 +175,11 @@ endif
 ifneq ($(filter ENABLE_PWM, $(FEATURE_ENABLE)),)
 BOARD_SOURCES += $(DRIVER_PATH)/pwm/pwm_at32f4xx.c
 CPP_SOURCES += $(APP_DIR)/src/cmdpwm.cpp
+endif
+
+ifneq ($(filter ENABLE_DEMO_GIF, $(FEATURE_ENABLE)),)
+CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
+CSRCS += $(APP_DIR)/libs/agif/agif.c
 endif
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
