@@ -165,7 +165,6 @@ int _write(int file, char *ptr, int len)
 {
     (void)file;
 
-	UART_Write(&hs1.bus, (uint8_t*)ptr, len);
-
-	return len;
+	//hs0.ops.write((const char*)ptr, len);
+    return ops4.write((const char*)ptr, len);
 }

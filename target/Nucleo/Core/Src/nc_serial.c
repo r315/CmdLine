@@ -63,7 +63,7 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
 void SERIAL_Init(void)
 {
     SERIAL_Config(&hs0, SERIAL0, SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
-    SERIAL_Config(&hs0, SERIAL1, SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
+    SERIAL_Config(&hs1, SERIAL1, SERIAL_DATA_8B | SERIAL_PARITY_NONE | SERIAL_STOP_1B | SERIAL_SPEED_115200);
 }
 
 serialops_t *SERIAL_GetSerialOps(int32_t nr)
@@ -75,18 +75,14 @@ serialops_t *SERIAL_GetSerialOps(int32_t nr)
     return &hs1.ops;
 }
 
-int kbhit (void)
+int _write(int file, char *ptr, int len)
 {
-    return hs0.ops.available();
+    (void)file;
+	return hs0.ops.write((const char*)ptr, len);
 }
 
-int __io_putchar(int ch)
+int _read(int file, char *ptr, int len)
 {
-    hs0.ops.writechar(ch);
-    return 0;
-}
-
-int __io_getchar(void)
-{
-    return hs0.ops.readchar();
+    (void)file;
+    return hs0.ops.read(ptr, len);
 }
