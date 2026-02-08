@@ -64,7 +64,7 @@ static ConsoleCommand *app_commands[] = {
 #if defined (ENABLE_MEM)
     new CmdMem(),
 #endif
-#if defined (ENABLE_TFT_DISPLAY)
+#if defined (ENABLE_DISPLAY)
 	new CmdTft(),
 #endif
 #if defined (ENABLE_BENCHMARK)

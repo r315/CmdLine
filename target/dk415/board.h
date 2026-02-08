@@ -73,7 +73,7 @@ extern "C" {
 #error "No board defined"
 #endif
 
-#ifdef ENABLE_TFT_DISPLAY
+#ifdef ENABLE_DISPLAY
 
 #ifdef TFT_DRV_ST7735
 #define TFT_W   128
@@ -89,7 +89,7 @@ extern "C" {
 #endif
 
 //extern const drvlcd_t *drvlcd;
-#endif /* ENABLE_TFT_DISPLAY */
+#endif /* ENABLE_DISPLAY */
 
 
 void BOARD_Init(void);

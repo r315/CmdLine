@@ -62,7 +62,7 @@ uint32_t GetTick(void){ return HAL_GetTick(); }
 static spibus_t spibus;
 #endif
 
-#ifdef ENABLE_TFT_DISPLAY
+#ifdef ENABLE_DISPLAY
 static drvlcdspi_t lcd0;
 
 static void displayInit()
@@ -111,7 +111,7 @@ uint32_t i2cRead(uint8_t device, uint8_t *data, uint16_t len)
 
 void BOARD_LCD_Init(void)
 {
-    #ifdef ENABLE_TFT_DISPLAY
+    #ifdef ENABLE_DISPLAY
     displayInit();
     #endif
 }
@@ -146,7 +146,7 @@ int main(void)
 
     SERIAL_Init();
 
-	#ifdef ENABLE_TFT_DISPLAY
+	#ifdef ENABLE_DISPLAY
     displayInit();
     #endif
 

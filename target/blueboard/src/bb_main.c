@@ -3,7 +3,7 @@
 #include "tim_lpc17xx.h"
 #include "app.h"
 
-#if defined(ENABLE_TFT_DISPLAY)
+#if defined(ENABLE_DISPLAY)
 void BOARD_LCD_Init(){
     BB_LCD_Init();
 }

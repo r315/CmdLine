@@ -14,7 +14,7 @@
 #define PBAR_HEIGHT     20
 #define PBAR_POSY       20
 
-#if defined(ENABLE_TFT_DISPLAY)
+#if defined(ENABLE_DISPLAY)
 static void setupDisplay(void){
     BOARD_LCD_Init();
     LIB2D_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight());
@@ -44,7 +44,7 @@ static uint32_t piBenchmark(uint32_t iterations, float *calc_pi){
     uint32_t start, time;
     float x = 1.0f;
     float pi = 1.0f;
-    #if defined(ENABLE_TFT_DISPLAY)
+    #if defined(ENABLE_DISPLAY)
     uint32_t progress = 1;
     #endif
 
@@ -52,7 +52,7 @@ static uint32_t piBenchmark(uint32_t iterations, float *calc_pi){
     for (uint32_t i = 2; i < iterations; i++) {
         x *= -1.0;
         pi += x / (2.0f * (float)i - 1.0f);
-        #if defined(ENABLE_TFT_DISPLAY)
+        #if defined(ENABLE_DISPLAY)
         updateDisplay(&progress);
         #endif
     }
@@ -90,7 +90,7 @@ char CmdBenchmark::execute(int argc, char **argv){
 
     if(xstrcmp("pi", (const char*)argv[1]) == 0){
         console->print("PI Benchmark\n");
-        #if defined(ENABLE_TFT_DISPLAY)
+        #if defined(ENABLE_DISPLAY)
         setupDisplay();
         #endif
 
@@ -101,7 +101,7 @@ char CmdBenchmark::execute(int argc, char **argv){
         console->printf("Iterations: %u\n", PI_ITERATIONS);
         console->printf("Time: %ums\n", time);
 
-        #if defined(ENABLE_TFT_DISPLAY)
+        #if defined(ENABLE_DISPLAY)
         LIB2D_SetPos(0, PBAR_POSY + 30);
         LIB2D_Printf("PI: %f\n", pi);
         LIB2D_Printf("Iter: %u\n", PI_ITERATIONS);

@@ -10,7 +10,7 @@
 static spibus_t spidev;
 #endif
 
-#ifdef ENABLE_TFT_DISPLAY
+#ifdef ENABLE_DISPLAY
 static drvlcdspi_t lcd0;
 #endif
 
@@ -86,7 +86,7 @@ clock_t clock(void){
     return (clock_t)GetTick();
 }
 
-#ifdef ENABLE_TFT_DISPLAY
+#ifdef ENABLE_DISPLAY
 void BOARD_LCD_Init(void)
 {
     lcd0.w = TFT_W;

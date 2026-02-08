@@ -15,7 +15,7 @@ void BOARD_Init(void){
     SERVO_Init();
 #endif
 
-#ifdef ENABLE_TFT_DISPLAY_
+#ifdef ENABLE_DISPLAY
     displayInit();
 #endif
 
@@ -29,7 +29,7 @@ void SW_Reset(void)
     NVIC_SystemReset();
 }
 
-#ifdef ENABLE_TFT_DISPLAY
+#ifdef ENABLE_DISPLAY
 static drvlcdspi_t lcd0;
 
 static void displayInit()
@@ -57,7 +57,7 @@ static void displayInit()
 
     LCD_FillRect(0, 0, lcd0.w, lcd0.h, 0);
 }
-#endif /* ENABLE_TFT_DISPLAY */
+#endif /* ENABLE_DISPLAY */
 
 #ifdef ENABLE_PWM
 /**
@@ -546,7 +546,7 @@ uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size)
 
 void BOARD_LCD_Init(void)
 {
-    #ifdef ENABLE_TFT_DISPLAY
+    #ifdef ENABLE_DISPLAY
     displayInit();
     #endif
 }
