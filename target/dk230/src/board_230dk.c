@@ -1,6 +1,5 @@
 #include <stdint.h>
 #include "board.h"
-#include "syscalls.h"
 #include "serial.h"
 #include "i2c.h"
 #include "system_gd32e23x.h"

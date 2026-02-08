@@ -144,13 +144,6 @@ void SERVO_SetPulse(uint16_t pulse);
 /**
  * UART
  * */
-#define BOARD_SERIAL_HANDLERS   BOARD_SERIAL0_HANDLER, BOARD_SERIAL4_HANDLER
-#define BOARD_SERIAL0           (&BOARD_SERIAL0_HANDLER.serial)
-#define BOARD_SERIAL1           BOARD_SERIAL0
-#define BOARD_SERIAL4           (&BOARD_SERIAL4_HANDLER.serial)
-#define BOARD_STDIO             BOARD_SERIAL4
-
-extern serialport_t BOARD_SERIAL_HANDLERS;
 
 void BOARD_LCD_Init(void);
 void SW_Reset(void);
