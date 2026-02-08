@@ -19,6 +19,8 @@ public:
 	}
 
     char execute(int argc, char **argv){
+        (void)argc;
+        (void)argv;
         //console->print("Version %d.%d.%d %s\n", VERSION_MAJOR, VERSION_MINOR, VERSION_PATCH, VERSION_STRING);
         console->printf("%s\n", VERSION_STRING);
         return CMD_OK;
@@ -26,7 +28,7 @@ public:
 
     void help(void){}
 
-    CmdVersion () : ConsoleCommand("version") { }    
+    CmdVersion () : ConsoleCommand("version") { }
 };
 
 

@@ -39,7 +39,7 @@ public:
     char execute(int argc, char **argv);
     void help(void);
 
-    CmdDS1086 () : ConsoleCommand("ds1086") {  m_i2c = {NULL, 0, 0}; }
+    CmdDS1086 () : ConsoleCommand("ds1086") {  m_i2c = {NULL, 0, 0, 0, 0}; }
 };
 
 

@@ -22,7 +22,9 @@ void CmdLmcshd::help(void)
 
 char CmdLmcshd::execute(int argc, char **argv)
 {
-    //uint8_t update;
+    (void)argc;
+    (void)argv;
+
     uint8_t c;
     uint8_t ack = 0x06;
     uint16_t buf[m_matrix_w * 2];

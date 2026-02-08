@@ -175,6 +175,8 @@ static int get_param(uint8_t k, uint8_t *v)
 
 static int set_param(uint8_t k, uint8_t v)
 {
+    (void)k;
+    (void)v;
     return 0;
 }
 
@@ -182,14 +184,15 @@ static int set_param(uint8_t k, uint8_t v)
 
 static void set_dev_settings(uint8_t *buf)
 {
+    (void)buf;
     /* buf points on the first setting */
-
     STATE_SET_FLAG(&state, HAS_DEV_SETTINGS);
 }
 
 static void set_ext_settings(uint8_t *buf, uint32_t n)
 {
-
+    (void)buf;
+    (void)n;
     STATE_SET_FLAG(&state, HAS_DEV_SETTINGS);
 }
 
@@ -313,6 +316,8 @@ static uint8_t read_osccal_at(uint8_t i)
 
 void stk500_timeout(uint8_t *buf, uint32_t isize, uint32_t *osize)
 {
+    (void)buf;
+    (void)isize;
     *osize = 0;
 }
 
@@ -505,7 +510,7 @@ stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
 
     case Cmnd_STK_SET_DEVICE_EXT:
     {
-        if (isize < (buf[1] + 2))
+        if (isize < (uint32_t)(buf[1] + 2))
             goto on_more_data;
 
         set_ext_settings(buf + 2, isize - 3);
@@ -528,7 +533,7 @@ stk500_error_t stk500_process(uint8_t *buf, uint32_t isize, uint32_t *osize)
             break;
         }
 
-        if (avrProgrammingEnable(1, 0) != -1)
+        if (avrProgrammingEnable(1, 0) != AVR_RESPONSE_FAIL)
             goto on_insync_ok;
 
         error = STK500_ERROR_FAILURE;

@@ -22,7 +22,8 @@ void CmdAdc::help(void){
 
 //TODO: FIX for all targets
 char CmdAdc::execute(int argc, char **argv){
-    //uint8_t quit = 0;
+    (void)argc;
+    (void)argv;
 
     if(xstrcmp("init", (const char*)argv[1]) == 0) {
         s_adc.eoc = adcEoc;

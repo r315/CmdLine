@@ -6,7 +6,7 @@
 extern "C" {
 #endif
 
-#include "board.h" 
+#include "board.h"
 #include "console.h"
 
 class CmdReset : public ConsoleCommand{
@@ -15,12 +15,15 @@ class CmdReset : public ConsoleCommand{
 public:
     void init(void *params) { console = static_cast<Console*>(params); }
     CmdReset () : ConsoleCommand("reset") { }
-    
+
     char execute(int argc, char **argv){
+        (void)argc;
+        (void)argv;
+
         SW_Reset();
-        return CMD_OK;        
+        return CMD_OK;
     }
-    
+
     void help(void){}
 };
 

@@ -70,6 +70,7 @@ void CmdSd::d_error(DRESULT res)
 	{
         default:
             console->printf("disk result error: %x\n", res);
+            break;
 
 		case RES_OK:
             console->println("disk result ok");

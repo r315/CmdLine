@@ -27,7 +27,7 @@ enum avresp{
 };
 
 
-uint8_t avrProgrammingEnable(uint8_t en, uint8_t trydw);
+enum avresp avrProgrammingEnable(uint8_t en, uint8_t trydw);
 void avrLoadProgramPage(uint8_t addr, uint16_t value);
 uint16_t avrReadProgram(uint16_t addr);
 void avrWriteProgramPage(uint16_t addr);

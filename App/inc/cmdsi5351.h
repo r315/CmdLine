@@ -5,7 +5,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
- 
+
 #include "console.h"
 #include "i2c.h"
 #include "si5351.h"
@@ -19,8 +19,8 @@ public:
 
     char execute(int argc, char **argv);
     void help(void);
-    
-    CmdSi5351 () : ConsoleCommand("si5351") {  m_i2c = {NULL, 0, 0}; }
+
+    CmdSi5351 () : ConsoleCommand("si5351") {  m_i2c = {NULL, 0, 0, 0, 0}; }
 };
 
 

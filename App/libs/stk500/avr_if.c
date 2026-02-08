@@ -56,19 +56,19 @@ static spibus_t *avrspibus;
 static uint32_t rst_pin;
 
 /**
- * @brief 
- * 
- * @return int 
+ * @brief
+ *
+ * @return int
  */
 int avrWaitReady(void){
     uint32_t timeout = 0x100000;
-    
-    while(timeout--){        
+
+    while(timeout--){
         memcpy(s_avr_device.data, POLL_RDY, AVR_INSTRUCTION_SIZE);
         SPI_Transfer(avrspibus, s_avr_device.data, AVR_INSTRUCTION_SIZE);
         if( !(s_avr_device.data[3] & 0x01)){
             return AVR_RESPONSE_OK;
-        }                
+        }
     }
 
     return AVR_RESPONSE_TIMEOUT;
@@ -78,12 +78,14 @@ int avrWaitReady(void){
  * @brief Enter program mode.
  * program mode is enabled if the device echoes second sent byte.
  * Reset signal must be kepted low for following commands.
- * 
+ *
  * @param en        Enable/Disable program mode
  * @param trydW     Try debug wire interface
- * @return uint8_t 
+ * @return uint8_t
  */
-uint8_t avrProgrammingEnable(uint8_t en, uint8_t trydW){
+enum avresp avrProgrammingEnable(uint8_t en, uint8_t trydW)
+{
+    (void)trydW;
 
     if(!en){
         /**
@@ -91,16 +93,16 @@ uint8_t avrProgrammingEnable(uint8_t en, uint8_t trydW){
         * */
         s_avr_device.status &= ~(AVR_PROGRAMMING_ACTIVE);
         AVR_RST1;
-        return AVR_RESPONSE_OK; 
+        return AVR_RESPONSE_OK;
     }
 
     if(s_avr_device.status & AVR_PROGRAMMING_ACTIVE)
     {
-       return AVR_RESPONSE_OK; 
+       return AVR_RESPONSE_OK;
     }
 
     memcpy(s_avr_device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
-    
+
     AVR_RST1;
     AVR_RSTY;
 
@@ -116,25 +118,25 @@ uint8_t avrProgrammingEnable(uint8_t en, uint8_t trydW){
         }
 
         // TODO: If fail, try using lower SCK
-        if(i == AVR_ENABLE_RETRIES) 
+        if(i == AVR_ENABLE_RETRIES)
             break;
-        
+
         memcpy(s_avr_device.data, DEVICE_PROG_ENABLE, AVR_INSTRUCTION_SIZE);
         #ifdef ENABLE_AVR_DW
-        if(trydW) 
+        if(trydW)
             avrDisable_dW();
-        #endif       
+        #endif
     }
-    
+
     AVR_RST1;
 
-    return AVR_RESPONSE_FAIL; 
+    return AVR_RESPONSE_FAIL;
 }
 
 /**
  * @brief Tryes to read device signature
- * 
- * @param buf 
+ *
+ * @param buf
  */
 void avrDeviceCode(uint8_t *buf){
 
@@ -160,9 +162,9 @@ void avrDeviceCode(uint8_t *buf){
 
 /**
  * @brief Write fuse
- * 
- * @param lh 
- * @param fuses 
+ *
+ * @param lh
+ * @param fuses
  */
 void avrWriteFuses(uint8_t lh, uint8_t fuses)
 {
@@ -175,10 +177,10 @@ void avrWriteFuses(uint8_t lh, uint8_t fuses)
         memcpy(s_avr_device.data, WRITE_FUSE_H, AVR_INSTRUCTION_SIZE);
     }else{
         memcpy(s_avr_device.data, WRITE_FUSE_L, AVR_INSTRUCTION_SIZE);
-    }   
+    }
 
     s_avr_device.data[3] = fuses;
-    
+
     SPI_Transfer(avrspibus, s_avr_device.data, AVR_INSTRUCTION_SIZE);
 
     avrWaitReady();
@@ -186,8 +188,8 @@ void avrWriteFuses(uint8_t lh, uint8_t fuses)
 
 /**
  * @brief Read fuses
- * 
- * @return uint32_t 
+ *
+ * @return uint32_t
  */
 uint32_t avrReadFuses(void)
 {
@@ -203,14 +205,14 @@ uint32_t avrReadFuses(void)
 
     memcpy(s_avr_device.data, READ_FUSE_H, AVR_INSTRUCTION_SIZE);
     SPI_Transfer(avrspibus, s_avr_device.data, AVR_INSTRUCTION_SIZE);
-    fuses |= s_avr_device.data[3] << 8;    
+    fuses |= s_avr_device.data[3] << 8;
 
     return fuses;
 }
 
 /**
  * @brief Chip erase
- * 
+ *
  */
 void avrChipErase(void){
 
@@ -227,9 +229,9 @@ void avrChipErase(void){
 
 /**
  * @brief Read program memory
- * 
- * @param addr 
- * @return uint16_t 
+ *
+ * @param addr
+ * @return uint16_t
  */
 uint16_t avrReadProgram(uint16_t addr){
     uint16_t value = 0;
@@ -252,16 +254,16 @@ uint16_t avrReadProgram(uint16_t addr){
     s_avr_device.data[1] = HIGH_BYTE(addr);
     s_avr_device.data[2] = LOW_BYTE(addr);
     SPI_Transfer(avrspibus, s_avr_device.data, AVR_INSTRUCTION_SIZE);
-    value |= s_avr_device.data[3];    
+    value |= s_avr_device.data[3];
 
     return value;
 }
 
 /**
  * @brief load data to program memory
- * 
- * @param addr 
- * @param value 
+ *
+ * @param addr
+ * @param value
  */
 void avrLoadProgramPage(uint8_t addr, uint16_t value){
 
@@ -274,7 +276,7 @@ void avrLoadProgramPage(uint8_t addr, uint16_t value){
     s_avr_device.data[2] = addr;
     s_avr_device.data[3] = LOW_BYTE(value);
     SPI_Transfer(avrspibus, s_avr_device.data, AVR_INSTRUCTION_SIZE);
-    
+
     /* load high byte */
     memcpy(s_avr_device.data, LOAD_PROGRAM_PAGE_H, AVR_INSTRUCTION_SIZE);
     s_avr_device.data[2] = addr;
@@ -284,14 +286,14 @@ void avrLoadProgramPage(uint8_t addr, uint16_t value){
 
 /**
  * @brief write to program memory
- * 
- * @param addr 
+ *
+ * @param addr
  */
-void avrWriteProgramPage(uint16_t addr){ 
+void avrWriteProgramPage(uint16_t addr){
 
     if( avrProgrammingEnable(YES, NO) != AVR_RESPONSE_OK){
         return;
-    }  
+    }
 
     memcpy(s_avr_device.data, WRITE_PROGRAM_PAGE, AVR_INSTRUCTION_SIZE);
     s_avr_device.data[1] = HIGH_BYTE(addr);
@@ -303,9 +305,9 @@ void avrWriteProgramPage(uint16_t addr){
 
 /**
  * @brief Get the Device Name object
- * 
- * @param sig 
- * @return const char* 
+ *
+ * @param sig
+ * @return const char*
  */
 const char *avrDeviceName(uint32_t sig)
 {
@@ -342,30 +344,30 @@ void bitTime(void){
 
 /****************************************************************************
  * Debug wire is a serial protocol used on AVR chips for debuging
- *                               
+ *
  * RESET     _______           _________   _   _   _   _   _______________
  *                  |         |         | | | | | | | | | |
  *                  |_________|         |_| |_| |_| |_| |_|
- * 
+ *
  *                  |<-150us->|         [      0x55       ]
- * 
+ *
  * Note: debugWire only available if fuse bit DWEN is programmed
- * 
- * If the DWEN bit is programmed the protocol is enabled and 
+ *
+ * If the DWEN bit is programmed the protocol is enabled and
  * starts upon a reset by sending a sync byte 0x55. This byte is used
- * to determine the baudrate by measuring each pulse length. 
- * Current implementation only measures the duration of the first low pule 
- * after the 150us initial pulse. The measured duration is set as bit time reference 
+ * to determine the baudrate by measuring each pulse length.
+ * Current implementation only measures the duration of the first low pule
+ * after the 150us initial pulse. The measured duration is set as bit time reference
  * and used for communication.
- * 
+ *
  * https://www.ruemohr.org/docs/debugwire.html
- * 
+ *
  * */
 
 /**
  * @brief Called when a falling edge is detected on reset pin (P0.23 for blueboard)
- * 
- * @param capValue 
+ *
+ * @param capValue
  */
 static void autoBaudCb(uint32_t capValue){
     static uint32_t delta = 0;
@@ -373,7 +375,7 @@ static void autoBaudCb(uint32_t capValue){
 		delta = capValue;
 	}else{
 		delta = capValue - delta - 1;
-		
+
 		TIM_Reset(LPC_TIM3);
         tbit = delta - 2;
 		delta = 0;
@@ -385,8 +387,8 @@ static void autoBaudCb(uint32_t capValue){
  * TODO: This can be optimized to use timer callback to send bits
  * and avoid blocking calls
  * This has to be tested due tos changes on timer API
- * 
- * @param data 
+ *
+ * @param data
  */
 static void avrSend_dW(uint8_t data){
 
@@ -405,7 +407,7 @@ static void avrSend_dW(uint8_t data){
 			LPC_GPIO0->FIOSET = (1<<24); //AVR_RST1;
 		}else{
 			LPC_GPIO0->FIOCLR = (1<<24); //AVR_RST0;
-		}		
+		}
 	}
 
     TIM_Restart(LPC_TIM3);
@@ -418,22 +420,22 @@ static void avrSend_dW(uint8_t data){
  * @brief Disables debug wire interface.
  * Only implemented for blueboard, too lazy
  * to port for other chips
- * 
+ *
  * Only works with P0_24 connected to RST and P00_23
- * 
- * @return uint8_t 
+ *
+ * @return uint8_t
  */
 uint8_t avrDisable_dW(void){
     uint32_t autobaud;
 
-    LPC_GPIO0->FIOSET = (1<<24); //AVR_RST1; 
+    LPC_GPIO0->FIOSET = (1<<24); //AVR_RST1;
     DelayMs(5);
-    LPC_GPIO0->FIOCLR = (1<<24); //AVR_RST0; 
+    LPC_GPIO0->FIOCLR = (1<<24); //AVR_RST0;
     DelayMs(5);
     TIM_InitCapture(LPC_TIM3);
     TIM_Capture(LPC_TIM3, 0, 1, autoBaudCb);  // 1: Capture on falling edge
     tbit = 0;
-    LPC_GPIO0->FIODIR &= ~(1<<24); //AVR_RSTZ; 
+    LPC_GPIO0->FIODIR &= ~(1<<24); //AVR_RSTZ;
     DelayMs(50); // Skip 150us initial pulse
     LPC_GPIO0->FIOSET = (1<<24); //AVR_RST1;
     LPC_GPIO0->FIODIR |= (1<<24); //AVR_RSTY;
@@ -477,18 +479,22 @@ uint8_t avrDisable_dW(void){
 //------------------------------------------------------------
 void spi_write_lock_bits(uint8_t value)
 {
+    (void)value;
 }
 
 void spi_write_fuse_bits(uint8_t value)
 {
+    (void)value;
 }
 
 void spi_write_fuse_high_bits(uint8_t value)
 {
+    (void)value;
 }
 
 void spi_write_extended_fuse_bits(uint8_t value)
 {
+    (void)value;
 }
 
 uint8_t spi_read_fuse_bits(void)
@@ -508,15 +514,19 @@ uint8_t spi_read_fuse_high_bits(void)
 
 void spi_read_calibration_bytes(uint8_t *buf)
 {
+    (void)buf;
 }
 
 uint8_t spi_read_eeprom(uint16_t addr)
 {
+    (void)addr;
     return 0;
 }
 
 void spi_write_eeprom(uint16_t addr, uint8_t value)
 {
+    (void)addr;
+    (void)value;
 }
 
 uint8_t spi_read_lock_bits(void)
@@ -531,8 +541,8 @@ uint8_t spi_write_read(uint8_t *buf)
 }
 
 void avr_if_Init(spibus_t *spi, uint32_t pin)
-{ 
-    avrspibus = spi;    
+{
+    avrspibus = spi;
     rst_pin = pin;
 
     SPI_Init(avrspibus);

@@ -417,6 +417,7 @@ typedef struct {
 void Stack_Dump(stackframe_t *stack){
     //GPIOJ->MODER = (1 << 26);
     //HAL_GPIO_WritePin(GPIOJ, GPIO_PIN_13, GPIO_PIN_SET);
+    (void)stack;
 
     __asm volatile(
         "bkpt #01 \n"

@@ -10,7 +10,7 @@ __attribute__ ((section(".data1.code")))
 uint32_t memTest(void *block, uint32_t len){
     uint8_t seed = 0x45;
     uint8_t *ptr = (uint8_t*)block;
-    
+
     SysTick->VAL = 0;
 
     do{
@@ -25,6 +25,8 @@ void CmdMem::help(void){
 }
 
 char CmdMem::execute(int argc, char **argv){
+    (void)argc;
+    (void)argv;
 
     if(xstrcmp("test", (const char*)argv[1]) == 0){
         console->printf("Ram0: %u\n", memTest(ram0, sizeof(ram0)));

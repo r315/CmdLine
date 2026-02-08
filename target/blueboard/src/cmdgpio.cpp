@@ -62,7 +62,11 @@ void CmdGpio::help(void){
     console->println("\t -b <bit>, set bit value");
 }
 
-char CmdGpio::execute(int argc, char **argv){
+char CmdGpio::execute(int argc, char **argv)
+{
+    (void)argc;
+    (void)argv;
+
 	uint32_t aux, pin;
 
 	if( !xstrcmp(argv[1],"init")){

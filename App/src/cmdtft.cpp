@@ -77,7 +77,7 @@ static void Graph_Cleanup(democtx_t *);
 static democtx_t demo_ctx;
 
 const demoops_t demos[] = {
-    {Tiles_Setup, Tiles_Loop},
+    {Tiles_Setup, Tiles_Loop, NULL},
 #if ENABLE_DEMO_AMIGA
     {AmigaBall_Setup, AmigaBall_Loop, NULL},
 #endif
@@ -466,18 +466,40 @@ char CmdTft::execute(int argc, char **argv){
         if (gif.open(GIF_DATA, GIF_DATA_SIZE, GIFDraw))
         {
             console->print("Successfully opened GIF, starting test...\n");
-            lTime = HAL_GetTick();
+            lTime = GetTick();
             while (gif.playFrame(false, NULL))
             {
                 iFrames++;
             }
             gif.close();
-            lTime = HAL_GetTick() - lTime;
+            lTime = GetTick() - lTime;
             console->printf("Decoded %d frames in %d miliseconds", iFrames, lTime);
         }
         return CMD_OK_LF;
     }
 #endif
+
+    if(xstrcmp("cmd", (const char*)argv[1]) == 0){
+        uint8_t *buf = (uint8_t*)demo_ctx.buf;
+        buf[0] = 0x40; //direct command to controller
+        buf[1] = 0;    // no parameters
+        buf[2] = 0x00; // Defaults to nop command
+
+        char **ptr = &argv[2];
+
+        if(ha2u(*ptr++, (uint32_t*)&val1)){
+            uint8_t len = 0;
+            buf[2] = val1; // command for controller
+            while(ha2u(*ptr++, (uint32_t*)&val1)){
+                buf[len + 3] = val1;
+                len++;
+            }
+            buf[1] = len;
+            LCD_DirectCommand(buf);
+        }
+        return CMD_OK;
+    }
+
     return CMD_BAD_PARAM;
 }
 
@@ -496,6 +518,7 @@ void CmdTft::fps(void){
 
 static void Tiles_Setup(democtx_t *ctx)
 {
+    (void)ctx;
     LCD_FillRect(0, 0, LCD_GetWidth(), LCD_GetHeight(), LCD_BLACK);
 }
 /**
@@ -814,11 +837,13 @@ static uint32_t Spiral_Loop(democtx_t *ctx){
 
 #if ENABLE_DEMO_SCROLL
 static void Scroll_Setup(democtx_t *ctx){
+    (void)ctx;
     ctx->value = 0;
     ctx->state = RNG_Get();
 }
 
 static void Scroll_Cleanup(democtx_t *ctx){
+    (void)ctx;
     LCD_Scroll(0);
 }
 
@@ -836,7 +861,7 @@ static uint32_t Scroll_Loop(democtx_t *ctx){
 #endif
 
 #if ENABLE_DEMO_RCOLOR
-static void RandomColors_Setup(democtx_t *ctx){ }
+static void RandomColors_Setup(democtx_t *ctx){ (void)ctx; }
 
 static uint32_t RandomColors_Loop(democtx_t *ctx)
 {
@@ -1036,6 +1061,7 @@ uint32_t Graph_Loop(democtx_t *ctx)
 
 void Graph_Cleanup(democtx_t *ctx)
 {
+    (void)ctx;
     LCD_SetOrientation(LCD_PORTRAIT);
 }
 #endif

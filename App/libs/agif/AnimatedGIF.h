@@ -33,7 +33,7 @@
 // Written by Larry Bank
 // Copyright (c) 2020 BitBank Software, Inc.
 // bitbank@pobox.com
-// 
+//
 // Designed to decode images up to 480x320
 // using less than 22K of RAM
 //
@@ -171,7 +171,7 @@ class AnimatedGIF
     void close();
     void reset();
     void begin(unsigned char ucPaletteType = GIF_PALETTE_RGB565_LE);
-    void begin(int iEndian, unsigned char ucPaletteType) { begin(ucPaletteType); };
+    void begin(int iEndian, unsigned char ucPaletteType) { (void)iEndian; begin(ucPaletteType); };
     int playFrame(bool bSync, int *delayMilliseconds, void *pUser = NULL);
     int getCanvasWidth();
     int allocFrameBuf(GIF_ALLOC_CALLBACK *pfnAlloc);
