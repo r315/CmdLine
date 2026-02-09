@@ -53,16 +53,16 @@
 ENTRY(Reset_Handler)
 
 /* Highest address of the user mode stack */
-_estack = 0x2000A000;    /* end of RAM */
+__estack = ORIGIN(RAM) + LENGTH(RAM);
 /* Generate a link error if heap and stack don't fit into RAM */
-_Min_Heap_Size = 0x200;      /* required amount of heap  */
-_Min_Stack_Size = 0x400; /* required amount of stack */
+_Min_Heap_Size = 0x2000;    /* required amount of heap  */
+_Min_Stack_Size = 0x1000;   /* required amount of stack */
 
 /* Specify the memory areas */
 MEMORY
 {
-RAM (xrw)      : ORIGIN = 0x20000000, LENGTH = 40K
-FLASH (rx)      : ORIGIN = 0x8000000, LENGTH = 128K
+    RAM (xrw)    : ORIGIN = 0x20000000, LENGTH = 40K
+    FLASH (rx)   : ORIGIN = 0x08000000, LENGTH = 128K
 }
 
 /* Define output sections */
@@ -102,8 +102,8 @@ SECTIONS
     . = ALIGN(8);
   } >FLASH
 
-  .ARM.extab   : 
-  { 
+  .ARM.extab   :
+  {
   . = ALIGN(8);
   *(.ARM.extab* .gnu.linkonce.armextab.*)
   . = ALIGN(8);
@@ -124,7 +124,7 @@ SECTIONS
     PROVIDE_HIDDEN (__preinit_array_end = .);
 	. = ALIGN(8);
   } >FLASH
-  
+
   .init_array :
   {
 	. = ALIGN(8);
@@ -148,7 +148,7 @@ SECTIONS
   _sidata = LOADADDR(.data);
 
   /* Initialized data sections goes into RAM, load LMA copy after code */
-  .data : 
+  .data :
   {
     . = ALIGN(8);
     _sdata = .;        /* create a global symbol at data start */
@@ -159,7 +159,7 @@ SECTIONS
     _edata = .;        /* define a global symbol at data end */
   } >RAM AT> FLASH
 
-  
+
   /* Uninitialized data section */
   . = ALIGN(4);
   .bss :
@@ -177,7 +177,7 @@ SECTIONS
   } >RAM
 
   /* User_heap_stack section, used to check that there is enough RAM left */
-  ._user_heap_stack :
+  .heap :
   {
     . = ALIGN(8);
     PROVIDE ( end = . );
@@ -187,7 +187,14 @@ SECTIONS
     . = ALIGN(8);
   } >RAM
 
-  
+  .stack (ORIGIN(RAM) + LENGTH(RAM) - _Min_Stack_Size) :
+  {
+    _sstack = .;
+    . += _Min_Stack_Size;
+    _estack = .;
+  } > RAM
+
+
 
   /* Remove information from the standard libraries */
   /DISCARD/ :
