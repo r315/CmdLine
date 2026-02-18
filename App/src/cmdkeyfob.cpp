@@ -28,12 +28,12 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
     if(len == 0){
         return;
     }
-    
+
     //console->print("\nData of %d edges\n", len);
 
     switch(view){
         case BITSTREAM_RAW:
-            for(uint32_t i = 0; i < len; i++){            
+            for(uint32_t i = 0; i < len; i++){
                 console->printf(" %d%c", bitstream[i], (i%2) == 0 ? ',' : '\n');
             }
             console->printchar('\n');
@@ -41,6 +41,7 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
 
         case BITSTREAM_WIDTH:
             console->print("Pulses duration in us :");
+            // fall through
         case BITSTREAM_JSON:
             console->printchar('[');
             for(uint32_t i = 0; i < len - 1; i++){
@@ -53,7 +54,7 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
         case BITSTREAM_DECODE:
         {
             if(bittime == 0){
-                bittime = bitstream[1] - bitstream[0];                
+                bittime = bitstream[1] - bitstream[0];
                 for(uint32_t i = 0; i < len - 1; i++){
                     int16_t diff = bitstream[i + 1] - bitstream[i];
                     if(abs(diff) < abs(bittime)){
@@ -85,12 +86,12 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
                 idle_state = !idle_state;
 
                 bit_count += bits;
-                
+
                 while(bits--){
                     console->printf("%d", idle_state);
-                }                
+                }
             }
-            console->printf("\n%d bits decoded\n", bit_count);     
+            console->printf("\n%d bits decoded\n", bit_count);
             break;
         }
 
@@ -100,7 +101,7 @@ void CmdKeyFob::printBitstream(bitstreamview_e view, uint16_t *bitstream, uint32
                 diff = (diff < 0) ? -diff : diff;
 
                 diff /= 10;
-                
+
                 while(diff){
                     console->printf("%d\r\n", i%2 * 100);
                     diff--;
@@ -171,14 +172,14 @@ char CmdKeyFob::execute(int argc, char **argv){
                     if(single_cap){
                         break;
                     }
-                }                
+                }
                 console->getchNonBlocking(&c);
             }while(c != '\n');
             return CMD_OK;
-        }   
+        }
     }
 
-    if(strcmp((const char*)argv[1], "decode") == 0){        
+    if(strcmp((const char*)argv[1], "decode") == 0){
         if(ia2i(argv[2], &val1)){  // get bit time
             bitstreamview_e format;
             if(strcmp((const char*)argv[3], "raw") == 0){
@@ -193,9 +194,9 @@ char CmdKeyFob::execute(int argc, char **argv){
         }
     }
 
-    if(strcmp((const char*)argv[1], "stop") == 0){         
+    if(strcmp((const char*)argv[1], "stop") == 0){
         DSCR_StopCapture();
-        m_capturing = false;    
+        m_capturing = false;
         return CMD_OK;
     }
 
@@ -209,7 +210,7 @@ char CmdKeyFob::execute(int argc, char **argv){
             switch(val1){
                 case 1:
                 case 3:
-                default: 
+                default:
                     break;
 
                 case 2:
@@ -223,7 +224,7 @@ char CmdKeyFob::execute(int argc, char **argv){
                     }
 
                     break;
-                    
+
             }
             DSCR_Replay(m_buf, m_cap_count);
             return CMD_OK;

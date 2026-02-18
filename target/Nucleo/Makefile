@@ -21,17 +21,17 @@ BOARD=BOARD_NUCLEO_L412KB
 
 FEATURE_ENABLE +=ENABLE_I2C
 FEATURE_ENABLE +=ENABLE_SPI
-FEATURE_ENABLE +=ENABLE_SI5351
-FEATURE_ENABLE +=ENABLE_DS1086
-FEATURE_ENABLE +=ENABLE_BENCHMARK
-FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
-FEATURE_ENABLE +=ENABLE_TONE
-FEATURE_ENABLE +=ENABLE_DISPLAY
-FEATURE_ENABLE +=ENABLE_DEMO_AMIGA
-FEATURE_ENABLE +=ENABLE_DEMO_SPIRAL
-FEATURE_ENABLE +=ENABLE_DEMO_SCROLL
-FEATURE_ENABLE +=ENABLE_DEMO_RCOLOR
-FEATURE_ENABLE +=ENABLE_DEMO_GRAPH
+#FEATURE_ENABLE +=ENABLE_SI5351
+#FEATURE_ENABLE +=ENABLE_DS1086
+#FEATURE_ENABLE +=ENABLE_BENCHMARK
+#FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+#FEATURE_ENABLE +=ENABLE_TONE
+#FEATURE_ENABLE +=ENABLE_DISPLAY
+#FEATURE_ENABLE +=ENABLE_DEMO_AMIGA
+#FEATURE_ENABLE +=ENABLE_DEMO_SPIRAL
+#FEATURE_ENABLE +=ENABLE_DEMO_SCROLL
+#FEATURE_ENABLE +=ENABLE_DEMO_RCOLOR
+#FEATURE_ENABLE +=ENABLE_DEMO_GRAPH
 #FEATURE_ENABLE +=ENABLE_DEMO_GIF
 
 #######################################
@@ -67,6 +67,7 @@ $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
+$(APP_DIR)/libs \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/dhrystone \
 $(APP_DIR)/libs/si5351 \
@@ -108,41 +109,34 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
-$(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
-$(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_PATH)/spi/spi_stm32l4xx.c \
 $(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
 $(DRIVER_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 $(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
-$(DRIVER_PATH)/tone/tone_stm32l4xx.c \
-$(LIB_PATH)/src/liblcd.c \
-$(LIB_PATH)/src/lib2d.c \
-$(LIB_PATH)/src/font.c \
-$(LIB_PATH)/src/strfunc.c \
+$(DRIVER_PATH)/rng/rng_software.c \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/rtttl.c \
 $(LIB_PATH)/src/stimer.c \
-$(APP_DIR)/libs/dhrystone/dhry_1.c \
-$(APP_DIR)/libs/dhrystone/dhry_2.c \
-$(APP_DIR)/libs/ws2812b/ws2812b.c \
+$(LIB_PATH)/src/strfunc.c \
+#$(APP_DIR)/libs/ws2812b/ws2812b.c \
+$(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
+$(DRIVER_PATH)/tone/tone_stm32l4xx.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdmem.cpp \
-$(APP_DIR)/src/cmdrfinder.cpp \
-$(APP_DIR)/src/cmdbuz.cpp \
-$(APP_DIR)/src/cmdkeyfob.cpp \
-$(APP_DIR)/src/cmdpwm.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
-$(APP_DIR)/src/cmdlmcshd.cpp \
-$(APP_DIR)/src/cmdbenchmark.cpp \
-$(APP_DIR)/src/cmdi2c.cpp \
 $(APP_DIR)/src/cmdspi.cpp \
-$(APP_DIR)/src/cmdsi5351.cpp \
+$(APP_DIR)/src/cmdi2c.cpp \
+#$(APP_DIR)/src/cmdsi5351.cpp \
+$(APP_DIR)/src/cmdkeyfob.cpp \
+$(APP_DIR)/src/cmdrfinder.cpp \
+$(APP_DIR)/src/cmdmem.cpp \
+$(APP_DIR)/src/cmdbuz.cpp \
+$(APP_DIR)/src/cmdtft.cpp \
+$(APP_DIR)/src/cmdpwm.cpp \
+$(APP_DIR)/src/cmdlmcshd.cpp \
 $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/si5351/si5351.cpp \
 $(APP_DIR)/libs/ds1086/ds1086.cpp \
@@ -150,6 +144,31 @@ $(APP_DIR)/libs/ds1086/ds1086.cpp \
 ifneq ($(filter ENABLE_DEMO_GIF,$(FEATURE_ENABLE)),)
 CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
 C_SOURCES += $(APP_DIR)/libs/agif/agif.c
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c \
+
+CPP_SOURCES +=$(APP_DIR)/src/cmdbenchmark.cpp
+endif
+
+ifneq ($(filter ENABLE_DISPLAY,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
+$(LIB_PATH)/src/liblcd.c \
+$(LIB_PATH)/src/lib2d.c \
+$(LIB_PATH)/src/font.c \
+
+endif
+
+ifneq ($(filter ENABLE_QSPI,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(APP_DIR)/libs/ext-loader/flash.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_qspi.c \
+
+CPP_SOURCES += $(APP_DIR)/src/cmdqspi.cpp
 endif
 
 # ASM sources
@@ -188,7 +207,7 @@ FLOAT-ABI =-mfloat-abi=hard -u_printf_float
 ifeq ($(RELEASE), 1)
 OPT =-Os
 else
-OPT =-Og -g -gdwarf-2
+OPT =-O0 -g -gdwarf-2
 endif
 
 ifneq ($(V),1)
