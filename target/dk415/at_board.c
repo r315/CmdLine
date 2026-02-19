@@ -82,10 +82,6 @@ inline uint32_t GetTick(void)
 }
 #endif
 
-clock_t clock(void){
-    return (clock_t)GetTick();
-}
-
 #ifdef ENABLE_DISPLAY
 void BOARD_LCD_Init(void)
 {

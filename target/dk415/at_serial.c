@@ -103,3 +103,8 @@ serialops_t *SERIAL_GetSerialOps(int32_t nr)
     return &hs0.ops;
 }
 
+int _write(int file, char *ptr, int len)
+{
+    (void)file;
+	return hs0.ops.write((const char*)ptr, len);
+}
