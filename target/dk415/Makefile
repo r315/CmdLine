@@ -7,20 +7,10 @@ BOARD =BOARD_415DK
 # Features
 #######################################
 
-FEATURE_ENABLE = \
-ENABLE_SPI \
-_ENABLE_I2C \
-_ENABLE_I2S \
-ENABLE_DISPLAY \
-_ENABLE_PWM \
-_ENABLE_BENCHMARK \
-_ENABLE_BENCHMARK_DHRYSTONE \
-_ENABLE_RGBLED \
-_ENABLE_AVR_PROGRAMMING \
-_ENABLE_DS1086 \
-_ENABLE_TONE \
-_ENABLE_DEBUG \
-ENABLE_DEMO_GIF
+#FEATURE_ENABLE +=ENABLE_AVR_PROGRAMMING
+FEATURE_ENABLE +=ENABLE_BENCHMARK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
 
 #######################################
 # paths
@@ -48,6 +38,7 @@ $(CMSIS_PATH)/Core/Include \
 $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(APP_DIR)/inc \
+$(APP_DIR)/libs \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/ws2812b \
@@ -71,42 +62,42 @@ $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
 $(DRIVER_SOC_PATH)/src/at32f4xx_rcc.c \
-$(DRIVER_PATH)/dma/dma_at32f4xx.c \
-$(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
-$(DRIVER_PATH)/uart/uart_at32f4xx.c \
-$(DRIVER_PATH)/wdt/wdt_at32f4xx.c \
 
-
-CSRCS = \
-$(BOARD_SOURCES) \
+APP_SOURCES =\
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/stimer.c \
 $(LIB_PATH)/src/debug.c \
-
+$(DRIVER_PATH)/dma/dma_at32f4xx.c \
+$(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
+$(DRIVER_PATH)/uart/uart_at32f4xx.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 
+C_SOURCES = \
+$(BOARD_SOURCES) \
+$(APP_SOURCES)
+
 
 ifneq ($(filter ENABLE_DISPLAY, $(FEATURE_ENABLE)),)
 BOARD_SOURCES += \
 $(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_COMPONENT_PATH)/display/st7789.c \
-# \
-$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
+
+#$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
 $(DRIVER_COMPONENT_PATH)/tft/st7735.c \
 
-CSRCS += \
+APP_SOURCES += \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 
 CPP_SOURCES += \
-$(APP_DIR)/src/cmdtft.cpp \
-
+$(APP_DIR)/src/cmdtft.cpp
 endif
 
 
@@ -136,13 +127,22 @@ CPP_SOURCES += $(APP_DIR)/src/cmdbenchmark.cpp
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK_DHRYSTONE, $(FEATURE_ENABLE)),)
-CSRCS = \
+C_SOURCES += \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c
 endif
 
+ifneq ($(filter ENABLE_BENCHMARK_COREMARK,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(APP_DIR)/libs/CoreMark/core_main.c \
+$(APP_DIR)/libs/CoreMark/core_state.c \
+$(APP_DIR)/libs/CoreMark/core_util.c \
+$(APP_DIR)/libs/CoreMark/core_list_join.c \
+$(APP_DIR)/libs/CoreMark/core_matrix.c
+endif
+
 ifneq ($(filter ENABLE_RGBLED, $(FEATURE_ENABLE)),)
-CSRCS +=$(APP_DIR)/libs/ws2812b/ws2812b.c
+C_SOURCES +=$(APP_DIR)/libs/ws2812b/ws2812b.c
 CPP_SOURCES +=$(APP_DIR)/src/cmdrgbled.cpp
 endif
 
@@ -153,7 +153,7 @@ $(APP_DIR)/libs/ds1086/ds1086.cpp
 endif
 
 ifneq ($(filter ENABLE_AVR_PROGRAMMING, $(FEATURE_ENABLE)),)
-CSRCS += \
+C_SOURCES += \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c
 
@@ -164,7 +164,7 @@ ifneq ($(filter ENABLE_TONE, $(FEATURE_ENABLE)),)
 BOARD_SOURCES += \
 $(DRIVER_PATH)/tone/tone_at32f4xx.c
 
-CSRCS += \
+C_SOURCES += \
 $(LIB_PATH)/src/rtttl.c \
 
 CPP_SOURCES += \
@@ -179,7 +179,7 @@ endif
 
 ifneq ($(filter ENABLE_DEMO_GIF, $(FEATURE_ENABLE)),)
 CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
-CSRCS += $(APP_DIR)/libs/agif/agif.c
+C_SOURCES += $(APP_DIR)/libs/agif/agif.c
 endif
 
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
@@ -191,6 +191,7 @@ LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 C_DEFS +=\
 $(BOARD) \
 $(DEVICE) \
+CONSOLE_WIDTH=128 \
 USE_STDPERIPH_DRIVER \
 FIFO_INTERRUPT_SAFE \
 UART_TX_MODE=UART_MODE_FIFO \
@@ -221,7 +222,7 @@ DEBUG =0
 OPT   =-O2
 else
 DEBUG =1
-OPT   =-O0 -g -gdwarf-2 -Wall #-Wextra
+OPT   =-O0 -g -gdwarf-2 -Wall -Wextra
 endif
 
 ifndef V
@@ -247,7 +248,7 @@ ifdef SEMIHOSTING
 SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
 else
-#SPECS =--specs=nano.specs --specs=nosys.specs
+SPECS =--specs=nano.specs --specs=nosys.specs
 LIBS =-lstdc++ #-lusbpwrkt
 endif
 
@@ -255,15 +256,14 @@ endif
 # Objects
 #######################################
 
-OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(CSRCS:.c=.o)))
-vpath %.c $(sort $(dir $(CSRCS)))
+OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
 
 OBJECTS += $(addprefix $(BUILD_DIR)/, $(notdir $(CPP_SOURCES:.cpp=.obj)))
 vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
 #OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
 #vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-#VPATH +=$(sort $(dir $(CSRCS)))
 
 #######################################
 # Tool binaries

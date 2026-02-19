@@ -19,12 +19,13 @@ BOARD=BOARD_NUCLEO_L412KB
 # Features
 #######################################
 
-FEATURE_ENABLE +=ENABLE_I2C
-FEATURE_ENABLE +=ENABLE_SPI
+#FEATURE_ENABLE +=ENABLE_I2C
+#FEATURE_ENABLE +=ENABLE_SPI
 #FEATURE_ENABLE +=ENABLE_SI5351
 #FEATURE_ENABLE +=ENABLE_DS1086
-#FEATURE_ENABLE +=ENABLE_BENCHMARK
-#FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+FEATURE_ENABLE +=ENABLE_BENCHMARK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
 #FEATURE_ENABLE +=ENABLE_TONE
 #FEATURE_ENABLE +=ENABLE_DISPLAY
 #FEATURE_ENABLE +=ENABLE_DEMO_AMIGA
@@ -81,7 +82,7 @@ AS_INCLUDES =
 # source
 ######################################
 # C sources
-C_SOURCES =  \
+TARGET_SOURCES =  \
 $(TARGET_PATH)/Core/Src/main.c \
 $(TARGET_PATH)/Core/Src/stm32l4xx_it.c \
 $(TARGET_PATH)/Core/Src/stm32l4xx_hal_msp.c \
@@ -89,57 +90,62 @@ $(TARGET_PATH)/Core/Src/system_stm32l4xx.c \
 $(TARGET_PATH)/Core/Src/syscalls.c \
 $(TARGET_PATH)/Core/Src/sysmem.c \
 $(TARGET_PATH)/Core/Src/nc_serial.c \
-$(TARGET_PATH)/Core/Src/dscr.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
+#$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_gpio.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
-$(DRIVER_PATH)/spi/spi_stm32l4xx.c \
+#$(DRIVER_PATH)/spi/spi_stm32l4xx.c \
 $(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
-$(DRIVER_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 $(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
-$(DRIVER_PATH)/wdt/wdt_dummy.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(LIB_PATH)/src/fifo.c \
-$(LIB_PATH)/src/rtttl.c \
-$(LIB_PATH)/src/stimer.c \
-$(LIB_PATH)/src/strfunc.c \
 #$(APP_DIR)/libs/ws2812b/ws2812b.c \
 $(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
 $(DRIVER_PATH)/tone/tone_stm32l4xx.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
+$(TARGET_PATH)/Core/Src/dscr.c \
+
+APP_SOURCES =\
+$(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/fifo.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(DRIVER_PATH)/uart/uart_stm32l4xx.c \
+#$(LIB_PATH)/src/rtttl.c \
+$(LIB_PATH)/src/stimer.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdspi.cpp \
+#$(APP_DIR)/src/cmdspi.cpp \
 $(APP_DIR)/src/cmdi2c.cpp \
 #$(APP_DIR)/src/cmdsi5351.cpp \
 $(APP_DIR)/src/cmdkeyfob.cpp \
 $(APP_DIR)/src/cmdrfinder.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 $(APP_DIR)/src/cmdbuz.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdpwm.cpp \
 $(APP_DIR)/src/cmdlmcshd.cpp \
 $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/si5351/si5351.cpp \
 $(APP_DIR)/libs/ds1086/ds1086.cpp \
+
+C_SOURCES =\
+$(TARGET_SOURCES) \
+$(APP_SOURCES)
 
 ifneq ($(filter ENABLE_DEMO_GIF,$(FEATURE_ENABLE)),)
 CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
@@ -147,11 +153,22 @@ C_SOURCES += $(APP_DIR)/libs/agif/agif.c
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK,$(FEATURE_ENABLE)),)
+CPP_SOURCES +=$(APP_DIR)/src/cmdbenchmark.cpp
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK_DHRYSTONE,$(FEATURE_ENABLE)),)
 C_SOURCES +=\
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
-$(APP_DIR)/libs/dhrystone/dhry_2.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c
+endif
 
-CPP_SOURCES +=$(APP_DIR)/src/cmdbenchmark.cpp
+ifneq ($(filter ENABLE_BENCHMARK_COREMARK,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(APP_DIR)/libs/CoreMark/core_main.c \
+$(APP_DIR)/libs/CoreMark/core_state.c \
+$(APP_DIR)/libs/CoreMark/core_util.c \
+$(APP_DIR)/libs/CoreMark/core_list_join.c \
+$(APP_DIR)/libs/CoreMark/core_matrix.c
 endif
 
 ifneq ($(filter ENABLE_DISPLAY,$(FEATURE_ENABLE)),)
@@ -161,6 +178,7 @@ $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 
+CPP_SOURCES +=$(APP_DIR)/src/cmdtft.cpp
 endif
 
 ifneq ($(filter ENABLE_QSPI,$(FEATURE_ENABLE)),)
@@ -202,7 +220,7 @@ CPU =-mcpu=$(CORE)
 # fpu
 FPU =-mfpu=fpv4-sp-d16
 # float-abi
-FLOAT-ABI =-mfloat-abi=hard -u_printf_float
+FLOAT_ABI =-mfloat-abi=hard
 
 ifeq ($(RELEASE), 1)
 OPT =-Os
@@ -217,7 +235,7 @@ endif
 #######################################
 # CFLAGS
 #######################################
-MCU = $(CPU) $(FPU) $(FLOAT-ABI)
+MCU = $(CPU) $(FPU) $(FLOAT_ABI)
 
 # macros for gcc
 COMMON_DEFS = \
@@ -227,14 +245,14 @@ $(DEVICE) \
 USE_HAL_DRIVER \
 'VERSION_STRING="$(VERSION)"' \
 $(FEATURE_ENABLE) \
+CONSOLE_WIDTH=128 \
 
 # C defines
 C_DEFS =  \
 $(COMMON_DEFS) \
-MSC_CLOCK \
 FIFO_INTERRUPT_SAFE=1 \
 FIFO_SIZE=128 \
-CONSOLE_WIDTH=128 \
+
 
 # CPP defines
 CPP_DEFS = \
@@ -245,7 +263,7 @@ $(COMMON_DEFS) \
 # AS defines
 AS_DEFS =
 
-COMMON_FLAGS =$(MCU) $(OPT) -Wall -Wextra -fdata-sections -ffunction-sections -u _printf_float
+COMMON_FLAGS =$(MCU) $(OPT) -Wall -Wextra -fdata-sections -ffunction-sections
 
 # compile gcc flags
 ASFLAGS =$(AS_DEFS) $(AS_INCLUDES) $(COMMON_FLAGS)

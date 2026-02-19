@@ -9,11 +9,12 @@ DBG_PROBE   ="JLINK"
 #######################################
 # Features
 #######################################
-
+FEATURE_ENABLE +=ENABLE_USB_VCP
+#FEATURE_ENABLE +=ENABLE_DISPLAY
 #FEATURE_ENABLE +=ENABLE_AVR_PROGRAMMING
-FEATURE_ENABLE +=ENABLE_DISPLAY
 FEATURE_ENABLE +=ENABLE_BENCHMARK
 FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
 
 #######################################
 # paths
@@ -35,6 +36,7 @@ C_INCLUDES =\
 $(TARGET_PATH)/inc \
 $(TARGET_PATH)/usbdrv \
 $(APP_DIR)/inc \
+$(APP_DIR)/libs \
 $(APP_DIR)/libs/minimp3 \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/stk500 \
@@ -52,54 +54,45 @@ $(BSP_PATH) \
 ######################################
 # Sources
 ######################################
-C_SOURCES =\
+TARGET_SOURCES =\
 $(CMSIS_PATH)/Device/NXP/LPC17xx/src/startup_LPC17xx.c \
 $(CMSIS_PATH)/Device/NXP/LPC17xx/src/system_LPC17xx.c \
+$(DRIVER_PATH)/clock/clock_lpc17xx.c \
+$(DRIVER_PATH)/gpio/gpio_lpc17xx.c \
+$(DRIVER_PATH)/dma/dma_lpc17xx.c \
+$(DRIVER_PATH)/uart/uart_lpc17xx.c \
+$(DRIVER_PATH)/timer/tim_lpc17xx.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(BSP_PATH)/blueboard.c \
 $(TARGET_PATH)/src/sysmem.c \
 $(TARGET_PATH)/src/syscalls.c \
-$(DRIVER_PATH)/clock/clock_lpc17xx.c \
-$(DRIVER_PATH)/timer/tim_lpc17xx.c \
-$(DRIVER_COMPONENT_PATH)/display/ili9328.c \
-$(DRIVER_PATH)/pwm/pwm_lpc17xx.c \
+$(TARGET_PATH)/src/bb_serial.c \
+$(TARGET_PATH)/src/bb_main.c \
+
+APP_SOURCES =\
+$(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/fifo.c \
+
+#$(DRIVER_PATH)/pwm/pwm_lpc17xx.c \
 $(DRIVER_PATH)/i2c/i2c_lpc17xx.c \
 $(DRIVER_PATH)/i2s/i2s_lpc17xx.c \
 $(DRIVER_PATH)/spi/spi_lpc17xx.c \
 $(DRIVER_PATH)/dac/dac_lpc17xx.c \
-$(DRIVER_PATH)/gpio/gpio_lpc17xx.c \
-$(DRIVER_PATH)/uart/uart_lpc17xx.c \
-$(DRIVER_PATH)/dma/dma_lpc17xx.c \
 $(DRIVER_PATH)/adc/adc_lpc17xx.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(DRIVER_PATH)/storage/memcard.c \
-$(LIB_PATH)/src/font.c \
-$(LIB_PATH)/src/fifo.c \
-$(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/debug.c \
 $(LIB_PATH)/src/button.c \
 $(LIB_PATH)/pff/pff.c \
-$(LIB_PATH)/src/lib2d.c \
-$(TARGET_PATH)/usbdrv/usbserial.c \
-$(TARGET_PATH)/usbdrv/usbhw_lpc.c \
-$(TARGET_PATH)/usbdrv/usbcontrol.c \
-$(TARGET_PATH)/usbdrv/usbstdreq.c \
-$(TARGET_PATH)/src/bb_serial.c \
-$(TARGET_PATH)/src/bb_main.c \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c \
-$(APP_DIR)/libs/dhrystone/dhry_1.c \
-$(APP_DIR)/libs/dhrystone/dhry_2.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdi2s.cpp \
+#$(APP_DIR)/src/cmdi2s.cpp \
 $(APP_DIR)/src/cmdgpio.cpp \
 $(APP_DIR)/src/cmdplayer.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
-$(APP_DIR)/src/cmdbenchmark.cpp \
 $(TARGET_PATH)/src/cmdspi.cpp \
 $(TARGET_PATH)/src/cmdlsd.cpp \
 $(TARGET_PATH)/src/cmdpwm.cpp \
@@ -108,13 +101,53 @@ $(TARGET_PATH)/src/cmdadc.cpp \
 $(TARGET_PATH)/src/cmdi2c.cpp \
 $(TARGET_PATH)/src/cmdavr.cpp \
 #$(APP_DIR)/src/cmdsbus.cpp \
-$(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/libs/stk500/stk500_service.cpp \
 $(APP_DIR)/src/cmdmsensor.cpp \
 
+C_SOURCES =\
+$(TARGET_SOURCES) \
+$(APP_SOURCES)
+
+ifneq ($(filter ENABLE_USB_VCP, $(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(TARGET_PATH)/usbdrv/usbserial.c \
+$(TARGET_PATH)/usbdrv/usbhw_lpc.c \
+$(TARGET_PATH)/usbdrv/usbcontrol.c \
+$(TARGET_PATH)/usbdrv/usbstdreq.c
+endif
+
+ifneq ($(filter ENABLE_DISPLAY, $(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(DRIVER_COMPONENT_PATH)/display/ili9328.c \
+$(LIB_PATH)/src/font.c \
+$(LIB_PATH)/src/lib2d.c \
+$(DRIVER_PATH)/rng/rng_software.c
+
+CPP_SOURCES +=$(APP_DIR)/src/cmdtft.cpp
+endif
+
 ifneq ($(filter ENABLE_DEMO_GIF, $(FEATURE_ENABLE)),)
-CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
-CSRCS += $(APP_DIR)/libs/agif/agif.c
+C_SOURCES +=$(APP_DIR)/libs/agif/agif.c
+CPP_SOURCES +=$(APP_DIR)/libs/agif/AnimatedGIF.cpp
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK,$(FEATURE_ENABLE)),)
+CPP_SOURCES +=$(APP_DIR)/src/cmdbenchmark.cpp
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK_DHRYSTONE,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(APP_DIR)/libs/dhrystone/dhry_1.c \
+$(APP_DIR)/libs/dhrystone/dhry_2.c
+endif
+
+ifneq ($(filter ENABLE_BENCHMARK_COREMARK,$(FEATURE_ENABLE)),)
+C_SOURCES +=\
+$(APP_DIR)/libs/CoreMark/core_main.c \
+$(APP_DIR)/libs/CoreMark/core_state.c \
+$(APP_DIR)/libs/CoreMark/core_util.c \
+$(APP_DIR)/libs/CoreMark/core_list_join.c \
+$(APP_DIR)/libs/CoreMark/core_matrix.c
 endif
 
 LDSCRIPT =$(TARGET_PATH)/lpc1768.ld
@@ -151,7 +184,8 @@ endif
 
 C_DEFS = \
 $(BOARD) \
-$(foreach feature, $(FEATURE_ENABLE), $(feature))
+$(foreach feature, $(FEATURE_ENABLE), $(feature)) \
+CONSOLE_WIDTH=128 \
 
 GCFLAGS =$(CPU) $(OPT) -fdata-sections -ffunction-sections -fno-unwind-tables #-fstack-usage
 GPPFLAGS=$(GCFLAGS) -fno-exceptions -fno-rtti
