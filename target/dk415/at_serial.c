@@ -39,11 +39,12 @@ extern int usb_pwrkt_send(const char *data, int length);
 extern int usb_pwrkt_is_connected(void);
 extern void usb_pwrkt_handler(void);
 
+#ifdef BOARD_PWRKT
 void USBOTG_IRQHandler(void)
 {
     usb_pwrkt_handler();
 }
-
+#endif
 /**
  * API
  * */
@@ -64,22 +65,22 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
     #else
     switch(nr){
         case SERIAL0:
-            ASSIGN_SERIAL_OPS(hserial->serial, 0);
-            hserial->port.bus = UART_BUS0;
+            ASSIGN_SERIAL_OPS(hserial->ops, 0);
+            hserial->bus.bus = UART_BUS0;
             break;
 
             default:
         return;
     }
 
-    serialbus_t *port = &hserial->port;
+    serialbus_t *serialbus = &hserial->bus;
 
-    port->speed = SERIAL_CONFIG_GET_SPEED(config);
-    port->parity = SERIAL_CONFIG_GET_PARITY(config);
-    port->stopbit = SERIAL_CONFIG_GET_STOP(config);
-    port->datalength = SERIAL_CONFIG_GET_DATA(config);
+    serialbus->speed = SERIAL_CONFIG_GET_SPEED(config);
+    serialbus->parity = SERIAL_CONFIG_GET_PARITY(config);
+    serialbus->stopbit = SERIAL_CONFIG_GET_STOP(config);
+    serialbus->datalength = SERIAL_CONFIG_GET_DATA(config);
 
-    UART_Init(port);
+    UART_Init(serialbus);
     #endif
 }
 

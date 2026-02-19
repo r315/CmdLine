@@ -21,8 +21,10 @@ I->ops.writechar = UART_FUNCTION_NAME(N, writechar); \
 I->ops.write = UART_FUNCTION_NAME(N, write);
 
 static serialport_t hs0, hs1, hs3;
-static fifo_t txfifo4, rxfifo4;
 static serialops_t ops4;
+#ifdef ENABLE_USB_VCP
+static fifo_t txfifo4, rxfifo4;
+#endif
 
 /**
  * Uart0/1/3
@@ -31,7 +33,7 @@ UART_FUNCTIONS(0)
 UART_FUNCTIONS(1)
 UART_FUNCTIONS(3)
 
-#if 1 // TODO: Fix
+#ifdef ENABLE_USB_VCP
 /**
  * virtual com port
  * */
@@ -111,7 +113,7 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
             ASSIGN_UART_FUNCTIONS(hserial, 3);
             hserial->bus.bus = UART_BUS3;
             break;
-
+#ifdef ENABLE_USB_VCP
         case SERIAL4:
             ops4.available = SERIAL4_Available;
             ops4.writechar = SERIAL4_WriteChar;
@@ -119,7 +121,7 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
             ops4.readchar = SERIAL4_ReadChar;
             ops4.read = SERIAL4_Read;
             SERIAL4_Init();
-
+#endif
         default:
             return;
     }

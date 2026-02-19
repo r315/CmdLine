@@ -2,7 +2,7 @@
 # target
 ######################################
 TARGET =console-dk415
-
+BOARD =BOARD_415DK
 #######################################
 # Features
 #######################################
@@ -189,8 +189,7 @@ LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 
 # C defines
 C_DEFS +=\
-_BOARD_415DK \
-BOARD_PWRKT \
+$(BOARD) \
 $(DEVICE) \
 USE_STDPERIPH_DRIVER \
 FIFO_INTERRUPT_SAFE \
@@ -248,8 +247,8 @@ ifdef SEMIHOSTING
 SPECS =--specs=rdimon.specs
 LDLIBS =-nostartfiles -lc -lrdimon
 else
-SPECS =--specs=nano.specs --specs=nosys.specs
-LIBS =-lstdc++ -lusbpwrkt
+#SPECS =--specs=nano.specs --specs=nosys.specs
+LIBS =-lstdc++ #-lusbpwrkt
 endif
 
 #######################################

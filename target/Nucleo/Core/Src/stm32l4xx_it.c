@@ -88,7 +88,7 @@ void SysTick_Handler(void)
 /******************************************************************************/
 
 /* USER CODE BEGIN 1 */
-
+#ifdef ENABLE_DSCR
 void TIM1_BRK_TIM15_IRQHandler(void)
 {
     DSCR_TimeoutHandler();
@@ -98,6 +98,6 @@ void TIM1_BRK_TIM15_IRQHandler(void)
 void TIM1_CC_IRQHandler(void)
 {
 }
-
+#endif
 /* USER CODE END 1 */
 /************************ (C) COPYRIGHT STMicroelectronics *****END OF FILE****/
