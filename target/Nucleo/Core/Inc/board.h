@@ -44,13 +44,6 @@ extern "C" {
 #define I2C_MAX_ITF         3
 #define I2C_IF0 	        0 //PB6->SCL, PB7<->SDA
 
-/**
- * SPI Header
- * */
-#define BOARD_SPIDEV_HANDLER    spi1
-#define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
-extern spibus_t BOARD_SPIDEV_HANDLER;
-
 void BOARD_Init(void);
 void BOARD_LCD_Init(void);
 void BOARD_PWM_Init(pwmchip_t *pwmchip);

@@ -45,9 +45,7 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-UART_HandleTypeDef huart1;
-UART_HandleTypeDef huart2;
-spibus_t BOARD_SPIDEV_HANDLER;
+
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
@@ -271,7 +269,7 @@ void SystemClock_Config(void)
 	*/
 static void MX_USART1_UART_Init(void)
 {
-
+        UART_HandleTypeDef huart1;
 		/* USER CODE BEGIN USART1_Init 0 */
 
 		/* USER CODE END USART1_Init 0 */
@@ -305,7 +303,7 @@ static void MX_USART1_UART_Init(void)
 	*/
 static void MX_USART2_UART_Init(void)
 {
-
+        UART_HandleTypeDef huart2;
 		/* USER CODE BEGIN USART2_Init 0 */
 
 		/* USER CODE END USART2_Init 0 */
