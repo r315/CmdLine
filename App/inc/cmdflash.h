@@ -1,6 +1,6 @@
 
-#ifndef _cmdspiflash_h_
-#define _cmdspiflash_h_
+#ifndef _cmdflash_h_
+#define _cmdflash_h_
 
 
 #ifdef __cplusplus
@@ -9,9 +9,9 @@ extern "C" {
 
 #include "console.h"
 
-class CmdSpiFlash : public ConsoleCommand{
+class CmdFlash : public ConsoleCommand{
 public:
-    CmdSpiFlash () : ConsoleCommand("spiflash") { }
+    CmdFlash () : ConsoleCommand("flash") { }
     void init(void *params) { console = static_cast<Console*>(params); }
     char execute(int argc, char **argv);
     void help(void);

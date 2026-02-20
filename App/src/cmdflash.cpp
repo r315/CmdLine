@@ -1,9 +1,9 @@
 #include "board.h"
-#include "cmdspiflash.h"
-#include "spi_flash.h"
+#include "cmdflash.h"
+#include "flash_dev.h"
 
 
-void CmdSpiFlash::flashDump(uint32_t addr){
+void CmdFlash::flashDump(uint32_t addr){
     uint8_t buf[16];
 
     if(!flashRead(addr, buf, 16)){
@@ -32,7 +32,7 @@ void CmdSpiFlash::flashDump(uint32_t addr){
 	console->print("|\n");
 }
 
-void CmdSpiFlash::help(void){
+void CmdFlash::help(void){
     console->println("Usage: spiflash <read <addr> | id | rs | ws>");
     console->println("\tread,\t read 256 bytes from address");
     console->println("\tid,\t read identification");
@@ -40,7 +40,7 @@ void CmdSpiFlash::help(void){
     console->println("\tws,\t write status register");
 }
 
-char CmdSpiFlash::execute(int argc, char **argv){
+char CmdFlash::execute(int argc, char **argv){
     uint32_t value;
     int32_t idx;
 

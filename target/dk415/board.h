@@ -15,14 +15,6 @@ extern "C" {
 #include "tone_at32f4xx.h"
 #include "pwm.h"
 
-// TODO add ifdef to select proper include
-#ifdef BOARD_PWRKT
-//#include "ili9341.h"
-//#include "st7735.h"
-#include "st7789.h"
-#endif
-
-
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
 
@@ -37,7 +29,9 @@ extern "C" {
 
 #define I2C_MAX_ITF     4
 
-#define SPI_FREQ        18000 //kHz
+#define SPI_BUSX        SPI_BUS0
+#define SPI_FREQ        1000 //kHz
+#define SPI_CS_PIN      PA_4
 
 /**
 * @brief Lcd Pin configuration:
@@ -49,6 +43,10 @@ extern "C" {
 #define LCD_SCLK    PA_5
 #define LCD_DI      PA_7
 #elif defined(BOARD_PWRKT)
+// TODO add ifdef to select proper include
+//#include "ili9341.h"
+//#include "st7735.h"
+#include "st7789.h"
 
 #define SPI_FREQ        18000 //kHz
 #define SPI_BUSX        SPI_BUS1

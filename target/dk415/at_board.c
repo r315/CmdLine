@@ -5,6 +5,7 @@
 #include "drvlcd.h"
 #include "stimer.h"
 #include "tone.h"
+#include "spiflash/flash_dev.h"
 
 #ifdef ENABLE_SPI
 static spibus_t spidev;
@@ -12,6 +13,10 @@ static spibus_t spidev;
 
 #ifdef ENABLE_DISPLAY
 static drvlcdspi_t lcd0;
+#endif
+
+#ifdef ENABLE_FLASH_SPI
+static flashdev_t flashdev;
 #endif
 
 #if 0
@@ -102,6 +107,13 @@ void BOARD_LCD_Init(void)
 }
 #endif
 
+#ifdef ENABLE_FLASH_SPI
+static void flashSpiSelect(uint8_t en)
+{
+    GPIO_Write(SPI_CS_PIN, en ? GPIO_PIN_LOW : GPIO_PIN_HIGH);
+}
+#endif
+
 void BOARD_Init(void)
 {
 	SystemInit();
@@ -135,6 +147,9 @@ void BOARD_Init(void)
 
     #ifdef ENABLE_TONE
     TONE_Init();
+    #endif
+
+    #ifdef ENABLE_FLASH_SPI
     #endif
 }
 

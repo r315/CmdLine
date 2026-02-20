@@ -14,7 +14,7 @@
 #include "cmdrfinder.h"
 #include "cmdadc.h"
 #include "cmdservo.h"
-#include "cmdspiflash.h"
+#include "cmdflash.h"
 #include "cmdflashrom.h"
 #include "cmdbuz.h"
 #include "cmdversion.h"
@@ -116,7 +116,7 @@ static ConsoleCommand *app_commands[] = {
 	new CmdServo(),
 #endif
 #if defined (ENABLE_FLASH)
-	new CmdSpiFlash(),
+	new CmdFlash(),
 #endif
 #if defined (ENABLE_FLASH_ROM)
 	new CmdFlashRom(),
