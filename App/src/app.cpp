@@ -118,7 +118,7 @@ static ConsoleCommand *app_commands[] = {
 #if defined (ENABLE_FLASH)
 	new CmdFlash(),
 #endif
-#if defined (ENABLE_FLASH_ROM)
+#if defined (ENABLE_FLASHROM)
 	new CmdFlashRom(),
 #endif
 #if defined (ENABLE_ENCODER)

@@ -1,7 +1,5 @@
 #include "board.h"
 #include "cmdflashrom.h"
-#include "spi_flash.h"
-#include "spi.h"
 
 typedef enum {
     IDLE = 0,
@@ -20,13 +18,13 @@ void CmdFlashRom::help(void){
 }
 
 char CmdFlashRom::execute(int argc, char **argv){
+    (void)argc;
+    (void)argv;
     uint8_t done = FALSE;
     uint8_t xfer_count = 0;
     spistate_e state = IDLE;
     uint8_t buf[16];
     uint16_t idx = 0;
-
-    BOARD_SPI_Init();
 
     console->print("FLASHROM OK");
 
@@ -60,11 +58,7 @@ char CmdFlashRom::execute(int argc, char **argv){
                     break;
                 }
 
-                BOARD_SPI_CS_LOW;
-                for(idx = 0; idx < xfer_count; idx++){
-                    buf[idx] = BOARD_SPI_Transfer(buf[idx], SPI_XFER_TIMEOUT);
-                }
-                BOARD_SPI_CS_HIGH;
+                spiExchange(buf, xfer_count, SPI_XFER_TIMEOUT);
 
                 for(idx = 0; idx < xfer_count; idx++){
                     //BOARD_STDIO->xputchar(buf[idx]);

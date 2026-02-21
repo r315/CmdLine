@@ -198,6 +198,9 @@ static void flashSelect(uint8_t en)
     GPIO_Write(SPI_CS_PIN, en ? GPIO_PIN_LOW : GPIO_PIN_HIGH);
 }
 
+#endif
+
+#ifdef ENABLE_FLASH
 flashdev_res_t flashRead(uint8_t *pbuffer, uint32_t addr, uint16_t len)
 {
     return flashDevRead(&flashdev, pbuffer, addr, len);
