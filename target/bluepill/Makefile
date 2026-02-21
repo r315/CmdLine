@@ -24,8 +24,12 @@ $(info FEATURES: $(FEATURE_ENABLE))
 BUILD_DIR 		:=build
 TARGET_PATH 	=$(CURDIR)
 
-LIB_PATH 		=$(LIBEMB_PATH)/lib
+APP_DIR			?=../../App
+LIB_PATH    	=$(LIBEMB_PATH)/lib
 DRIVER_PATH 	=$(LIBEMB_PATH)/drv
+CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
+CMSIS_PATH_CORE =$(CMSIS_PATH)/Core
+CMSIS_PATH_DEVICE =$(CMSIS_PATH)/Device/ST/STM32F1xx
 DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 
 ifeq ($(STM32REPO), )
@@ -39,73 +43,76 @@ $(info REPOSITORY: $(REPOSITORY))
 # Includes
 ######################################
 C_INCLUDES =  \
-Inc \
+$(TARGET_PATH)/Inc \
+$(CMSIS_PATH_CORE)/Include \
+$(CMSIS_PATH_DEVICE)/inc \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy \
-$(REPOSITORY)/Drivers/CMSIS/Device/ST/STM32F1xx/Include \
-$(REPOSITORY)/Drivers/CMSIS/Include \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Inc \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc \
 $(DRIVER_PATH)/inc \
-$(DRIVER_COMPONENT_PATH)/tft \
+$(LIB_PATH) \
 $(LIB_PATH)/inc \
-$(LIB_PATH)/pff \
-$(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs \
-$(APP_DIR)/libs/agif \
-$(APP_DIR)/libs/si5351 \
-$(APP_DIR)/libs/ds1086 \
 
 AS_INCLUDES =
 
 ######################################
 # Sources
 ######################################
-C_SOURCES =  \
+
+TARGET_SOURCES =\
+$(CMSIS_PATH_DEVICE)/src/startup_stm32f103xb.c \
+$(CMSIS_PATH_DEVICE)/src/system_stm32f1xx.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c \
-$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pcd.c \
+$(DRIVER_PATH)/clock/clock_stm32f1xx.c \
+$(DRIVER_PATH)/dma/dma_stm32f1xx.c \
+$(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(TARGET_PATH)/Src/bp_board.c \
+$(TARGET_PATH)/Src/bp_serial.c \
+$(TARGET_PATH)/Src/bp_main.c \
+$(TARGET_PATH)/Src/stm32f1xx_it.c \
+
+USB_SOURCES =\
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_usb.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ctlreq.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_core.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Core/Src/usbd_ioreq.c \
 $(REPOSITORY)/Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c \
-$(DRIVER_PATH)/uart/uart_stm32f10x.c \
-$(DRIVER_PATH)/spi/spi_stm32f1xx.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
-$(DRIVER_PATH)/dma/dma_stm32f1xx.c \
-$(DRIVER_PATH)/tone/tone_stm32f1xx.c \
-$(DRIVER_PATH)/wdt/wdt_dummy.c \
-$(DRIVER_PATH)/clock/clock_stm32f1xx.c \
-$(TARGET_PATH)/Src/bp_main.c \
 $(TARGET_PATH)/Src/usbd_desc.c \
 $(TARGET_PATH)/Src/usbd_conf.c \
 $(TARGET_PATH)/Src/usb_device.c \
-$(TARGET_PATH)/Src/stm32f1xx_it.c \
 $(TARGET_PATH)/Src/usbd_cdc_if.c \
-$(TARGET_PATH)/Src/system_stm32f1xx.c \
 $(TARGET_PATH)/Src/stm32f1xx_hal_msp.c \
-$(TARGET_PATH)/Src/board.c \
-$(TARGET_PATH)/Src/bp_serial.c \
-$(TARGET_PATH)/Src/syscalls.c \
-$(TARGET_PATH)/Src/sysmem.c \
+
+APP_SOURCES =\
+$(DRIVER_PATH)/uart/uart_stm32f10x.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
-$(LIB_PATH)/src/rtttl.c \
+$(TARGET_PATH)/Src/syscalls.c \
+$(TARGET_PATH)/Src/sysmem.c \
 
-#$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
+
+#$(LIB_PATH)/src/rtttl.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/tone/tone_stm32f1xx.c \
+$(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
 
+C_SOURCES = \
+$(TARGET_SOURCES) \
+$(APP_SOURCES) \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -134,6 +141,7 @@ $(DRIVER_COMPONENT_PATH)/tft/st7735.c
 endif
 
 ifneq ($(filter ENABLE_SPI,$(FEATURE_ENABLE)),)
+C_SOURCES +=$(DRIVER_PATH)/spi/spi_stm32f1xx.c
 CPP_SOURCES +=$(APP_DIR)/src/cmdspi.cpp
 endif
 

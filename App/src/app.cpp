@@ -1,7 +1,7 @@
 
 #include "board.h"
 #include "wdt.h"
-#include "stk500.h"
+#include "stk500/stk500.h"
 #include "rtttl.h"
 #include "tone.h"
 #include "debug.h"

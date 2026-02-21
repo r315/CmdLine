@@ -8,7 +8,7 @@ extern "C" {
 
 #include "console.h"
 #include "i2c.h"
-#include "si5351.h"
+#include "si5351/si5351.h"
 
 class CmdSi5351 : public ConsoleCommand{
     Console *console;

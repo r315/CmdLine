@@ -43,8 +43,8 @@ $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
 $(APP_DIR)/libs/dhrystone \
+$(LIB_PATH) \
 $(LIB_PATH)/inc \
-$(LIB_PATH)/pff \
 $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/NXP/LPC17xx/inc \
 $(CMSIS_PATH)/Core/Include \

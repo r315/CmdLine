@@ -7,8 +7,8 @@ extern "C" {
 #endif
 
 #include "console.h"
-#include "pff.h"
-#include "diskio.h"
+#include "pff/pff.h"
+#include "pff/diskio.h"
 #include "spi.h"
 
 

@@ -41,7 +41,7 @@ FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
 # Build path
 BUILD_DIR :=build
 TARGET_PATH =$(CURDIR)
-APP_DIR	?=../../App
+APP_DIR		?=../../App
 LIB_PATH    =$(LIBEMB_PATH)/lib
 DRIVER_PATH =$(LIBEMB_PATH)/drv
 CMSIS_PATH 	=$(LIBEMB_PATH)/CMSIS
@@ -65,15 +65,9 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Inc/Legacy \
 $(DRIVER_COMPONENT_PATH)/display \
 $(LIBEMB_PATH)/drv/inc \
 $(LIB_PATH)/inc \
-$(LIB_PATH)/pff \
-$(APP_DIR)/libs/stk500 \
+$(LIB_PATH) \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs \
-$(APP_DIR)/libs/agif \
-$(APP_DIR)/libs/dhrystone \
-$(APP_DIR)/libs/si5351 \
-$(APP_DIR)/libs/ds1086 \
-$(APP_DIR)/libs/ws2812b \
 
 # AS includes
 AS_INCLUDES =

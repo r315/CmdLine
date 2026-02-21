@@ -5,7 +5,7 @@
 #include "app.h"
 
 #if defined(ENABLE_BENCHMARK_DHRYSTONE)
-#include "dhry.h"
+#include "dhrystone/dhry.h"
 #endif
 
 #define PI_ITERATIONS   500000L

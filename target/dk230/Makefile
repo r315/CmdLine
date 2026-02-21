@@ -33,15 +33,10 @@ $(DRIVER_PATH)/inc \
 $(DRIVER_SOC_PATH)/inc \
 $(CMSIS_PATH)/Core/Include \
 $(CMSIS_PATH)/Device/Gigadevice/GD32E23x/inc \
+$(LIB_PATH) \
 $(LIB_PATH)/inc \
-$(LIB_PATH)/pff \
 $(APP_PATH)/inc \
-$(APP_DIR)/libs/si5351 \
-$(APP_DIR)/libs/ds1086 \
-$(APP_DIR)/libs/ws2812b \
-$(APP_DIR)/libs/stk500 \
-$(APP_DIR)/libs/dhrystone \
-$(APP_DIR)/libs/tone \
+$(APP_DIR)/libs \
 $(DRIVER_COMPONENT_PATH)/tft \
 
 AS_INCLUDES =\

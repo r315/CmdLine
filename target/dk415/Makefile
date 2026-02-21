@@ -37,17 +37,10 @@ $(DRIVER_SOC_PATH)/inc \
 $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
+$(LIB_PATH) \
 $(LIB_PATH)/inc \
-$(LIB_PATH)/pff \
 $(APP_DIR)/inc \
 $(APP_DIR)/libs \
-$(APP_DIR)/libs/si5351 \
-$(APP_DIR)/libs/ds1086 \
-$(APP_DIR)/libs/ws2812b \
-$(APP_DIR)/libs/stk500 \
-$(APP_DIR)/libs/dhrystone \
-$(APP_DIR)/libs/tone \
-$(APP_DIR)/libs/agif \
 $(DRIVER_COMPONENT_PATH)/display \
 
 AS_INCLUDES =\

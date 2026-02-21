@@ -8,7 +8,7 @@ extern "C" {
 
 #include "console.h"
 #include "i2c.h"
-#include "ds1086.h"
+#include "ds1086/ds1086.h"
 #include "stimer.h"
 
 typedef struct {
