@@ -198,6 +198,14 @@ static void flashSelect(uint8_t en)
     GPIO_Write(SPI_CS_PIN, en ? GPIO_PIN_LOW : GPIO_PIN_HIGH);
 }
 
+uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout)
+{
+    (void)timeout;
+    flashSelect(SET);
+    len = SPI_Xchg(&spidev, buffer, len);
+    flashSelect(RESET);
+    return len;
+}
 #endif
 
 #ifdef ENABLE_FLASH

@@ -106,6 +106,8 @@ flashdev_res_t flashRead(uint8_t *pbuffer, uint32_t addr, uint16_t len);
 flashdev_res_t flashWrite(uint8_t *pbuffer, uint32_t addr, uint16_t len);
 flashdev_res_t flashErase(uint32_t addr, enum flashdev_blk_sz size);
 
+uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout);
+
 #ifdef __cplusplus
 }
 #endif
