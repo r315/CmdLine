@@ -134,12 +134,8 @@ void SERVO_SetPulse(uint16_t pulse);
 #define BOARD_SPI_CK_PIN        PB_13
 #define BOARD_SPI_CS_PIN        PB_12
 
-
 #define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12)
 #define BOARD_SPI_CS_HIGH       GPIOB->BSRR = (1 << 12)
-
-#define BOARD_SPIDEV_HANDLER    spi2
-#define BOARD_SPIDEV            (&BOARD_SPIDEV_HANDLER)
 
 /**
  * UART
@@ -148,10 +144,7 @@ void SERVO_SetPulse(uint16_t pulse);
 void BOARD_LCD_Init(void);
 void SW_Reset(void);
 
-void BOARD_SPI_Init(void);
-uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout);
-uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size);
-uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size);
+uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout);
 
 #ifdef __cplusplus
 }

@@ -6,12 +6,16 @@
 #include "drvlcd.h"
 #include "tone.h"
 
-spibus_t BOARD_SPIDEV_HANDLER;
+#warning FIX: Use HSI
+
+#ifdef ENABLE_SPI
+static spibus_t spibus;
+#endif
 
 void BOARD_Init(void){
 
     SERIAL_Init();
- #ifdef ENABLE_SERVO
+#ifdef ENABLE_SERVO
     SERVO_Init();
 #endif
 
@@ -21,6 +25,29 @@ void BOARD_Init(void){
 
 #ifdef ENABLE_TONE
     TONE_Init();
+#endif
+
+#ifdef ENABLE_SPI
+    /**
+     *
+     * Pins:
+     * PB12 -> CS
+     * PB13 -> SCLK
+     * PB14 <- MISO
+     * PB15 -> MOSI
+     *
+     * */
+
+    spibus.bus = SPI_BUS1;
+    spibus.freq = 1000;
+    spibus.cfg = SPI_MODE0 | SPI_CFG_DMA;
+
+    SPI_Init(&spibus);
+
+    GPIO_Config(BOARD_SPI_DO_PIN, GPO_HS_AF);
+    GPIO_Config(BOARD_SPI_DI_PIN, GPO_HS_AF);
+    GPIO_Config(BOARD_SPI_CK_PIN, GPO_HS_AF);
+    GPIO_Config(BOARD_SPI_CS_PIN, GPO_MS);
 #endif
 }
 
@@ -486,62 +513,13 @@ void ADC_SetCallBack(void (*cb)(uint16_t*)){
 #endif /* ENABLE_ADC */
 
 #ifdef ENABLE_SPI
-/**
- * SPI API
- * This board uses SPI2
- *
- * Pins:
- * PB12 -> CS
- * PB13 -> SCLK
- * PB14 <- MISO
- * PB15 -> MOSI
- *
- * */
-#define DMA_CCR_PL_Medium   (1<<12)
-#define DMA_CCR_MSIZE_8     (0<<10)
-#define DMA_CCR_MSIZE_16    (1<<10)
-#define DMA_CCR_MSIZE_32    (2<<10)
-#define DMA_CCR_PSIZE_16    (1<<8)
-#define DMA_CCR_PSIZE_8     (0<<8)
-
-/**
- * @brief Configures SPI2 to be used by flashrom command
- *
- */
-void BOARD_SPI_Init(void)
+uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout)
 {
-    SPI_Init(BOARD_SPIDEV);
-
-    GPIO_Config(BOARD_SPI_DO_PIN, GPO_HS_AF);
-    GPIO_Config(BOARD_SPI_DI_PIN, GPO_HS_AF);
-    GPIO_Config(BOARD_SPI_CK_PIN, GPO_HS_AF);
-    GPIO_Config(BOARD_SPI_CS_PIN, GPO_MS);
-}
-
-uint16_t BOARD_SPI_Transfer(uint16_t data, uint32_t timeout)
-{
-    return SPI_Xchg(BOARD_SPIDEV, (uint8_t*)&data);
-}
-
-uint32_t BOARD_SPI_Read(uint8_t *dst, uint32_t size)
-{
-    uint8_t dummy;
-    if(size == 0 || dst == NULL){
-        return 0;
-    }
-
-    dummy = 0xFF;
-    for (uint32_t i = 0; i < size; i++, dst++){
-        *dst = SPI_Xchg(BOARD_SPIDEV, &dummy);
-    }
-
-    return size;
-}
-
-uint32_t BOARD_SPI_Write(uint8_t *src, uint32_t size)
-{
-    SPI_Transfer(BOARD_SPIDEV, src, size);
-    return size;
+    (void)timeout;
+    BOARD_SPI_CS_LOW;
+    SPI_Xchg(&spibus, buffer, len);
+    BOARD_SPI_CS_HIGH;
+    return len;
 }
 
 void BOARD_LCD_Init(void)

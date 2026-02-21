@@ -2,20 +2,19 @@
 # target
 ######################################
 TARGET =console_bluepill
-
+BOARD =BOARD_BLUEPILL HSI
 #######################################
 # Features
 #######################################
 
-FEATURE_ENABLE = \
-ENABLE_TONE \
+FEATURE_ENABLE += ENABLE_SPI
+#ENABLE_TONE \
 #ENABLE_BENCHMARK \
 #ENABLE_DISPLAY \
 #ENABLE_BENCHMARK_DHRYSTONE \
 #ENABLE_DEBUG MSC_CLOCK \
 #ENABLE_SERVO
 #ENABLE_I2C
-#ENABLE_SPI
 #ENABLE_ADC
 
 $(info FEATURES: $(FEATURE_ENABLE))
@@ -53,6 +52,7 @@ $(LIB_PATH)/inc \
 $(LIB_PATH)/pff \
 $(APP_DIR)/libs/stk500 \
 $(APP_DIR)/inc \
+$(APP_DIR)/libs \
 $(APP_DIR)/libs/agif \
 $(APP_DIR)/libs/si5351 \
 $(APP_DIR)/libs/ds1086 \
@@ -82,6 +82,7 @@ $(DRIVER_PATH)/gpio/gpio_stm32f1xx.c \
 $(DRIVER_PATH)/dma/dma_stm32f1xx.c \
 $(DRIVER_PATH)/tone/tone_stm32f1xx.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(DRIVER_PATH)/clock/clock_stm32f1xx.c \
 $(TARGET_PATH)/Src/bp_main.c \
 $(TARGET_PATH)/Src/usbd_desc.c \
 $(TARGET_PATH)/Src/usbd_conf.c \
@@ -109,15 +110,14 @@ $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c \
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-$(APP_DIR)/src/cmdtft.cpp \
+#$(APP_DIR)/src/cmdtft.cpp \
 $(APP_DIR)/src/cmdadc.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 $(APP_DIR)/src/cmdrfinder.cpp \
 $(APP_DIR)/src/cmdservo.cpp \
-$(APP_DIR)/src/cmdspiflash.cpp \
-$(APP_DIR)/src/cmdflashrom.cpp \
 $(APP_DIR)/src/cmdbenchmark.cpp \
 $(APP_DIR)/src/cmdbuz.cpp \
+#$(APP_DIR)/src/cmdflash.cpp \
 
 
 # ASM sources
@@ -133,9 +133,12 @@ $(LIB_PATH)/src/font.c \
 $(DRIVER_COMPONENT_PATH)/tft/st7735.c
 endif
 
-ifneq (,$(filter ENABLE_FLASH ENABLE_FLASH_ROM,$(FEATURES_ENABLE)))
-C_SOURCES += \
-$(APP_DIR)/libs/spiflash/spi_flash.c
+ifneq ($(filter ENABLE_SPI,$(FEATURE_ENABLE)),)
+CPP_SOURCES +=$(APP_DIR)/src/cmdspi.cpp
+endif
+
+ifneq ($(filter ENABLE_FLASHROM,$(FEATURE_ENABLE)),)
+CPP_SOURCES +=$(APP_DIR)/src/cmdflashrom.cpp
 endif
 
 #######################################
@@ -149,8 +152,9 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 $(DEVICE) \
+$(BOARD)\
 USE_HAL_DRIVER \
-BOARD_BLUEPILL \
+
 
 C_DEFS +=$(FEATURE_ENABLE)
 

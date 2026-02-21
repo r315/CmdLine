@@ -18,10 +18,6 @@ extern "C" {
 #include "button.h"
 #include "gpio.h"
 
-#define BOARD_Init              BB_Init
-#define BOARD_SPI_Write         BB_SPI_Write
-#define BOARD_SPI_SetFrequency  BB_SPI_SetFrequency
-
 #define DBG_PIN                 26
 #define DBG_PIN_HIGH            LPC_GPIO3->FIOSET = (1 << DBG_PIN)
 #define DBG_PIN_LOW             LPC_GPIO3->FIOCLR = (1 << DBG_PIN)

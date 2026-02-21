@@ -24,7 +24,7 @@ void BOARD_PWM_Init(pwmchip_t *pwmchip)
 
 int main()
 {
-    BOARD_Init();
+    BB_Init();
 
     CLOCK_InitUSBCLK();
     SERIAL_Init();
