@@ -14,6 +14,7 @@ extern "C" {
 #include "gpio_at32f4xx.h"
 #include "tone_at32f4xx.h"
 #include "pwm.h"
+#include "spiflash/flash_dev.h"
 
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
@@ -99,6 +100,11 @@ uint32_t ElapsedTicks(uint32_t start_ticks);
 uint32_t GetTick(void);
 void SW_Reset(void);
 void __debugbreak(void);
+
+flashdev_res_t flashReadId(uint32_t *id);
+flashdev_res_t flashRead(uint8_t *pbuffer, uint32_t addr, uint16_t len);
+flashdev_res_t flashWrite(uint8_t *pbuffer, uint32_t addr, uint16_t len);
+flashdev_res_t flashErase(uint32_t addr, enum flashdev_blk_sz size);
 
 #ifdef __cplusplus
 }

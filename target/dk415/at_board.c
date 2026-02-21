@@ -5,7 +5,6 @@
 #include "drvlcd.h"
 #include "stimer.h"
 #include "tone.h"
-#include "spiflash/flash_dev.h"
 
 #ifdef ENABLE_SPI
 static spibus_t spidev;
@@ -17,6 +16,8 @@ static drvlcdspi_t lcd0;
 
 #ifdef ENABLE_FLASH_SPI
 static flashdev_t flashdev;
+extern const flashdev_info_t at25sf321b;
+static void flashSelect(uint8_t en);
 #endif
 
 #if 0
@@ -107,13 +108,6 @@ void BOARD_LCD_Init(void)
 }
 #endif
 
-#ifdef ENABLE_FLASH_SPI
-static void flashSpiSelect(uint8_t en)
-{
-    GPIO_Write(SPI_CS_PIN, en ? GPIO_PIN_LOW : GPIO_PIN_HIGH);
-}
-#endif
-
 void BOARD_Init(void)
 {
 	SystemInit();
@@ -150,6 +144,11 @@ void BOARD_Init(void)
     #endif
 
     #ifdef ENABLE_FLASH_SPI
+    flashdev.bus = &spidev;
+    flashdev.info = &at25sf321b;
+    flashdev.select = flashSelect;
+
+    flashDevInit(&flashdev);
     #endif
 }
 
@@ -190,5 +189,32 @@ void BOARD_PWM_Init(pwmchip_t *pwmchip)
 
     GPIO_Config(PB_0, GPO_HS_AF);
     GPIO_Config(PB_1, GPO_HS_AF);
+}
+#endif
+
+#ifdef ENABLE_FLASH_SPI
+static void flashSelect(uint8_t en)
+{
+    GPIO_Write(SPI_CS_PIN, en ? GPIO_PIN_LOW : GPIO_PIN_HIGH);
+}
+
+flashdev_res_t flashRead(uint8_t *pbuffer, uint32_t addr, uint16_t len)
+{
+    return flashDevRead(&flashdev, pbuffer, addr, len);
+}
+
+flashdev_res_t flashWrite(uint8_t *pbuffer, uint32_t addr, uint16_t len)
+{
+    return flashDevWrite(&flashdev, pbuffer, addr, len);
+}
+
+flashdev_res_t flashReadId(uint32_t *id)
+{
+    return flashDevReadId(&flashdev, (uint8_t*)id);
+}
+
+flashdev_res_t flashErase(uint32_t addr, enum flashdev_blk_sz size)
+{
+    return flashDevErase(&flashdev, addr, size);
 }
 #endif

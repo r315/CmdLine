@@ -8,27 +8,35 @@
 extern "C" {
 #endif
 
-#define FLASH_DEV_SPI_MFD       0x90
-#define FLASH_DEV_SPI_JEDEC     0x9F
-#define FLASH_DEV_SPI_WREN      0x06
-#define FLASH_DEV_SPI_WRDI      0x04
-#define FLASH_DEV_SPI_RDSR      0x05
-#define FLASH_DEV_SPI_WRSR      0x01
-#define FLASH_DEV_SPI_READ      0x03
-#define FLASH_DEV_SPI_READ_FAST 0x0B
-#define FLASH_DEV_SPI_PAGE_PROG 0x02
-#define FLASH_DEV_SPI_SE        0xD7
-#define FLASH_DEV_SPI_BE        0xD8
-#define FLASH_DEV_SPI_CE        0xC7
+#define FLASH_DEV_SPI_REMS          0x90    // Read Electronic Manufacturer Signature
+#define FLASH_DEV_SPI_RDID          0x9F    // Read Device Identification
+#define FLASH_DEV_SPI_WREN          0x06
+#define FLASH_DEV_SPI_WRDI          0x04
+#define FLASH_DEV_SPI_RDSR          0x05
+#define FLASH_DEV_SPI_WRSR          0x01
+#define FLASH_DEV_SPI_READ          0x03
+#define FLASH_DEV_SPI_READ_FAST     0x0B
+#define FLASH_DEV_SPI_PAGE_PROG     0x02
+#define FLASH_DEV_SPI_BE_4K         0x20    // Block erase 4k
+#define FLASH_DEV_SPI_BE_32K        0x52
+#define FLASH_DEV_SPI_BE_64K        0xD8
+#define FLASH_DEV_SPI_CE            0xC7    // Chip erase
 
 
-#define FLASH_DEV_SPI_SR_WPEN         (1<<7)
-#define FLASH_DEV_SPI_SR_BP1          (1<<3)
-#define FLASH_DEV_SPI_SR_BP0          (1<<2)
-#define FLASH_DEV_SPI_SR_WEN          (1<<1)
-#define FLASH_DEV_SPI_SR_RDY          (1<<0)
+#define FLASH_DEV_SPI_SR_SRP0       (1<<7)
+#define FLASH_DEV_SPI_SR_BP4        (1<<6)
+#define FLASH_DEV_SPI_SR_BP3        (1<<5)
+#define FLASH_DEV_SPI_SR_BP2        (1<<4)
+#define FLASH_DEV_SPI_SR_BP1        (1<<3)
+#define FLASH_DEV_SPI_SR_BP0        (1<<2)
+#define FLASH_DEV_SPI_SR_WEN        (1<<1)
+#define FLASH_DEV_SPI_SR_BSY        (1<<0)
 
 
+flashdev_res_t flashDevSpiReadId(flashdev_t *fdev, uint8_t *id);
+flashdev_res_t flashDevSpiRead(flashdev_t *fdev, uint8_t *buffer, uint32_t addr, uint32_t len);
+flashdev_res_t flashDevSpiWrite(flashdev_t *fdev, const uint8_t *buffer, uint32_t addr, uint32_t len);
+flashdev_res_t flashDevSpiErase(flashdev_t *fdev, uint32_t addr, uint32_t size);
 
 #ifdef __cplusplus
 }
