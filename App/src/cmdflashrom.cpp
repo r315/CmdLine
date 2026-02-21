@@ -29,7 +29,7 @@ char CmdFlashRom::execute(int argc, char **argv){
     console->print("FLASHROM OK");
 
     while(done == FALSE){
-        char c = console->getChar();
+        char c = console->getch(); // No echo
 
         switch (state){
             case IDLE:
@@ -60,10 +60,7 @@ char CmdFlashRom::execute(int argc, char **argv){
 
                 spiExchange(buf, xfer_count, SPI_XFER_TIMEOUT);
 
-                for(idx = 0; idx < xfer_count; idx++){
-                    //BOARD_STDIO->xputchar(buf[idx]);
-                    console->printchar(buf[idx]);
-                }
+                console->write((const char*)buf, xfer_count);
 
                 state = IDLE;
                 break;
