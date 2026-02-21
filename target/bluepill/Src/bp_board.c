@@ -6,8 +6,6 @@
 #include "drvlcd.h"
 #include "tone.h"
 
-#warning FIX: Use HSI
-
 #ifdef ENABLE_SPI
 static spibus_t spibus;
 #endif
@@ -29,16 +27,20 @@ void BOARD_Init(void){
 
 #ifdef ENABLE_SPI
     /**
+     * SPI_BUS0
+     * PA4 -> CS
+     * P5 -> SCLK
+     * PA6 <- MISO
+     * PA7 -> MOSI
      *
-     * Pins:
+     * SPI_BUS1
      * PB12 -> CS
      * PB13 -> SCLK
      * PB14 <- MISO
      * PB15 -> MOSI
-     *
      * */
 
-    spibus.bus = SPI_BUS1;
+    spibus.bus = BOARD_SPI_BUS;
     spibus.freq = 1000;
     spibus.cfg = SPI_MODE0 | SPI_CFG_DMA;
 

@@ -129,6 +129,17 @@ void SERVO_SetPulse(uint16_t pulse);
 #define LCD_RST_PIN             -1
 #define LCD_BKL_PIN             PB_10
 
+#if 1
+#define BOARD_SPI_BUS           SPI_BUS0
+#define BOARD_SPI_DO_PIN        PA_7
+#define BOARD_SPI_DI_PIN        PA_6
+#define BOARD_SPI_CK_PIN        PA_5
+#define BOARD_SPI_CS_PIN        PA_4
+
+#define BOARD_SPI_CS_LOW        GPIOA->BRR = (1 << 4)
+#define BOARD_SPI_CS_HIGH       GPIOA->BSRR = (1 << 4)
+#else
+#define BOARD_SPI_BUS           SPI_BUS1
 #define BOARD_SPI_DO_PIN        PB_15
 #define BOARD_SPI_DI_PIN        PB_14
 #define BOARD_SPI_CK_PIN        PB_13
@@ -136,6 +147,7 @@ void SERVO_SetPulse(uint16_t pulse);
 
 #define BOARD_SPI_CS_LOW        GPIOB->BRR = (1 << 12)
 #define BOARD_SPI_CS_HIGH       GPIOB->BSRR = (1 << 12)
+#endif
 
 /**
  * UART

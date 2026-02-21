@@ -93,7 +93,7 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
     switch(nr){
         case SERIAL0:
             ASSIGN_UART_FUNCTIONS(hserial, 0);
-            hserial->bus.bus = UART_BUS1;
+            hserial->bus.bus = UART_BUS0;
             break;
 #if 0 // TODO: Fix
         case SERIAL4:
@@ -127,14 +127,14 @@ void SERIAL_Init(void)
 
 serialops_t *SERIAL_GetSerialOps(int32_t nr)
 {
-    switch(nr){
+    /* switch(nr){
         case SERIAL0:
         case SERIAL1:
-            return &hs0.ops;
+            return ;
 
         default:
             break;
-    }
+    } */
 
-    return NULL;
+    return &hs0.ops;
 }
