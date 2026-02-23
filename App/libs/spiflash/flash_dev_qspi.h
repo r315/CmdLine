@@ -1,8 +1,8 @@
-#ifndef _flash_dev_spi_h_
-#define _flash_dev_spi_h_
+#ifndef _flash_dev_qspi_h_
+#define _flash_dev_qspi_h_
 
-#include "stdint.h"
-#include "spi.h"
+#include <stdint.h>
+#include "flash_dev.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -13,20 +13,16 @@ extern "C" {
 #define FLASH_DEV_SPI_WREN          0x06
 #define FLASH_DEV_SPI_WRDI          0x04
 #define FLASH_DEV_SPI_RDSR          0x05
-#define FLASH_DEV_SPI_RDSR2         0x35
 #define FLASH_DEV_SPI_WRSR          0x01
 #define FLASH_DEV_SPI_READ          0x03
 #define FLASH_DEV_SPI_READ_FAST     0x0B
 #define FLASH_DEV_SPI_PAGE_PROG     0x02
 #define FLASH_DEV_SPI_BE_4K         0x20    // Block erase 4k
 #define FLASH_DEV_SPI_BE_32K        0x52
-#define FLASH_DEV_SPI_RST_EN        0x66
-#define FLASH_DEV_SPI_RESET         0x99
 #define FLASH_DEV_SPI_BE_64K        0xD8
 #define FLASH_DEV_SPI_CE            0xC7    // Chip erase
-#define FLASH_DEV_SPI_READ_QUAD     0xEB
 
-// Standard status register
+
 #define FLASH_DEV_SPI_SR_SRP0       (1<<7)
 #define FLASH_DEV_SPI_SR_BP4        (1<<6)
 #define FLASH_DEV_SPI_SR_BP3        (1<<5)
@@ -35,21 +31,13 @@ extern "C" {
 #define FLASH_DEV_SPI_SR_BP0        (1<<2)
 #define FLASH_DEV_SPI_SR_WEN        (1<<1)
 #define FLASH_DEV_SPI_SR_BSY        (1<<0)
-// status register 2
-#define FLASH_DEV_SPI_SR_SUS1       (1<<7)
-#define FLASH_DEV_SPI_SR_CMP        (1<<6)
-#define FLASH_DEV_SPI_SR_LB3        (1<<5)
-#define FLASH_DEV_SPI_SR_LB2        (1<<4)
-#define FLASH_DEV_SPI_SR_LB1        (1<<3)
-#define FLASH_DEV_SPI_SR_SUS2       (1<<2)
-#define FLASH_DEV_SPI_SR_QE         (1<<1)
-#define FLASH_DEV_SPI_SR_SRP1       (1<<0)
 
+flashdev_res_t flashDevQspiReadId(flashdev_t *fdev, uint8_t *id);
+flashdev_res_t flashDevQspiRead(flashdev_t *fdev, uint8_t *buffer, uint32_t addr, uint32_t len);
+flashdev_res_t flashDevQspiWrite(flashdev_t *fdev, const uint8_t *buffer, uint32_t addr, uint32_t len);
+flashdev_res_t flashDevQspiErase(flashdev_t *fdev, uint32_t addr, uint32_t size);
 
-flashdev_res_t flashDevSpiReadId(flashdev_t *fdev, uint8_t *id);
-flashdev_res_t flashDevSpiRead(flashdev_t *fdev, uint8_t *buffer, uint32_t addr, uint32_t len);
-flashdev_res_t flashDevSpiWrite(flashdev_t *fdev, const uint8_t *buffer, uint32_t addr, uint32_t len);
-flashdev_res_t flashDevSpiErase(flashdev_t *fdev, uint32_t addr, uint32_t size);
+flashdev_res_t flashDevQspiSingleCmd(flashdev_t *fdev, uint8_t cmd);
 
 #ifdef __cplusplus
 }

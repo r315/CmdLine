@@ -24,9 +24,10 @@ typedef enum flashdev_res{
 }flashdev_res_t;
 
 enum flash_if{
-    FLASH_IF_PARALLEL,
-    FLASH_IF_SPI,
-    FLASH_IF_QSPI,
+    FLASH_ITF_NONE = 0,
+    FLASH_IF_PARALLEL = 1,
+    FLASH_IF_SPI = 2,
+    FLASH_IF_QSPI = 4,
 };
 
 enum flashdev_blk_sz{
