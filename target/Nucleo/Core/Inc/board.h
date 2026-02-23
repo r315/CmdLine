@@ -6,10 +6,12 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+
 #include "main.h"
 #include "pwm.h"
 #include "drvlcd.h"
 #include "spi.h"
+#include "qspi.h"
 #include "rng.h"
 #include "serial.h"
 #include "uart.h"
@@ -17,6 +19,7 @@ extern "C" {
 #include "st7735.h"
 #include "dma_stm32l4xx.h"
 #include "gpio_stm32l4xx.h"
+#include "spiflash/flash_dev.h"
 
 /**
  * General macros
@@ -54,6 +57,11 @@ uint32_t GetTick(void);
 
 uint32_t i2cWrite(uint8_t device, const uint8_t *data, uint16_t len);
 uint32_t i2cRead(uint8_t device, uint8_t *data, uint16_t len);
+
+flashdev_res_t flashReadId(uint32_t *id);
+flashdev_res_t flashRead(uint8_t *pbuffer, uint32_t addr, uint16_t len);
+flashdev_res_t flashWrite(uint8_t *pbuffer, uint32_t addr, uint16_t len);
+flashdev_res_t flashErase(uint32_t addr, enum flashdev_blk_sz size);
 
 
 #ifdef __cplusplus

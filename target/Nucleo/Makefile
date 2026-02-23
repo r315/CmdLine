@@ -20,12 +20,14 @@ BOARD=BOARD_NUCLEO_L412KB
 #######################################
 
 #FEATURE_ENABLE +=ENABLE_I2C
-#FEATURE_ENABLE +=ENABLE_SPI
+FEATURE_ENABLE +=ENABLE_SPI
+FEATURE_ENABLE +=ENABLE_QSPI
+FEATURE_ENABLE +=ENABLE_FLASH
 #FEATURE_ENABLE +=ENABLE_SI5351
 #FEATURE_ENABLE +=ENABLE_DS1086
-FEATURE_ENABLE +=ENABLE_BENCHMARK
-FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
-FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
+#FEATURE_ENABLE +=ENABLE_BENCHMARK
+#FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
+#FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
 #FEATURE_ENABLE +=ENABLE_TONE
 #FEATURE_ENABLE +=ENABLE_DISPLAY
 #FEATURE_ENABLE +=ENABLE_DEMO_AMIGA
@@ -78,6 +80,7 @@ AS_INCLUDES =
 # C sources
 TARGET_SOURCES =  \
 $(TARGET_PATH)/Core/Src/main.c \
+$(TARGET_PATH)/Core/Src/nc_board.c \
 $(TARGET_PATH)/Core/Src/stm32l4xx_it.c \
 $(TARGET_PATH)/Core/Src/stm32l4xx_hal_msp.c \
 $(TARGET_PATH)/Core/Src/system_stm32l4xx.c \
@@ -118,14 +121,15 @@ $(LIB_PATH)/src/fifo.c \
 $(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(DRIVER_PATH)/uart/uart_stm32l4xx.c \
+$(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 #$(LIB_PATH)/src/rtttl.c \
 $(LIB_PATH)/src/stimer.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
-#$(APP_DIR)/src/cmdspi.cpp \
-$(APP_DIR)/src/cmdi2c.cpp \
+
+#$(APP_DIR)/src/cmdi2c.cpp \
 #$(APP_DIR)/src/cmdsi5351.cpp \
 $(APP_DIR)/src/cmdkeyfob.cpp \
 $(APP_DIR)/src/cmdrfinder.cpp \
@@ -175,12 +179,24 @@ $(LIB_PATH)/src/font.c \
 CPP_SOURCES +=$(APP_DIR)/src/cmdtft.cpp
 endif
 
-ifneq ($(filter ENABLE_QSPI,$(FEATURE_ENABLE)),)
-C_SOURCES +=\
-$(APP_DIR)/libs/ext-loader/flash.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_qspi.c \
+ifneq ($(filter ENABLE_SPI,$(FEATURE_ENABLE)),)
+C_SOURCES +=$(DRIVER_PATH)/spi/spi_stm32l4xx.c
+CPP_SOURCES +=$(APP_DIR)/src/cmdspi.cpp
+endif
 
-CPP_SOURCES += $(APP_DIR)/src/cmdqspi.cpp
+ifneq ($(filter ENABLE_QSPI,$(FEATURE_ENABLE)),)
+#$(APP_DIR)/libs/ext-loader/flash.c
+C_SOURCES +=\
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_qspi.c \
+$(DRIVER_PATH)/qspi/qspi_stm32l4xx.c \
+$(TARGET_PATH)/Core/Src/flash_gigadevice.c
+endif
+
+ifneq ($(filter ENABLE_FLASH, $(FEATURE_ENABLE)),)
+CPP_SOURCES += $(APP_DIR)/src/cmdflash.cpp
+C_SOURCES +=$(APP_DIR)/libs/spiflash/flash_dev.c \
+$(APP_DIR)/libs/spiflash/flash_dev_spi.c \
+$(APP_DIR)/libs/spiflash/flash_dev_qspi.c
 endif
 
 # ASM sources

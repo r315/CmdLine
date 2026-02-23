@@ -56,75 +56,6 @@ static void MX_USART2_UART_Init(void);
 void DelayMs(uint32_t ms) { HAL_Delay(ms); }
 uint32_t GetTick(void){ return HAL_GetTick(); }
 
-#ifdef ENABLE_SPI
-static spibus_t spibus;
-#endif
-
-#ifdef ENABLE_DISPLAY
-static drvlcdspi_t lcd0;
-
-static void displayInit()
-{
-    spibus.bus = SPI_BUS0;
-    spibus.cfg = SPI_CFG_DMA | SPI_CFG_CS;
-    spibus.freq = 20000;
-
-    lcd0.w = 240;
-    lcd0.h = 320;
-    lcd0.cs = LCD_CS_PIN;
-    lcd0.cd = LCD_CD_PIN;
-    lcd0.bkl = LCD_BKL_PIN;
-    lcd0.rst = LCD_RST_PIN;
-    lcd0.spidev = &spibus;
-
-    SPI_Init(&spibus);
-
-    GPIO_Config(lcd0.cs, GPO_MS);
-    GPIO_Config(lcd0.cd, GPO_MS);
-    GPIO_Config(lcd0.rst, GPO_MS);
-    GPIO_Config(lcd0.bkl, GPO_MS);
-    GPIO_Config(LCD_DI_PIN, GPIO_AF_SPI1_SPI2);
-    GPIO_Config(LCD_SCK_PIN, GPIO_AF_SPI1_SPI2);
-
-    LCD_Init(&lcd0);
-
-    LCD_Bkl(1);
-
-    LCD_FillRect(0, 0, lcd0.w, lcd0.h, 0);
-}
-#endif
-
-#ifdef ENABLE_I2C
-static i2cbus_t i2c;
-uint32_t i2cWrite(uint8_t device, const uint8_t *data, uint16_t len)
-{
-    return I2C_Write(&i2c, device, data, len);
-}
-
-uint32_t i2cRead(uint8_t device, uint8_t *data, uint16_t len)
-{
-    return I2C_Read(&i2c, device, data, len);
-}
-#endif
-
-void BOARD_LCD_Init(void)
-{
-    #ifdef ENABLE_DISPLAY
-    displayInit();
-    #endif
-}
-
-#ifdef ENABLE_PWM
-void BOARD_PWM_Init(pwmchip_t *pwmchip)
-{
-    #warning "PWM init not implemented for nucleo"
-    /* pwmchip->chip = 3;
-    PWM_Init(pwmchip);
-
-    GPIO_Config(PB_0, GPO_HS_AF);
-    GPIO_Config(PB_1, GPO_HS_AF); */
-}
-#endif
 
 /**
 	* @brief  The application entry point.
@@ -136,24 +67,13 @@ int main(void)
 
 	SystemClock_Config();
 
+    BOARD_Init();
+
 	MX_GPIO_Init();
 	MX_DMA_Init();
 	MX_USART1_UART_Init();
 	MX_USART2_UART_Init();
 	RNG_Init();
-
-    SERIAL_Init();
-
-	#ifdef ENABLE_DISPLAY
-    displayInit();
-    #endif
-
-    #ifdef ENABLE_I2C
-    i2c.bus_num = I2C_BUS0;
-    i2c.speed = 100;
-    i2c.cfg = I2C_CFG_PINS; // D4(SDA), D5(SCL)
-    I2C_Init(&i2c);
-    #endif
 
 	App();
 
