@@ -19,10 +19,10 @@ BOARD=BOARD_NUCLEO_L412KB
 # Features
 #######################################
 
-#FEATURE_ENABLE +=ENABLE_I2C
+FEATURE_ENABLE +=ENABLE_I2C
 FEATURE_ENABLE +=ENABLE_SPI
-FEATURE_ENABLE +=ENABLE_QSPI
-FEATURE_ENABLE +=ENABLE_FLASH
+#FEATURE_ENABLE +=ENABLE_QSPI
+#FEATURE_ENABLE +=ENABLE_FLASH
 #FEATURE_ENABLE +=ENABLE_SI5351
 #FEATURE_ENABLE +=ENABLE_DS1086
 #FEATURE_ENABLE +=ENABLE_BENCHMARK
@@ -98,15 +98,12 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
 #$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
-$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash_ramfunc.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c \
 #$(DRIVER_PATH)/spi/spi_stm32l4xx.c \
-$(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 $(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
 #$(APP_DIR)/libs/ws2812b/ws2812b.c \
@@ -129,7 +126,6 @@ CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
 
-#$(APP_DIR)/src/cmdi2c.cpp \
 #$(APP_DIR)/src/cmdsi5351.cpp \
 $(APP_DIR)/src/cmdkeyfob.cpp \
 $(APP_DIR)/src/cmdrfinder.cpp \
@@ -182,6 +178,13 @@ endif
 ifneq ($(filter ENABLE_SPI,$(FEATURE_ENABLE)),)
 C_SOURCES +=$(DRIVER_PATH)/spi/spi_stm32l4xx.c
 CPP_SOURCES +=$(APP_DIR)/src/cmdspi.cpp
+endif
+
+ifneq ($(filter ENABLE_I2C,$(FEATURE_ENABLE)),)
+C_SOURCES +=$(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
+$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c
+CPP_SOURCES +=$(APP_DIR)/src/cmdi2c.cpp
 endif
 
 ifneq ($(filter ENABLE_QSPI,$(FEATURE_ENABLE)),)
