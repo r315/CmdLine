@@ -14,6 +14,8 @@ FEATURE_ENABLE +=ENABLE_FLASH ENABLE_FLASH_SPI
 FEATURE_ENABLE +=ENABLE_BENCHMARK
 FEATURE_ENABLE +=ENABLE_BENCHMARK_DHRYSTONE MSC_CLOCK
 FEATURE_ENABLE +=ENABLE_BENCHMARK_COREMARK
+FEATURE_ENABLE +=ENABLE_RPM
+FEATURE_ENABLE +=ENABLE_DEBUG
 
 #######################################
 # paths
@@ -185,6 +187,10 @@ $(APP_DIR)/libs/spiflash/flash_dev_spi.c \
 $(TARGET_PATH)/flashspi_renessas.c
 endif
 
+ifneq ($(filter ENABLE_RPM, $(FEATURE_ENABLE)),)
+CPP_SOURCES += $(APP_DIR)/src/cmdrpm.cpp
+endif
+
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
 #######################################
 # Misc
@@ -199,8 +205,7 @@ USE_STDPERIPH_DRIVER \
 FIFO_INTERRUPT_SAFE \
 UART_TX_MODE=UART_MODE_FIFO \
 UART_RX_MODE=UART_MODE_FIFO \
-
-C_DEFS +=$(foreach feature, $(FEATURE_ENABLE), $(feature))
+$(FEATURE_ENABLE) \
 
 #######################################
 # CFLAGS

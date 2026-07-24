@@ -38,6 +38,7 @@
 #include "cmdds1086.h"
 #include "cmdrgbled.h"
 #include "cmdsd.h"
+#include "cmdrpm.h"
 
 #ifdef ENABLE_DEBUG
 #define DBG_TAG     "APP : "
@@ -132,6 +133,9 @@ static ConsoleCommand *app_commands[] = {
 #endif
 #if defined (ENABLE_LMCSHD)
     new CmdLmcshd(),
+#endif
+#if defined (ENABLE_RPM)
+    new CmdRpm(),
 #endif
 };
 
