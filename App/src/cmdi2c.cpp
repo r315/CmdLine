@@ -47,26 +47,29 @@ char CmdI2c::execute(int argc, char **argv){
 		    return CMD_BAD_PARAM;
 	    }
 
-        m_i2c.bus_num = (uint8_t)val;
-        I2C_Init(&m_i2c);
+        board_i2cbus.addr = 1;
+        board_i2cbus.speed = 100;
+        board_i2cbus.bus_num = (uint8_t)val;
+        board_i2cbus.cfg |= I2C_CFG_PINS;
+        I2C_Init(&board_i2cbus);
 
         return CMD_OK;
     }
 
-    if(m_i2c.handle == NULL){
+    if(board_i2cbus.handle == NULL){
         console->println("I2C not initialized");
 		return CMD_BAD_PARAM;
     }
 
     if(!xstrcmp("speed", argv[1])){
-        if(ia2i(argv[2], (int32_t*)&m_i2c.speed)){
+        if(ia2i(argv[2], (int32_t*)&board_i2cbus.speed)){
             return CMD_OK;
         }
     }
 
     if(!xstrcmp("slave", argv[1])){
         if(ha2u(argv[2], (uint32_t*)&val)){
-            m_i2c.addr = val;
+            board_i2cbus.addr = val;
             return CMD_OK;
         }
     }
@@ -74,7 +77,7 @@ char CmdI2c::execute(int argc, char **argv){
     if( !xstrcmp("read", argv[1])){
         if(!ha2u(argv[2], &device)){ return CMD_BAD_PARAM; }
         if(!ia2i(argv[3], &count)){ return CMD_BAD_PARAM; }
-        if(I2C_Read(&m_i2c, device, i2c_buf, count) == 0){
+        if(I2C_Read(&board_i2cbus, device, i2c_buf, count) == 0){
             console->print("Failed to read\n");
             return CMD_OK;
         }else{
@@ -110,7 +113,7 @@ char CmdI2c::execute(int argc, char **argv){
             i2c_buf[count++] = (uint8_t)val;
         }
 
-        if(I2C_Write(&m_i2c, device, i2c_buf, count) == 0){
+        if(I2C_Write(&board_i2cbus, device, i2c_buf, count) == 0){
             console->println("Failed to write");
         }
 
@@ -121,12 +124,12 @@ char CmdI2c::execute(int argc, char **argv){
         if(ha2u(argv[2], (uint32_t*)&val)){
             uint8_t reg = val;
             count = ia2i(argv[3], &val) ? val : 1;
-            if(!I2C_Write(&m_i2c, m_i2c.addr, (uint8_t*)&reg, 1)){
+            if(!I2C_Write(&board_i2cbus, board_i2cbus.addr, (uint8_t*)&reg, 1)){
                 console->println("Fail i2c write");
                 return CMD_OK;
             }
 
-            if(!I2C_Read(&m_i2c, m_i2c.addr, i2c_buf, count)){
+            if(!I2C_Read(&board_i2cbus, board_i2cbus.addr, i2c_buf, count)){
                 console->println("Fail i2c read");
                 return CMD_OK;
             }
@@ -152,7 +155,7 @@ char CmdI2c::execute(int argc, char **argv){
             i2c_buf[0] = val;
             if(ha2u(argv[3], &val)){
                 i2c_buf[1] = val;
-                if(!I2C_Write(&m_i2c, m_i2c.addr, i2c_buf, 2)){
+                if(!I2C_Write(&board_i2cbus, board_i2cbus.addr, i2c_buf, 2)){
                     console->println("Fail i2c write");
                 }
             }
@@ -171,7 +174,7 @@ char CmdI2c::execute(int argc, char **argv){
             if( (i & 15) == 0)
                 console->printf("\n%02X ", i & 0xF0);
 
-            if(I2C_Read(&m_i2c, i, (uint8_t*)&device, 1) == 0){
+            if(I2C_Read(&board_i2cbus, i, (uint8_t*)&device, 1) == 0){
                 console->print("-- ");
             }else{
                 console->printf("%02X ", i);
@@ -185,7 +188,7 @@ char CmdI2c::execute(int argc, char **argv){
     }
 
     if(!xstrcmp("reset", argv[1])){
-        I2C_Reset(&m_i2c);
+        I2C_Reset(&board_i2cbus);
         return CMD_OK;
     }
 

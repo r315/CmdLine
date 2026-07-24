@@ -52,7 +52,7 @@ L1 =en
 SHELL := /bin/bash
 command:
 ifeq ($(CMDNAME),)
-	@echo "usage: make command CMDNAME=<name>"
+	@echo "usage: make command CMDNAME=<only name>"
 else
 	@cat  $(CMDTEMPLATEHEADER) > App/inc/cmd$(CMDNAME).h
 	@sed -i -- "s/%NAME%/$(CMDNAME)/g" App/inc/cmd$(CMDNAME).h

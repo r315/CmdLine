@@ -9,6 +9,7 @@ extern "C" {
 #include <stddef.h>
 #include <stdint.h>
 #include "gd32e23x_gpio.h"
+#include "i2c.h"
 
 #define LED1_PIN_INIT  \
         rcu_periph_clock_enable(RCU_GPIOA); \
@@ -29,6 +30,10 @@ void __debugbreak(void);
 
 void board_config_output(uint32_t frequency);
 int32_t board_trim_irc(int8_t adj);
+
+#ifdef ENABLE_I2C
+extern i2cbus_t board_i2cbus;
+#endif
 
 #ifdef __cplusplus
 }

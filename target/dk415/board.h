@@ -10,6 +10,7 @@ extern "C" {
 #include <stdint.h>
 #include "at32f4xx.h"
 #include "spi.h"
+#include "i2c.h"
 #include "gpio.h"
 #include "gpio_at32f4xx.h"
 #include "tone_at32f4xx.h"
@@ -107,6 +108,10 @@ flashdev_res_t flashWrite(uint8_t *pbuffer, uint32_t addr, uint16_t len);
 flashdev_res_t flashErase(uint32_t addr, enum flashdev_blk_sz size);
 
 uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout);
+
+#ifdef ENABLE_I2C
+extern i2cbus_t board_i2cbus;
+#endif
 
 #ifdef __cplusplus
 }

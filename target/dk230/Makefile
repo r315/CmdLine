@@ -7,8 +7,7 @@ TARGET =console-230dk
 # Features
 #######################################
 
-FEATURE_TFT_DISPLAY =yes
-FEATURE_CLI			=yes
+FEATURE_ENABLE +=ENABLE_I2C
 
 #######################################
 # paths
@@ -86,10 +85,8 @@ OCD_CONFIG =$(TARGET_PATH)/gigadevice.cfg
 # C defines
 C_DEFS +=\
 $(DEVICE) \
-
-C_DEFS += \
 BOARD_230DK \
-
+$(FEATURE_ENABLE) \
 
 #######################################
 # CFLAGS

@@ -1,6 +1,7 @@
 #include <sys/times.h>
 #include "board.h"
 #include "spi.h"
+#include "i2c.h"
 #include "serial.h"
 #include "drvlcd.h"
 #include "stimer.h"
@@ -8,6 +9,10 @@
 
 #ifdef ENABLE_SPI
 static spibus_t spidev;
+#endif
+
+#ifdef ENABLE_I2C
+i2cbus_t board_i2cbus;
 #endif
 
 #ifdef ENABLE_DISPLAY

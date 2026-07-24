@@ -6,6 +6,10 @@
 
 static volatile uint32_t ticms;
 
+#ifdef ENABLE_I2C
+i2cbus_t board_i2cbus;
+#endif
+
 void SysTick_Handler(void){
     ticms++;
     //LED1_TOGGLE;
