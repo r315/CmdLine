@@ -39,6 +39,7 @@
 #include "cmdrgbled.h"
 #include "cmdsd.h"
 #include "cmdrpm.h"
+#include "cmdir.h"
 
 #ifdef ENABLE_DEBUG
 #define DBG_TAG     "APP : "
@@ -136,6 +137,9 @@ static ConsoleCommand *app_commands[] = {
 #endif
 #if defined (ENABLE_RPM)
     new CmdRpm(),
+#endif
+#if defined (ENABLE_IR)
+    new CmdIr(),
 #endif
 };
 
