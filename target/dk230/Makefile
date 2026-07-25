@@ -55,7 +55,7 @@ $(DRIVER_SOC_PATH)/src/gd32e23x_i2c.c \
 $(DRIVER_SOC_PATH)/src/gd32e23x_timer.c \
 $(DRIVER_PATH)/uart/uart_gd32e23x.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
-#$(DRIVERS_PATH)/i2c/i2c_230dk.c \
+$(DRIVER_PATH)/i2c/i2c_gd32e230.c \
 
 C_SOURCES = \
 $(DRIVER_SOURCES) \

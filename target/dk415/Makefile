@@ -27,7 +27,6 @@ TARGET_PATH 	=$(CURDIR)
 APP_DIR			?=../../App
 LIB_PATH        =$(LIBEMB_PATH)/lib
 DRIVER_PATH 	=$(LIBEMB_PATH)/drv
-DRIVER_SOC_PATH =$(DRIVER_PATH)/SOC/at32f4xx
 DRIVER_COMPONENT_PATH =$(LIBEMB_PATH)/component
 CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
 
@@ -36,7 +35,6 @@ CMSIS_PATH 		=$(LIBEMB_PATH)/CMSIS
 #######################################
 C_INCLUDES = \
 $(TARGET_PATH) \
-$(DRIVER_SOC_PATH)/inc \
 $(DRIVER_PATH)/inc \
 $(CMSIS_PATH)/Device/ARTERY/AT32F4xx/inc \
 $(CMSIS_PATH)/Core/Include \
@@ -59,79 +57,65 @@ $(TARGET_PATH)/at_main.c \
 $(TARGET_PATH)/at_serial.c \
 $(TARGET_PATH)/syscalls.c \
 $(TARGET_PATH)/sysmem.c \
-$(DRIVER_SOC_PATH)/src/at32f4xx_rcc.c \
 
-APP_SOURCES =\
+LIB_SOURCES = \
 $(LIB_PATH)/src/fifo.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/stimer.c \
 $(LIB_PATH)/src/debug.c \
+
+DRV_SOURCES = \
+$(DRIVER_PATH)/clock/clock_at32f4xx.c \
 $(DRIVER_PATH)/dma/dma_at32f4xx.c \
 $(DRIVER_PATH)/gpio/gpio_at32f4xx.c \
 $(DRIVER_PATH)/uart/uart_at32f4xx.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
 
-CPP_SOURCES = \
+APP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
 
-C_SOURCES = \
-$(BOARD_SOURCES) \
-$(APP_SOURCES)
-
-
 ifneq ($(filter ENABLE_DISPLAY, $(FEATURE_ENABLE)),)
-BOARD_SOURCES += \
-$(DRIVER_PATH)/rng/rng_software.c \
+DRV_SOURCES += \
 $(DRIVER_COMPONENT_PATH)/display/st7789.c \
+$(DRIVER_PATH)/rng/rng_software.c
 
-#$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
-$(DRIVER_COMPONENT_PATH)/tft/st7735.c \
-
-APP_SOURCES += \
+LIB_SOURCES += \
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
-$(LIB_PATH)/src/font.c \
+$(LIB_PATH)/src/font.c
 
-CPP_SOURCES += \
-$(APP_DIR)/src/cmdtft.cpp
+APP_SOURCES +=$(APP_DIR)/src/cmdtft.cpp
 endif
 
-
 ifneq ($(filter ENABLE_I2C, $(FEATURE_ENABLE)),)
-BOARD_SOURCES += \
-$(DRIVER_SOC_PATH)/src/at32f4xx_i2c.c \
-$(DRIVER_SOC_PATH)/src/at32f4xx_i2c_ex.c \
-$(DRIVER_PATH)/i2c/i2c_at32f4xx.c \
-
-CPP_SOURCES += \
-$(APP_DIR)/src/cmdi2c.cpp \
-
+DRV_SOURCES +=$(DRIVER_PATH)/i2c/i2c_at32f4xx.c
+APP_SOURCES +=$(APP_DIR)/src/cmdi2c.cpp
 endif
 
 ifneq ($(filter ENABLE_I2S, $(FEATURE_ENABLE)),)
-BOARD_SOURCES += $(DRIVER_PATH)/i2s/i2s_at32f4xx.c
-CPP_SOURCES += $(APP_DIR)/src/cmdi2s.cpp
+DRV_SOURCES += $(DRIVER_PATH)/i2s/i2s_at32f4xx.c
+APP_SOURCES += $(APP_DIR)/src/cmdi2s.cpp
 endif
 
 ifneq ($(filter ENABLE_SPI, $(FEATURE_ENABLE)),)
-BOARD_SOURCES += $(DRIVER_PATH)/spi/spi_at32f4xx.c
-CPP_SOURCES += $(APP_DIR)/src/cmdspi.cpp
+DRV_SOURCES += $(DRIVER_PATH)/spi/spi_at32f4xx.c
+APP_SOURCES += $(APP_DIR)/src/cmdspi.cpp
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK, $(FEATURE_ENABLE)),)
-CPP_SOURCES += $(APP_DIR)/src/cmdbenchmark.cpp
+APP_SOURCES += $(APP_DIR)/src/cmdbenchmark.cpp
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK_DHRYSTONE, $(FEATURE_ENABLE)),)
-C_SOURCES += \
+APP_SOURCES += \
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK_COREMARK,$(FEATURE_ENABLE)),)
-C_SOURCES +=\
+APP_SOURCES +=\
 $(APP_DIR)/libs/CoreMark/core_main.c \
 $(APP_DIR)/libs/CoreMark/core_state.c \
 $(APP_DIR)/libs/CoreMark/core_util.c \
@@ -140,72 +124,74 @@ $(APP_DIR)/libs/CoreMark/core_matrix.c
 endif
 
 ifneq ($(filter ENABLE_RGBLED, $(FEATURE_ENABLE)),)
-C_SOURCES +=$(APP_DIR)/libs/ws2812b/ws2812b.c
-CPP_SOURCES +=$(APP_DIR)/src/cmdrgbled.cpp
+DRV_SOURCES +=$(APP_DIR)/libs/ws2812b/ws2812b.c
+APP_SOURCES +=$(APP_DIR)/src/cmdrgbled.cpp
 endif
 
 ifneq ($(filter ENABLE_DS1086, $(FEATURE_ENABLE)),)
-CPP_SOURCES += \
+APP_SOURCES += \
 $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/ds1086/ds1086.cpp
 endif
 
 ifneq ($(filter ENABLE_AVR_PROGRAMMING, $(FEATURE_ENABLE)),)
-C_SOURCES += \
+APP_SOURCES += \
+$(APP_DIR)/src/cmdavr.cpp \
 $(APP_DIR)/libs/stk500/avr_if.c \
 $(APP_DIR)/libs/stk500/stk500.c
-
-CPP_SOURCES += $(APP_DIR)/src/cmdavr.cpp
 endif
 
 ifneq ($(filter ENABLE_TONE, $(FEATURE_ENABLE)),)
-BOARD_SOURCES += \
-$(DRIVER_PATH)/tone/tone_at32f4xx.c
-
-C_SOURCES += \
-$(LIB_PATH)/src/rtttl.c \
-
-CPP_SOURCES += \
-$(APP_DIR)/src/cmdbuz.cpp \
-
+DRV_SOURCES += $(DRIVER_PATH)/tone/tone_at32f4xx.c
+LIB_SOURCES += $(LIB_PATH)/src/rtttl.c
+APP_SOURCES += $(APP_DIR)/src/cmdbuz.cpp
 endif
 
 ifneq ($(filter ENABLE_PWM, $(FEATURE_ENABLE)),)
-BOARD_SOURCES += $(DRIVER_PATH)/pwm/pwm_at32f4xx.c
-CPP_SOURCES += $(APP_DIR)/src/cmdpwm.cpp
+DRV_SOURCES += $(DRIVER_PATH)/pwm/pwm_at32f4xx.c
+APP_SOURCES += $(APP_DIR)/src/cmdpwm.cpp
 endif
 
 ifneq ($(filter ENABLE_DEMO_GIF, $(FEATURE_ENABLE)),)
-CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
-C_SOURCES += $(APP_DIR)/libs/agif/agif.c
+APP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
+APP_SOURCES += $(APP_DIR)/libs/agif/agif.c
 endif
 
 ifneq ($(filter ENABLE_FLASH, $(FEATURE_ENABLE)),)
-CPP_SOURCES += $(APP_DIR)/src/cmdflash.cpp
-C_SOURCES +=$(APP_DIR)/libs/spiflash/flash_dev.c \
+APP_SOURCES += $(APP_DIR)/src/cmdflash.cpp
+LIB_SOURCES += \
+$(APP_DIR)/libs/spiflash/flash_dev.c \
 $(APP_DIR)/libs/spiflash/flash_dev_spi.c \
 $(TARGET_PATH)/flashspi_renessas.c
 endif
 
 ifneq ($(filter ENABLE_RPM, $(FEATURE_ENABLE)),)
+APP_SOURCES += $(APP_DIR)/src/cmdrpm.cpp
+
 CPP_SOURCES += $(APP_DIR)/src/cmdrpm.cpp
 endif
 
+CPP_SOURCES = $(filter %.cpp, $(APP_SOURCES))
+C_SOURCES = \
+$(BOARD_SOURCES) \
+$(DRV_SOURCES) \
+$(LIB_SOURCES) \
+$(filter %.c,$(APP_SOURCES))
+
 LDSCRIPT :=$(TARGET_PATH)/AT32F415xB_FLASH.ld
+
 #######################################
-# Misc
+# Objects
 #######################################
 
-# C defines
-C_DEFS +=\
-$(BOARD) \
-$(DEVICE) \
-CONSOLE_WIDTH=128 \
-USE_STDPERIPH_DRIVER \
-FIFO_INTERRUPT_SAFE \
-UART_TX_MODE=UART_MODE_FIFO \
-UART_RX_MODE=UART_MODE_FIFO \
-$(FEATURE_ENABLE) \
+OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(C_SOURCES:.c=.o)))
+vpath %.c $(sort $(dir $(C_SOURCES)))
+
+OBJECTS += $(addprefix $(BUILD_DIR)/, $(notdir $(CPP_SOURCES:.cpp=.obj)))
+vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
+
+#OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
+#vpath %.s $(sort $(dir $(ASM_SOURCES)))
 
 #######################################
 # CFLAGS
@@ -213,17 +199,20 @@ $(FEATURE_ENABLE) \
 
 DEVICE =AT32F415CBT7
 CPU =-mcpu=cortex-m4 -mthumb
-
-# fpu
 #at43f415 does not have FPU
 #FPU =-mfloat-abi=hard -mfpu=fpv4-sp-d16
 #FPU =-mfloat-abi=soft
-
-# float-abi
-FLOAT_ABI =#-u_printf_float
-
-# mcu
+#FLOAT_ABI =#-u_printf_float
 MCU = $(CPU) $(FPU) $(FLOAT_ABI)
+
+C_DEFS +=\
+$(BOARD) \
+$(DEVICE) \
+CONSOLE_WIDTH=128 \
+FIFO_INTERRUPT_SAFE \
+UART_TX_MODE=UART_MODE_FIFO \
+UART_RX_MODE=UART_MODE_FIFO \
+$(FEATURE_ENABLE) \
 
 ifdef RELEASE
 DEBUG =0
@@ -261,19 +250,6 @@ LIBS =-lstdc++ #-lusbpwrkt
 endif
 
 #######################################
-# Objects
-#######################################
-
-OBJECTS = $(addprefix $(BUILD_DIR)/, $(notdir $(C_SOURCES:.c=.o)))
-vpath %.c $(sort $(dir $(C_SOURCES)))
-
-OBJECTS += $(addprefix $(BUILD_DIR)/, $(notdir $(CPP_SOURCES:.cpp=.obj)))
-vpath %.cpp $(sort $(dir $(CPP_SOURCES)))
-
-#OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-#vpath %.s $(sort $(dir $(ASM_SOURCES)))
-
-#######################################
 # Tool binaries
 #######################################
 PREFIX = arm-none-eabi-
@@ -287,7 +263,6 @@ OBJCOPY =$(PREFIX)objcopy
 OBJDUMP =$(PREFIX)objdump
 HEX = $(OBJCOPY) -O ihex
 BIN = $(OBJCOPY) -O binary -S
-
 
 ifeq ($(ST_LINK_PROBE),1)
 PRG_DEP =bin
@@ -304,6 +279,12 @@ PRG_DEP =bin $(PRG_CFG)
 PRG_CFG =$(BUILD_DIR)/$(TARGET).jlink
 PRG_CMD =$(JLK) -device $(DEVICE) -if SWD -speed auto -CommanderScript $(PRG_CFG)
 endif
+
+#######################################
+# Misc
+#######################################
+
+
 
 #######################################
 # Rules
