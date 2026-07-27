@@ -184,6 +184,7 @@ extern "C" void App(void)
 
 	while(1){
 		console.process();
+        STIMER_Tick(GetTick());
         WDT_Reset();
 	}
 }

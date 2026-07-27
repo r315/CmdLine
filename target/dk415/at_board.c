@@ -74,7 +74,6 @@ static void InitTimeBase(void)
 static volatile uint32_t ticms;
 void SysTick_Handler(void){
     ticms++;
-    STIMER_Handler();
 }
 
 void DelayMs(uint32_t ms){
