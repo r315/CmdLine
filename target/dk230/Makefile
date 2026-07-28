@@ -64,6 +64,7 @@ $(TARGET_PATH)/src/serial_230dk.c \
 $(TARGET_PATH)/src/main.c \
 $(TARGET_PATH)/src/syscalls.c \
 $(LIB_PATH)/src/strfunc.c \
+$(LIB_PATH)/src/stimer.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \

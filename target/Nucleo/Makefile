@@ -119,8 +119,8 @@ $(DRIVER_PATH)/rng/rng_software.c \
 $(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(DRIVER_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
-#$(LIB_PATH)/src/rtttl.c \
 $(LIB_PATH)/src/stimer.c \
+#$(LIB_PATH)/src/rtttl.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \

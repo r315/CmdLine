@@ -97,6 +97,7 @@ APP_SOURCES =\
 $(DRIVER_PATH)/uart/uart_stm32f10x.c \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/stimer.c \
 $(TARGET_PATH)/Src/syscalls.c \
 $(TARGET_PATH)/Src/sysmem.c \
 

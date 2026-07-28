@@ -72,6 +72,7 @@ $(TARGET_PATH)/src/bb_main.c \
 APP_SOURCES =\
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
+$(LIB_PATH)/src/stimer.c \
 
 #$(DRIVER_PATH)/pwm/pwm_lpc17xx.c \
 $(DRIVER_PATH)/i2c/i2c_lpc17xx.c \
