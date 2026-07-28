@@ -27,13 +27,18 @@ static uint32_t ir_repeat(stimer_t *timer)
 static uint32_t ir_capture(stimer_t *timer)
 {
     (void)timer;
-
+    #if 0
     dbg_printf("\nEdges: %d\n", ir_rx_buf_len);
-
     for(uint8_t i = 0; i < ir_rx_buf_len; i++){
         dbg_printf("%u ", ir_rx_buf[i]);
     }
-
+    #else
+    dbg_printf("\nNumber of marks: %d\n", ir_rx_buf_len - 1);
+    for(uint8_t i = 0; i < ir_rx_buf_len - 1; i++){
+        ir_rx_buf[i] = ir_rx_buf[i + 1] - ir_rx_buf[i];
+        dbg_printf("%u, ", ir_rx_buf[i]);
+    }
+    #endif
     dbg_printf("\n");
 
     return 0;
@@ -118,10 +123,14 @@ char CmdIr::execute(int argc, char **argv)
     if(!xstrcmp("replay", argv[1])){
         for(uint8_t i = 0; i < ir_rx_buf_len-1; i++){
             ir_tx_buf[i] = ir_rx_buf[i + 1] - ir_rx_buf[i];
+
             if(ir_tx_buf[i] == 0){
+                // Abort on invalid capture
                 return CMD_OK;
             }
-            if(!(i&1))ir_tx_buf[i] |= 0x8000;
+
+            if(!(i&1))
+                ir_tx_buf[i] = IR_MARK_ON(ir_tx_buf[i]);
         }
         ir_tx_buf_len = ir_rx_buf_len - 1;
         ir_repeat_count = 5;
