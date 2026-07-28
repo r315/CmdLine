@@ -1,4 +1,4 @@
-#include "cmdIr.h"
+#include "cmdir.h"
 #include "stimer.h"
 #include "rc6.h"
 #include <debug.h>

@@ -1,4 +1,4 @@
-#include "cmdRpm.h"
+#include "cmdrpm.h"
 #include "gpio.h"
 #include "stimer.h"
 #include "debug.h"
