@@ -1,26 +1,53 @@
 #include "cmdir.h"
 #include "stimer.h"
 #include "rc6.h"
+#include "rcmm.h"
 #include <debug.h>
 
-static uint8_t rc6_tr;
+#define RCMM_VDF_KEY_PRESSED    0x26
+#define RCMM_VDF_KEY_RELEASED   0xA6
+
+enum ir_proto{
+    IR_PROTO_RC6,
+    IR_PROTO_RCMM,
+    IR_PROTO_END
+};
+
 static stimer_t ir_tx_timer;
 static stimer_t ir_rx_timer;
-static uint16_t ir_tx_buf[44];
+static enum ir_proto ir_proto;
+static uint16_t ir_tx_buf[64];
 static uint16_t ir_rx_buf[64];
-static uint8_t ir_repeat_count;
 static uint8_t ir_tx_buf_len;
 static uint8_t ir_rx_buf_len;
+static uint8_t ir_repeat_count;
+static uint8_t ir_code, ir_control;
 
 
 static uint32_t ir_repeat(stimer_t *timer)
 {
     (void)timer;
-    if(--ir_repeat_count){
-        IR_Transmit(ir_tx_buf, ir_tx_buf_len);
-    }else{
-        IR_Receive(ir_rx_buf, sizeof(ir_rx_buf) >> 1);
+
+    if(--ir_repeat_count == 0){
+        ir_proto = IR_PROTO_END;
     }
+
+    switch(ir_proto){
+        case IR_PROTO_RC6:
+            IR_Transmit(ir_tx_buf, ir_tx_buf_len);
+            break;
+        case IR_PROTO_RCMM:
+            if(ir_repeat_count == 1){
+                ir_tx_buf_len = RCMM_Frame(ir_tx_buf, RCMM_VDF_KEY_RELEASED, 0, ir_code);
+            }else{
+                IR_Transmit(ir_tx_buf, ir_tx_buf_len);
+            }
+            break;
+        case IR_PROTO_END:
+            IR_Receive(ir_rx_buf, sizeof(ir_rx_buf) >> 1);
+            break;
+    }
+
     return 0;
 }
 
@@ -108,8 +135,22 @@ char CmdIr::execute(int argc, char **argv)
         uint32_t code;
         if(ha2u(argv[2], &code)){
             ir_repeat_count = 4;
-            ir_tx_buf_len = RC6_Frame(ir_tx_buf, rc6_tr++, 0, code);
+            ir_proto = IR_PROTO_RC6;
+            ir_tx_buf_len = RC6_Frame(ir_tx_buf, ir_control++, 0, code);
             IR_CancelReceive();
+            IR_Transmit(ir_tx_buf, ir_tx_buf_len);
+            return CMD_OK;
+        }
+    }
+
+    if(!xstrcmp("rcmm", argv[1])){
+        uint32_t code;
+        if(ha2u(argv[2], &code)){
+            IR_CancelReceive();
+            ir_repeat_count = 4;
+            ir_code = code;
+            ir_proto = IR_PROTO_RCMM;
+            ir_tx_buf_len = RCMM_Frame(ir_tx_buf, RCMM_VDF_KEY_PRESSED, 0, ir_code);
             IR_Transmit(ir_tx_buf, ir_tx_buf_len);
             return CMD_OK;
         }
