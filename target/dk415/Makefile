@@ -172,6 +172,7 @@ APP_SOURCES += $(APP_DIR)/src/cmdrpm.cpp
 ifneq ($(filter ENABLE_IR, $(FEATURE_ENABLE)),)
 DRV_SOURCES += $(DRIVER_PATH)/ir/ir_at32f4xx.c
 LIB_SOURCES += $(LIB_PATH)/src/rc6.c
+LIB_SOURCES += $(LIB_PATH)/src/rcmm.c
 APP_SOURCES += $(APP_DIR)/src/cmdir.cpp
 endif
 endif
