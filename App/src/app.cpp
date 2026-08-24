@@ -40,6 +40,7 @@
 #include "cmdsd.h"
 #include "cmdrpm.h"
 #include "cmdir.h"
+#include "cmdsump.h"
 
 #ifdef ENABLE_DEBUG
 #define DBG_TAG     "APP : "
@@ -140,6 +141,9 @@ static ConsoleCommand *app_commands[] = {
 #endif
 #if defined (ENABLE_IR)
     new CmdIr(),
+#endif
+#if defined (ENABLE_LA)
+    new CmdSump(),
 #endif
 };
 

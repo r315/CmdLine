@@ -21,6 +21,8 @@ static inline int UART_FUNCTION_NAME(N, write)(const char *buf, int len){ return
 
 static serialport_t hs0;
 
+stdinout_t *host_serial;
+
 /**
  * Uart0/1/3
  * */
@@ -67,6 +69,7 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
         case SERIAL0:
             ASSIGN_SERIAL_OPS(hserial->ops, 0);
             hserial->bus.bus = UART_BUS0;
+            host_serial = (stdinout_t*)&hserial->ops;
             break;
 
             default:

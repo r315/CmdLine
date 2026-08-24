@@ -44,6 +44,7 @@ extern "C" {
 #define LCD_BKL     PA_3
 #define LCD_SCLK    PA_5
 #define LCD_DI      PA_7
+
 #elif defined(BOARD_PWRKT)
 // TODO add ifdef to select proper include
 //#include "ili9341.h"
@@ -112,6 +113,8 @@ uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout);
 #ifdef ENABLE_I2C
 extern i2cbus_t board_i2cbus;
 #endif
+
+extern stdinout_t *host_serial;;
 
 #ifdef __cplusplus
 }
