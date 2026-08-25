@@ -115,7 +115,7 @@ uint16_t spiExchange(uint8_t *buffer, uint16_t len, uint32_t timeout);
 extern i2cbus_t board_i2cbus;
 #endif
 
-extern stdinout_t *host_serial;;
+extern stdinout_t *host_serial;
 
 #ifdef __cplusplus
 }

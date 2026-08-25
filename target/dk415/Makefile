@@ -228,7 +228,7 @@ $(FEATURE_ENABLE) \
 
 ifdef RELEASE
 DEBUG =0
-OPT   =-O2
+OPT   =-O3
 else
 DEBUG =1
 OPT   =-O0 -g -gdwarf-2 -Wall -Wextra

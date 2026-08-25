@@ -20,6 +20,7 @@ extern "C" {
 #include "dma_stm32l4xx.h"
 #include "gpio_stm32l4xx.h"
 #include "spiflash/flash_dev.h"
+#include "stdinout.h"
 
 /**
  * General macros
@@ -66,6 +67,8 @@ flashdev_res_t flashErase(uint32_t addr, enum flashdev_blk_sz size);
 #ifdef ENABLE_I2C
 extern i2cbus_t board_i2cbus;
 #endif
+
+extern stdinout_t *host_serial;
 
 #ifdef __cplusplus
 }

@@ -235,8 +235,8 @@ FPU =-mfpu=fpv4-sp-d16
 # float-abi
 FLOAT_ABI =-mfloat-abi=hard
 
-ifeq ($(RELEASE), 1)
-OPT =-Os
+ifdef RELEASE
+OPT =-O3
 else
 OPT =-O0 -g -gdwarf-2
 endif

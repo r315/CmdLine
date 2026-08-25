@@ -19,6 +19,7 @@ I->ops.writechar = UART_FUNCTION_NAME(N, writechar); \
 I->ops.write = UART_FUNCTION_NAME(N, write);
 
 static serialport_t hs0, hs1;
+stdinout_t *host_serial;
 
 /**
  * Uart0/1/3
@@ -39,6 +40,7 @@ void SERIAL_Config(serialport_t *hserial, int32_t nr, uint32_t config){
         case SERIAL0:
             ASSIGN_UART_FUNCTIONS(hserial, 0);
             hserial->bus.bus = UART_BUS2;
+            host_serial = (stdinout_t*)&hserial->ops;
             break;
 
 		case SERIAL1:

@@ -123,6 +123,13 @@ void CmdBenchmark::help(void){
     #endif
 }
 
+/**
+ * @brief Optimal performance compile with -O3
+ *
+ * @param argc
+ * @param argv
+ * @return
+ */
 char CmdBenchmark::execute(int argc, char **argv){
 
     if(argc < 2 || !xstrcmp("help", (const char*)argv[1])){
