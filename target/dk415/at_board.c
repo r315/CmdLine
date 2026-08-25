@@ -114,8 +114,15 @@ void BOARD_LCD_Init(void)
 
 void BOARD_Init(void)
 {
-	SystemInit();
-	SystemCoreClockUpdate();
+#if HSE_VALUE == 8000000UL
+    SystemInit();
+#else
+    if(SystemConfigPll(RCC_CFG_PLLRC_HSE, HSE_VALUE, 150000000)){
+        SystemConfigClockSrc(RCC_CFG_SYSCLKSEL_PLL);
+    }
+#endif
+
+    SystemCoreClockUpdate();
 
 	InitTimeBase();
 
