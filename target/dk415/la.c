@@ -45,7 +45,19 @@ void sampler_init(void)
     // Plus mode
     TIMER_SAMPLER->CTRL1 = TMR_CTRL1_PMEN;
 
+#if 1
     GPIOA->CTRLL = 0x44444444;
+#else
+    GPIOA->CTRLL = 0x4444444b;
+    CLOCK_Enable(TMR5, ENABLE);
+    TMR5->DIV = 0;
+    TMR5->AR = (CLOCK_Get(CLOCK_CLK4) / 1000000) - 1;
+    TMR5->CC1 = TMR5->AR >> 1;
+    TMR5->CCM1 = (6 << 4);
+    TMR5->CCE = TMR_CCE_C1EN;
+    TMR5->CTRL1 = TMR_CTRL1_CNTEN;
+#endif
+
 #ifdef SAMPLER_DMA
     sampler_dma.dir = DMA_DIR_P2M;
     sampler_dma.src = (void*)&GPIOA->IPTDT;

@@ -3,6 +3,18 @@
 
 #include <stdint.h>
 
+/**
+ * DMA operates a maximum of 25MHz with
+ * CPU overclocked to 250MHz.
+ * DMA requires some clocks to perform transference
+ * thus it is not possible to have a transference on
+ * every clock of timer when it only divides sclk by 1.
+ *
+ * However dividing sclk by 10, gives at least 10 clocks
+ * for DMA. It could be fewer cycles but DS does not specify
+ * this parameter
+ *
+ */
 #define SAMPLER_DMA
 
 #define SAMPLER_NUM_OF_CHANNELS     8
@@ -12,7 +24,7 @@
  * The highest sample rate in Hz.
  */
 #ifdef SAMPLER_DMA
-#define SAMPLER_MAX_SAMPLE_RATE     75000000UL
+#define SAMPLER_MAX_SAMPLE_RATE     25000000UL
 #else
 #define SAMPLER_MAX_SAMPLE_RATE     1000000UL
 #endif
