@@ -63,7 +63,6 @@ static void updateDisplay(uint32_t *progress){
 
 static CORETIMETYPE start_time_val, stop_time_val;
 ee_u32 default_num_contexts=1;
-static Console *con;
 
 void start_time(void){start_time_val = GetTick(); }
 void stop_time(void){stop_time_val = GetTick(); }
@@ -82,7 +81,7 @@ int ee_printf(const char *format, ...)
     len = strformater(buf, CONSOLE_WIDTH, format, args);
 	va_end(args);
 
-	return con->write(buf, len);
+	return host_serial->write(buf, len);
 }
 
 #endif
@@ -133,7 +132,6 @@ char CmdBenchmark::execute(int argc, char **argv){
 
 #if defined(ENABLE_BENCHMARK_COREMARK)
     if(xstrcmp("core", (const char*)argv[1]) == 0){
-        con  = console;
         coremark_main();
         return CMD_OK;
     }
