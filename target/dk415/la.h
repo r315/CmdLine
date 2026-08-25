@@ -6,13 +6,7 @@
 #define SAMPLER_DMA
 
 #define SAMPLER_NUM_OF_CHANNELS     8
-#define SAMPLER_MAX_SAMPLES         0x1000
-#define TIMER_SAMPLER               TMR2
-
-/**
- * How much memory is allocated for samples, in samples.
- */
-#define SAMPLER_MEMORY_SIZE         0x1000
+#define SAMPLER_MEMORY_SIZE         0x4000
 
 /**
  * The highest sample rate in Hz.
@@ -23,6 +17,7 @@
 #define SAMPLER_MAX_SAMPLE_RATE     1000000UL
 #endif
 
+#define TIMER_SAMPLER               TMR2
 
 #ifdef __cplusplus
 extern "C" {
@@ -37,7 +32,7 @@ void sampler_arm(void);
 void sampler_abort(void);
 uint8_t sampler_is_triggered(void);
 uint32_t sampler_acquire_samples(void);
-const uint32_t *sampler_get_samples(void);
+const uint8_t *sampler_get_samples(void);
 
 #ifdef __cplusplus
 }

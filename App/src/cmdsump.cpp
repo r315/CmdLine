@@ -23,10 +23,10 @@ static const char SUMP_METADATA[] = {
     SUMP_METADATA_DEVICE_NAME, 'A', 'T', '3', '2', '\0',
     /* Sample memory (4096 bytes). */
     SUMP_METADATA_SAMPLE_MEMORY_AVAILABLE,
-    (uint8_t)((uint32_t)SAMPLER_MAX_SAMPLES >> 24),
-    (uint8_t)(((uint32_t)SAMPLER_MAX_SAMPLES >> 16) & 0xFF),
-    (uint8_t)(((uint32_t)SAMPLER_MAX_SAMPLES >> 8) & 0xFF),
-    (uint8_t)((uint32_t)SAMPLER_MAX_SAMPLES & 0xFF),
+    (uint8_t)((uint32_t)SAMPLER_MEMORY_SIZE >> 24),
+    (uint8_t)(((uint32_t)SAMPLER_MEMORY_SIZE >> 16) & 0xFF),
+    (uint8_t)(((uint32_t)SAMPLER_MEMORY_SIZE >> 8) & 0xFF),
+    (uint8_t)((uint32_t)SAMPLER_MEMORY_SIZE & 0xFF),
     /* Sample rate (1MHz). */
     SUMP_METADATA_MAXIMUM_SAMPLE_RATE,
     (uint8_t)((uint32_t)SAMPLER_MAX_SAMPLE_RATE >> 24),
@@ -174,8 +174,8 @@ char CmdSump::execute(int argc, char **argv)
             WDT_Reset();
             uint32_t acquired;
             if((acquired = sampler_acquire_samples()) > 0){
-                /* Write captured samples out (each sample is 4 bytes). */
-                host_serial->write((const char*)sampler_get_samples(), acquired << 2);
+                /* Write captured samples out */
+                host_serial->write((const char*)sampler_get_samples(), acquired);
             }
         }
     }

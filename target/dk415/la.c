@@ -21,7 +21,7 @@ typedef enum {
 static sump_sampler_state_t sampler_state = SAMPLER_IDLE;
 static uint32_t samples_to_acquire;
 static uint8_t trigger_armed;
-static uint32_t samples_buffer[SAMPLER_MAX_SAMPLES];
+static uint8_t samples_buffer[SAMPLER_MEMORY_SIZE];
 #ifdef SAMPLER_DMA
 static dmatype_t sampler_dma;
 static volatile uint32_t done;
@@ -56,7 +56,7 @@ void sampler_init(void)
     sampler_dma.eot = sampler_eos_handler;
     DMA_Config(&sampler_dma, DMA1_REQ_TIM2_UP);
 #endif
-    sampler_set_samples(SAMPLER_MAX_SAMPLES);
+    sampler_set_samples(SAMPLER_MEMORY_SIZE);
     sampler_set_rate(200000);
 }
 
@@ -76,8 +76,8 @@ void sampler_reset(void)
 
 void sampler_set_samples(uint32_t n)
 {
-    if(n > SAMPLER_MAX_SAMPLES){
-        n = SAMPLER_MAX_SAMPLES;
+    if(n > SAMPLER_MEMORY_SIZE){
+        n = SAMPLER_MEMORY_SIZE;
     }
 
     samples_to_acquire = n;
@@ -129,13 +129,13 @@ void sampler_abort(void)
 
 }
 
-const uint32_t *sampler_get_samples(void)
+const uint8_t *sampler_get_samples(void)
 {
     #if 0
     uint32_t len = samples_to_acquire;
     // Expand 8 channels to 32 channels sample
     uint8_t *last_sample = ((uint8_t*)samples_buffer) + len;
-    uint32_t *psample = samples_buffer + SAMPLER_MAX_SAMPLES;
+    uint32_t *psample = samples_buffer + SAMPLER_MEMORY_SIZE;
 
     while(len--){
         psample--;
