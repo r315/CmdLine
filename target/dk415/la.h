@@ -3,9 +3,11 @@
 
 #include <stdint.h>
 
+#define SAMPLER_DMA
+
 #define SAMPLER_NUM_OF_CHANNELS     8
 #define SAMPLER_MAX_SAMPLES         0x1000
-#define TIMER_SAMPLER               TMR10
+#define TIMER_SAMPLER               TMR2
 
 /**
  * How much memory is allocated for samples, in samples.
@@ -15,7 +17,11 @@
 /**
  * The highest sample rate in Hz.
  */
+#ifdef SAMPLER_DMA
+#define SAMPLER_MAX_SAMPLE_RATE     75000000UL
+#else
 #define SAMPLER_MAX_SAMPLE_RATE     1000000UL
+#endif
 
 
 #ifdef __cplusplus

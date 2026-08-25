@@ -5,6 +5,7 @@
 #include "clock.h"
 #include "la.h"
 
+
 /**
  * SUMP_ID response buffer, advertise ourselves as a Logic Sniffer.
  *
@@ -127,24 +128,16 @@ static bool sumpCommand(uint8_t input_byte)
                 break;
 
                 case SUMP_DIV: {
-                    uint32_t period;
                     /*
                     * Read the 24-bits period value and rescale from SUMP's
-                    * own 100MHz frequency range to the internal 16MIPs
-                    * range.
+                    * own 100MHz frequency range
                     */
-                    period = (((((uint32_t)command_buffer.bytes[3] << 16) +
-                                ((uint32_t)command_buffer.bytes[2] << 8) +
-                                (uint32_t)command_buffer.bytes[1]) + 1) * 4) / 25;
+                    uint32_t div;
+                    div = ((uint32_t)command_buffer.bytes[3] << 16) +
+                             ((uint32_t)command_buffer.bytes[2] << 8) +
+                             ((uint32_t)command_buffer.bytes[1] << 0);
 
-                    /* Round down if needed. */
-                    if (period > 0x10) {
-                        period -= 0x10;
-                    } else {
-                        period = 1;
-                    }
-
-                    sampler_set_rate(period);
+                    sampler_set_rate(100000000UL / (div + 1));
                 }
                 break;
             }
@@ -190,6 +183,7 @@ char CmdSump::execute(int argc, char **argv)
     if(CMD_IS_PARM_1("run")){
         sumpCommand(SUMP_RUN);
         sampler_acquire_samples();
+        sampler_get_samples();
     }
 
     return CMD_OK;

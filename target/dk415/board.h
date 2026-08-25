@@ -16,6 +16,7 @@ extern "C" {
 #include "tone_at32f4xx.h"
 #include "pwm.h"
 #include "spiflash/flash_dev.h"
+#include "stdinout.h"
 
 #define SET_BIT(REG, BIT)       ((REG) |= (BIT))
 #define CLEAR_BIT(REG, BIT)     ((REG) &= ~(BIT))
