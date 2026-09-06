@@ -178,8 +178,8 @@ void __debugbreak(void){
 enum tone_e TONE_Init(void)
 {
 
-    tone_pwm_init_t init = {
-        .tmr = TMR1,
+    tone_init_t init = {
+        .per = TMR1,
         .ch = 1 - 1,
         .pin = PA_8,
         .pin_idle = 0

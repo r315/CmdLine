@@ -7,9 +7,9 @@ BOARD =BOARD_BLUEPILL HSI
 # Features
 #######################################
 
-FEATURE_ENABLE += ENABLE_SPI
-FEATURE_ENABLE += ENABLE_FLASHROM
-#ENABLE_TONE \
+FEATURE_ENABLE +=ENABLE_SPI
+FEATURE_ENABLE +=ENABLE_FLASHROM
+#FEATURE_ENABLE +=ENABLE_TONE
 #ENABLE_BENCHMARK \
 #ENABLE_DISPLAY \
 #ENABLE_BENCHMARK_DHRYSTONE \
@@ -102,9 +102,7 @@ $(TARGET_PATH)/Src/syscalls.c \
 $(TARGET_PATH)/Src/sysmem.c \
 
 
-#$(LIB_PATH)/src/rtttl.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_PATH)/tone/tone_stm32f1xx.c \
+#$(DRIVER_PATH)/rng/rng_software.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c \
 $(REPOSITORY)/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c \
@@ -149,6 +147,12 @@ endif
 
 ifneq ($(filter ENABLE_FLASHROM,$(FEATURE_ENABLE)),)
 CPP_SOURCES +=$(APP_DIR)/src/cmdflashrom.cpp
+endif
+
+ifneq ($(filter ENABLE_TONE, $(FEATURE_ENABLE)),)
+TARGET_SOURCES +=$(DRIVER_PATH)/tone/tone_stm32f1xx.c
+APP_SOURCES +=$(LIB_PATH)/src/rtttl.c
+CPP_SOURCES +=$(APP_DIR)/src/cmdbuz.cpp
 endif
 
 #######################################

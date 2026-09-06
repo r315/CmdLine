@@ -13,7 +13,6 @@ extern "C" {
 #include "i2c.h"
 #include "gpio.h"
 #include "gpio_at32f4xx.h"
-#include "tone_at32f4xx.h"
 #include "pwm.h"
 #include "spiflash/flash_dev.h"
 #include "stdinout.h"

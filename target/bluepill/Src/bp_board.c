@@ -535,8 +535,8 @@ void BOARD_LCD_Init(void)
 #ifdef ENABLE_TONE
 enum tone_e TONE_Init(void)
 {
-    tone_pwm_init_t init = {
-        .tim = TIM1,        // Timer instance
+    tone_init_t init = {
+        .per = TIM1,        // Timer instance
         .ch = 0,            // Channel nr - 1
         .pin = PA_8,        // Pin name
         .pin_idle = 0       // Idle state

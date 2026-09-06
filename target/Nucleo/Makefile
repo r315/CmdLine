@@ -96,6 +96,7 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
+
 #$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_flash.c \
@@ -105,10 +106,8 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_dma_ex.c \
 #$(DRIVER_PATH)/spi/spi_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
-$(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
 #$(APP_DIR)/libs/ws2812b/ws2812b.c \
 $(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
-$(DRIVER_PATH)/tone/tone_stm32l4xx.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 $(TARGET_PATH)/Core/Src/dscr.c \
 
@@ -120,7 +119,6 @@ $(DRIVER_PATH)/wdt/wdt_dummy.c \
 $(DRIVER_PATH)/uart/uart_stm32l4xx.c \
 $(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 $(LIB_PATH)/src/stimer.c \
-#$(LIB_PATH)/src/rtttl.c \
 
 CPP_SOURCES = \
 $(LIB_PATH)/src/console.cpp \
@@ -130,7 +128,6 @@ $(APP_DIR)/src/app.cpp \
 $(APP_DIR)/src/cmdkeyfob.cpp \
 $(APP_DIR)/src/cmdrfinder.cpp \
 $(APP_DIR)/src/cmdmem.cpp \
-$(APP_DIR)/src/cmdbuz.cpp \
 $(APP_DIR)/src/cmdpwm.cpp \
 $(APP_DIR)/src/cmdlmcshd.cpp \
 $(APP_DIR)/src/cmdds1086.cpp \
@@ -200,6 +197,12 @@ CPP_SOURCES += $(APP_DIR)/src/cmdflash.cpp
 C_SOURCES +=$(APP_DIR)/libs/spiflash/flash_dev.c \
 $(APP_DIR)/libs/spiflash/flash_dev_spi.c \
 $(APP_DIR)/libs/spiflash/flash_dev_qspi.c
+endif
+
+ifneq ($(filter ENABLE_TONE, $(FEATURE_ENABLE)),)
+TARGET_SOURCES +=$(DRIVER_PATH)/tone/tone_stm32l4xx.c
+APP_SOURCES +=$(LIB_PATH)/src/rtttl.c
+CPP_SOURCES +=$(APP_DIR)/src/cmdbuz.cpp
 endif
 
 # ASM sources

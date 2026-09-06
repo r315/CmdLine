@@ -312,7 +312,7 @@ void __debugbreak(void){
 void Fault_Handler(void)
 {
     volatile uint8_t isr_number = (SCB->ICSR & 255) - 16;
-    // See position number on Table 46 from RM0394
+    // See position number on Table 51 from RM0394
     UNUSED(isr_number);
 
     __asm volatile(

@@ -16,6 +16,8 @@ extern "C" {
 #include "serial.h"
 #include "uart.h"
 #include "dma.h"
+#include "tone.h"
+#include "gpio.h"
 #include "st7735.h"
 #include "dma_stm32l4xx.h"
 #include "gpio_stm32l4xx.h"
@@ -25,11 +27,31 @@ extern "C" {
 /**
  * General macros
  * */
+/*
+ NUCLEO L412KB
 
+    +---UUUU---+
+    |          |
+ PA9|D1     VIN|
+PA10|D0     GND|
+ RST|nRST  nRST|
+    |GND    +5V|
+PA12|D2      A7|PA2
+ PB0|D3      A6|PA7
+ PB7|D4      A5|PA6
+ PB6|D5      A4|PA5
+ PB1|D6      A3|PA4
+PC14|D7      A2|PA3
+PC15|D8      A1|PA1
+ PA8|D9      A0|PA0
+PA11|D10   AREF|
+ PB5|D11   +3V3|
+ PB4|D12    D13|PB3 (LED)
+    +----------+
 
+ */
 /**
  * LED and GPIO's
- *  LED Pin PB3 (Arduino D13)
  * */
 #define LED1_ON          HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET)
 #define LED1_OFF         HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET)

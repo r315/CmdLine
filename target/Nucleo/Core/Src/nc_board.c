@@ -3,7 +3,6 @@
 
 #ifdef ENABLE_SPI
 static spibus_t spibus;
-static void flashSelect(uint8_t en);
 #endif
 
 #ifdef ENABLE_QSPI
@@ -14,6 +13,7 @@ static qspibus_t qspibus;
 #ifdef ENABLE_FLASH
 static flashdev_t flashdev;
 extern const flashdev_info_t gd25lq16;
+static void flashSelect(uint8_t en);
 #endif
 
 #ifdef ENABLE_DISPLAY
@@ -44,7 +44,7 @@ void BOARD_LCD_Init(void)
 }
 #endif
 
-#ifdef ENABLE_SPI
+#ifdef ENABLE_FLASH
 static void flashSelect(uint8_t en)
 {
     (void)en;
@@ -74,6 +74,20 @@ void BOARD_PWM_Init(pwmchip_t *pwmchip)
 
     GPIO_Config(PB_0, GPO_HS_AF);
     GPIO_Config(PB_1, GPO_HS_AF); */
+}
+#endif
+
+#ifdef ENABLE_TONE
+enum tone_e TONE_Init(void)
+{
+    tone_init_t init = {
+        .per = TIM16,
+        .ch = 1 - 1,
+        .pin = PB_6,
+        .pin_idle = 0
+    };
+
+    return TONE_PwmInit(&init);
 }
 #endif
 
@@ -111,6 +125,9 @@ void BOARD_Init(void)
     flashDevInit(&flashdev);
     #endif
 
+    #ifdef ENABLE_TONE
+    TONE_Init();
+    #endif
 }
 
 #ifdef ENABLE_FLASH

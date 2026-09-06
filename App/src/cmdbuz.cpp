@@ -34,13 +34,12 @@ static const tone_t chirp [] = {
 
 void CmdBuz::help(void)
 {
-    console->print("usage: buz <params>\n");
-    console->print("  params, <freq> <duration>, ex: 2000 100\n");
-    console->print("          vol [level]\n");
-    console->print("          rtttl <string>\n");
-    console->print("          demo <nr>\n");
-    console->print("          chirp\n");
-    console->print("          stop\n");
+    console->print("usage: buz <freq> <duration>\n");
+    console->print("\tvol [level]\n");
+    console->print("\trtttl <string>\n");
+    console->print("\tdemo <nr>\n");
+    console->print("\tchirp\n");
+    console->print("\tstop\n");
 }
 
 char CmdBuz::execute(int argc, char **argv)
