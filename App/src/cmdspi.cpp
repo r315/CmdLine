@@ -41,12 +41,6 @@ void CmdSpi::help(void){
     console->println("\tstatus : bus status");
     console->println("\tmode <0-3>: set spi mode");
     console->println("\tcs <0-1>: Enable HW CS");
-    /*console->println("  Spi Pins\n"
-                    "\tSCK   P0.7\n"
-                    "\tMISO  P0.8\n"
-                    "\tMOSI  P0.9\n"
-                    "\tSSEL  NA\n"); */
-
 }
 
 char CmdSpi::execute(int argc, char **argv){
@@ -73,7 +67,7 @@ char CmdSpi::execute(int argc, char **argv){
 		SPI_Transfer(&mspi, data, n);
 		return CMD_OK;
 	}else if(xstrcmp("init", argv[2]) == 0){
-        if(ia2i(argv[3], (int32_t*)&aux)){
+        if(ia2i(argv[1], (int32_t*)&aux)){
             mspi.bus = aux;
             mspi.freq = 1000;
             SPI_Init(&mspi);
