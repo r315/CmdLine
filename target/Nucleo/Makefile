@@ -78,7 +78,7 @@ AS_INCLUDES =
 # source
 ######################################
 # C sources
-TARGET_SOURCES =  \
+BOARD_SOURCES =  \
 $(TARGET_PATH)/Core/Src/main.c \
 $(TARGET_PATH)/Core/Src/nc_board.c \
 $(TARGET_PATH)/Core/Src/stm32l4xx_it.c \
@@ -87,6 +87,8 @@ $(TARGET_PATH)/Core/Src/system_stm32l4xx.c \
 $(TARGET_PATH)/Core/Src/syscalls.c \
 $(TARGET_PATH)/Core/Src/sysmem.c \
 $(TARGET_PATH)/Core/Src/nc_serial.c \
+
+DRV_SOURCES = \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_cortex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_rcc.c \
@@ -96,6 +98,11 @@ $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_uart_ex.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_pwr_ex.c \
+$(DRIVER_PATH)/rng/rng_software.c \
+$(DRIVER_PATH)/wdt/wdt_dummy.c \
+$(DRIVER_PATH)/uart/uart_stm32l4xx.c \
+$(DRIVER_PATH)/dma/dma_stm32l4xx.c \
+$(DRIVER_PATH)/gpio/gpio_stm32l4xx.c \
 
 #$(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_tim_ex.c \
@@ -111,16 +118,12 @@ $(DRIVER_PATH)/pwm/pwm_stm32l4xx.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_exti.c \
 $(TARGET_PATH)/Core/Src/dscr.c \
 
-APP_SOURCES =\
+LIB_SOURCES = \
 $(LIB_PATH)/src/strfunc.c \
 $(LIB_PATH)/src/fifo.c \
-$(DRIVER_PATH)/rng/rng_software.c \
-$(DRIVER_PATH)/wdt/wdt_dummy.c \
-$(DRIVER_PATH)/uart/uart_stm32l4xx.c \
-$(DRIVER_PATH)/dma/dma_stm32l4xx.c \
 $(LIB_PATH)/src/stimer.c \
 
-CPP_SOURCES = \
+APP_SOURCES =\
 $(LIB_PATH)/src/console.cpp \
 $(APP_DIR)/src/app.cpp \
 
@@ -134,27 +137,23 @@ $(APP_DIR)/src/cmdds1086.cpp \
 $(APP_DIR)/libs/si5351/si5351.cpp \
 $(APP_DIR)/libs/ds1086/ds1086.cpp \
 
-C_SOURCES =\
-$(TARGET_SOURCES) \
-$(APP_SOURCES)
-
 ifneq ($(filter ENABLE_DEMO_GIF,$(FEATURE_ENABLE)),)
-CPP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
-C_SOURCES += $(APP_DIR)/libs/agif/agif.c
+APP_SOURCES += $(APP_DIR)/libs/agif/AnimatedGIF.cpp
+APP_SOURCES += $(APP_DIR)/libs/agif/agif.c
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK,$(FEATURE_ENABLE)),)
-CPP_SOURCES +=$(APP_DIR)/src/cmdbenchmark.cpp
+APP_SOURCES +=$(APP_DIR)/src/cmdbenchmark.cpp
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK_DHRYSTONE,$(FEATURE_ENABLE)),)
-C_SOURCES +=\
+APP_SOURCES +=\
 $(APP_DIR)/libs/dhrystone/dhry_1.c \
 $(APP_DIR)/libs/dhrystone/dhry_2.c
 endif
 
 ifneq ($(filter ENABLE_BENCHMARK_COREMARK,$(FEATURE_ENABLE)),)
-C_SOURCES +=\
+APP_SOURCES +=\
 $(APP_DIR)/libs/CoreMark/core_main.c \
 $(APP_DIR)/libs/CoreMark/core_state.c \
 $(APP_DIR)/libs/CoreMark/core_util.c \
@@ -163,47 +162,63 @@ $(APP_DIR)/libs/CoreMark/core_matrix.c
 endif
 
 ifneq ($(filter ENABLE_DISPLAY,$(FEATURE_ENABLE)),)
-C_SOURCES +=\
-$(DRIVER_COMPONENT_PATH)/display/ili9341.c \
+APP_SOURCES +=\
+$(APP_DIR)/src/cmdtft.cpp
+
+LIB_SOURCES +=\
 $(LIB_PATH)/src/liblcd.c \
 $(LIB_PATH)/src/lib2d.c \
 $(LIB_PATH)/src/font.c \
 
-CPP_SOURCES +=$(APP_DIR)/src/cmdtft.cpp
+DRV_SOURCES +=$(DRIVER_COMPONENT_PATH)/display/ili9341.c
 endif
 
 ifneq ($(filter ENABLE_SPI,$(FEATURE_ENABLE)),)
-C_SOURCES +=$(DRIVER_PATH)/spi/spi_stm32l4xx.c
-CPP_SOURCES +=$(APP_DIR)/src/cmdspi.cpp
+DRV_SOURCES +=$(DRIVER_PATH)/spi/spi_stm32l4xx.c
+APP_SOURCES +=$(APP_DIR)/src/cmdspi.cpp
 endif
 
 ifneq ($(filter ENABLE_I2C,$(FEATURE_ENABLE)),)
-C_SOURCES +=$(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
+DRV_SOURCES +=\
+$(DRIVER_PATH)/i2c/i2c_stm32l4xx.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c.c \
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_i2c_ex.c
-CPP_SOURCES +=$(APP_DIR)/src/cmdi2c.cpp
+APP_SOURCES +=$(APP_DIR)/src/cmdi2c.cpp
 endif
 
 ifneq ($(filter ENABLE_QSPI,$(FEATURE_ENABLE)),)
 #$(APP_DIR)/libs/ext-loader/flash.c
-C_SOURCES +=\
+DRV_SOURCES +=\
 $(REPOSITORY)/Drivers/STM32L4xx_HAL_Driver/Src/stm32l4xx_hal_qspi.c \
-$(DRIVER_PATH)/qspi/qspi_stm32l4xx.c \
-$(TARGET_PATH)/Core/Src/flash_gigadevice.c
+$(DRIVER_PATH)/qspi/qspi_stm32l4xx.c
+
+BOARD_SOURCES +=$(TARGET_PATH)/Core/Src/flash_gigadevice.c
 endif
 
 ifneq ($(filter ENABLE_FLASH, $(FEATURE_ENABLE)),)
-CPP_SOURCES += $(APP_DIR)/src/cmdflash.cpp
-C_SOURCES +=$(APP_DIR)/libs/spiflash/flash_dev.c \
+APP_SOURCES +=\
+$(APP_DIR)/src/cmdflash.cpp \
 $(APP_DIR)/libs/spiflash/flash_dev_spi.c \
-$(APP_DIR)/libs/spiflash/flash_dev_qspi.c
+$(APP_DIR)/libs/spiflash/flash_dev_qspi.c\
+$(APP_DIR)/libs/spiflash/flash_dev.c
 endif
 
 ifneq ($(filter ENABLE_TONE, $(FEATURE_ENABLE)),)
-TARGET_SOURCES +=$(DRIVER_PATH)/tone/tone_stm32l4xx.c
-APP_SOURCES +=$(LIB_PATH)/src/rtttl.c
-CPP_SOURCES +=$(APP_DIR)/src/cmdbuz.cpp
+DRV_SOURCES +=$(DRIVER_PATH)/tone/tone_stm32l4xx.c
+LIB_SOURCES +=$(LIB_PATH)/src/rtttl.c
+APP_SOURCES +=$(APP_DIR)/src/cmdbuz.cpp
 endif
+
+ifneq ($(filter ENABLE_RPM, $(FEATURE_ENABLE)),)
+APP_SOURCES +=$(APP_DIR)/src/cmdrpm.cpp
+endif
+
+CPP_SOURCES = $(filter %.cpp, $(APP_SOURCES))
+C_SOURCES = \
+$(BOARD_SOURCES) \
+$(DRV_SOURCES) \
+$(LIB_SOURCES) \
+$(filter %.c,$(APP_SOURCES))
 
 # ASM sources
 ASM_SOURCES =  \
