@@ -6,6 +6,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
+#include "console.h"
 
 typedef struct _Array{
 	uint8_t *data;
@@ -16,6 +17,8 @@ typedef struct _Array{
 void App(void);
 
 int16_t map(int16_t x, int16_t in_min, int16_t in_max, int16_t out_min, int16_t out_max);
+
+extern Console console;
 
 #ifdef __cplusplus
 }

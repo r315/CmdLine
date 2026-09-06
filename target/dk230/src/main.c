@@ -2,7 +2,8 @@
 #include <stdint.h>
 #include <stdio.h>
 #include "board.h"
-#include "app.h"
+
+void App(void);
 
 /**
   * @brief  main function.

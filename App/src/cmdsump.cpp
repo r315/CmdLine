@@ -65,11 +65,11 @@ static bool sumpCommand(uint8_t input_byte)
                 return true;
                 /* Send the device identification buffer. */
                 case SUMP_ID:
-                    host_serial->write(SUMP_DEVICE_ID, sizeof(SUMP_DEVICE_ID));
+                    console.write(SUMP_DEVICE_ID, sizeof(SUMP_DEVICE_ID));
                 break;
                 /* Send device description. */
                 case SUMP_DESC:
-                    host_serial->write(SUMP_METADATA, sizeof(SUMP_METADATA));
+                    console.write(SUMP_METADATA, sizeof(SUMP_METADATA));
                 break;
                 /* Arm the sampler. */
                 case SUMP_RUN:
@@ -166,16 +166,16 @@ char CmdSump::execute(int argc, char **argv)
 
     if(CMD_IS_PARM_1("start")){
         while(1){
-            if(host_serial->available()){
+            if(console.available()){
                 uint8_t input_byte;
-                host_serial->read((char*)&input_byte, 1);
+                console.read((char*)&input_byte, 1);
                 sumpCommand(input_byte);
             }
             WDT_Reset();
             uint32_t acquired;
             if((acquired = sampler_acquire_samples()) > 0){
                 /* Write captured samples out */
-                host_serial->write((const char*)sampler_get_samples(), acquired);
+                console.write((const char*)sampler_get_samples(), acquired);
             }
         }
     }

@@ -1,7 +1,6 @@
 #include "board.h"
 #include "clock_lpc17xx.h"
 #include "tim_lpc17xx.h"
-#include "app.h"
 
 #if defined(ENABLE_DISPLAY)
 void BOARD_LCD_Init(){
@@ -21,6 +20,7 @@ void BOARD_PWM_Init(pwmchip_t *pwmchip)
 }
 #endif
 
+void App(void);
 
 int main()
 {

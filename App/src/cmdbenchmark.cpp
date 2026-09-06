@@ -81,7 +81,7 @@ int ee_printf(const char *format, ...)
     len = strformater(buf, CONSOLE_WIDTH, format, args);
 	va_end(args);
 
-	return host_serial->write(buf, len);
+	return console.write(buf, len);
 }
 
 #endif

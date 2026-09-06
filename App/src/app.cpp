@@ -1,4 +1,5 @@
 
+#include "app.h"
 #include "board.h"
 #include "wdt.h"
 #include "stk500/stk500.h"
@@ -7,7 +8,6 @@
 #include "debug.h"
 
 #include "stdinout.h"
-#include "console.h"
 #include "cmdecho.h"
 #include "cmdhelp.h"
 #include "cmdmem.h"
@@ -56,6 +56,8 @@
 #endif
 
 #define WDT_TIMEOUT     3000
+
+Console console;
 
 static ConsoleCommand *app_commands[] = {
     new CmdHelp(),
@@ -149,7 +151,6 @@ static ConsoleCommand *app_commands[] = {
 
 extern "C" void App(void)
 {
-    Console console;
     // stdout_t and serialops_t must be compatible for this to work
     stdinout_t *userio = (stdinout_t*)SERIAL_GetSerialOps(-1);
 

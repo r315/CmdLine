@@ -1,7 +1,7 @@
 #include "cmdrpm.h"
 #include "gpio.h"
 #include "stimer.h"
-#include "debug.h"
+#include "app.h"
 
 
 static uint32_t count;
@@ -15,7 +15,7 @@ static void pulse_handler(void)
 
 static uint32_t rpm_handler(stimer_t *tmr)
 {
-    dbg_printf("\e[1K\rRPM: %lu", count * 60);
+    console.printf("\e[1K\rRPM: %lu", count * 60);
     count = 0;
     return tmr->interval;
 }
